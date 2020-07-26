@@ -1,9 +1,4 @@
-<form
-    nz-form
-    [formGroup]="form"
-    class="login-form"
-    (ngSubmit)="submitForm()"
->
+<form nz-form [formGroup]="form" class="login-form" (ngSubmit)="submitForm()">
     <nz-form-item>
         <nz-form-control nzErrorTip="Please input your username!">
             <nz-input-group nzPrefixIcon="user">
@@ -45,5 +40,5 @@
     >
         Log in
     </button>
-    Or <a> register now! </a>
+    Or <a routerLink="../register"> register now! </a>
 </form>

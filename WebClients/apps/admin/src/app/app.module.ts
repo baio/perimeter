@@ -6,6 +6,7 @@ import { IconDefinition } from '@ant-design/icons-angular';
 import * as AllIcons from '@ant-design/icons-angular/icons';
 import { NZ_ICONS } from 'ng-zorro-antd/icon';
 import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
 
 const antDesignIcons = AllIcons as {
     [key: string]: IconDefinition;
@@ -16,7 +17,12 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(
 
 @NgModule({
     declarations: [AppComponent],
-    imports: [BrowserModule, HttpClientModule, AdminAuthPagesModule],
+    imports: [
+        BrowserModule,
+        HttpClientModule,
+        AdminAuthPagesModule,
+        AppRoutingModule,
+    ],
     providers: [{ provide: NZ_ICONS, useValue: icons }],
     bootstrap: [AppComponent],
 })
