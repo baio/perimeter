@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="SignUp\Models.fs" />
+        <Compile Include="SignUp\SignUp.fs" />
+        <Compile Include="SignIn\Models.fs" />
+        <Compile Include="SignIn\UserHelpers.fs" />
+        <Compile Include="SignIn\CreateClaims.fs" />
+        <Compile Include="SignIn\CreateToken.fs" />
+        <Compile Include="SignIn\SignInUser.fs" />
+        <Compile Include="SignIn\SignIn.fs" />
+        <Compile Include="SignUpConfirm\Models.fs" />
+        <Compile Include="SignUpConfirm\SignUpConfirm.fs" />
+        <Compile Include="RefreshToken\Models.fs" />
+        <Compile Include="RefreshToken\ValidateAccessToken.fs" />
+        <Compile Include="RefreshToken\Validate.fs" />
+        <Compile Include="RefreshToken\RefreshToken.fs" />
+        <Compile Include="GetAudience.fs" />
+        <Compile Include="Helpers.fs" />
+        <Compile Include="ResetPasswordConfirm\Models.fs" />
+        <Compile Include="ResetPasswordConfirm\ResetPasswordConfirm.fs" />
+        <Compile Include="ResetPassword\Models.fs" />
+        <Compile Include="ResetPassword\ResetPassword.fs" />
+        <Compile Include="UpdatePassword\Models.fs" />
+        <Compile Include="UpdatePassword\UpdatePassword.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\..\Common\Domain\Common.Domain.Models\Common.Domain.Models.fsproj" />
+      <ProjectReference Include="..\..\..\..\Common\Domain\Common.Domain.Utils\Common.Domain.Utils.fsproj" />
+      <ProjectReference Include="..\..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
+      <ProjectReference Include="..\..\System\PRR.System.Models\PRR.System.Models.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
+      <PackageReference Include="TaskBuilder.fs" Version="2.1.0" />
+    </ItemGroup>
+
+</Project>

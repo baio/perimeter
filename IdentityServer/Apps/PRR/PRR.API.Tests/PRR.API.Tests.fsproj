@@ -1,0 +1,80 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+
+        <IsPackable>false</IsPackable>
+        <GenerateProgramFile>false</GenerateProgramFile>
+        <Configurations>Debug;Release;Test</Configurations>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+      <DefineConstants>TRACE;ASPNETCORE_ENVIRONMENT=Test;TEST</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|AnyCPU'">
+      <DefineConstants>TRACE;ASPNETCORE_ENVIRONMENT=Test;TEST</DefineConstants>
+      <Optimize>false</Optimize>
+      <Tailcalls>true</Tailcalls>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <DefineConstants>TRACE;TEST</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Utils\ClientFixture.fs" />
+        <Compile Include="Utils\EFLogger.fs" />
+        <Compile Include="Utils\Setup.fs" />
+        <Compile Include="Utils\TestFixture.fs" />
+        <Compile Include="Utils\CreateUserTestContext.fs" />
+        <Compile Include="Utils\CreateUser.fs" />
+        <Compile Include="Tenant\Permissions\CRUDTests.fs" />
+        <Compile Include="Tenant\Permissions\MultiUsersTests.fs" />
+        <Compile Include="Tenant\Permissions\NotFoundTests.fs" />
+        <Compile Include="Tenant\Roles\CRUDTests.fs" />
+        <Compile Include="Tenant\Roles\MultiUsersTests.fs" />
+        <Compile Include="Tenant\DomainUserRoles\MultiUsersTests.fs" />
+        <Compile Include="Tenant\DomainPools\CRUDTests.fs" />
+        <Compile Include="Tenant\DomainPools\MultiUsersTests.fs" />
+        <Compile Include="Tenant\Domains\CRUDTests.fs" />
+        <Compile Include="Tenant\Domains\MultiUsersTests.fs" />
+        <Compile Include="Tenant\Apis\CRUDTests.fs" />
+        <Compile Include="Tenant\Applications\CRUDTests.fs" />
+        <Compile Include="Tenant\TenantUserRoles\MultiUsersTests.fs" />
+        <Compile Include="Auth\SignUpTests.fs" />
+        <Compile Include="Auth\SignInTests.fs" />
+        <Compile Include="Auth\RefreshTokenTests.fs" />
+        <Compile Include="Auth\RefreshTokenPersistenceTests.fs" />
+        <Compile Include="Auth\ResetPasswordTests.fs" />
+        <Compile Include="Program.fs" />
+        <Content Include="akka.hocon">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="appsettings.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Akka.Persistence.Azure" Version="0.6.1" />
+        <PackageReference Include="Akkling" Version="0.10.0" />
+        <PackageReference Include="EntityFramework" Version="6.4.4" />
+        <PackageReference Include="FsUnit" Version="3.9.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+        <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="16.6.1" />
+        <PackageReference Include="Npgsql" Version="4.1.3.1" />
+        <PackageReference Include="TaskBuilder.fs" Version="2.1.0" />
+        <PackageReference Include="xunit" Version="2.4.0" />
+        <PackageReference Include="Xunit.Priority" Version="1.1.6" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+        <PackageReference Include="coverlet.collector" Version="1.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Common\Common.Test.Utils\Common.Test.Utils.fsproj" />
+      <ProjectReference Include="..\Data\PRR.Data.DataContextMigrations\PRR.Data.DataContextMigrations.csproj" />
+      <ProjectReference Include="..\PRR.API\PRR.API.fsproj" />
+    </ItemGroup>
+
+</Project>

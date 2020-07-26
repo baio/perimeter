@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="ValueResult.fs" />
+        <Compile Include="SignUpSuccess.fs" />
+        <Compile Include="SignUpConfirmSuccess.fs" />
+        <Compile Include="SignInSuccess.fs" />
+        <Compile Include="CreatedTenantInfo.fs" />
+        <Compile Include="RefreshTokenSuccess.fs" />
+        <Compile Include="RefreshToken.fs" />
+        <Compile Include="SignUpToken.fs" />
+        <Compile Include="ResetPassword.fs" />
+        <Compile Include="SendMail.fs" />
+        <Compile Include="Commands.fs" />
+        <Compile Include="Queries.fs" />
+        <Compile Include="Events.fs" />
+        <Compile Include="Env.fs" />
+        <Compile Include="CQRSSystem.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\..\Common\Domain\Common.Domain.Models\Common.Domain.Models.fsproj" />
+      <ProjectReference Include="..\..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Akkling" Version="0.10.0" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="BadRequestValidators.fs" />
+        <Compile Include="CommonExpressions.fs" />
+        <Compile Include="HandleFilter.fs" />
+        <Compile Include="HandlePagination.fs" />
+        <Compile Include="HandleSort.fs" />
+        <Compile Include="HandleListQuery.fs" />
+        <Compile Include="LinqHelpers.fs" />
+        <Compile Include="ExecuteListQuery.fs" />
+        <Compile Include="UniqueConstraintException.fs" />
+        <Compile Include="CRUD.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Common.Utils\Common.Utils.fsproj" />
+      <ProjectReference Include="..\Common.Domain.Models\Common.Domain.Models.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.5" />
+    </ItemGroup>
+
+</Project>
