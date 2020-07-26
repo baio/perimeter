@@ -16,7 +16,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@data-avail/api-interfaces": ["libs/api-interfaces/src/index.ts"]
+      "@admin/auth": ["libs/admin/auth/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
