@@ -1,6 +1,6 @@
 <form nz-form [formGroup]="form" (ngSubmit)="submitForm()">
     <nz-form-item>
-        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="email"
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="email" nzRequired
             >E-mail</nz-form-label
         >
         <nz-form-control [nzSm]="14" [nzXs]="24" [nzErrorTip]="emailErrorTpl">
@@ -143,8 +143,19 @@
     </nz-form-item>
     <nz-form-item nz-row class="register-area">
         <nz-form-control [nzSpan]="14" [nzOffset]="6">
-            <label nz-checkbox formControlName="agree">
-                <span>I have read the <a>agreement</a></span>
+            <label data-cy="agree" nz-checkbox formControlName="agree">
+                <span
+                    >I have read the
+                    <a
+                        data-cy="agreement-modal-open"
+                        (click)="
+                            $event.preventDefault();
+                            $event.stopPropagation();
+                            isAgreementVisible = true
+                        "
+                        >agreement</a
+                    ></span
+                >
             </label>
         </nz-form-control>
     </nz-form-item>
@@ -152,7 +163,7 @@
         <nz-form-control [nzSpan]="14" [nzOffset]="6">
             <button
                 data-cy="submit"
-                [disabled]="form.invalid || !!form.value['agree']"
+                [disabled]="form.invalid || !form.value['agree']"
                 nz-button
                 nzType="primary"
             >
@@ -161,3 +172,24 @@
         </nz-form-control>
     </nz-form-item>
 </form>
+
+<nz-modal
+    [nzClosable]="false"
+    [(nzVisible)]="isAgreementVisible"
+    nzTitle="Agreement"
+    [nzFooter]="modalFooter"
+>
+    <div data-cy="agreement-modal">
+        <p>Welcome</p>
+    </div>
+    <ng-template #modalFooter>
+        <button
+            data-cy="agreement-modal-close"
+            nz-button
+            nzType="primary"
+            (click)="isAgreementVisible = false"
+        >
+            OK
+        </button>
+    </ng-template>
+</nz-modal>

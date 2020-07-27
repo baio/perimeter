@@ -65,4 +65,46 @@ describe('auth/register page', () => {
             .type(' ')
             .dataCy('last-name-required-error')
             .should('be.visible'));
+
+    it('Last name field should show error when empty s+', () =>
+        cy
+            .dataCy('agreement-modal-open')
+            .click()
+            .dataCy('agreement-modal')
+            .should('be.visible')
+            .dataCy('agreement-modal-close')
+            .click()
+            .should('not.exist'));
+
+    it('All fields correct but agreement not read should disable Register button', () =>
+        cy
+            .dataCy('email')
+            .type('test@mail.dev')
+            .dataCy('password')
+            .type('123456')
+            .dataCy('confirm-password')
+            .type('123456')
+            .dataCy('first-name')
+            .type('alice')
+            .dataCy('last-name')
+            .type('ms')
+            .dataCy('submit')
+            .should('be.disabled'));
+
+    it('All fields correct and agreement checked should enable register button', () =>
+        cy
+            .dataCy('email')
+            .type('test@mail.dev')
+            .dataCy('password')
+            .type('123456')
+            .dataCy('confirm-password')
+            .type('123456')
+            .dataCy('first-name')
+            .type('alice')
+            .dataCy('last-name')
+            .type('ms')
+            .dataCy('agree')
+            .click()
+            .dataCy('submit')
+            .should('not.be.disabled'));
 });

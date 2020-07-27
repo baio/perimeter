@@ -17,6 +17,8 @@ const emptyValidator = (control: FormControl) => {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignupPageComponent implements OnInit {
+    isAgreementVisible = false;
+
     public readonly form: FormGroup;
 
     constructor(private fb: FormBuilder) {
