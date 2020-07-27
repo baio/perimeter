@@ -16,7 +16,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@admin/auth": ["libs/admin/auth/src/index.ts"]
+      "@admin/auth": ["libs/admin/auth/src/index.ts"],
+      "@admin/data-access": ["libs/admin/data-access/src/index.ts"],
+      "@admin/common": ["libs/admin/common/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

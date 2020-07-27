@@ -11,8 +11,10 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AdminDataAccessModule } from '@admin/data-access';
 
 @NgModule({
     imports: [
@@ -27,6 +29,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
         NzCheckboxModule,
         NzSelectModule,
         NzModalModule,
+        NzAlertModule,
+        AdminDataAccessModule,
     ],
     declarations: [
         LoginPageComponent,

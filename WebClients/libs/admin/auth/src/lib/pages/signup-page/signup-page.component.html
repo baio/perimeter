@@ -159,10 +159,24 @@
             </label>
         </nz-form-control>
     </nz-form-item>
+
+    <nz-alert
+        data-cy="submit-error"
+        nz-row
+        *ngIf="errorMessage"
+        nzType="error"
+        nzCloseable
+        nzMessage="Error"
+        [nzDescription]="errorMessage"
+        style="margin-bottom: 25px;"
+    >
+    </nz-alert>
+
     <nz-form-item nz-row class="register-area">
         <nz-form-control [nzSpan]="14" [nzOffset]="6">
             <button
                 data-cy="submit"
+                [nzLoading]="isSubmitting"
                 [disabled]="form.invalid || !form.value['agree']"
                 nz-button
                 nzType="primary"
@@ -184,7 +198,7 @@
     </div>
     <ng-template #modalFooter>
         <button
-            data-cy="agreement-modal-close"
+            data-cy="agreement-modal-close"            
             nz-button
             nzType="primary"
             (click)="isAgreementVisible = false"

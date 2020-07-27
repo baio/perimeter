@@ -1,4 +1,3 @@
-import { getGreeting } from '../support/app.po';
 import '../support';
 
 describe('auth/register page', () => {
@@ -107,4 +106,38 @@ describe('auth/register page', () => {
             .click()
             .dataCy('submit')
             .should('not.be.disabled'));
+
+    it('When send signup fails form should display error', () => {
+        cy.server();
+        cy.route({
+            method: 'POST',
+            url: '**/auth/sign-up',
+            status: 500,
+            delay: 10,
+            response: [],
+        }).as('signUp');
+
+        cy.dataCy('email')
+            .type('test@mail.dev')
+            .dataCy('password')
+            .type('123456')
+            .dataCy('confirm-password')
+            .type('123456')
+            .dataCy('first-name')
+            .type('alice')
+            .dataCy('last-name')
+            .type('ms')
+            .dataCy('agree')
+            .click()
+            .dataCy('submit')
+            .click()
+            .dataCy('submit-error')
+            .should('be.visible');
+
+        cy.wait('@signUp');
+    });
+
+    it('when signup success should be redirected to signup congrats page', () => {
+        expect(true).equals(false);
+    });
 });

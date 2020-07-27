@@ -37,6 +37,12 @@
     },
     "admin-auth": {
       "tags": []
+    },
+    "admin-data-access": {
+      "tags": []
+    },
+    "admin-common": {
+      "tags": []
     }
   }
 }

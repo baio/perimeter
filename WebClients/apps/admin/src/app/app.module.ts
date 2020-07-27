@@ -7,6 +7,8 @@ import * as AllIcons from '@ant-design/icons-angular/icons';
 import { NZ_ICONS } from 'ng-zorro-antd/icon';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { HttpBaseUrlInterceptorModule } from '@admin/common';
+import { environment } from '../environments/environment';
 
 const antDesignIcons = AllIcons as {
     [key: string]: IconDefinition;
@@ -22,6 +24,7 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(
         HttpClientModule,
         AdminAuthPagesModule,
         AppRoutingModule,
+        HttpBaseUrlInterceptorModule.forRoot({ baseUrl: environment.baseUrl }),
     ],
     providers: [{ provide: NZ_ICONS, useValue: icons }],
     bootstrap: [AppComponent],
