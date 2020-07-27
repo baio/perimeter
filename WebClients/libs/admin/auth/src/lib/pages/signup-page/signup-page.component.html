@@ -1,14 +1,29 @@
 <form nz-form [formGroup]="form" (ngSubmit)="submitForm()">
     <nz-form-item>
-        <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="email"
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="email"
             >E-mail</nz-form-label
         >
-        <nz-form-control
-            [nzSm]="14"
-            [nzXs]="24"
-            nzErrorTip="The input is not valid E-mail!"
-        >
-            <input nz-input formControlName="email" id="email" />
+        <nz-form-control [nzSm]="14" [nzXs]="24" [nzErrorTip]="emailErrorTpl">
+            <input
+                data-cy="email"
+                nz-input
+                formControlName="email"
+                id="email"
+            />
+            <ng-template #emailErrorTpl let-control>
+                <span
+                    data-cy="email-required-error"
+                    *ngIf="control.hasError('empty')"
+                >
+                    E-mail is required!
+                </span>
+                <span
+                    data-cy="email-invalid-error"
+                    *ngIf="control.hasError('email')"
+                >
+                    The input is not valid E-mail!
+                </span>
+            </ng-template>
         </nz-form-control>
     </nz-form-item>
     <nz-form-item>
@@ -18,35 +33,61 @@
         <nz-form-control
             [nzSm]="14"
             [nzXs]="24"
-            nzErrorTip="Please input your password!"
+            [nzErrorTip]="passwordErrorTpl"
         >
             <input
+                data-cy="password"
                 nz-input
                 type="password"
                 id="password"
                 formControlName="password"
                 (ngModelChange)="updateConfirmValidator()"
             />
+            <ng-template #passwordErrorTpl let-control>
+                <span
+                    data-cy="password-required-error"
+                    *ngIf="control.hasError('empty')"
+                >
+                    Password should not be empty!
+                </span>
+                <span
+                    data-cy="password-min-length-error"
+                    *ngIf="control.hasError('minlength')"
+                >
+                    Password should not be less than 6 characters!
+                </span>
+            </ng-template>
         </nz-form-control>
     </nz-form-item>
     <nz-form-item>
         <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="checkPassword" nzRequired
             >Confirm Password</nz-form-label
         >
-        <nz-form-control [nzSm]="14" [nzXs]="24" [nzErrorTip]="errorTpl">
+        <nz-form-control
+            [nzSm]="14"
+            [nzXs]="24"
+            [nzErrorTip]="confirmPasswordErrorTpl"
+        >
             <input
+                data-cy="confirm-password"
                 nz-input
                 type="password"
                 formControlName="checkPassword"
                 id="checkPassword"
             />
-            <ng-template #errorTpl let-control>
-                <ng-container *ngIf="control.hasError('required')">
+            <ng-template #confirmPasswordErrorTpl let-control>
+                <span
+                    data-cy="confirm-password-required"
+                    *ngIf="control.hasError('required')"
+                >
                     Please confirm your password!
-                </ng-container>
-                <ng-container *ngIf="control.hasError('confirm')">
+                </span>
+                <span
+                    data-cy="confirm-password-not-match-error"
+                    *ngIf="control.hasError('confirm')"
+                >
                     Two passwords that you enter is inconsistent!
-                </ng-container>
+                </span>
             </ng-template>
         </nz-form-control>
     </nz-form-item>
@@ -57,21 +98,47 @@
         <nz-form-control
             [nzSm]="14"
             [nzXs]="24"
-            nzErrorTip="Please input your First Name!"
+            [nzErrorTip]="firstNameErrorTpl"
         >
-            <input nz-input id="firstName" formControlName="firstName" />
+            <input
+                data-cy="first-name"
+                nz-input
+                id="firstName"
+                formControlName="firstName"
+            />
+            <ng-template #firstNameErrorTpl let-control>
+                <span
+                    data-cy="first-name-required-error"
+                    *ngIf="control.hasError('empty')"
+                >
+                    Please input your First Name!
+                </span>
+            </ng-template>
         </nz-form-control>
     </nz-form-item>
     <nz-form-item>
         <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="lastName" nzRequired>
-            First Name
+            Last Name
         </nz-form-label>
         <nz-form-control
             [nzSm]="14"
             [nzXs]="24"
-            nzErrorTip="Please input your Last Name!"
+            [nzErrorTip]="lastNameErrorTpl"
         >
-            <input nz-input id="lastName" formControlName="lastName" />
+            <input
+                data-cy="last-name"
+                nz-input
+                id="lastName"
+                formControlName="lastName"
+            />
+            <ng-template #lastNameErrorTpl let-control>
+                <span
+                    data-cy="last-name-required-error"
+                    *ngIf="control.hasError('empty')"
+                >
+                    Please input your Last Name!
+                </span>
+            </ng-template>
         </nz-form-control>
     </nz-form-item>
     <nz-form-item nz-row class="register-area">
@@ -83,7 +150,14 @@
     </nz-form-item>
     <nz-form-item nz-row class="register-area">
         <nz-form-control [nzSpan]="14" [nzOffset]="6">
-            <button nz-button nzType="primary">Register</button>
+            <button
+                data-cy="submit"
+                [disabled]="form.invalid || !!form.value['agree']"
+                nz-button
+                nzType="primary"
+            >
+                Register
+            </button>
         </nz-form-control>
     </nz-form-item>
 </form>

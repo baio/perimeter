@@ -10,7 +10,7 @@
             },
             "root": "apps/admin",
             "sourceRoot": "apps/admin/src",
-            "prefix": "data-avail",
+            "prefix": "admin",
             "architect": {
                 "build": {
                     "builder": "@angular-devkit/build-angular:browser",

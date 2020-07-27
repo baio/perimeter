@@ -6,6 +6,10 @@ import {
     Validators,
 } from '@angular/forms';
 
+const emptyValidator = (control: FormControl) => {
+    const isEmpty = !control.value || /^\s+$/.test(control.value as string);
+    return isEmpty && { empty: true };
+};
 @Component({
     selector: 'admin-signup-page',
     templateUrl: './signup-page.component.html',
@@ -17,14 +21,21 @@ export class SignupPageComponent implements OnInit {
 
     constructor(private fb: FormBuilder) {
         this.form = this.fb.group({
-            email: [null, [Validators.email, Validators.required]],
-            password: [null, [Validators.required]],
+            email: [null, [Validators.email, emptyValidator]],
+            password: [
+                null,
+                [
+                    emptyValidator,
+                    Validators.minLength(6),
+                    Validators.maxLength(100),
+                ],
+            ],
             checkPassword: [
                 null,
                 [Validators.required, this.confirmationValidator],
             ],
-            firstName: [null, [Validators.required]],
-            lastName: [null, [Validators.required]],
+            firstName: [null, [emptyValidator]],
+            lastName: [null, [emptyValidator]],
             agree: [false],
         });
     }
