@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router'; // CLI imports router
-import { LoginPageComponent, SignupPageComponent } from '@admin/auth';
+import { LoginPageComponent, SignupPageComponent, SignupConfirmSentPageComponent } from '@admin/auth';
 
 const routes: Routes = [
     {
@@ -8,6 +8,10 @@ const routes: Routes = [
         children: [
             { path: 'login', component: LoginPageComponent },
             { path: 'register', component: SignupPageComponent },
+            {
+                path: 'register-sent',
+                component: SignupConfirmSentPageComponent,
+            },
         ],
     },
     {

@@ -1,18 +1,19 @@
-import {
-    Component,
-    OnInit,
-    ChangeDetectionStrategy,
-    ChangeDetectorRef,
-} from '@angular/core';
-import {
-    FormGroup,
-    FormBuilder,
-    FormControl,
-    Validators,
-} from '@angular/forms';
 import { FormValidators } from '@admin/common';
 import { AuthDataAccessService } from '@admin/data-access';
 import { HttpErrorResponse } from '@angular/common/http';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnInit,
+} from '@angular/core';
+import {
+    FormBuilder,
+    FormControl,
+    FormGroup,
+    Validators,
+} from '@angular/forms';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 
 @Component({
     selector: 'admin-signup-page',
@@ -30,7 +31,9 @@ export class SignupPageComponent implements OnInit {
     constructor(
         private fb: FormBuilder,
         private readonly authDataAccess: AuthDataAccessService,
-        private readonly cdr: ChangeDetectorRef
+        private readonly cdr: ChangeDetectorRef,
+        private readonly router: Router,
+        private readonly activatedRoute: ActivatedRoute
     ) {
         this.form = this.fb.group({
             email: [null, [Validators.email, FormValidators.empty]],
@@ -76,11 +79,18 @@ export class SignupPageComponent implements OnInit {
         try {
             this.isSubmitting = true;
             await this.authDataAccess.signUp(this.form.value).toPromise();
+            this.errorMessage = null;
         } catch (err) {
             this.errorMessage = (err as HttpErrorResponse).message;
         } finally {
             this.isSubmitting = false;
             this.cdr.markForCheck();
+        }
+
+        if (!this.errorMessage) {
+            this.router.navigate(['..', 'register-sent'], {
+                relativeTo: this.activatedRoute,
+            });
         }
     }
 }

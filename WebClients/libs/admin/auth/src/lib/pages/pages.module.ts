@@ -15,6 +15,7 @@ import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AdminDataAccessModule } from '@admin/data-access';
+import { SignupConfirmSentPageComponent } from './signup-confirm-sent-page/signup-confirm-sent-page.component';
 
 @NgModule({
     imports: [
@@ -37,12 +38,14 @@ import { AdminDataAccessModule } from '@admin/data-access';
         SignupPageComponent,
         ForgotPasswordPageComponent,
         SignupPageComponent,
+        SignupConfirmSentPageComponent,
     ],
     exports: [
         LoginPageComponent,
         SignupPageComponent,
         ForgotPasswordPageComponent,
         SignupPageComponent,
+        SignupConfirmSentPageComponent,
     ],
 })
 export class AdminAuthPagesModule {}

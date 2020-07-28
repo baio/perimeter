@@ -137,7 +137,33 @@ describe('auth/register page', () => {
         cy.wait('@signUp');
     });
 
-    it('when signup success should be redirected to signup congrats page', () => {
-        expect(true).equals(false);
+    it('when signup success should be redirected to confirm sign-up send page', () => {
+        cy.server();
+        cy.route({
+            method: 'POST',
+            url: '**/auth/sign-up',
+            status: 204,
+            delay: 10,
+            response: {},
+        }).as('signUp');
+
+        cy.dataCy('email')
+            .type('test@mail.dev')
+            .dataCy('password')
+            .type('123456')
+            .dataCy('confirm-password')
+            .type('123456')
+            .dataCy('first-name')
+            .type('alice')
+            .dataCy('last-name')
+            .type('ms')
+            .dataCy('agree')
+            .click()
+            .dataCy('submit')
+            .click();
+
+        cy.wait('@signUp');
+
+        cy.route('**/auth/register-sent');
     });
 });
