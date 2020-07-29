@@ -15,7 +15,7 @@ module private Handlers =
                                  { DataContext = getDataContext ctx
                                    PasswordSalter = getPasswordSalter ctx })
                                  |> ofReader)
-             <*> (doublet <!> bindUserClaimId <*> bindJsonAsync<Data>))
+             <*> (doublet <!> bindUserClaimId <*> bindValidateJsonAsync validateData))
 
 
 open Handlers

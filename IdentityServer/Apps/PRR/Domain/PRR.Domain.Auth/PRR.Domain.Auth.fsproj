@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="validatePassword.fs" />
         <Compile Include="SignUp\Models.fs" />
         <Compile Include="SignUp\SignUp.fs" />
         <Compile Include="SignIn\Models.fs" />

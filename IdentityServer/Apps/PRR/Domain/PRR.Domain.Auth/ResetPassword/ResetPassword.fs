@@ -11,7 +11,6 @@ module ResetPassword =
 
     let resetPassword: ResetPassword =
         fun env data ->
-
             task {
                 let! cnt = query {
                                for user in env.Users do

@@ -17,7 +17,7 @@ module private Handlers =
                          { DataContext = getDataContext ctx
                            HashProvider = getHash ctx })
                          |> ofReader)
-             <*> bindValidateJsonAsync signUpValidate)
+             <*> bindValidateJsonAsync validateData)
 
 
     open PRR.Domain.Auth.SignIn
@@ -79,7 +79,7 @@ module private Handlers =
             (resetPasswordConfirm <!> ((fun ctx ->
                                        { DataContext = getDataContext ctx
                                          PasswordSalter = getPasswordSalter ctx })
-                                       |> ofReader) <*> bindResetPasswordQuery <*> bindJsonAsync<Data>)
+                                       |> ofReader) <*> bindResetPasswordQuery <*> bindValidateJsonAsync validateData)
 
 open Handlers
 

@@ -61,7 +61,7 @@ module ResetPasswordTests =
             task {
                 let data: Data =
                     { Token = testContext.Value.GetResetPasswordToken()
-                      Password = "1234" }
+                      Password = "1234A!sd" }
                 let! res = testFixture.HttpPostAsync' "/auth/reset-password/confirm" data
                 do! ensureSuccessAsync res
             }
@@ -72,7 +72,7 @@ module ResetPasswordTests =
             task {
                 let data: Data =
                     { Token = testContext.Value.GetResetPasswordToken()
-                      Password = "1234" }
+                      Password = "1234A!sd" }
                 let! res = testFixture.HttpPostAsync' "/auth/reset-password/confirm" data
                 ensureUnauthorized res
             }
@@ -91,8 +91,8 @@ module ResetPasswordTests =
         member __.``E Update password must be success``() =
             task {
                 let resetPasswordData: PRR.Domain.Auth.UpdatePassword.Models.Data =
-                    { OldPassword = "1234"
-                      Password = "12345" }
+                    { OldPassword = "1234A!sd"
+                      Password = "1234A!sd8" }
                 let! res = testFixture.HttpPutAsync accessToken.Value "/me/password" resetPasswordData
                 do! ensureSuccessAsync res
             }
@@ -102,8 +102,8 @@ module ResetPasswordTests =
         member __.``F Update password with wrong old password must fail``() =
             task {
                 let resetPasswordData: PRR.Domain.Auth.UpdatePassword.Models.Data =
-                    { OldPassword = "1234"
-                      Password = "12345" }
+                    { OldPassword = "1234A!sd"
+                      Password = "1234A!sd8+" }
                 let! res = testFixture.HttpPutAsync accessToken.Value "/me/password" resetPasswordData
                 ensureUnauthorized res
             }
