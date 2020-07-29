@@ -1,10 +1,12 @@
 ﻿namespace Common.Domain.Utils
 
 open Common.Domain.Models
+open FSharpx
 open System
+open System.Text.RegularExpressions
 
 [<AutoOpen>]
-module BadRequestValidators = 
+module BadRequestValidators =
     let ofBool x =
         function
         | true -> Some x
@@ -17,7 +19,15 @@ module BadRequestValidators =
     let noneIfNullOrEmpty = noneIf String.IsNullOrEmpty
 
     let validateNullOrEmpty name =
-        String.IsNullOrEmpty >> ofBool (name, EMPTY_STRING) >> Option.map BadRequestFieldError
+        String.IsNullOrEmpty
+        >> ofBool (name, EMPTY_STRING)
+        >> Option.map BadRequestFieldError
+
+    let validateRegex name err (regex: string) =
+        (Regex(regex).IsMatch)
+        >> not
+        >> ofBool (name, err)
+        >> Option.map BadRequestFieldError
 
     let validateMaxLength' max name =
         String.length
