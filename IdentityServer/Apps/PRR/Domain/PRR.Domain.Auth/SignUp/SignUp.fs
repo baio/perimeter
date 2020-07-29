@@ -9,6 +9,14 @@ open PRR.System.Models
 [<AutoOpen>]
 module SignUp =
 
+    let private validatePassword =
+        // https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/password-must-meet-complexity-requirements
+        // Uppercase letters of European languages (A through Z, with diacritic marks, Greek and Cyrillic characters)
+        // Lowercase letters of European languages (a through z, sharp-s, with diacritic marks, Greek and Cyrillic characters)
+        // Base 10 digits (0 through 9)
+        // Non-alphanumeric characters (special characters): (~!@#$%^&*_-+=`|\(){}[]:;"'<>,.?/) Currency symbols such as the Euro or British Pound are not counted as special characters for this policy setting.
+        ()
+
     let signUpValidate (data: Data) =
         [| (validateNullOrEmpty "firstName" data.FirstName)
            (validateNullOrEmpty "lastName" data.LastName)
@@ -37,6 +45,7 @@ module SignUp =
                 return { FirstName = data.FirstName
                          LastName = data.LastName
                          Token = hash
+                         Password = data.Password
                          Email = data.Email }
                        |> UserSignedUpEvent
             }

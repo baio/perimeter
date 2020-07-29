@@ -21,26 +21,22 @@ module MultiUsers =
     let user1Data: Data =
         { FirstName = "First"
           LastName = "XXX"
-          Email = "user1@user.com" }
-
-    let user1Password = "123"
+          Email = "user1@user.com"
+          Password = "#6VvR&^" }
 
     let user2Data: Data =
         { FirstName = "Second"
           LastName = "YYY"
-          Email = "user2@user.com" }
-
-    let user2Password = "123"
+          Email = "user2@user.com"
+          Password = "#6VvR&^" }
     
     let private users =
         System.Collections.Generic.List<_>
             [ {| Data = user1Data
-                 Password = user1Password
                  Token = None
                  Tenant = None
                  PermissionId = None |}
               {| Data = user2Data
-                 Password = user2Password
                  Token = None
                  Tenant = None
                  PermissionId = None |} ]
@@ -69,7 +65,7 @@ module MultiUsers =
                 testContext <- Some(createUserTestContext testFixture)
                 // create user 1 + tenant + permission
                 let u = users.[0]
-                let! userToken = createUser testContext.Value u.Data u.Password
+                let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
                 let! permissionId = (testFixture.HttpPostAsync userToken
                                         (sprintf "/tenant/apis/%i/permissions" tenant.SampleApiId)
@@ -81,7 +77,7 @@ module MultiUsers =
                                                                         
                 // create user 2 + tenant + permission
                 let u = users.[1]
-                let! userToken = createUser testContext.Value u.Data u.Password
+                let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
                 let! permissionId = testFixture.HttpPostAsync userToken
                                         (sprintf "/tenant/apis/%i/permissions" tenant.SampleApiId)

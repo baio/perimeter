@@ -17,9 +17,8 @@ module CRUD =
     let userData: Data =
         { FirstName = "First"
           LastName = "Last"
-          Email = "user@user.com" }
-
-    let userPassword = "123"
+          Email = "user@user.com"
+          Password = "#6VvR&^" }
 
     let mutable userToken: string = null
 
@@ -45,7 +44,7 @@ module CRUD =
         member __.``0 BeforeAll``() =
             task {
                 testContext <- Some(createUserTestContext testFixture)
-                let! userToken' = createUser testContext.Value userData userPassword
+                let! userToken' = createUser testContext.Value userData
                 userToken <- userToken'
             }
 

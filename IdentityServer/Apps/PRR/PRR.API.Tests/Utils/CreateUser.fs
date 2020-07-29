@@ -15,13 +15,12 @@ module CreateUser =
           accessToken: string
           refreshToken: string }
 
-    let createUser' signInUnderSampleDoamin (env: UserTestContext) (userData: SignUp.Models.Data) password =
+    let createUser' signInUnderSampleDoamin (env: UserTestContext) (userData: SignUp.Models.Data) =
         task {
             let! _ = env.TestFixture.HttpPostAsync' "/auth/sign-up" userData
             env.ConfirmTokenWaitHandle.WaitOne() |> ignore
             let confirmData: SignUpConfirm.Models.Data =
-                { Token = env.GetConfirmToken()
-                  Password = password }
+                { Token = env.GetConfirmToken() }
 
             let! _ = env.TestFixture.HttpPostAsync' "/auth/sign-up/confirm" confirmData
 
@@ -31,7 +30,7 @@ module CreateUser =
 
             let signInData: SignIn.Models.SignInData =
                 { Email = userData.Email
-                  Password = password
+                  Password = userData.Password
                   ClientId =
                       if signInUnderSampleDoamin then tenant.SampleApplicationClientId
                       else tenant.TenantManagementApplicationClientId }

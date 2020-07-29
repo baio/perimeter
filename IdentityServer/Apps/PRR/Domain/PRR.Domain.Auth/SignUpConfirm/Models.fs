@@ -9,12 +9,10 @@ open System.Threading.Tasks
 module Models =
 
     type Env =
-        { DataContext: DbDataContext
-          PasswordSalter: StringSalter }
+        { DataContext: DbDataContext }
+        
+    type Data = {
+        Token: string
+    }
 
-    [<CLIMutable>]
-    type Data =
-        { Password: string
-          Token: string }
-
-    type SignUpConfirm = Env -> SignUpToken.Item -> Data -> Task<Events>
+    type SignUpConfirm = Env -> SignUpToken.Item -> Task<Events>

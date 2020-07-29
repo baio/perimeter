@@ -16,7 +16,8 @@ module CRUD =
     let userData: Data =
         { FirstName = "First"
           LastName = "Last"
-          Email = "user@user.com" }
+          Email = "user@user.com"
+          Password = "#6VvR&^" }
 
     let userPassword = "123"
 
@@ -52,7 +53,7 @@ module CRUD =
         member __.``0 BEFORE ALL``() =
             task {
                 testContext <- Some(createUserTestContext testFixture)
-                let! userToken' = createUser' false testContext.Value userData userPassword
+                let! userToken' = createUser' false testContext.Value userData
                 userToken <- userToken'
             }
 

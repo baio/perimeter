@@ -22,14 +22,16 @@ module MultiUsers =
     let user1Data: Data =
         { FirstName = "First"
           LastName = "XXX"
-          Email = "user1@user.com" }
+          Email = "user1@user.com"
+          Password = "#6VvR&^" }
 
     let user1Password = "123"
 
     let user2Data: Data =
         { FirstName = "Second"
           LastName = "YYY"
-          Email = "user2@user.com" }
+          Email = "user2@user.com"
+          Password = "#6VvR&^" }
 
     let user2Password = "123"
 
@@ -48,6 +50,7 @@ module MultiUsers =
     let mutable testContext: UserTestContext option = None
 
 
+
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
     type ``domains-multi-users-api``(testFixture: TestFixture, output: ITestOutputHelper) =
         do setConsoleOutput output
@@ -60,7 +63,7 @@ module MultiUsers =
                 testContext <- Some(createUserTestContext testFixture)
                 // create user 1 + tenant + permission
                 let u = users.[0]
-                let! userToken = createUser testContext.Value u.Data u.Password
+                let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
                 users.[0] <- {| u with
                                     Token = Some(userToken)
@@ -68,7 +71,7 @@ module MultiUsers =
 
                 // create user 2 + tenant + permission
                 let u = users.[1]
-                let! userToken = createUser testContext.Value u.Data u.Password
+                let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
                 users.[1] <- {| u with
                                     Token = Some(userToken)
@@ -84,6 +87,7 @@ module MultiUsers =
                 let data: PostLike =
                     { Name = "Domain update" }
                 let! result = testFixture.HttpPutAsync u2.Token.Value
-                                  (sprintf "/tenant/domain-pools/%i/domains/%i" u1.Tenant.Value.DomainPoolId u1.Tenant.Value.DomainId) data
+                                  (sprintf "/tenant/domain-pools/%i/domains/%i" u1.Tenant.Value.DomainPoolId
+                                       u1.Tenant.Value.DomainId) data
                 ensureForbidden result
             }

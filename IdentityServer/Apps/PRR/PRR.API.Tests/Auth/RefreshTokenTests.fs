@@ -38,9 +38,8 @@ module RefreshToken =
     let ownerData: Data =
         { FirstName = "First"
           LastName = "Last"
-          Email = "user@user.com" }
-
-    let ownerPassword = "123"
+          Email = "user@user.com"
+          Password = "#6VvR&^" }
 
     let systemEventHandled =
         function
@@ -78,14 +77,13 @@ module RefreshToken =
                 let! _ = testFixture.HttpPostAsync' "/auth/sign-up" ownerData
                 confirmTokenWaitHandle.WaitOne() |> ignore
                 let confirmData: SignUpConfirm.Models.Data =
-                    { Token = confirmToken
-                      Password = ownerPassword }
+                    { Token = confirmToken }
                 let! _ = testFixture.HttpPostAsync' "/auth/sign-up/confirm" confirmData
                 tenantWaitHandle.WaitOne() |> ignore
 
                 let validUserData: SignIn.Models.SignInData =
                     { Email = ownerData.Email
-                      Password = ownerPassword
+                      Password = ownerData.Password
                       ClientId = tenant.Value.SampleApplicationClientId }
 
                 let! result = testFixture.HttpPostAsync' "/auth/sign-in" validUserData

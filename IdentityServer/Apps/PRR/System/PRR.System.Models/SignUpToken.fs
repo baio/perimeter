@@ -13,6 +13,7 @@ module SignUpToken =
         FirstName: string
         LastName: string
         Email: string
+        Password: string
         Token: string
         ExpiredAt: DateTime
     }

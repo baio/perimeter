@@ -17,8 +17,10 @@ module private SharedActors =
             <| { refreshToken env.AuthConfig.RefreshTokenExpiresIn with SupervisionStrategy = Some(ss) }
 
         let signUpTokenActor =
-            spawn sys "signUpToken"
-            <| { signUpToken env.AuthConfig.SignUpTokenExpiresIn events.Value with SupervisionStrategy = Some(ss) }
+            let env: SignUpToken.Env =
+                { TokenExpiresIn = env.AuthConfig.SignUpTokenExpiresIn
+                  PasswordSalter = env.PasswordSalter }
+            spawn sys "signUpToken" <| { signUpToken env events.Value with SupervisionStrategy = Some(ss) }
 
         let resetPasswordActor =
             spawn sys "resetPassword"

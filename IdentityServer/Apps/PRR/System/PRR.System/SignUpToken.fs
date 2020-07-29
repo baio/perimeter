@@ -14,7 +14,11 @@ module private SignUpToken =
 
     type private State = Map<Token, Item>
 
-    let signUpToken (tokenExpiresIs: int<minutes>) (events: IActorRef<Models.Events.Events>) =
+    type Env =
+        { PasswordSalter: StringSalter
+          TokenExpiresIn: int<minutes> }
+
+    let signUpToken (env: Env) (events: IActorRef<Models.Events.Events>) =
         propsPersist (fun ctx ->
             let rec loop (state: State) =
                 actor {
@@ -32,8 +36,9 @@ module private SignUpToken =
                                 { FirstName = x.FirstName
                                   LastName = x.LastName
                                   Email = x.Email
+                                  Password = env.PasswordSalter x.Password
                                   Token = x.Token
-                                  ExpiredAt = DateTime.UtcNow.AddMinutes(float (int tokenExpiresIs)) }
+                                  ExpiredAt = DateTime.UtcNow.AddMinutes(float (int env.TokenExpiresIn)) }
                             return Persist(Event(TokenAdded item))
                         | RemoveTokensWithEmail(email) ->
                             // TODO : Async

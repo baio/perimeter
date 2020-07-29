@@ -24,29 +24,25 @@ module MultiUsers =
     let user1Data: Data =
         { FirstName = "First"
           LastName = "XXX"
-          Email = "user1@user.com" }
-
-    let user1Password = "123"
+          Email = "user1@user.com"
+          Password = "#6VvR&^" }
 
     let user2Data: Data =
         { FirstName = "Second"
           LastName = "YYY"
-          Email = "user2@user.com" }
-
-    let user2Password = "123"
+          Email = "user2@user.com"
+          Password = "#6VvR&^" }
 
     let newUserEmail = "new@user.com"
 
     let private users =
         System.Collections.Generic.List<_>
             [ {| Data = user1Data
-                 Password = user1Password
                  Token = None
                  Tenant = None
                  PermissionId = None
                  RoleId = None |}
               {| Data = user2Data
-                 Password = user2Password
                  Token = None
                  Tenant = None
                  PermissionId = None
@@ -75,7 +71,7 @@ module MultiUsers =
                 testContext <- Some(createUserTestContext testFixture)
                 // create user 1 + tenant + permission
                 let u = users.[0]
-                let! userToken = createUser testContext.Value u.Data u.Password
+                let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
                 let! permissionId = (testFixture.HttpPostAsync userToken
                                          (sprintf "/tenant/apis/%i/permissions" tenant.SampleApiId)
@@ -95,7 +91,7 @@ module MultiUsers =
 
                 // create user 2 + tenant + permission
                 let u = users.[1]
-                let! userToken = createUser testContext.Value u.Data u.Password
+                let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
                 let! permissionId = (testFixture.HttpPostAsync userToken
                                          (sprintf "/tenant/apis/%i/permissions" tenant.SampleApiId)
@@ -148,7 +144,7 @@ module MultiUsers =
             task {
                 let data: SignIn.Models.SignInData =
                     { Email = u2.Data.Email
-                      Password = u2.Password
+                      Password = u2.Data.Password
                       ClientId = u1.Tenant.Value.SampleApplicationClientId }
                 // re-signin 2nd tenant under 1st client
                 let! res = testFixture.HttpPostAsync' "/auth/sign-in" data
@@ -201,7 +197,7 @@ module MultiUsers =
             task {
                 let data: SignIn.Models.SignInData =
                     { Email = u2.Data.Email
-                      Password = u2.Password
+                      Password = u2.Data.Password
                       ClientId = u1.Tenant.Value.SampleApplicationClientId }
                 // re-signin 2nd tenant under 1st client
                 let! res = testFixture.HttpPostAsync' "/auth/sign-in" data
@@ -269,7 +265,7 @@ module MultiUsers =
             task {
                 let data: SignIn.Models.SignInData =
                     { Email = u2.Data.Email
-                      Password = u2.Password
+                      Password = u2.Data.Password
                       ClientId = u1.Tenant.Value.SampleApplicationClientId }
                 // re-signin 2nd tenant under 1st client
                 let! res = testFixture.HttpPostAsync' "/auth/sign-in" data

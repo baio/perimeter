@@ -33,9 +33,8 @@ module SignIn =
     let ownerData: Data =
         { FirstName = "First"
           LastName = "Last"
-          Email = "user@user.com" }
-
-    let ownerPassword = "123"
+          Email = "user@user.com"
+          Password = "#6VvR&^" }
 
     let systemEventHandled =
         function
@@ -75,8 +74,7 @@ module SignIn =
                 let! _ = testFixture.HttpPostAsync' "/auth/sign-up" ownerData
                 confirmTokenWaitHandle.WaitOne() |> ignore
                 let confirmData: SignUpConfirm.Models.Data =
-                    { Token = confirmToken
-                      Password = ownerPassword }
+                    { Token = confirmToken }
                 let! _ = testFixture.HttpPostAsync' "/auth/sign-up/confirm" confirmData
                 tenantWaitHandle.WaitOne() |> ignore
                 return ()
@@ -93,7 +91,7 @@ module SignIn =
 
                 let data: SignIn.Models.SignInData =
                     { Email = ownerData.Email
-                      Password = ownerPassword
+                      Password = ownerData.Password
                       ClientId = tenant.Value.SampleApplicationClientId }
 
                 let! result = testFixture.HttpPostAsync' "/auth/sign-in" data
@@ -117,7 +115,7 @@ module SignIn =
 
                 let data: SignIn.Models.LogInData =
                     { Email = ownerData.Email
-                      Password = ownerPassword }
+                      Password = ownerData.Password }
 
                 let! result = testFixture.HttpPostAsync' "/auth/log-in" data
 

@@ -15,6 +15,7 @@ module Models =
     type Data =
         { FirstName: string
           LastName: string
-          Email: string }
+          Email: string
+          Password: string }
 
     type SignUp = Env -> Data -> Task<Events>

@@ -93,11 +93,13 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     printf "+++%s" context.HostingEnvironment.EnvironmentName
     // Actors system
 
+
     let systemEnv: SystemEnv =
         { SendMail = sendMail
           GetDataContextProvider =
               fun () -> new DataContextProvider(services.BuildServiceProvider().CreateScope()) :> IDataContextProvider
           HashProvider = (HashProvider() :> IHashProvider).GetHash
+          PasswordSalter = services.BuildServiceProvider().GetService<IPasswordSaltProvider>().SaltPassword
           AuthConfig =
               { IdTokenExpiresIn = config.Jwt.IdTokenExpiresIn
                 AccessTokenExpiresIn = config.Jwt.AccessTokenExpiresIn
@@ -123,12 +125,6 @@ let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigu
     config.AddJsonFile("appsettings.json", false, true)
           .AddJsonFile(sprintf "appsettings.%s.json" context.HostingEnvironment.EnvironmentName, true)
           .AddEnvironmentVariables() |> ignore
-
-
-
-
-
-
 
 
 [<EntryPoint>]

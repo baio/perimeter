@@ -10,11 +10,16 @@ module AzureBlob =
         let storageAccount = CloudStorageAccount.Parse(connectionStr);
         let blob = storageAccount.CreateCloudBlobClient()
         let containerRef = blob.GetContainerReference blobContainerName
-        containerRef.Delete()
+        try
+            containerRef.Delete()
+        with _ -> ()
 
     open Microsoft.Azure.Cosmos.Table
+
     let removeTable connectionStr tableName =
         let storageAccount = CloudStorageAccount.Parse(connectionStr);
         let table = storageAccount.CreateCloudTableClient()
         let tableRef = table.GetTableReference tableName
-        tableRef.Delete()
+        try
+            tableRef.Delete()
+        with _ -> ()

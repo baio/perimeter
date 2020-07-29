@@ -7,4 +7,5 @@ module SignUpSuccess =
         { FirstName: string
           LastName: string
           Email: string
+          Password: string
           Token: string }

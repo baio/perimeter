@@ -60,10 +60,7 @@ module private Handlers =
 
     let signUpConfirmHandler =
         sysWrap
-            (signUpConfirm <!> ((fun ctx ->
-                                { DataContext = getDataContext ctx
-                                  PasswordSalter = getPasswordSalter ctx })
-                                |> ofReader) <*> bindSignUpTokenQuery <*> bindJsonAsync<Data>)
+            (signUpConfirm <!> ((fun ctx -> { DataContext = getDataContext ctx }) |> ofReader) <*> bindSignUpTokenQuery)
 
 
     open PRR.Domain.Auth.ResetPassword

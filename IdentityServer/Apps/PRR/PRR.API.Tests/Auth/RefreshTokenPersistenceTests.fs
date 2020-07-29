@@ -39,9 +39,8 @@ module RefreshTokenPersistence =
     let ownerData: Data =
         { FirstName = "First"
           LastName = "Last"
-          Email = "user@user.com" }
-
-    let ownerPassword = "123"
+          Email = "user@user.com"
+          Password = "#6VvR&^" }
 
     let systemEventHandled =
         function
@@ -53,12 +52,12 @@ module RefreshTokenPersistence =
             tenantWaitHandle.Set() |> ignore
         | CommandFailureEvent _ ->
             confirmTokenWaitHandle.Set() |> ignore
-            tenantWaitHandle.Set() |> ignore            
-        | QueryFailureEvent _ -> 
+            tenantWaitHandle.Set() |> ignore
+        | QueryFailureEvent _ ->
             confirmTokenWaitHandle.Set() |> ignore
             tenantWaitHandle.Set() |> ignore
-        | _ ->            
-            ()            
+        | _ ->
+            ()
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
     type ``refresh-token-persistence-api``(testFixture: TestFixture, output: ITestOutputHelper) =
@@ -74,28 +73,27 @@ module RefreshTokenPersistence =
                 let systemEnv = sp.GetService<SystemEnv>()
                 let systemEnv =
                     { systemEnv with EventHandledCallback = systemEventHandled }
-                let sys = PRR.System.Setup.setUp systemEnv                    
-                services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore)                
+                let sys = PRR.System.Setup.setUp systemEnv
+                services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore)
 
             task {
                 let! _ = testFixture.HttpPostAsync' "/auth/sign-up" ownerData
                 confirmTokenWaitHandle.WaitOne() |> ignore
-                
+
                 let confirmData: SignUpConfirm.Models.Data =
-                    { Token = confirmToken
-                      Password = ownerPassword }
+                    { Token = confirmToken }
                 let! _ = testFixture.HttpPostAsync' "/auth/sign-up/confirm" confirmData
-                tenantWaitHandle.WaitOne() |> ignore               
+                tenantWaitHandle.WaitOne() |> ignore
 
                 let validUserData: SignIn.Models.SignInData =
                     { Email = ownerData.Email
-                      Password = ownerPassword
+                      Password = ownerData.Password
                       ClientId = tenant.Value.SampleApplicationClientId }
 
                 let! result = testFixture.HttpPostAsync' "/auth/sign-in" validUserData
                 let! result = readAsJsonAsync<SignInResult> result
                 accessToken <- result.accessToken
-                refreshToken <- result.refreshToken               
+                refreshToken <- result.refreshToken
 
                 return ()
             }
@@ -106,12 +104,12 @@ module RefreshTokenPersistence =
         member __.``Refresh token must be success``() =
 
             task {
-                
-                // Restart refresh token actor 
+
+                // Restart refresh token actor
                 let sys = testFixture.Server.Services.GetService<ICQRSSystem>()
-                                                                           
-                sys.CommandsRef <! RefreshTokenCommand(RefreshToken.Restart)                                              
-                                              
+
+                sys.CommandsRef <! RefreshTokenCommand(RefreshToken.Restart)
+
                 let data: RefreshToken.Models.Data =
                     { RefreshToken = refreshToken }
 
@@ -141,12 +139,12 @@ module RefreshTokenPersistence =
         member __.``Refresh token snapshot``() =
 
             task {
-                
-                // Restart refresh token actor 
+
+                // Restart refresh token actor
                 let sys = testFixture.Server.Services.GetService<ICQRSSystem>()
-                                                                           
+
                 sys.CommandsRef <! RefreshTokenCommand(RefreshToken.MakeSnapshot)
                 sys.CommandsRef <! RefreshTokenCommand(RefreshToken.Restart)
-                
-                Thread.Sleep(1000)                                              
+
+                Thread.Sleep(1000)
             }

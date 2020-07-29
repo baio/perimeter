@@ -24,7 +24,8 @@ module SignUp =
     let userData: Data =
         { FirstName = "First"
           LastName = "Last"
-          Email = "user@user.com" }
+          Email = "user@user.com"
+          Password = "#6VvR&^" }
 
     let sendMail: SendMail =
         fun data ->
@@ -84,7 +85,8 @@ module SignUp =
                 let invalidUserData: Data =
                     { FirstName = ""
                       LastName = ""
-                      Email = "xxx" }
+                      Email = "xxx"
+                      Password = "#6VvR&^" }
 
                 let! result = testFixture.HttpPostAsync' "/auth/sign-up" invalidUserData
 
@@ -117,6 +119,7 @@ module SignUp =
                                     LastName = userData.LastName
                                     Email = userData.Email
                                     Token = userToken
+                                    Password = x.Password
                                     ExpiredAt = x.ExpiredAt } }
 
 
@@ -132,8 +135,7 @@ module SignUp =
             task {
 
                 let confirmData: SignUpConfirm.Models.Data =
-                    { Token = userToken
-                      Password = "123" }
+                    { Token = userToken }
 
                 let! result = testFixture.HttpPostAsync' "/auth/sign-up/confirm" confirmData
 
@@ -147,8 +149,7 @@ module SignUp =
             task {
 
                 let confirmData: SignUpConfirm.Models.Data =
-                    { Token = userToken
-                      Password = "123" }
+                    { Token = userToken }
 
                 let! result = testFixture.HttpPostAsync' "/auth/sign-up/confirm" confirmData
 
@@ -176,8 +177,7 @@ module SignUp =
                 waitHandle.WaitOne() |> ignore
 
                 let confirmData: SignUpConfirm.Models.Data =
-                    { Token = userToken
-                      Password = "123" }
+                    { Token = userToken }
 
                 let! result = testFixture.HttpPostAsync' "/auth/sign-up/confirm" confirmData
 

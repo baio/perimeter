@@ -21,15 +21,12 @@ module NotFound =
     let user1Data: Data =
         { FirstName = "First"
           LastName = "XXX"
-          Email = "user1@user.com" }
-
-    let user1Password = "123"
-
+          Email = "user1@user.com"
+          Password = "#6VvR&^" }
 
     let users =
         System.Collections.Generic.List<_>
             [ {| Data = user1Data
-                 Password = user1Password
                  Token = None
                  Tenant = None |} ]
 
@@ -60,7 +57,7 @@ module NotFound =
                 testContext <- Some(createUserTestContext testFixture)
                 // create user 1 + tenant + permission
                 let u = users.[0]
-                let! userToken = createUser testContext.Value u.Data u.Password
+                let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
                 users.[0] <- {| u with
                                     Token = Some(userToken)

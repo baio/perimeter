@@ -25,32 +25,30 @@ module MultiUsers =
     let user1Data: Data =
         { FirstName = "First"
           LastName = "XXX"
-          Email = "user1@user.com" }
-
-    let user1Password = "123"
+          Email = "user1@user.com"
+          Password = "#6VvR&^" }
 
     let user2Data: Data =
         { FirstName = "Second"
           LastName = "YYY"
-          Email = "user2@user.com" }
-
-    let user2Password = "123"
+          Email = "user2@user.com"
+          Password = "#6VvR&^" }
 
     let newUserEmail = "new@user.com"
 
     let private users =
         System.Collections.Generic.List<_>
             [ {| Data = user1Data
-                 Password = user1Password
                  Token = None
                  Tenant = None |}
               {| Data = user2Data
-                 Password = user2Password
                  Token = None
                  Tenant = None |} ]
 
 
     let mutable testContext: UserTestContext option = None
+
+
 
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
@@ -66,7 +64,7 @@ module MultiUsers =
                 testContext <- Some(createUserTestContext testFixture)
                 // create user 1 + tenant
                 let u1 = users.[0]
-                let! userToken = createUser testContext.Value u1.Data u1.Password
+                let! userToken = createUser testContext.Value u1.Data
                 let tenant = testContext.Value.GetTenant()
 
                 users.[0] <- {| u1 with
@@ -85,12 +83,12 @@ module MultiUsers =
 
                 // create user 2
                 let u2 = users.[1]
-                let! _ = createUser testContext.Value u2.Data u2.Password
+                let! _ = createUser testContext.Value u2.Data
 
                 // resignin user 2 under first tenant
                 let data: SignIn.Models.SignInData =
                     { Email = u2.Data.Email
-                      Password = u2.Password
+                      Password = u2.Data.Password
                       ClientId = u1.Tenant.Value.SampleApplicationClientId }
                 // re-signin 2nd tenant under 1st client
                 let! res = testFixture.HttpPostAsync' "/auth/sign-in" data >>= readAsJsonAsync<CreateUser.SignInResult>
@@ -120,7 +118,7 @@ module MultiUsers =
 
             let data: SignIn.Models.SignInData =
                 { Email = u1.Data.Email
-                  Password = u1.Password
+                  Password = u1.Data.Password
                   ClientId = u1.Tenant.Value.TenantManagementApplicationClientId }
 
             task {
@@ -149,7 +147,7 @@ module MultiUsers =
 
             let data: SignIn.Models.SignInData =
                 { Email = u2.Data.Email
-                  Password = u2.Password
+                  Password = u2.Data.Password
                   ClientId = u1.Tenant.Value.TenantManagementApplicationClientId }
 
             task {
@@ -174,9 +172,10 @@ module MultiUsers =
                   RolesIds = [ PRR.Data.DataContext.Seed.Roles.TenantAdmin.Id ] }
 
             task {
-                
+
                 printf "!!! %s" users.[1].Token.Value
-                
+
                 let! res = testFixture.HttpPostAsync users.[1].Token.Value "/tenant/users/roles" data
 
-                ensureForbidden res }
+                ensureForbidden res
+            }

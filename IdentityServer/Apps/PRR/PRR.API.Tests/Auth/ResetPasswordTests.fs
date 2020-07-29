@@ -17,14 +17,13 @@ module ResetPasswordTests =
     let user1Data: PRR.Domain.Auth.SignUp.Models.Data =
         { FirstName = "First"
           LastName = "XXX"
-          Email = "user1@user.com" }
+          Email = "user1@user.com"
+          Password = "#6VvR&^" }
 
-    let user1Password = "123"
 
     let private users =
         System.Collections.Generic.List<_>
-            [ {| Data = user1Data
-                 Password = user1Password |} ]
+            [ {| Data = user1Data |} ]
 
     let mutable testContext: UserTestContext option = None
 
@@ -41,7 +40,7 @@ module ResetPasswordTests =
         member __.``0 BEFORE ALL``() =
             task {
                 testContext <- Some(createUserTestContext testFixture)
-                let! res = createUser' false testContext.Value users.[0].Data users.[0].Password
+                let! res = createUser' false testContext.Value users.[0].Data
                 accessToken <- Some res
             }
 
