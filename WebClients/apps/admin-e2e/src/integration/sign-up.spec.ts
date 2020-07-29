@@ -137,22 +137,20 @@ describe('auth/register page', () => {
         cy.wait('@signUp');
     });
 
-    it('when signup success should be redirected to confirm sign-up send page', () => {
+    it.only('when signup success should be redirected to confirm sign-up send page', () => {
         cy.server();
+
         cy.route({
             method: 'POST',
             url: '**/auth/sign-up',
-            status: 204,
-            delay: 10,
-            response: {},
         }).as('signUp');
 
         cy.dataCy('email')
-            .type('test@mail.dev')
+            .type('max.putilov@gmail.com')
             .dataCy('password')
-            .type('123456')
+            .type('123456A!a')
             .dataCy('confirm-password')
-            .type('123456')
+            .type('123456A!a')
             .dataCy('first-name')
             .type('alice')
             .dataCy('last-name')
