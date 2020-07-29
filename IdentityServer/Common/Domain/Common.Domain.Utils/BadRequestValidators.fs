@@ -29,11 +29,16 @@ module BadRequestValidators =
         >> ofBool (name, err)
         >> Option.map BadRequestFieldError
 
-    let validateMaxLength' max name =
+    let validateMaxLength max name =
         String.length
         >> (fun x -> x > max)
         >> ofBool (name, MAX_LENGTH max)
         >> Option.map BadRequestFieldError
 
-    let validateMaxLength max name =
-        noneIfNullOrEmpty >> Option.bind (validateMaxLength' max name)
+    let validateMinLength min name =
+        String.length
+        >> (fun x -> x < min)
+        >> ofBool (name, MIN_LENGTH min)
+        >> Option.map BadRequestFieldError
+
+

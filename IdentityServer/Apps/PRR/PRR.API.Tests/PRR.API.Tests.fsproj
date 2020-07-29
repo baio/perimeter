@@ -47,6 +47,7 @@
         <Compile Include="Auth\RefreshTokenTests.fs" />
         <Compile Include="Auth\RefreshTokenPersistenceTests.fs" />
         <Compile Include="Auth\ResetPasswordTests.fs" />
+        <Compile Include="Auth\SignUpPasswordValidationTests.fs" />
         <Compile Include="Program.fs" />
         <Content Include="akka.hocon">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
