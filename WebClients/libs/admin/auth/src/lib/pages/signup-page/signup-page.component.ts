@@ -89,12 +89,14 @@ export class SignupPageComponent implements OnInit {
             this.errorMessage = null;
         } catch (_err) {
             const err = _err as HttpErrorResponse;
-            this.errorMessage = err.message;
             if (err.status === 400) {
+                this.errorMessage = 'Some fields have invalid data';
                 mapBadRequestResponseToFormValidationErrors(
                     this.form,
                     err.error
                 );
+            } else {
+                this.errorMessage = err.message;
             }
         } finally {
             this.isSubmitting = false;
