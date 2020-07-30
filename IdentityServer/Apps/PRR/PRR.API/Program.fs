@@ -15,6 +15,8 @@ open Microsoft.Extensions.Logging
 open Microsoft.IdentityModel.Tokens
 open PRR.API
 open PRR.API.Infra
+open PRR.API.Infra.Mail
+open PRR.API.Infra.Mail.Models
 open PRR.API.Routes
 open PRR.API.Routes.Tenant
 open PRR.Data.DataContext
@@ -95,9 +97,9 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     // Actors system
 
     // TODO : Why not working like so https://stackoverflow.com/questions/56442871/is-there-a-way-to-use-f-record-types-to-extract-the-appsettings-json-configurat
-    let mailEnv =
-        { ApiKey = context.Configuration.GetValue("MailSender:ApiKey")
-          FromEmail = context.Configuration.GetValue("MailSender:FromEmail")
+
+    let mailEnv: MailEnv =
+        { FromEmail = context.Configuration.GetValue("MailSender:FromEmail")
           FromName = context.Configuration.GetValue("MailSender:FromName")
           Project =
               { Name = context.Configuration.GetValue("MailSender:Project:Name")
@@ -105,10 +107,11 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
                 ConfirmSignUpUrl = context.Configuration.GetValue("MailSender:Project:ConfirmSignUpUrl")
                 ResetPasswordUrl = context.Configuration.GetValue("MailSender:Project:ResetPasswordUrl") } }
 
-    //let mailEnv = context.Configuration.GetValue<MailEnv>("MailSender")
+    let sendGridApiKey = context.Configuration.GetValue("SendGridApiKey")
+    let mailSender = PRR.API.Infra.Mail.SendGridMail.createSendMail sendGridApiKey
 
     let systemEnv: SystemEnv =
-        { SendMail = createMailSender mailEnv
+        { SendMail = createSendMail mailEnv mailSender
           GetDataContextProvider =
               fun () -> new DataContextProvider(services.BuildServiceProvider().CreateScope()) :> IDataContextProvider
           HashProvider = (HashProvider() :> IHashProvider).GetHash
@@ -138,6 +141,8 @@ let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigu
     config.AddJsonFile("appsettings.json", false, true)
           .AddJsonFile(sprintf "appsettings.%s.json" context.HostingEnvironment.EnvironmentName, true)
           .AddEnvironmentVariables() |> ignore
+
+
 
 
 

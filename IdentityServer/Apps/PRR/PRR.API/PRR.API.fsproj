@@ -20,7 +20,9 @@
         <Compile Include="PermssionsFromRoles.fs" />
         <Compile Include="SysWrap.fs" />
         <Compile Include="Infra\Models.fs" />
+        <Compile Include="Infra\Mail\Models.fs" />
         <Compile Include="Infra\Mail\SendMail.fs" />
+        <Compile Include="Infra\Mail\SendGridMail.fs" />
         <Compile Include="Infra\PermissionsFromRoles.fs" />
         <Compile Include="Infra\PasswordSaltProvider.fs" />
         <Compile Include="Infra\HashProvider.fs" />
