@@ -158,6 +158,7 @@ describe('auth/register page', () => {
             method: 'POST',
             url: '**/auth/sign-up',
             status: 400,
+            delay: 10,
             response: {
                 password: ['MISS_UPPER_LETTER', 'MISS_LOWER_LETTER'],
             },
@@ -189,6 +190,7 @@ describe('auth/register page', () => {
         cy.route({
             method: 'POST',
             url: '**/auth/sign-up',
+            delay: 10,
             status: 200,
             response: {},
         }).as('signUp');
@@ -212,4 +214,46 @@ describe('auth/register page', () => {
 
         cy.route('**/auth/register-sent');
     });
+
+    it('when user open register-confirm page without token in query string error must be displayed', () => {
+        cy.visit('/auth/register-confirm');
+        cy.dataCy('signup-confirm-error').should('be.visible');
+    });
+
+    it('when user open register-confirm page with wrong token in query string error must be displayed', () => {
+        cy.server();
+
+        cy.route({
+            method: 'POST',
+            url: '**/auth/sign-up/confirm',
+            status: 500,
+            delay: 10,
+            response: {},
+        }).as('signUpConfirm');
+
+        cy.visit('/auth/register-confirm?token=xxx');
+
+        cy.wait('@signUpConfirm');
+        cy.dataCy('signup-confirm-error').should('be.visible');
+    });
+
+    it('when user open register-confirm page with correct token should be redirected to login page', () => {
+        cy.server();
+
+        cy.route({
+            method: 'POST',
+            url: '**/auth/sign-up/confirm',
+            delay: 100,
+            status: 200,
+            response: {},
+        }).as('signUpConfirm');
+
+        cy.visit('/auth/register-confirm?token=xxx');
+
+        cy.wait('@signUpConfirm');
+        cy.route('/auth/login?event=sign-up-confirm-success');
+        cy.dataCy('sign-up-confirm-success').should('be.visible');
+    });
+
+
 });

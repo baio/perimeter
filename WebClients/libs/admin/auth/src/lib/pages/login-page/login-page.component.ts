@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'admin-login-page',
@@ -8,10 +9,14 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginPageComponent implements OnInit {
+    queryEvent: string;
     public readonly form: FormGroup;
 
-    constructor(private fb: FormBuilder) {
-        this.form = this.fb.group({
+    constructor(
+        fb: FormBuilder,
+        private readonly activatedRoute: ActivatedRoute
+    ) {
+        this.form = fb.group({
             email: [null, [Validators.required]],
             password: [null, [Validators.required]],
             remember: [true],
@@ -20,5 +25,7 @@ export class LoginPageComponent implements OnInit {
 
     submitForm(): void {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.queryEvent = this.activatedRoute.snapshot.params['event'];
+    }
 }

@@ -16,4 +16,8 @@ export class AuthDataAccessService {
     signUp(data: SignUpData): Observable<any> {
         return this.http.post('auth/sign-up', data);
     }
+
+    signUpConfirm(token: string): Observable<any> {
+        return this.http.post('auth/sign-up/confirm', { token });
+    }
 }

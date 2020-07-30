@@ -1,6 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router'; // CLI imports router
-import { LoginPageComponent, SignupPageComponent, SignupConfirmSentPageComponent } from '@admin/auth';
+import {
+    LoginPageComponent,
+    SignupPageComponent,
+    SignupConfirmSentPageComponent,
+    SignupConfirmPageComponent,
+} from '@admin/auth';
 
 const routes: Routes = [
     {
@@ -8,6 +13,7 @@ const routes: Routes = [
         children: [
             { path: 'login', component: LoginPageComponent },
             { path: 'register', component: SignupPageComponent },
+            { path: 'register-confirm', component: SignupConfirmPageComponent },
             {
                 path: 'register-sent',
                 component: SignupConfirmSentPageComponent,

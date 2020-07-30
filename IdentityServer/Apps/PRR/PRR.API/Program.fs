@@ -38,7 +38,7 @@ let createDbContext (connectionString: string) =
     DbDataContext(optionsBuilder.Options)
 
 let configureCors (builder: CorsPolicyBuilder) =
-    builder.WithOrigins("http://localhost:8080").AllowAnyMethod().AllowAnyHeader() |> ignore
+    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader() |> ignore
 
 let configureApp (app: IApplicationBuilder) =
     let env = app.ApplicationServices.GetService<IHostingEnvironment>()
@@ -46,10 +46,10 @@ let configureApp (app: IApplicationBuilder) =
     (match env.IsDevelopment() with
      | true -> app.UseDeveloperExceptionPage()
      | false -> app.UseGiraffeErrorHandler errorHandler)
-        .UseHttpsRedirection()
-        .UseCors(configureCors)
+        .UseHttpsRedirection()        
         .UseAuthentication()
         .UseAuthorization()
+        .UseCors(configureCors)
         .UseGiraffe(webApp)
 
 
@@ -141,13 +141,6 @@ let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigu
     config.AddJsonFile("appsettings.json", false, true)
           .AddJsonFile(sprintf "appsettings.%s.json" context.HostingEnvironment.EnvironmentName, true)
           .AddEnvironmentVariables() |> ignore
-
-
-
-
-
-
-
 
 [<EntryPoint>]
 let main _ =

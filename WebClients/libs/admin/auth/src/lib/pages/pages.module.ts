@@ -16,6 +16,7 @@ import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AdminDataAccessModule } from '@admin/data-access';
 import { SignupConfirmSentPageComponent } from './signup-confirm-sent-page/signup-confirm-sent-page.component';
+import { SignupConfirmPageComponent } from './signup-confirm-page/signup-confirm-page.component';
 
 @NgModule({
     imports: [
@@ -39,6 +40,7 @@ import { SignupConfirmSentPageComponent } from './signup-confirm-sent-page/signu
         ForgotPasswordPageComponent,
         SignupPageComponent,
         SignupConfirmSentPageComponent,
+        SignupConfirmPageComponent,
     ],
     exports: [
         LoginPageComponent,
@@ -46,6 +48,7 @@ import { SignupConfirmSentPageComponent } from './signup-confirm-sent-page/signu
         ForgotPasswordPageComponent,
         SignupPageComponent,
         SignupConfirmSentPageComponent,
+        SignupConfirmPageComponent,
     ],
 })
 export class AdminAuthPagesModule {}

@@ -1,3 +1,13 @@
+<nz-alert
+    *ngIf="queryEvent==='sign-up-confirm-success'"
+    data-cy="sign-up-confirm-success"
+    nz-row
+    nzType="success"
+    nzCloseable
+    nzMessage="Email confirmed! You can sign in now."    
+>
+</nz-alert>
+
 <form nz-form [formGroup]="form" class="login-form" (ngSubmit)="submitForm()">
     <nz-form-item>
         <nz-form-control nzErrorTip="Please input your username!">
