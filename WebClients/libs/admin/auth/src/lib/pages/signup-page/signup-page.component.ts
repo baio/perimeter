@@ -1,4 +1,7 @@
-import { FormValidators } from '@admin/common';
+import {
+    FormValidators,
+    mapBadRequestResponseToFormValidationErrors,
+} from '@admin/common';
 import { AuthDataAccessService } from '@admin/data-access';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
@@ -84,13 +87,19 @@ export class SignupPageComponent implements OnInit {
             this.isSubmitting = true;
             await this.authDataAccess.signUp(this.form.value).toPromise();
             this.errorMessage = null;
-        } catch (err) {
-            this.errorMessage = (err as HttpErrorResponse).message;
+        } catch (_err) {
+            const err = _err as HttpErrorResponse;
+            this.errorMessage = err.message;
+            if (err.status === 400) {
+                mapBadRequestResponseToFormValidationErrors(
+                    this.form,
+                    err.error
+                );
+            }
         } finally {
             this.isSubmitting = false;
             this.cdr.markForCheck();
         }
-
         if (!this.errorMessage) {
             this.router.navigate(['..', 'register-sent'], {
                 relativeTo: this.activatedRoute,

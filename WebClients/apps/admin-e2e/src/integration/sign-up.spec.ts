@@ -139,7 +139,7 @@ describe('auth/register page', () => {
         cy.wait('@signUp');
     });
 
-    it('When password validate should display error', () =>
+    it('When password invalid should display error', () =>
         cy
             .dataCy('email')
             .dataCy('password')
@@ -150,6 +150,38 @@ describe('auth/register page', () => {
             .should('be.visible')
             .dataCy('password-miss-special-char-error')
             .should('be.visible'));
+
+    it('server response for password field should be displayed correctly', () => {
+        cy.server();
+
+        cy.route({
+            method: 'POST',
+            url: '**/auth/sign-up',
+            status: 400,
+            response: {
+                password: ['MISS_UPPER_LETTER', 'MISS_LOWER_LETTER'],
+            },
+        }).as('signUp');
+
+        cy.dataCy('email')
+            .type('max.putilov@gmail.com')
+            .dataCy('password')
+            .type(password)
+            .dataCy('confirm-password')
+            .type(password)
+            .dataCy('first-name')
+            .type('alice')
+            .dataCy('last-name')
+            .type('ms')
+            .dataCy('agree')
+            .click()
+            .dataCy('submit')
+            .click();
+
+        cy.wait('@signUp');
+
+        cy.route('**/auth/register-sent');
+    });
 
     it('when signup success should be redirected to confirm sign-up send page', () => {
         cy.server();
