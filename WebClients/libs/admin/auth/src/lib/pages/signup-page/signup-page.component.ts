@@ -13,7 +13,7 @@ import {
     FormGroup,
     Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'admin-signup-page',
@@ -43,6 +43,16 @@ export class SignupPageComponent implements OnInit {
                     FormValidators.empty,
                     Validators.minLength(6),
                     Validators.maxLength(100),
+                    FormValidators.regex(/[A-Z]/, {
+                        ['miss-upper-case-letter']: true,
+                    }),
+                    FormValidators.regex(/[a-z]/, {
+                        ['miss-lower-case-letter']: true,
+                    }),
+                    FormValidators.regex(/[0-9]/, { ['miss-digit']: true }),
+                    FormValidators.regex(/[!@#$%^&*()_+=\[{\]};:<>|./?,-]/, {
+                        ['miss-special-char']: true,
+                    }),
                 ],
             ],
             checkPassword: [

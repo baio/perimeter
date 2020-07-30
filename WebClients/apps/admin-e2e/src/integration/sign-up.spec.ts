@@ -1,5 +1,7 @@
 import '../support';
 
+const password = '#6VvR&^';
+
 describe('auth/register page', () => {
     beforeEach(() => cy.visit('/auth/register'));
 
@@ -80,9 +82,9 @@ describe('auth/register page', () => {
             .dataCy('email')
             .type('test@mail.dev')
             .dataCy('password')
-            .type('123456')
+            .type(password)
             .dataCy('confirm-password')
-            .type('123456')
+            .type(password)
             .dataCy('first-name')
             .type('alice')
             .dataCy('last-name')
@@ -95,9 +97,9 @@ describe('auth/register page', () => {
             .dataCy('email')
             .type('test@mail.dev')
             .dataCy('password')
-            .type('123456')
+            .type(password)
             .dataCy('confirm-password')
-            .type('123456')
+            .type(password)
             .dataCy('first-name')
             .type('alice')
             .dataCy('last-name')
@@ -120,9 +122,9 @@ describe('auth/register page', () => {
         cy.dataCy('email')
             .type('test@mail.dev')
             .dataCy('password')
-            .type('123456')
+            .type(password)
             .dataCy('confirm-password')
-            .type('123456')
+            .type(password)
             .dataCy('first-name')
             .type('alice')
             .dataCy('last-name')
@@ -137,20 +139,34 @@ describe('auth/register page', () => {
         cy.wait('@signUp');
     });
 
-    it.only('when signup success should be redirected to confirm sign-up send page', () => {
+    it('When password validate should display error', () =>
+        cy
+            .dataCy('email')
+            .dataCy('password')
+            .type('123456')
+            .dataCy('password-miss-upper-case-letter-error')
+            .should('be.visible')
+            .dataCy('password-miss-lower-case-letter-error')
+            .should('be.visible')
+            .dataCy('password-miss-special-char-error')
+            .should('be.visible'));
+
+    it('when signup success should be redirected to confirm sign-up send page', () => {
         cy.server();
 
         cy.route({
             method: 'POST',
             url: '**/auth/sign-up',
+            status: 200,
+            response: {},
         }).as('signUp');
 
         cy.dataCy('email')
             .type('max.putilov@gmail.com')
             .dataCy('password')
-            .type('123456A!a')
+            .type(password)
             .dataCy('confirm-password')
-            .type('123456A!a')
+            .type(password)
             .dataCy('first-name')
             .type('alice')
             .dataCy('last-name')
