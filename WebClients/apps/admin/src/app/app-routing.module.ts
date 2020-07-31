@@ -5,6 +5,7 @@ import {
     SignupPageComponent,
     SignupConfirmSentPageComponent,
     SignupConfirmPageComponent,
+    ForgotPasswordPageComponent,
 } from '@admin/auth';
 
 const routes: Routes = [
@@ -18,6 +19,7 @@ const routes: Routes = [
                 path: 'register-sent',
                 component: SignupConfirmSentPageComponent,
             },
+            { path: 'forgot-password', component: ForgotPasswordPageComponent },
         ],
     },
     {

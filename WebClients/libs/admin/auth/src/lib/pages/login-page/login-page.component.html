@@ -1,10 +1,10 @@
 <nz-alert
-    *ngIf="queryEvent==='sign-up-confirm-success'"
+    *ngIf="queryEvent === 'sign-up-confirm-success'"
     data-cy="sign-up-confirm-success"
     nz-row
     nzType="success"
     nzCloseable
-    nzMessage="Email confirmed! You can sign in now."    
+    nzMessage="Email confirmed! You can sign in now."
 >
 </nz-alert>
 
@@ -40,7 +40,9 @@
             </label>
         </div>
         <div nz-col [nzSpan]="12">
-            <a class="login-form-forgot">Forgot password</a>
+            <a class="login-form-forgot" routerLink="../forgot-password"
+                >Forgot password</a
+            >
         </div>
     </div>
     <button
