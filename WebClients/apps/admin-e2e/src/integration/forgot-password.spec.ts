@@ -35,7 +35,7 @@ describe('auth/forgot-password page', () => {
             .dataCy('submit')
             .should('not.be.disabled'));
 
-    it.only('When send reset-password fails form should display error', () => {
+    it('When send reset-password fails form should display error', () => {
         cy.server();
         cy.route({
             method: 'POST',
@@ -55,7 +55,7 @@ describe('auth/forgot-password page', () => {
         cy.wait('@resetPassword');
     });
 
-    it.skip('when signup success should be redirected to confirm sign-up send page', () => {
+    it('when reset-password success should be redirected to reset-password-sent page', () => {
         cy.server();
 
         cy.route({
@@ -70,7 +70,7 @@ describe('auth/forgot-password page', () => {
 
         cy.wait('@resetPassword');
 
-        cy.route('**/auth/reset-password-sent');
+        cy.url().should('include', '/auth/forgot-password-sent');
     });
 
     it.skip('when user open register-confirm page without token in query string error must be displayed', () => {

@@ -181,7 +181,7 @@ describe('auth/register page', () => {
 
         cy.wait('@signUp');
 
-        cy.route('**/auth/register-sent');
+        cy.url().should('include', '**/auth/register-sent');
     });
 
     it('when signup success should be redirected to confirm sign-up send page', () => {
@@ -212,7 +212,7 @@ describe('auth/register page', () => {
 
         cy.wait('@signUp');
 
-        cy.route('**/auth/register-sent');
+        cy.url().should('include', '**/auth/register-sent');
     });
 
     it('when user open register-confirm page without token in query string error must be displayed', () => {
@@ -251,9 +251,7 @@ describe('auth/register page', () => {
         cy.visit('/auth/register-confirm?token=xxx');
 
         cy.wait('@signUpConfirm');
-        cy.route('/auth/login?event=sign-up-confirm-success');
+        cy.url().should('include', '/auth/login?event=sign-up-confirm-success');
         cy.dataCy('sign-up-confirm-success').should('be.visible');
     });
-
-
 });

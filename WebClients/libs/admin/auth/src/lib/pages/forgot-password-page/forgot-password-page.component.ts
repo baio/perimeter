@@ -48,7 +48,7 @@ export class ForgotPasswordPageComponent implements OnInit {
             this.cdr.markForCheck();
         }
         if (!this.errorMessage) {
-            this.router.navigate(['..', 'reset-password-sent'], {
+            this.router.navigate(['..', 'forgot-password-sent'], {
                 relativeTo: this.activatedRoute,
             });
         }
