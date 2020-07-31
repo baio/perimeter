@@ -2,14 +2,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, never } from 'rxjs';
 
-export interface ResetPasswordData {
-    email: string;
-}
-
 export interface SignUpData {
     firstName: string;
     lastName: string;
     email: string;
+    password: string;
+}
+
+export interface ResetPasswordData {
+    email: string;
+}
+
+export interface ResetPasswordConfirmData {
+    token: string;
     password: string;
 }
 
@@ -27,5 +32,9 @@ export class AuthDataAccessService {
 
     resetPassword(data: ResetPasswordData): Observable<any> {
         return this.http.post('auth/reset-password', data);
+    }
+
+    resetPasswordConfirm(data: ResetPasswordConfirmData): Observable<any> {
+        return this.http.post('auth/reset-password/confirm', data);
     }
 }

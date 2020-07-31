@@ -73,26 +73,11 @@ describe('auth/forgot-password page', () => {
         cy.url().should('include', '/auth/forgot-password-sent');
     });
 
-    it.skip('when user open register-confirm page without token in query string error must be displayed', () => {
-        cy.visit('/auth/register-confirm');
-        cy.dataCy('signup-confirm-error').should('be.visible');
-    });
+    it('when user open reset-password with empty token he got error immediately', () => {
 
-    it.skip('when user open register-confirm page with wrong token in query string error must be displayed', () => {
-        cy.server();
+        cy.visit('/auth/forgot-password-reset');
 
-        cy.route({
-            method: 'POST',
-            url: '**/auth/sign-up/confirm',
-            status: 500,
-            delay: 10,
-            response: {},
-        }).as('signUpConfirm');
-
-        cy.visit('/auth/register-confirm?token=xxx');
-
-        cy.wait('@signUpConfirm');
-        cy.dataCy('signup-confirm-error').should('be.visible');
+        cy.dataCy('submit-error').should('be.visible');
     });
 
     it.skip('when user open register-confirm page with correct token should be redirected to login page', () => {

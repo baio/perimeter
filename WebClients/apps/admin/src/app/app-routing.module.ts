@@ -6,8 +6,9 @@ import {
     SignupConfirmSentPageComponent,
     SignupConfirmPageComponent,
     ForgotPasswordPageComponent,
+    ForgotPasswordSentPageComponent,
+    ForgotPasswordResetPageComponent,
 } from '@admin/auth';
-import { ForgotPasswordSentPageComponent } from 'libs/admin/auth/src/lib/pages/forgot-password-sent-page/forgot-password-sent-page.component';
 
 const routes: Routes = [
     {
@@ -24,6 +25,10 @@ const routes: Routes = [
             {
                 path: 'forgot-password-sent',
                 component: ForgotPasswordSentPageComponent,
+            },
+            {
+                path: 'forgot-password-reset',
+                component: ForgotPasswordResetPageComponent,
             },
         ],
     },

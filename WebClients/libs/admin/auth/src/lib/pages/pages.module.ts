@@ -18,6 +18,7 @@ import { AdminDataAccessModule } from '@admin/data-access';
 import { SignupConfirmSentPageComponent } from './signup-confirm-sent-page/signup-confirm-sent-page.component';
 import { SignupConfirmPageComponent } from './signup-confirm-page/signup-confirm-page.component';
 import { ForgotPasswordSentPageComponent } from './forgot-password-sent-page/forgot-password-sent-page.component';
+import { ForgotPasswordResetPageComponent } from './forgot-password-reset-page/forgot-password-reset-page.component';
 
 @NgModule({
     imports: [
@@ -43,6 +44,7 @@ import { ForgotPasswordSentPageComponent } from './forgot-password-sent-page/for
         SignupConfirmSentPageComponent,
         SignupConfirmPageComponent,
         ForgotPasswordSentPageComponent,
+        ForgotPasswordResetPageComponent,
     ],
     exports: [
         LoginPageComponent,
@@ -52,6 +54,7 @@ import { ForgotPasswordSentPageComponent } from './forgot-password-sent-page/for
         SignupConfirmSentPageComponent,
         SignupConfirmPageComponent,
         ForgotPasswordSentPageComponent,
+        ForgotPasswordResetPageComponent,
     ],
 })
 export class AdminAuthPagesModule {}
