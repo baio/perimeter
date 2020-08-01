@@ -15,8 +15,10 @@ module Events =
         | RefreshTokenSuccessEvent of RefreshTokenSuccess
         | SignUpTokenEvent of SignUpToken.Events
         | ResetPasswordEvent of ResetPassword.Events
+        | UserLogInSuccessEvent of LogIn.Item
+        | LogInEvent of LogIn.Events 
         | ResetPasswordRequested of Email
         | ResetPasswordUpdated of Email
         | CommandFailureEvent of exn
-        | QueryFailureEvent of exn
+        | QueryFailureEvent of exn 
          
