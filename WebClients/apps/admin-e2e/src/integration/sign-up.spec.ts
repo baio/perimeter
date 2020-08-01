@@ -44,7 +44,7 @@ describe('auth/register page', () => {
             .dataCy('password-min-length-error')
             .should('be.visible'));
 
-    it('Confirm password field should show error when not the smae', () =>
+    it('Confirm password field should show error when not the same', () =>
         cy
             .dataCy('password')
             .type('123456')

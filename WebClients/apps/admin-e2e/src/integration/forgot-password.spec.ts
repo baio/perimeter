@@ -1,4 +1,5 @@
 import '../support';
+import { before } from 'mocha';
 
 describe('auth/forgot-password page', () => {
     beforeEach(() => cy.visit('/auth/forgot-password'));
@@ -72,29 +73,76 @@ describe('auth/forgot-password page', () => {
 
         cy.url().should('include', '/auth/forgot-password-sent');
     });
+    
 
     it('when user open reset-password with empty token he got error immediately', () => {
-
         cy.visit('/auth/forgot-password-reset');
 
         cy.dataCy('submit-error').should('be.visible');
     });
 
-    it.skip('when user open register-confirm page with correct token should be redirected to login page', () => {
-        cy.server();
+    describe('reset password page', () => {
+        beforeEach(() => cy.visit('/auth/forgot-password-reset?token=123'));
 
-        cy.route({
-            method: 'POST',
-            url: '**/auth/sign-up/confirm',
-            delay: 100,
-            status: 200,
-            response: {},
-        }).as('signUpConfirm');
+        it('Password field should show error when empty s+', () =>
+            cy
+                .dataCy('password')
+                .type(' ')
+                .dataCy('password-required-error')
+                .should('be.visible'));
 
-        cy.visit('/auth/register-confirm?token=xxx');
+        it('Password field should show error when less then 6 chars', () =>
+            cy
+                .dataCy('password')
+                .type('12345')
+                .dataCy('password-min-length-error')
+                .should('be.visible'));
 
-        cy.wait('@signUpConfirm');
-        cy.route('/auth/login?event=sign-up-confirm-success');
-        cy.dataCy('sign-up-confirm-success').should('be.visible');
+        it('Confirm password field should show error when not the same', () =>
+            cy
+                .dataCy('password')
+                .type('123456')
+                .dataCy('confirm-password')
+                .type('12345')
+                .dataCy('confirm-password-not-match-error')
+                .should('be.visible'));
+
+        it('When password invalid should display error', () =>
+            cy
+                .dataCy('password')
+                .type('123456')
+                .dataCy('password-miss-upper-case-letter-error')
+                .should('be.visible')
+                .dataCy('password-miss-lower-case-letter-error')
+                .should('be.visible')
+                .dataCy('password-miss-special-char-error')
+                .should('be.visible'));
+
+        it('when user change password succesfully he should be redirected to login page', () => {
+            cy.server();
+
+            cy.route({
+                method: 'POST',
+                url: '**/auth/reset-password/confirm',
+                delay: 100,
+                status: 200,
+                response: {},
+            }).as('resetPasswordConfirm');
+
+            cy.dataCy('password')
+                .type('11$ASDfg')
+                .dataCy('confirm-password')
+                .type('11$ASDfg')
+                .dataCy('submit')
+                .click();
+
+            cy.wait('@resetPasswordConfirm');
+            cy.url().should(
+                'include',
+                '/auth/login;event=reset-password-success'
+            );
+            cy.dataCy('reset-password-success').should('be.visible');
+        });
     });
+
 });

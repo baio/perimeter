@@ -4,7 +4,16 @@
     nz-row
     nzType="success"
     nzCloseable
-    nzMessage="Email confirmed! You can sign in now."
+    nzMessage="Email confirmed! You can login now."
+>
+</nz-alert>
+<nz-alert
+    *ngIf="queryEvent === 'reset-password-success'"
+    data-cy="reset-password-success"
+    nz-row
+    nzType="success"
+    nzCloseable
+    nzMessage="Password reset! You can login now."
 >
 </nz-alert>
 
@@ -40,7 +49,7 @@
             </label>
         </div>
         <div nz-col [nzSpan]="12">
-            <a class="login-form-forgot" routerLink="../forgot-password"
+            <a data-cy="forgot-password" class="login-form-forgot" routerLink="../forgot-password"
                 >Forgot password</a
             >
         </div>
