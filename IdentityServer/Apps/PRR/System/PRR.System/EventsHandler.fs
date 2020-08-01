@@ -58,6 +58,11 @@ module private EventsHandler =
             |> LogIn.AddCode
             |> LogInCommand
             |> ofOne
+        | UserLogInTokenSuccessEvent item ->
+            item
+            |> LogIn.RemoveCode
+            |> LogInCommand
+            |> ofOne
         | CommandFailureEvent data ->
             printf "Command fails %O" data
             Seq.empty

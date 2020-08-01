@@ -8,6 +8,8 @@ module LogIn =
 
     type Item =
         { Code: Token
+          UserId: UserId
+          Scopes: Scope seq
           ClientId: ClientId
           CodeChallenge: Token
           ExpiresAt: DateTime }

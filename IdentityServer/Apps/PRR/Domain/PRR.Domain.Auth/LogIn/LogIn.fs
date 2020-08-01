@@ -22,7 +22,8 @@ module Authorize =
            (validateEmail "email" data.Email)
            (validateNullOrEmpty "password" data.Password)
            (validateNullOrEmpty "code_challenge" data.CodeChallenge)
-           (validateNullOrEmpty "code_challenge_method" data.CodeChallengeMethod) |]
+           (validateNullOrEmpty "code_challenge_method" data.CodeChallengeMethod)
+           (validateContains [| "S256" |] "response_type" data.ResponseType) |]
         |> Array.choose id
 
     let logIn: LogIn =
@@ -31,7 +32,7 @@ module Authorize =
             task {
                 let saltedPassword = env.PasswordSalter data.Password
                 match! getUserId dataContext (data.Email, saltedPassword) with
-                | Some _ ->
+                | Some userId ->
                     let code = env.CodeGenerator()
 
                     let result: Result =
@@ -44,6 +45,8 @@ module Authorize =
                         ({ Code = code
                            ClientId = data.ClientId
                            CodeChallenge = data.CodeChallenge
+                           Scopes = data.Scopes
+                           UserId = userId
                            ExpiresAt = expiresAt }: LogIn.Item)
                         |> UserLogInSuccessEvent
 

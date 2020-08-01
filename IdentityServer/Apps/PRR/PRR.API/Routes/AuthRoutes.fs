@@ -93,6 +93,21 @@ module private Handlers =
     let logInHandler =
         sysWrapOK (logIn <!> getLogInEnv <*> bindValidateJsonAsync validateData)
 
+    open PRR.Domain.Auth.LogInToken
+
+    let getLogInTokenEnv =
+        ofReader (fun ctx ->
+            { DataContext = getDataContext ctx
+              HashProvider = getHash ctx
+              JwtConfig = (getConfig ctx).Jwt })
+
+    let private bindLogInCodeQuery =
+        ((fun (x: Data) -> x.Code) <!> bindJsonAsync<Data>)
+        >>= ((bindSysQuery (LogIn.GetCode >> Queries.LogIn)) >> noneFails UnAuthorized)
+
+    let logInTokenHandler =
+        sysWrapOK (logInToken <!> getLogInTokenEnv <*> bindLogInCodeQuery <*> bindValidateJsonAsync validateData)
+
 open Handlers
 
 let createRoutes() =
@@ -104,6 +119,7 @@ let createRoutes() =
                              route "/sign-in" >=> signInHandler
                              route "/log-in" >=> signInTenantHandler
                              route "/login" >=> logInHandler
+                             route "/token" >=> logInTokenHandler
                              route "/refresh-token" >=> refreshTokenHandler
                              route "/reset-password/confirm" >=> resetPasswordConfirmHandler
                              route "/reset-password" >=> resetPasswordHandler ] ])

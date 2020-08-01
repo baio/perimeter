@@ -16,6 +16,7 @@ module Events =
         | SignUpTokenEvent of SignUpToken.Events
         | ResetPasswordEvent of ResetPassword.Events
         | UserLogInSuccessEvent of LogIn.Item
+        | UserLogInTokenSuccessEvent of Token
         | LogInEvent of LogIn.Events 
         | ResetPasswordRequested of Email
         | ResetPasswordUpdated of Email
