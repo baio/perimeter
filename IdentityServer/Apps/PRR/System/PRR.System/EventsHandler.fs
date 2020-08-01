@@ -53,6 +53,11 @@ module private EventsHandler =
             |> SignUpToken.AddToken
             |> SignUpTokenCommand
             |> ofOne
+        | UserLogInSuccessEvent item ->
+            item
+            |> LogIn.AddCode
+            |> LogInCommand
+            |> ofOne
         | CommandFailureEvent data ->
             printf "Command fails %O" data
             Seq.empty

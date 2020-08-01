@@ -35,7 +35,7 @@ module SignIn =
             }
 
 
-    let logIn: LogIn =
+    let signInTenant: LogIn =
         fun env data ->
             task {
                 let! managmentAppClientId = query {

@@ -22,7 +22,7 @@ module private Handlers =
 
     open PRR.Domain.Auth.SignIn
 
-    let getEnv =
+    let getSignInEnv =
         ofReader (fun ctx ->
             { DataContext = getDataContext ctx
               PasswordSalter = getPasswordSalter ctx
@@ -30,10 +30,10 @@ module private Handlers =
               JwtConfig = (getConfig ctx).Jwt })
 
     let signInHandler =
-        sysWrapOK (signIn <!> getEnv <*> bindJsonAsync)
+        sysWrapOK (signIn <!> getSignInEnv <*> bindJsonAsync)
 
-    let logInHandler =
-        sysWrapOK (logIn <!> getEnv <*> bindJsonAsync)
+    let signInTenantHandler =
+        sysWrapOK (signInTenant <!> getSignInEnv <*> bindJsonAsync)
 
 
     open PRR.Domain.Auth.RefreshToken
@@ -81,6 +81,18 @@ module private Handlers =
                                          PasswordSalter = getPasswordSalter ctx })
                                        |> ofReader) <*> bindResetPasswordQuery <*> bindValidateJsonAsync validateData)
 
+    open PRR.Domain.Auth.LogIn
+
+    let getLogInEnv =
+        ofReader (fun ctx ->
+            { DataContext = getDataContext ctx
+              PasswordSalter = getPasswordSalter ctx
+              CodeGenerator = getHash ctx
+              CodeExpiresIn = (getConfig ctx).Jwt.CodeExpiresIn })
+
+    let logInHandler =
+        sysWrapOK (logIn <!> getLogInEnv <*> bindValidateJsonAsync validateData)
+
 open Handlers
 
 let createRoutes() =
@@ -90,7 +102,8 @@ let createRoutes() =
                            [ route "/sign-up/confirm" >=> signUpConfirmHandler
                              route "/sign-up" >=> signUpHandler
                              route "/sign-in" >=> signInHandler
-                             route "/log-in" >=> logInHandler
+                             route "/log-in" >=> signInTenantHandler
+                             route "/login" >=> logInHandler
                              route "/refresh-token" >=> refreshTokenHandler
                              route "/reset-password/confirm" >=> resetPasswordConfirmHandler
                              route "/reset-password" >=> resetPasswordHandler ] ])

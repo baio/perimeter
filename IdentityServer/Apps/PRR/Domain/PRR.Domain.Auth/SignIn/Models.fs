@@ -14,12 +14,13 @@ module Models =
           AccessTokenSecret: string
           IdTokenExpiresIn: int<minutes>
           AccessTokenExpiresIn: int<minutes>
-          RefreshTokenExpiresIn: int<minutes> }
+          RefreshTokenExpiresIn: int<minutes>
+          CodeExpiresIn: int<minutes> }
 
     type SignInData =
         { ClientId: ClientId
           // RedirectUri: Uri
-          // Scopes: Scope seq    
+          // Scopes: Scope seq
           Email: string
           Password: string }
 
@@ -40,5 +41,5 @@ module Models =
     type LogInData =
         { Email: string
           Password: string }
-        
-    type LogIn = Env -> LogInData -> Task<SignInResult * Events>        
+
+    type LogIn = Env -> LogInData -> Task<SignInResult * Events>

@@ -4,6 +4,9 @@
 module BadRequestErrors =
     type BadRequestFieldError =
         | EMPTY_STRING
+        | CONTAINS_STRING of string seq
+        | CONTAINS_ALL_STRING of string seq
+        | NOT_URL_STRING
         | MAX_LENGTH of int
         | MIN_LENGTH of int
         | MISS_UPPER_LETTER

@@ -3,6 +3,7 @@
 open Common.Domain.Models
 open FSharpx
 open System
+open System.Net.Mail
 open System.Text.RegularExpressions
 
 [<AutoOpen>]
@@ -41,4 +42,29 @@ module BadRequestValidators =
         >> ofBool (name, MIN_LENGTH min)
         >> Option.map BadRequestFieldError
 
+    let validateContains (list: string seq) name =
+        flip (Seq.contains) list
+        >> not
+        >> ofBool (name, CONTAINS_STRING list)
+        >> Option.map BadRequestFieldError
 
+    let validateContainsAll (list: string seq) name =
+        Seq.except list
+        >> Seq.isEmpty
+        >> ofBool (name, CONTAINS_ALL_STRING list)
+        >> Option.map BadRequestFieldError
+
+    let validateUrl name =
+        (Regex("^http(s)?://([\w-]+.)+[\w-]+(/[\w- ./?%&=])?$").IsMatch)
+        >> not
+        >> ofBool (name, NOT_URL_STRING)
+        >> Option.map BadRequestFieldError
+
+    let validateEmail name =
+        (fun str ->
+        try
+            MailAddress(str) |> ignore
+            true
+        with :? FormatException -> false)
+        >> ofBool (name, NOT_URL_STRING)
+        >> Option.map BadRequestFieldError

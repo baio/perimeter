@@ -18,6 +18,8 @@ module private QueriesHandler =
                     sharedActors.SignUpTokenActor <! SignUpToken.Query(q)
                 | ResetPassword q ->
                     sharedActors.ResetPasswordActor <! ResetPassword.Query(q)
+                | LogIn q ->
+                    sharedActors.LogInActor <! LogIn.Query(q)
                 return loop()
             }
         loop()

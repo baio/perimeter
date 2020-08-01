@@ -11,3 +11,4 @@ module Commands =
         | RefreshTokenCommand of RefreshToken.Commands
         | SignUpTokenCommand of SignUpToken.Commands
         | ResetPasswordCommand of ResetPassword.Commands
+        | LogInCommand of LogIn.Commands

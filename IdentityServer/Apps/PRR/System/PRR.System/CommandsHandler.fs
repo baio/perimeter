@@ -40,7 +40,9 @@ module private CommandsHandler =
                 | SignUpTokenCommand cmd ->
                     sharedActors.SignUpTokenActor <! (SignUpToken.Command cmd)
                 | ResetPasswordCommand cmd ->
-                    sharedActors.ResetPasswordActor <! (ResetPassword.Command cmd)                    
+                    sharedActors.ResetPasswordActor <! (ResetPassword.Command cmd)
+                | LogInCommand cmd ->
+                    sharedActors.LogInActor <! (LogIn.Command cmd)                    
                 return loop()
             }
         loop()
