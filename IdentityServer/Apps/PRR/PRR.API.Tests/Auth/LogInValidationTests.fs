@@ -4,6 +4,9 @@ open Akkling
 open Common.Test.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
+open Microsoft.IdentityModel.Json
+open Newtonsoft.Json
+open PRR.API.ErrorHandler
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.SignUp
 open PRR.Domain.Tenant.Permissions
@@ -38,6 +41,7 @@ module LogIn =
     let mutable permissionId: int option = None
 
 
+
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
     type ``login-api``(testFixture: TestFixture, output: ITestOutputHelper) =
         do setConsoleOutput output
@@ -57,6 +61,18 @@ module LogIn =
         member __.``A Login data with empty client_id should give validation error``() =
             task {
                 let! result = testFixture.HttpPostAsync userToken "/auth/login" logInData
-                do ensureBadRequest result                
+                do ensureBadRequest result
+
+                let! result' = readAsJsonAsync<ErrorDTO<Map<string, string array>>> result
+
+                let expected =
+                    {| Message = "Some data is not valid"
+                       Data =
+                           Map
+                               [ ("client_id", [| "EMPTY_STRING" |])
+                                 ("email", [| "NOT_URL_STRING" |])
+                                 ("response_type", [| "CONTAINS_STRING:S256" |]) ] |}
+
+
+                result'.Data |> should equal expected.Data
             }
-            

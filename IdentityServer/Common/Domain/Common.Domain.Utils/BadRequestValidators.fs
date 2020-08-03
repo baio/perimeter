@@ -21,6 +21,8 @@ module BadRequestValidators =
 
     let noneIfNullOrEmpty = noneIf isEmpty
 
+    let private seqJoin = String.concat ","
+
     let validateNullOrEmpty name =
         String.IsNullOrEmpty
         >> ofBool (name, EMPTY_STRING)
@@ -47,13 +49,21 @@ module BadRequestValidators =
     let validateContains' (list: string seq) name =
         flip (Seq.contains) list
         >> not
-        >> ofBool (name, CONTAINS_STRING list)
+        >> ofBool
+            (name,
+             list
+             |> seqJoin
+             |> CONTAINS_STRING)
         >> Option.map BadRequestFieldError
 
     let validateContainsAll (list: string seq) name =
         Seq.except list
         >> Seq.isEmpty
-        >> ofBool (name, CONTAINS_ALL_STRING list)
+        >> ofBool
+            (name,
+             list
+             |> seqJoin
+             |> CONTAINS_ALL_STRING)
         >> Option.map BadRequestFieldError
 
     let validateUrl' name =

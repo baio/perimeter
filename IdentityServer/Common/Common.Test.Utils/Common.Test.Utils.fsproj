@@ -13,6 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Json.Net" Version="1.0.23" />
       <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.5" />
       <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.7" />
       <PackageReference Include="Microsoft.Azure.Storage.Blob" Version="11.1.7" />

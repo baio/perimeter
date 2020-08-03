@@ -8,10 +8,14 @@ open System
 [<AutoOpen>]
 module ErrorHandler =
 
+    type ErrorDTO<'a> =
+        { Message: string
+          Data: 'a }
+
     let mapBadRequestError =
         function
         | BadRequestFieldError(field, err) ->
-            (field, (sprintf "%O" err).Replace(" ", ":"))
+            (field, (sprintf "%O" err).Replace(" ", ":").Replace("\"", ""))
         | BadRequestCommonError x -> ("__", x)
 
     let mapBadRequestErrors x =
@@ -40,6 +44,9 @@ module ErrorHandler =
         | :? BadRequest as e ->
             e.Data0
             |> mapBadRequestErrors
+            |> fun errs ->
+                { Message = "Some data is not valid"
+                  Data = errs }
             |> RequestErrors.BAD_REQUEST
         | _ ->
             ServerErrors.INTERNAL_ERROR ex
