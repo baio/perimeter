@@ -10,15 +10,15 @@ open System.Threading.Tasks
 module LogIn =
 
     type Data =
-        { ClientId: ClientId
-          ResponseType: string
+        { Client_Id: ClientId
+          Response_Type: string
           State: string
-          RedirectUri: Uri
+          Redirect_Uri: Uri
           Scopes: Scope seq
           Email: string
           Password: string
-          CodeChallenge: string
-          CodeChallengeMethod: string }
+          Code_Challenge: string
+          Code_Challenge_Method: string }
 
     type Result =
         { State: string

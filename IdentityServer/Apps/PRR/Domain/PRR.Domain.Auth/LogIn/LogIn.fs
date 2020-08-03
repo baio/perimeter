@@ -12,18 +12,18 @@ open System
 module Authorize =
 
     let validateData (data: Data): BadRequestError array =
-        [| (validateNullOrEmpty "client_id" data.ClientId)
-           (validateNullOrEmpty "response_type" data.ResponseType)
-           (validateContains [| "code" |] "response_type" data.ResponseType)
-           (validateNullOrEmpty "redirect_uri" data.RedirectUri)
-           (validateUrl "redirect_uri" data.RedirectUri)
+        [| (validateNullOrEmpty "client_id" data.Client_Id)
+           (validateNullOrEmpty "response_type" data.Response_Type)
+           (validateContains [| "code" |] "response_type" data.Response_Type)
+           (validateNullOrEmpty "redirect_uri" data.Redirect_Uri)
+           (validateUrl "redirect_uri" data.Redirect_Uri)
            (validateContainsAll [| "openid"; "profile" |] "scopes" data.Scopes)
            (validateNullOrEmpty "email" data.Email)
            (validateEmail "email" data.Email)
            (validateNullOrEmpty "password" data.Password)
-           (validateNullOrEmpty "code_challenge" data.CodeChallenge)
-           (validateNullOrEmpty "code_challenge_method" data.CodeChallengeMethod)
-           (validateContains [| "S256" |] "response_type" data.ResponseType) |]
+           (validateNullOrEmpty "code_challenge" data.Code_Challenge)
+           (validateNullOrEmpty "code_challenge_method" data.Code_Challenge_Method)
+           (validateContains [| "S256" |] "response_type" data.Response_Type) |]
         |> Array.choose id
 
     let logIn: LogIn =
@@ -43,8 +43,8 @@ module Authorize =
 
                     let evt =
                         ({ Code = code
-                           ClientId = data.ClientId
-                           CodeChallenge = data.CodeChallenge
+                           ClientId = data.Client_Id
+                           CodeChallenge = data.Code_Challenge
                            Scopes = data.Scopes
                            UserId = userId
                            ExpiresAt = expiresAt }: LogIn.Item)

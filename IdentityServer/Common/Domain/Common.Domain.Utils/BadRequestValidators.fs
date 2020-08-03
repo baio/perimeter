@@ -17,7 +17,9 @@ module BadRequestValidators =
         if f x then Some x
         else None
 
-    let noneIfNullOrEmpty = noneIf String.IsNullOrEmpty
+    let isEmpty = String.IsNullOrEmpty
+
+    let noneIfNullOrEmpty = noneIf isEmpty
 
     let validateNullOrEmpty name =
         String.IsNullOrEmpty
@@ -42,7 +44,7 @@ module BadRequestValidators =
         >> ofBool (name, MIN_LENGTH min)
         >> Option.map BadRequestFieldError
 
-    let validateContains (list: string seq) name =
+    let validateContains' (list: string seq) name =
         flip (Seq.contains) list
         >> not
         >> ofBool (name, CONTAINS_STRING list)
@@ -54,13 +56,13 @@ module BadRequestValidators =
         >> ofBool (name, CONTAINS_ALL_STRING list)
         >> Option.map BadRequestFieldError
 
-    let validateUrl name =
+    let validateUrl' name =
         (Regex("^http(s)?://([\w-]+.)+[\w-]+(/[\w- ./?%&=])?$").IsMatch)
         >> not
         >> ofBool (name, NOT_URL_STRING)
         >> Option.map BadRequestFieldError
 
-    let validateEmail name =
+    let validateEmail' name =
         (fun str ->
         try
             MailAddress(str) |> ignore
@@ -68,3 +70,13 @@ module BadRequestValidators =
         with :? FormatException -> false)
         >> ofBool (name, NOT_URL_STRING)
         >> Option.map BadRequestFieldError
+
+    let skipEmpty str f =
+        if isEmpty str then None
+        else f str
+
+    let validateEmail name str = validateEmail' name |> skipEmpty str
+
+    let validateUrl name str = validateUrl' name |> skipEmpty str
+
+    let validateContains list name str = validateContains' list name |> skipEmpty str
