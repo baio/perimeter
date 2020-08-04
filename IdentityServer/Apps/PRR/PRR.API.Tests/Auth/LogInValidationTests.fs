@@ -1,21 +1,16 @@
 ﻿namespace PRR.API.Tests
 
-open Akkling
 open Common.Test.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
-open Microsoft.IdentityModel.Json
-open Newtonsoft.Json
 open PRR.API.ErrorHandler
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.SignUp
-open PRR.Domain.Tenant.Permissions
-open PRR.System.Models
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
 
-module LogIn =
+module LogInValidation =
 
     let signUpData: Data =
         { FirstName = "First"
@@ -24,7 +19,7 @@ module LogIn =
           Password = "#6VvR&^" }
 
     let logInData =
-        {| client_id = ""
+        {| client_id = "123"
            response_type = "code"
            state = "state"
            redirect_uri = "http://localhost:4200"
@@ -41,9 +36,8 @@ module LogIn =
     let mutable permissionId: int option = None
 
 
-
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
-    type ``login-api``(testFixture: TestFixture, output: ITestOutputHelper) =
+    type ``login-validation-api``(testFixture: TestFixture, output: ITestOutputHelper) =
         do setConsoleOutput output
         interface IClassFixture<TestFixture>
 
@@ -57,22 +51,125 @@ module LogIn =
             }
 
         [<Fact>]
-        [<Priority(1)>]
         member __.``A Login data with empty client_id should give validation error``() =
             task {
-                let! result = testFixture.HttpPostAsync userToken "/auth/login" logInData
+                let! result = testFixture.HttpPostAsync userToken "/auth/login" {| logInData with client_id = "" |}
                 do ensureBadRequest result
 
                 let! result' = readAsJsonAsync<ErrorDTO<Map<string, string array>>> result
 
                 let expected =
                     {| Message = "Some data is not valid"
-                       Data =
-                           Map
-                               [ ("client_id", [| "EMPTY_STRING" |])
-                                 ("email", [| "NOT_URL_STRING" |])
-                                 ("response_type", [| "CONTAINS_STRING:S256" |]) ] |}
+                       Data = Map [ ("client_id", [| "EMPTY_STRING" |]) ] |}
 
 
                 result'.Data |> should equal expected.Data
+            }
+
+        [<Fact>]
+        member __.``B All empty fields should give validation error``() =
+            task {
+                let! result = testFixture.HttpPostAsync userToken "/auth/login" {|  |}
+                do ensureBadRequest result
+
+                let! result' = readAsJsonAsync<ErrorDTO<Map<string, string array>>> result
+
+                let expected =
+                    [ ("client_id", [| "EMPTY_STRING" |])
+                      ("code_challenge", [| "EMPTY_STRING" |])
+                      ("code_challenge_method", [| "EMPTY_STRING" |])
+                      ("email", [| "EMPTY_STRING" |])
+                      ("password", [| "EMPTY_STRING" |])
+                      ("redirect_uri", [| "EMPTY_STRING" |])
+                      ("response_type", [| "EMPTY_STRING" |])
+                      ("scopes", [| "EMPTY_VALUE" |]) ]
+                    |> Map
+
+                printf "+++ %A" result'.Data
+
+                result'.Data |> should equal expected
+            }
+
+        [<Fact>]
+        member __.``C response_type different from 'code' should give error``() =
+            task {
+                let! result = testFixture.HttpPostAsync userToken "/auth/login"
+                                  {| logInData with response_type = "not_code" |}
+                do ensureBadRequest result
+
+                let! result' = readAsJsonAsync<ErrorDTO<Map<string, string array>>> result
+
+                let expected =
+                    [ ("response_type", [| "NOT_CONTAINS_STRING:code" |]) ] |> Map
+
+                printf "+++ %A" result'.Data
+
+                result'.Data |> should equal expected
+            }
+
+        [<Fact>]
+        member __.``D redirect_uri not url``() =
+            task {
+                let! result = testFixture.HttpPostAsync userToken "/auth/login"
+                                  {| logInData with redirect_uri = "redirect_uri" |}
+                do ensureBadRequest result
+
+                let! result' = readAsJsonAsync<ErrorDTO<Map<string, string array>>> result
+
+                let expected =
+                    [ ("redirect_uri", [| "NOT_URL_STRING" |]) ] |> Map
+
+                printf "+++ %A" result'.Data
+
+                result'.Data |> should equal expected
+            }
+
+        [<Fact>]
+        member __.``E scopes doesn't contain required scopes``() =
+            task {
+                let! result = testFixture.HttpPostAsync userToken "/auth/login" {| logInData with scopes = [||] |}
+                do ensureBadRequest result
+
+                let! result' = readAsJsonAsync<ErrorDTO<Map<string, string array>>> result
+
+                let expected =
+                    [ ("scopes", [| "NOT_CONTAINS_ALL_STRING:openid,profile" |]) ] |> Map
+
+                printf "+++ %A" result'.Data
+
+                result'.Data |> should equal expected
+            }
+
+        [<Fact>]
+        member __.``F email is not email should return error``() =
+            task {
+                let! result = testFixture.HttpPostAsync userToken "/auth/login"
+                                  {| logInData with email = "not_email" |}
+                do ensureBadRequest result
+
+                let! result' = readAsJsonAsync<ErrorDTO<Map<string, string array>>> result
+
+                let expected =
+                    [ ("email", [| "NOT_EMAIL_STRING" |]) ] |> Map
+
+                printf "+++ %A" result'.Data
+
+                result'.Data |> should equal expected
+            }
+
+        [<Fact>]
+        member __.``G code_challenge_method is not S256 should give error``() =
+            task {
+                let! result = testFixture.HttpPostAsync userToken "/auth/login"
+                                  {| logInData with code_challenge_method = "not_S256" |}
+                do ensureBadRequest result
+
+                let! result' = readAsJsonAsync<ErrorDTO<Map<string, string array>>> result
+
+                let expected =
+                    [ ("code_challenge_method", [| "NOT_CONTAINS_STRING:S256" |]) ] |> Map
+
+                printf "+++ %A" result'.Data
+
+                result'.Data |> should equal expected
             }

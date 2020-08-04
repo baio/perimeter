@@ -17,13 +17,14 @@ module Authorize =
            (validateContains [| "code" |] "response_type" data.Response_Type)
            (validateNullOrEmpty "redirect_uri" data.Redirect_Uri)
            (validateUrl "redirect_uri" data.Redirect_Uri)
+           (validateNull "scopes" data.Scopes)
            (validateContainsAll [| "openid"; "profile" |] "scopes" data.Scopes)
            (validateNullOrEmpty "email" data.Email)
            (validateEmail "email" data.Email)
            (validateNullOrEmpty "password" data.Password)
            (validateNullOrEmpty "code_challenge" data.Code_Challenge)
            (validateNullOrEmpty "code_challenge_method" data.Code_Challenge_Method)
-           (validateContains [| "S256" |] "response_type" data.Response_Type) |]
+           (validateContains [| "S256" |] "code_challenge_method" data.Code_Challenge_Method) |]
         |> Array.choose id
 
     let logIn: LogIn =

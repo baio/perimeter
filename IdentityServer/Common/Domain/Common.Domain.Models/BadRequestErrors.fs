@@ -3,10 +3,12 @@
 [<AutoOpen>]
 module BadRequestErrors =
     type BadRequestFieldError =
+        | EMPTY_VALUE
         | EMPTY_STRING
-        | CONTAINS_STRING of string
-        | CONTAINS_ALL_STRING of string
+        | NOT_CONTAINS_STRING of string
+        | NOT_CONTAINS_ALL_STRING of string
         | NOT_URL_STRING
+        | NOT_EMAIL_STRING
         | MAX_LENGTH of int
         | MIN_LENGTH of int
         | MISS_UPPER_LETTER

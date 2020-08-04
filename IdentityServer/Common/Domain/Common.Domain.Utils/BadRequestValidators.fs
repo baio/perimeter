@@ -28,6 +28,10 @@ module BadRequestValidators =
         >> ofBool (name, EMPTY_STRING)
         >> Option.map BadRequestFieldError
 
+    let validateNull name x =
+        if x = null then Some(BadRequestFieldError(name, EMPTY_VALUE))
+        else None
+
     let validateRegex name err (regex: string) =
         (Regex(regex).IsMatch)
         >> not
@@ -53,17 +57,17 @@ module BadRequestValidators =
             (name,
              list
              |> seqJoin
-             |> CONTAINS_STRING)
+             |> NOT_CONTAINS_STRING)
         >> Option.map BadRequestFieldError
 
-    let validateContainsAll (list: string seq) name =
+    let validateContainsAll' (list: string seq) name =
         Seq.except list
         >> Seq.isEmpty
         >> ofBool
             (name,
              list
              |> seqJoin
-             |> CONTAINS_ALL_STRING)
+             |> NOT_CONTAINS_ALL_STRING)
         >> Option.map BadRequestFieldError
 
     let validateUrl' name =
@@ -76,17 +80,23 @@ module BadRequestValidators =
         (fun str ->
         try
             MailAddress(str) |> ignore
-            true
-        with :? FormatException -> false)
-        >> ofBool (name, NOT_URL_STRING)
+            false
+        with :? FormatException -> true)
+        >> ofBool (name, NOT_EMAIL_STRING)
         >> Option.map BadRequestFieldError
 
     let skipEmpty str f =
         if isEmpty str then None
         else f str
 
+    let skipNull x f =
+        if x = null then None
+        else f x
+
     let validateEmail name str = validateEmail' name |> skipEmpty str
 
     let validateUrl name str = validateUrl' name |> skipEmpty str
 
     let validateContains list name str = validateContains' list name |> skipEmpty str
+
+    let validateContainsAll list name x = validateContainsAll' list name |> skipNull x
