@@ -132,7 +132,9 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     ClientSecret = table.Column<string>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false, defaultValueSql: "now()"),
                     IdTokenExpiresIn = table.Column<int>(nullable: false),
-                    RefreshTokenExpiresIn = table.Column<int>(nullable: false)
+                    RefreshTokenExpiresIn = table.Column<int>(nullable: false),
+                    AllowedCallbackUrls = table.Column<string>(nullable: false),
+                    Flow = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
