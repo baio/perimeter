@@ -41,5 +41,5 @@ module internal SignInUser =
                 let! userRolePemissions = getUserDomainRolesPermissions env.DataContext (domainId, tokenData.Email)
                 return signInUser' env audiences tokenData userRolePemissions
             | None ->
-                return! raise UnAuthorized
+                return! raise (UnAuthorized None)
         }

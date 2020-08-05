@@ -13,6 +13,7 @@ module DIHelpers =
     let getDataContext': ReaderTask<HttpContext, DbDataContext> = ReaderTask.ofReader getDataContext
 
     let getHash (ctx: HttpContext) = ctx.GetService<IHashProvider>().GetHash
+    let getSHA256 (ctx: HttpContext) = ctx.GetService<ISHA256Provider>().GetSHA256
     let getPasswordSalter (ctx: HttpContext) = ctx.GetService<IPasswordSaltProvider>().SaltPassword
     let getConfig (ctx: HttpContext) = ctx.GetService<IConfig>().GetConfig()
 

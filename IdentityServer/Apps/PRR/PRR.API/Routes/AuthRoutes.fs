@@ -40,7 +40,7 @@ module private Handlers =
 
     let private bindRefreshTokenQuery =
         ((fun (x: Data) -> x.RefreshToken) <!> bindJsonAsync<Data>)
-        >>= ((bindSysQuery (RefreshToken.GetToken >> Queries.RefreshToken)) >> noneFails UnAuthorized)
+        >>= ((bindSysQuery (RefreshToken.GetToken >> Queries.RefreshToken)) >> noneFails (UnAuthorized None))
 
     let refreshTokenHandler =
 
@@ -49,14 +49,14 @@ module private Handlers =
                                { DataContext = getDataContext ctx
                                  HashProvider = getHash ctx
                                  JwtConfig = (getConfig ctx).Jwt })
-                               |> ofReader) <*> (bindAuthorizationBearerHeader >> option2Task UnAuthorized)
+                               |> ofReader) <*> (bindAuthorizationBearerHeader >> option2Task (UnAuthorized None))
              <*> bindRefreshTokenQuery)
 
     open PRR.Domain.Auth.SignUpConfirm
 
     let private bindSignUpTokenQuery =
         ((fun (x: Data) -> x.Token) <!> bindJsonAsync<Data>)
-        >>= ((bindSysQuery (SignUpToken.GetToken >> Queries.SignUpToken)) >> noneFails UnAuthorized)
+        >>= ((bindSysQuery (SignUpToken.GetToken >> Queries.SignUpToken)) >> noneFails (UnAuthorized None))
 
     let signUpConfirmHandler =
         sysWrap
@@ -72,7 +72,7 @@ module private Handlers =
 
     let private bindResetPasswordQuery =
         ((fun (x: Data) -> x.Token) <!> bindJsonAsync<Data>)
-        >>= ((bindSysQuery (ResetPassword.GetToken >> Queries.ResetPassword)) >> noneFails UnAuthorized)
+        >>= ((bindSysQuery (ResetPassword.GetToken >> Queries.ResetPassword)) >> noneFails (UnAuthorized None))
 
     let resetPasswordConfirmHandler =
         sysWrap
@@ -99,11 +99,12 @@ module private Handlers =
         ofReader (fun ctx ->
             { DataContext = getDataContext ctx
               HashProvider = getHash ctx
+              Sha256Provider = getSHA256 ctx
               JwtConfig = (getConfig ctx).Jwt })
 
     let private bindLogInCodeQuery =
         ((fun (x: Data) -> x.Code) <!> bindJsonAsync<Data>)
-        >>= ((bindSysQuery (LogIn.GetCode >> Queries.LogIn)) >> noneFails UnAuthorized)
+        >>= ((bindSysQuery (LogIn.GetCode >> Queries.LogIn)) >> noneFails (UnAuthorized None))
 
     let logInTokenHandler =
         sysWrapOK (logInToken <!> getLogInTokenEnv <*> bindLogInCodeQuery <*> bindValidateJsonAsync validateData)

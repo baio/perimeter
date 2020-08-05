@@ -29,6 +29,8 @@ module Models =
     type StringSalter = string -> string
 
     type HashProvider = unit -> string
+    
+    type Sha256Provider = string -> string
 
     [<Measure>] type days
 

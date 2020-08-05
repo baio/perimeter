@@ -4,10 +4,8 @@
 module Exceptions = 
 
     exception NotFound
-
-    exception UnAuthorized
     
-    exception UnAuthorized' of string
+    exception UnAuthorized of string option
 
     exception Forbidden
 

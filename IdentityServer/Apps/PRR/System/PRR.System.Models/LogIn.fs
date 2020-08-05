@@ -10,6 +10,7 @@ module LogIn =
         { Code: Token
           UserId: UserId
           Scopes: Scope seq
+          RedirectUri: string
           ClientId: ClientId
           CodeChallenge: Token
           ExpiresAt: DateTime }

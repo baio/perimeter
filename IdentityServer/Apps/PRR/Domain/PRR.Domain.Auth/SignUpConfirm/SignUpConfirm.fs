@@ -15,7 +15,7 @@ module SignUpConfirm =
     let signUpConfirm: SignUpConfirm =
         fun env item ->
 
-            if item.ExpiredAt < DateTime.UtcNow then raise UnAuthorized
+            if item.ExpiredAt < DateTime.UtcNow then raise (UnAuthorized None)
 
             let dataContext = env.DataContext
 

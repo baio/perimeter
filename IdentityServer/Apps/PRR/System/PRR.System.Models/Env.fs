@@ -24,7 +24,7 @@ module Env =
     type GetDataContextProvider = unit -> IDataContextProvider
 
     type SystemEnv =
-        { HashProvider: HashProvider
+        { HashProvider: HashProvider        
           PasswordSalter: StringSalter
           SendMail: SendMail
           GetDataContextProvider: GetDataContextProvider

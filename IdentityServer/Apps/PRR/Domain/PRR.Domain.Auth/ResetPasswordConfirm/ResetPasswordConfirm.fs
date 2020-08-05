@@ -19,11 +19,11 @@ module ResetPasswordConfirm =
     let resetPasswordConfirm: ResetPasswordConfirm =
         fun env item data ->
 
-            if item.ExpiredAt < DateTime.UtcNow then raise UnAuthorized
+            if item.ExpiredAt < DateTime.UtcNow then raise (UnAuthorized None)
 
             task {
                 let saltedPassword = env.PasswordSalter data.Password
-                do! updateSingleRawAsyncExn UnAuthorized env.DataContext.Users {| Password = saltedPassword |}
+                do! updateSingleRawAsyncExn (UnAuthorized None) env.DataContext.Users {| Password = saltedPassword |}
                         {| Email = item.Email |}
                 return item.Email |> ResetPasswordUpdated
             }

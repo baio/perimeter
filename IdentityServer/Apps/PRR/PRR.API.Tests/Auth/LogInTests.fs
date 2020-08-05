@@ -37,18 +37,18 @@ module LogIn =
     let codeVerfier = randomString 128
 
     let sha256 = SHA256.Create()
-    let codeChellenge = HashProvider.getSha256Hash' sha256 codeVerfier
+    let codeChellenge = HashProvider.getSha256Hash sha256 codeVerfier
 
-    let logInData =
-        {| client_id = "123"
-           response_type = "code"
-           state = "state"
-           redirect_uri = "http://localhost:4200"
-           scopes = [| "open_id"; "profile"; "email" |]
-           email = signUpData.Email
-           password = signUpData.Password
-           code_challenge = codeChellenge
-           code_challenge_method = "S256" |}
+    let logInData: PRR.Domain.Auth.LogIn.Models.Data =
+        { Client_Id = "123"
+          Response_Type = "code"
+          State = "state"
+          Redirect_Uri = "http://localhost:4200"
+          Scopes = [| "open_id"; "profile"; "email" |]
+          Email = signUpData.Email
+          Password = signUpData.Password
+          Code_Challenge = codeChellenge
+          Code_Challenge_Method = "S256" }
 
     let mutable userToken: string = null
 
@@ -74,30 +74,43 @@ module LogIn =
         [<Fact>]
         [<Priority(1)>]
         member __.``A Login with correct data should success``() =
+            let loginData =
+                { logInData with Client_Id = testContext.Value.GetTenant().TenantManagementApplicationClientId }
             task {
-                let! result' = testFixture.HttpPostAsync userToken "/auth/login" logInData
+                let! result' = testFixture.HttpPostAsync userToken "/auth/login" loginData
                 do! ensureSuccessAsync result'
-                let! result = result' |> readAsJsonAsync<PRR.Domain.Auth.LogIn.LogIn.Result>
-                result.State |> should equal logInData.state
+                let! result = result' |> readAsJsonAsync<PRR.Domain.Auth.LogIn.Models.Result>
+                result.State |> should equal logInData.State
                 result.Code |> should be (not' Empty)
                 authCode <- result.Code
             }
 
         [<Fact>]
-        [<Priority(1)>]
+        [<Priority(2)>]
         member __.``B Login token with correct data should success``() =
             let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
-                { GrantType = "code"
+                { Grant_Type = "code"
                   Code = authCode
-                  RedirectUri = "http://localhost:4200"
-                  ClientId = testContext.Value.GetTenant().TenantManagementApplicationClientId
-                  CodeVerifier = codeVerfier }
+                  Redirect_Uri = logInData.Redirect_Uri
+                  Client_Id = testContext.Value.GetTenant().TenantManagementApplicationClientId
+                  Code_Verifier = codeVerfier }
             task {
                 let! result' = testFixture.HttpPostAsync userToken "/auth/token" loginTokenData
                 do! ensureSuccessAsync result'
                 let! result = result' |> readAsJsonAsync<PRR.Domain.Auth.SignIn.Models.SignInResult>
                 printf "%O" result
-            }
-            // TODO : Validate payload,  ClientId, Code Challenges
-            
-       
+            } 
+
+        [<Fact>]
+        [<Priority(3)>]
+        member __.``C Login token with the same code should give 401``() =
+            let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
+                { Grant_Type = "code"
+                  Code = authCode
+                  Redirect_Uri = logInData.Redirect_Uri
+                  Client_Id = testContext.Value.GetTenant().TenantManagementApplicationClientId
+                  Code_Verifier = codeVerfier }
+            task {
+                let! result = testFixture.HttpPostAsync userToken "/auth/token" loginTokenData
+                do ensureUnauthorized result
+            } 

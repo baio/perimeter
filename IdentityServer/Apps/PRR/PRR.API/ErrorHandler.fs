@@ -35,8 +35,9 @@ module ErrorHandler =
         match ex with
         | :? NotFound ->
             RequestErrors.NOT_FOUND "Not Found"
-        | :? UnAuthorized ->
-            RequestErrors.UNAUTHORIZED "Bearer" "App" "Not Authorized"
+        | :? UnAuthorized as e ->
+            let msg = match e.Data0 with Some x -> x | None -> "Not Authorized"
+            RequestErrors.UNAUTHORIZED "Bearer" "App" msg
         | :? Forbidden ->
             RequestErrors.FORBIDDEN "Forbidden"
         | :? Conflict as e ->

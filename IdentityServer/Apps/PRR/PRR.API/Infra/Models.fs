@@ -20,9 +20,11 @@ module Models =
         abstract GetConfig: (unit -> AppConfig) with get
 
     type IHashProvider =
-        abstract GetHash: (unit -> string) with get
+        abstract GetHash: (unit -> string) with get                
 
     type IPasswordSaltProvider =
         abstract SaltPassword: (string -> string) with get
 
+    type ISHA256Provider =
+        abstract GetSHA256: (string -> string)  with get              
 

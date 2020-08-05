@@ -7,7 +7,7 @@ open PRR.System.Models
 open System.Threading.Tasks
 
 [<AutoOpen>]
-module LogIn =
+module Models =
 
     type Data =
         { Client_Id: ClientId

@@ -31,7 +31,7 @@ module RefreshToken =
                                       RefreshToken = res.RefreshToken
                                       OldRefreshToken = item.Token })
                     | None ->
-                        return! raise UnAuthorized
+                        return! raise (UnAuthorized None)
                 | _ ->
-                    return! raise UnAuthorized
+                    return! raise (UnAuthorized None)
             }

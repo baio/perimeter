@@ -11,11 +11,11 @@ open System.Threading.Tasks
 module Models =
 
     type Data =
-        { GrantType: string
+        { Grant_Type: string
           Code: Token
-          RedirectUri: string
-          ClientId: string
-          CodeVerifier: string }
+          Redirect_Uri: string
+          Client_Id: string
+          Code_Verifier: string }
 
     type Result =
         { IdToken: string
@@ -25,6 +25,7 @@ module Models =
     type Env =
         { DataContext: DbDataContext
           JwtConfig: JwtConfig
-          HashProvider: HashProvider }
+          HashProvider: HashProvider
+          Sha256Provider: Sha256Provider }
 
     type LogInToken = Env -> LogIn.Item -> Data -> Task<Result * Events>

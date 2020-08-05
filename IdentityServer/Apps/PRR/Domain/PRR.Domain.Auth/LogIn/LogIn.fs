@@ -48,10 +48,11 @@ module Authorize =
                            CodeChallenge = data.Code_Challenge
                            Scopes = data.Scopes
                            UserId = userId
-                           ExpiresAt = expiresAt }: LogIn.Item)
+                           ExpiresAt = expiresAt
+                           RedirectUri = data.Redirect_Uri }: LogIn.Item)
                         |> UserLogInSuccessEvent
 
                     return (result, evt)
                 | None ->
-                    return! raise UnAuthorized
+                    return! raise (UnAuthorized None)
             }

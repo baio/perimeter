@@ -23,6 +23,7 @@ open PRR.Data.DataContext
 open PRR.System
 open PRR.System.Models
 open System
+open System.Security.Cryptography
 
 let webApp =
     choose
@@ -77,9 +78,14 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     services.AddGiraffe() |> ignore
 
     // Infra
+    let sha256 = SHA256.Create()
+    let hashProvider = HashProvider sha256
+    let sha256Provider = SHA256Provider sha256
+    
     services.AddSingleton<IConfig, Config>() |> ignore
     services.AddSingleton<IPermissionsFromRoles, PermissionsFromRoles>() |> ignore
-    services.AddSingleton<IHashProvider, HashProvider>() |> ignore
+    services.AddSingleton<IHashProvider>(hashProvider) |> ignore
+    services.AddSingleton<ISHA256Provider>(sha256Provider) |> ignore
     services.AddSingleton<IPasswordSaltProvider, PasswordSaltProvider>() |> ignore
 
     // Configure DataContext
@@ -109,12 +115,12 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
 
     let sendGridApiKey = context.Configuration.GetValue("SendGridApiKey")
     let mailSender = PRR.API.Infra.Mail.SendGridMail.createSendMail sendGridApiKey
-
+    
     let systemEnv: SystemEnv =
         { SendMail = createSendMail mailEnv mailSender
           GetDataContextProvider =
-              fun () -> new DataContextProvider(services.BuildServiceProvider().CreateScope()) :> IDataContextProvider
-          HashProvider = (HashProvider() :> IHashProvider).GetHash
+              fun () -> new DataContextProvider(services.BuildServiceProvider().CreateScope()) :> IDataContextProvider              
+          HashProvider = (hashProvider :> IHashProvider).GetHash
           PasswordSalter = services.BuildServiceProvider().GetService<IPasswordSaltProvider>().SaltPassword
           AuthConfig =
               { IdTokenExpiresIn = config.Jwt.IdTokenExpiresIn

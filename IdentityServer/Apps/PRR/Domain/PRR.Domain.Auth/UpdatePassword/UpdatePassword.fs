@@ -16,6 +16,6 @@ module UpdatePassword =
         fun env (userId, data) ->
             let oldSaltedPassword = env.PasswordSalter data.OldPassword
             let saltedPassword = env.PasswordSalter data.Password
-            updateSingleRawAsyncExn UnAuthorized env.DataContext.Users {| Password = saltedPassword |}
+            updateSingleRawAsyncExn (UnAuthorized None) env.DataContext.Users {| Password = saltedPassword |}
                 {| Id = userId
                    Password = oldSaltedPassword |}

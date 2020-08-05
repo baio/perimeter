@@ -31,7 +31,7 @@ module SignIn =
 
                     return (res1, res2)
                 | None ->
-                    return! raiseTask UnAuthorized
+                    return! raiseTask (UnAuthorized None)
             }
 
 
@@ -43,7 +43,7 @@ module SignIn =
                                                     where (app.Domain.Tenant.User.Email = data.Email)
                                                     select app.ClientId
                                             }
-                                            |> LinqHelpers.toSingleExnAsync UnAuthorized
+                                            |> LinqHelpers.toSingleExnAsync (UnAuthorized None)
 
                 return! signIn env
                             { Email = data.Email

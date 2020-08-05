@@ -26,6 +26,7 @@
         <Compile Include="Infra\PermissionsFromRoles.fs" />
         <Compile Include="Infra\PasswordSaltProvider.fs" />
         <Compile Include="Infra\HashProvider.fs" />
+        <Compile Include="Infra\SHA256Provider.fs" />
         <Compile Include="Infra\Config.fs" />
         <Compile Include="ErrorHandler.fs" />
         <Content Include="appsettings.json">
