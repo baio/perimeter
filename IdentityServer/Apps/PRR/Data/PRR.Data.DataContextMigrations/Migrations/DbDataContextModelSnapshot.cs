@@ -67,6 +67,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<string>("AllowedCallbackUrls")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("ClientId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -82,6 +86,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
 
                     b.Property<int>("DomainId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Flow")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("IdTokenExpiresIn")
                         .HasColumnType("integer");

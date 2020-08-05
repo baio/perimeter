@@ -3,6 +3,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PRR.Data.Entities
 {
+    public enum FlowType {
+        PKCE,
+        AuthorizationCode,
+        Implicit
+    }
+
     public class Application
     {
         public int Id { get; set; }
@@ -28,6 +34,12 @@ namespace PRR.Data.Entities
         
         [Required]
         public int RefreshTokenExpiresIn { get; set; }
+        
+        [Required]
+        public string AllowedCallbackUrls { get; set; }
+        
+        [Required]
+        public FlowType Flow { get; set; }
 
     }
 }

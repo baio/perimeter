@@ -10,7 +10,7 @@ using PRR.Data.DataContext;
 namespace PRR.Data.DataContextMigrations.Migrations
 {
     [DbContext(typeof(DbDataContext))]
-    [Migration("20200725151804_Initial")]
+    [Migration("20200805192946_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,6 +69,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<string>("AllowedCallbackUrls")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("ClientId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -84,6 +88,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
 
                     b.Property<int>("DomainId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Flow")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("IdTokenExpiresIn")
                         .HasColumnType("integer");

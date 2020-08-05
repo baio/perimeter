@@ -53,7 +53,8 @@ module DomainPools =
         Application
             (Domain = domain, Name = "Domain Management Application", ClientId = guid(),
              ClientSecret = env.HashProvider(), IdTokenExpiresIn = (int env.AuthConfig.IdTokenExpiresIn),
-             RefreshTokenExpiresIn = (int env.AuthConfig.RefreshTokenExpiresIn)) |> add' env.DataContext
+             RefreshTokenExpiresIn = (int env.AuthConfig.RefreshTokenExpiresIn), AllowedCallbackUrls = "*",
+             Flow = FlowType.PKCE) |> add' env.DataContext
 
     let createDomainManagementApi (env: Env) domain =
         Api
@@ -98,7 +99,7 @@ module DomainPools =
                 addUserRoles ownerEmail domain [ Seed.Roles.DomainOwner.Id ] dataContext
 
             do! saveChangesAsync dataContext
-            
+
             return domainPool.Id
         }
 

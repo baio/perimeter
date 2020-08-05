@@ -36,8 +36,8 @@ module Applications =
             (fun (domainId, dto) ->
             Application
                 (Name = dto.Name, ClientId = dto.ClientId, DomainId = domainId, ClientSecret = env.HashProvider(),
-                 IdTokenExpiresIn = int env.IdTokenExpiresIn, RefreshTokenExpiresIn = int env.RefreshTokenExpiresIn))
-            (fun x -> x.Id)
+                 IdTokenExpiresIn = int env.IdTokenExpiresIn, RefreshTokenExpiresIn = int env.RefreshTokenExpiresIn,
+                 Flow = FlowType.PKCE, AllowedCallbackUrls = "*")) (fun x -> x.Id)
 
     let update: Update<int, DomainId * PostLike, DbDataContext> =
         update<Application, _, _, _> (fun id -> Application(Id = id)) (fun (_, dto) entity ->

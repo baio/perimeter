@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRR.Data.Entities;
 
 namespace PRR.Data.DataContext
@@ -56,6 +57,8 @@ namespace PRR.Data.DataContext
                 entity.HasIndex(x => x.ClientId).IsUnique();
                 entity.Property(x => x.DateCreated).HasDefaultValueSql("now()");
                 entity.HasOne(x => x.Domain).WithMany(x => x.Applications).OnDelete(DeleteBehavior.Cascade);
+                entity.Property(d => d.Flow)
+                    .HasConversion(new EnumToStringConverter<FlowType>());
             });
 
             modelBuilder.Entity<Api>(entity =>
