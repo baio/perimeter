@@ -14,7 +14,9 @@ open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
 
-module SignUpValidatePassword =
+module SignUpValidatePassword = ()
+
+(*    
 
     let mutable userToken: string = null
     let mutable actualEmail: SendMailParams option = None
@@ -152,3 +154,4 @@ module SignUpValidatePassword =
 
                 json |> should equal """{"password":["MISS_DIGIT"]}"""
             }
+*)

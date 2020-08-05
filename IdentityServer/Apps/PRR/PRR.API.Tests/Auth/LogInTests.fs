@@ -39,14 +39,11 @@ module LogIn =
     let sha256 = SHA256.Create()
     let codeChellenge = HashProvider.getSha256Hash sha256 codeVerfier
 
-    let mutable userToken: string = null
-
     let mutable testContext: UserTestContext option = None
 
     let mutable permissionId: int option = None
 
     let redirectUri = "http://localhost:4200"
-
 
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
@@ -58,10 +55,9 @@ module LogIn =
         [<Priority(-1)>]
         member __.``0 BeforeAll``() =
             task {
-
                 testContext <- Some(createUserTestContext testFixture)
-                let! userToken' = createUser testContext.Value signUpData
-                userToken <- userToken'
+                let! _ = createUser testContext.Value signUpData
+                ()
             }
 
 
@@ -90,7 +86,7 @@ module LogIn =
                   Code_Verifier = codeVerfier }
 
             task {
-                let! result = testFixture.HttpPostAsync userToken "/auth/token" loginTokenData
+                let! result = testFixture.HttpPostAsync' "/auth/token" loginTokenData
                 do ensureUnauthorized result }
 
         [<Fact>]
@@ -118,7 +114,7 @@ module LogIn =
                   Code_Verifier = sprintf "%s1" codeVerfier }
 
             task {
-                let! result = testFixture.HttpPostAsync userToken "/auth/token" loginTokenData
+                let! result = testFixture.HttpPostAsync' "/auth/token" loginTokenData
                 do ensureUnauthorized result }
 
 
@@ -140,7 +136,7 @@ module LogIn =
                   Code_Challenge_Method = "S256" }
 
             task {
-                let! result' = testFixture.HttpPostAsync userToken "/auth/login" logInData
+                let! result' = testFixture.HttpPostAsync' "/auth/login" logInData
                 do! ensureSuccessAsync result'
                 let! result = result' |> readAsJsonAsync<PRR.Domain.Auth.LogIn.Models.Result>
                 result.State |> should equal logInData.State
@@ -154,7 +150,7 @@ module LogIn =
                       Client_Id = clientId
                       Code_Verifier = codeVerfier }
 
-                let! result' = testFixture.HttpPostAsync userToken "/auth/token" loginTokenData
+                let! result' = testFixture.HttpPostAsync' "/auth/token" loginTokenData
                 do! ensureSuccessAsync result'
                 let! result = result' |> readAsJsonAsync<PRR.Domain.Auth.SignIn.Models.SignInResult>
                 result.AccessToken |> should be (not' Empty)
@@ -173,5 +169,5 @@ module LogIn =
                   Client_Id = testContext.Value.GetTenant().TenantManagementApplicationClientId
                   Code_Verifier = codeVerfier }
             task {
-                let! result = testFixture.HttpPostAsync userToken "/auth/token" loginTokenData
+                let! result = testFixture.HttpPostAsync' "/auth/token" loginTokenData
                 do ensureUnauthorized result }
