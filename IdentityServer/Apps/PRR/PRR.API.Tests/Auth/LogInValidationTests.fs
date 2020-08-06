@@ -23,7 +23,7 @@ module LogInValidation =
            response_type = "code"
            state = "state"
            redirect_uri = "http://localhost:4200"
-           scopes = [| "open_id"; "profile"; "email" |]
+           scope = [| "open_id"; "profile"; "email" |]
            email = signUpData.Email
            password = signUpData.Password
            code_challenge = "123"
@@ -82,10 +82,8 @@ module LogInValidation =
                       ("password", [| "EMPTY_STRING" |])
                       ("redirect_uri", [| "EMPTY_STRING" |])
                       ("response_type", [| "EMPTY_STRING" |])
-                      ("scopes", [| "EMPTY_VALUE" |]) ]
+                      ("scope", [| "EMPTY_VALUE" |]) ]
                     |> Map
-
-                printf "+++ %A" result'.Data
 
                 result'.Data |> should equal expected
             }
@@ -127,13 +125,13 @@ module LogInValidation =
         [<Fact>]
         member __.``E scopes doesn't contain required scopes``() =
             task {
-                let! result = testFixture.HttpPostAsync userToken "/auth/login" {| logInData with scopes = [||] |}
+                let! result = testFixture.HttpPostAsync userToken "/auth/login" {| logInData with scope = [||] |}
                 do ensureBadRequest result
 
                 let! result' = readAsJsonAsync<ErrorDTO<Map<string, string array>>> result
 
                 let expected =
-                    [ ("scopes", [| "NOT_CONTAINS_ALL_STRING:openid,profile" |]) ] |> Map
+                    [ ("scope", [| "NOT_CONTAINS_ALL_STRING:openid,profile" |]) ] |> Map
 
                 printf "+++ %A" result'.Data
 

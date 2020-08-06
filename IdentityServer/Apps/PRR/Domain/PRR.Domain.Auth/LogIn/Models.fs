@@ -14,7 +14,7 @@ module Models =
           Response_Type: string
           State: string
           Redirect_Uri: Uri
-          Scopes: Scope seq
+          Scope: Scope seq
           Email: string
           Password: string
           Code_Challenge: string

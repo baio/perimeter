@@ -17,8 +17,8 @@ module Authorize =
            (validateContains [| "code" |] "response_type" data.Response_Type)
            (validateNullOrEmpty "redirect_uri" data.Redirect_Uri)
            (validateUrl "redirect_uri" data.Redirect_Uri)
-           (validateNull "scopes" data.Scopes)
-           (validateContainsAll [| "openid"; "profile" |] "scopes" data.Scopes)
+           (validateNull "scope" data.Scope)
+           (validateContainsAll [| "openid"; "profile" |] "scope" data.Scope)
            (validateNullOrEmpty "email" data.Email)
            (validateEmail "email" data.Email)
            (validateNullOrEmpty "password" data.Password)
@@ -32,7 +32,7 @@ module Authorize =
           Response_Type = data.Response_Type
           State = data.State
           Redirect_Uri = data.Redirect_Uri
-          Scopes = data.Scopes
+          Scope = data.Scopes
           Email = data.Email
           Password = data.Password
           Code_Challenge = data.Code_Challenge
@@ -71,7 +71,7 @@ module Authorize =
                         ({ Code = code
                            ClientId = data.Client_Id
                            CodeChallenge = data.Code_Challenge
-                           Scopes = data.Scopes
+                           Scopes = data.Scope
                            UserId = userId
                            ExpiresAt = expiresAt
                            RedirectUri = data.Redirect_Uri }: LogIn.Item)
@@ -99,7 +99,7 @@ module Authorize =
                               Response_Type = data.Response_Type
                               State = data.State
                               Redirect_Uri = data.Redirect_Uri
-                              Scopes = data.Scopes
+                              Scope = data.Scopes
                               Email = data.Email
                               Password = data.Password
                               Code_Challenge = data.Code_Challenge
