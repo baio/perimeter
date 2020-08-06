@@ -45,7 +45,6 @@ module LogIn =
 
     let redirectUri = "http://localhost:4200"
 
-
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
     type ``login-api``(testFixture: TestFixture, output: ITestOutputHelper) =
         do setConsoleOutput output
@@ -59,7 +58,6 @@ module LogIn =
                 let! _ = createUser testContext.Value signUpData
                 ()
             }
-
 
         [<Fact>]
         [<Priority(1)>]

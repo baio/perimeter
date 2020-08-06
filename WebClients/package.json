@@ -46,10 +46,12 @@
     "ng-zorro-antd": "^9.3.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "~6.5.5",
+    "tslib": "^2.0.0",
     "zone.js": "^0.10.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1000.0",
+    "@angular-devkit/build-ng-packagr": "~0.1000.4",
     "@angular/cli": "~10.0.0",
     "@angular/compiler-cli": "^10.0.0",
     "@angular/language-service": "^10.0.0",
@@ -69,6 +71,7 @@
     "eslint": "6.8.0",
     "jest": "25.2.3",
     "jest-preset-angular": "8.1.2",
+    "ng-packagr": "^10.0.0",
     "prettier": "2.0.4",
     "ts-jest": "25.2.1",
     "ts-node": "~7.0.0",

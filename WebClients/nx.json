@@ -43,6 +43,9 @@
     },
     "admin-common": {
       "tags": []
+    },
+    "perimeter-ng-auth": {
+      "tags": []
     }
   }
 }

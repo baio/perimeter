@@ -302,6 +302,50 @@
           "style": "scss"
         }
       }
+    },
+    "perimeter-ng-auth": {
+      "projectType": "library",
+      "root": "libs/perimeter/ng-auth",
+      "sourceRoot": "libs/perimeter/ng-auth/src",
+      "prefix": "data-avail",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/angular:package",
+          "options": {
+            "tsConfig": "libs/perimeter/ng-auth/tsconfig.lib.json",
+            "project": "libs/perimeter/ng-auth/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/perimeter/ng-auth/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/perimeter/ng-auth/tsconfig.lib.json",
+              "libs/perimeter/ng-auth/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/perimeter/ng-auth/**/*"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/perimeter/ng-auth/jest.config.js",
+            "tsConfig": "libs/perimeter/ng-auth/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "libs/perimeter/ng-auth/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/angular:component": {
+          "style": "scss"
+        }
+      }
     }
   },
   "cli": {
