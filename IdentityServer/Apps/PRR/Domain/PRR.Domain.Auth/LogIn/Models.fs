@@ -32,14 +32,3 @@ module Models =
           CodeExpiresIn: int<minutes> }
 
     type LogIn = Env -> Data -> Task<Result * Events>
-
-    type DefaultClientData =
-        { Response_Type: string
-          State: string
-          Redirect_Uri: Uri
-          Scopes: Scope seq
-          Email: string
-          Password: string
-          Code_Challenge: string
-          Code_Challenge_Method: string }
-    type DefaultClientLogIn = Env -> DefaultClientData -> Task<Result * Events>

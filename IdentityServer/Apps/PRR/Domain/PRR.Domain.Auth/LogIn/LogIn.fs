@@ -2,14 +2,16 @@
 
 open Common.Domain.Models
 
-open Common.Domain.Models.BadRequestErrors
 open Common.Domain.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open PRR.Data.DataContext
 open PRR.System.Models
 open System
 
 [<AutoOpen>]
 module Authorize =
+
+    let private DEFAULT_CLIENT_ID = "__DEFAULT_CLIENT_ID__"
 
     let validateData (data: Data): BadRequestError array =
         [| (validateNullOrEmpty "client_id" data.Client_Id)
@@ -27,26 +29,29 @@ module Authorize =
            (validateContains [| "S256" |] "code_challenge_method" data.Code_Challenge_Method) |]
         |> Array.choose id
 
-    let validateDefaultClientData (data: DefaultClientData): BadRequestError array =
-        { Client_Id = "123"
-          Response_Type = data.Response_Type
-          State = data.State
-          Redirect_Uri = data.Redirect_Uri
-          Scope = data.Scopes
-          Email = data.Email
-          Password = data.Password
-          Code_Challenge = data.Code_Challenge
-          Code_Challenge_Method = data.Code_Challenge_Method }
-        |> validateData
-
+    let private getClientId (dataContext: DbDataContext) clientId email =
+        task {
+            if clientId = DEFAULT_CLIENT_ID then
+                return! query {
+                            for app in dataContext.Applications do
+                                where (app.Domain.Tenant.User.Email = email)
+                                select app.ClientId
+                        }
+                        |> LinqHelpers.toSingleExnAsync (unAuthorized "Tenant's management API is not found")
+            else
+                return clientId
+        }
 
     let logIn: LogIn =
         fun env data ->
             let dataContext = env.DataContext
             task {
+
+                let! clientId = getClientId env.DataContext data.Client_Id data.Email
+
                 let! callbackUrls = query {
                                         for app in dataContext.Applications do
-                                            where (app.ClientId = data.Client_Id)
+                                            where (app.ClientId = clientId)
                                             select app.AllowedCallbackUrls
                                     }
                                     |> toSingleExnAsync (unAuthorized ("client_id not found"))
@@ -80,28 +85,4 @@ module Authorize =
                     return (result, evt)
                 | None ->
                     return! raise UnAuthorized'
-            }
-
-    let defaultClientLogIn: DefaultClientLogIn =
-        fun env data ->
-            task {
-                // TODO : User defaultDomainId
-                let! managmentAppClientId = query {
-                                                for app in env.DataContext.Applications do
-                                                    where (app.Domain.Tenant.User.Email = data.Email)
-                                                    select app.ClientId
-                                            }
-                                            |> LinqHelpers.toSingleExnAsync
-                                                (unAuthorized "Tenant's management API is not found")
-
-                return! logIn env
-                            { Client_Id = managmentAppClientId
-                              Response_Type = data.Response_Type
-                              State = data.State
-                              Redirect_Uri = data.Redirect_Uri
-                              Scope = data.Scopes
-                              Email = data.Email
-                              Password = data.Password
-                              Code_Challenge = data.Code_Challenge
-                              Code_Challenge_Method = data.Code_Challenge_Method }
             }

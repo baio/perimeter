@@ -96,10 +96,6 @@ module private Handlers =
     let logInHandler =
         sysWrapRedirect getRedirectUrl (logIn <!> getLogInEnv <*> bindValidateJsonAsync validateData)
 
-    let defaultClientLogInHandler =
-        sysWrapRedirect getRedirectUrl
-            (defaultClientLogIn <!> getLogInEnv <*> bindValidateJsonAsync validateDefaultClientData)
-
     open PRR.Domain.Auth.LogInToken
 
     let getLogInTokenEnv =
@@ -127,7 +123,6 @@ let createRoutes() =
                              route "/sign-in" >=> signInHandler
                              route "/log-in" >=> signInTenantHandler
                              route "/log-in" >=> signInTenantHandler
-                             route "/login/default" >=> defaultClientLogInHandler
                              route "/login" >=> logInHandler
                              route "/token" >=> logInTokenHandler
                              route "/refresh-token" >=> refreshTokenHandler
