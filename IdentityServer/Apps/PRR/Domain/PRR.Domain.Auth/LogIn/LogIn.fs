@@ -31,6 +31,17 @@ module Authorize =
         fun env data ->
             let dataContext = env.DataContext
             task {
+                let! callbackUrls = query {
+                                        for app in dataContext.Applications do
+                                            where (app.ClientId = data.Client_Id)
+                                            select app.AllowedCallbackUrls
+                                    }
+                                    |> toSingleExnAsync (unAuthorized ("client_id not found"))
+                if (callbackUrls <> "*" && (callbackUrls.Split(",")
+                                            |> Seq.map (fun x -> x.Trim())
+                                            |> Seq.contains data.Redirect_Uri
+                                            |> not))
+                then return! raise (unAuthorized "return_uri mismatch")
                 let saltedPassword = env.PasswordSalter data.Password
                 match! getUserId dataContext (data.Email, saltedPassword) with
                 | Some userId ->
@@ -54,5 +65,5 @@ module Authorize =
 
                     return (result, evt)
                 | None ->
-                    return! raise (UnAuthorized None)
+                    return! raise UnAuthorized'
             }

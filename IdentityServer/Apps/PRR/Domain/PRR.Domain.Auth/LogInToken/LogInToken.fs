@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.LogInToken
 
+open System
 open System.Security.Cryptography
 open Common.Domain.Models
 open Common.Domain.Utils
@@ -25,6 +26,8 @@ module SignIn =
     let logInToken: LogInToken =
         fun env item data ->
             let dataContext = env.DataContext
+            if (item.ExpiresAt < DateTime.UtcNow) then
+                raise (UnAuthorized (Some "code expires"))
             if data.Client_Id <> item.ClientId then
                 raise (UnAuthorized (Some "client_id mismatch"))
             if data.Redirect_Uri <> item.RedirectUri then

@@ -1,13 +1,10 @@
 ﻿namespace PRR.Domain.Tenant
 
 open Common.Domain.Models
-open Common.Domain.Utils
 open Common.Domain.Utils.CRUD
-open Common.Utils
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
-open System.Linq
 
 module Applications =
 
