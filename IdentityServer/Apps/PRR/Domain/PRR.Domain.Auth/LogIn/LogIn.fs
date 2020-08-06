@@ -27,6 +27,19 @@ module Authorize =
            (validateContains [| "S256" |] "code_challenge_method" data.Code_Challenge_Method) |]
         |> Array.choose id
 
+    let validateDefaultClientData (data: DefaultClientData): BadRequestError array =
+        { Client_Id = "123"
+          Response_Type = data.Response_Type
+          State = data.State
+          Redirect_Uri = data.Redirect_Uri
+          Scopes = data.Scopes
+          Email = data.Email
+          Password = data.Password
+          Code_Challenge = data.Code_Challenge
+          Code_Challenge_Method = data.Code_Challenge_Method }
+        |> validateData
+
+
     let logIn: LogIn =
         fun env data ->
             let dataContext = env.DataContext
