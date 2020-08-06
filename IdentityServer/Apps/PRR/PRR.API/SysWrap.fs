@@ -15,11 +15,11 @@ open System.Threading.Tasks
 module SysWrap =
 
     type HandlerFunCmd = HttpContext -> Task<Commands>
-    
+
     let sysWrapCmd (handler: HandlerFunCmd) (next: HttpFunc) (ctx: HttpContext) =
         let sys = ctx.GetService<ICQRSSystem>()
         task {
-            let! cmd = handler ctx           
+            let! cmd = handler ctx
             sys.CommandsRef <! cmd
             return! Successful.NO_CONTENT next ctx
         }
@@ -44,6 +44,16 @@ module SysWrap =
             let! (res, evt) = hr
             sys.EventsRef <! evt
             return! Successful.OK res next ctx
+        }
+
+    let sysWrapRedirect m (handler: HandlerFun'<'a>) (next: HttpFunc) (ctx: HttpContext) =
+        let sys = ctx.GetService<ICQRSSystem>()
+        task {
+            let! hr = handler ctx
+            let! (res, evt) = hr
+            sys.EventsRef <! evt
+            let url = m res
+            return! redirectTo false url next ctx
         }
 
     let bindSysQuery f x (ctx: HttpContext) =

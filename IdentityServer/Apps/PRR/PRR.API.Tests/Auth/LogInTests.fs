@@ -65,7 +65,7 @@ module LogIn =
         [<Priority(1)>]
         member __.``A Login with wrong Client_Id should give error``() =
 
-            let clientId = "123" // testContext.Value.GetTenant().TenantManagementApplicationClientId
+            let clientId = "123" 
 
             let logInData: PRR.Domain.Auth.LogIn.Models.Data =
                 { Client_Id = clientId
@@ -77,16 +77,9 @@ module LogIn =
                   Password = signUpData.Password
                   Code_Challenge = codeChellenge
                   Code_Challenge_Method = "S256" }
-
-            let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
-                { Grant_Type = "code"
-                  Code = authCode
-                  Redirect_Uri = logInData.Redirect_Uri
-                  Client_Id = clientId
-                  Code_Verifier = codeVerfier }
-
+            
             task {
-                let! result = testFixture.HttpPostAsync' "/auth/token" loginTokenData
+                let! result = logIn' testFixture logInData
                 do ensureUnauthorized result }
 
         [<Fact>]
@@ -105,15 +98,18 @@ module LogIn =
                   Password = signUpData.Password
                   Code_Challenge = codeChellenge
                   Code_Challenge_Method = "S256" }
-
-            let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
-                { Grant_Type = "code"
-                  Code = authCode
-                  Redirect_Uri = logInData.Redirect_Uri
-                  Client_Id = clientId
-                  Code_Verifier = sprintf "%s1" codeVerfier }
+                
 
             task {
+                let! authCode = logIn testFixture logInData                
+
+                let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
+                    { Grant_Type = "code"
+                      Code = authCode
+                      Redirect_Uri = logInData.Redirect_Uri
+                      Client_Id = clientId
+                      Code_Verifier = sprintf "%s1" codeVerfier }
+                
                 let! result = testFixture.HttpPostAsync' "/auth/token" loginTokenData
                 do ensureUnauthorized result }
 
@@ -136,12 +132,8 @@ module LogIn =
                   Code_Challenge_Method = "S256" }
 
             task {
-                let! result' = testFixture.HttpPostAsync' "/auth/login" logInData
-                do! ensureSuccessAsync result'
-                let! result = result' |> readAsJsonAsync<PRR.Domain.Auth.LogIn.Models.Result>
-                result.State |> should equal logInData.State
-                result.Code |> should be (not' Empty)
-                authCode <- result.Code
+                let! result = logIn testFixture logInData
+                authCode <- result
 
                 let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
                     { Grant_Type = "code"

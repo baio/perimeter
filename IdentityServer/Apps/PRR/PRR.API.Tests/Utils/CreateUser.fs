@@ -2,16 +2,29 @@
 
 open Common.Test.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open Microsoft.Azure.Documents
 open PRR.API.Infra
 open PRR.Domain.Auth
 open System
 open System.Security.Cryptography
 open System.Threading
+open System.Web
 
 
 [<AutoOpen>]
 module CreateUser =
 
+    let logIn' (testFixture: TestFixture) (data: PRR.Domain.Auth.LogIn.Models.Data) =
+        testFixture.HttpPostAsync' "/auth/login" data
+    
+    let logIn (testFixture: TestFixture) (data: PRR.Domain.Auth.LogIn.Models.Data) =
+        task {
+            let! result = logIn' testFixture data
+            let result = readResponseHader "Location" result            
+            let uri = Uri(result)
+            return HttpUtility.ParseQueryString(uri.Query).Get("code")
+        }
+               
     let sha256 = SHA256.Create()
     let random = Random()
 
@@ -68,12 +81,11 @@ module CreateUser =
                   Code_Challenge = codeChallenge
                   Code_Challenge_Method = "S256" }
 
-            let! result = env.TestFixture.HttpPostAsync' "/auth/login" logInData
-            let! result = readAsJsonAsync<PRR.Domain.Auth.LogIn.Models.Result> result
+            let! code = logIn env.TestFixture logInData 
 
             let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
                 { Grant_Type = "code"
-                  Code = result.Code
+                  Code = code
                   Redirect_Uri = logInData.Redirect_Uri
                   Client_Id = clientId
                   Code_Verifier = codeVerifier }

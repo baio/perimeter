@@ -90,8 +90,11 @@ module private Handlers =
               CodeGenerator = getHash ctx
               CodeExpiresIn = (getConfig ctx).Jwt.CodeExpiresIn })
 
+    let private getRedirectUrl (res: Result) =
+        sprintf "%s?code=%s&state=%s" res.RedirectUri res.Code res.State
+
     let logInHandler =
-        sysWrapOK (logIn <!> getLogInEnv <*> bindValidateJsonAsync validateData)
+        sysWrapRedirect getRedirectUrl (logIn <!> getLogInEnv <*> bindValidateJsonAsync validateData)
 
     open PRR.Domain.Auth.LogInToken
 

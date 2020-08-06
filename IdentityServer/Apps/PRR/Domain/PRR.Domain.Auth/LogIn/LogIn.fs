@@ -48,7 +48,8 @@ module Authorize =
                     let code = env.CodeGenerator()
 
                     let result: Result =
-                        { State = data.State
+                        { RedirectUri = data.Redirect_Uri
+                          State = data.State
                           Code = code }
 
                     let expiresAt = DateTime.UtcNow.AddMinutes(float env.CodeExpiresIn)
@@ -66,4 +67,28 @@ module Authorize =
                     return (result, evt)
                 | None ->
                     return! raise UnAuthorized'
+            }
+
+    let defaultClientLogIn: DefaultClientLogIn =
+        fun env data ->
+            task {
+                // TODO : User defaultDomainId
+                let! managmentAppClientId = query {
+                                                for app in env.DataContext.Applications do
+                                                    where (app.Domain.Tenant.User.Email = data.Email)
+                                                    select app.ClientId
+                                            }
+                                            |> LinqHelpers.toSingleExnAsync
+                                                (unAuthorized "Tenant's management API is not found")
+
+                return! logIn env
+                            { Client_Id = managmentAppClientId
+                              Response_Type = data.Response_Type
+                              State = data.State
+                              Redirect_Uri = data.Redirect_Uri
+                              Scopes = data.Scopes
+                              Email = data.Email
+                              Password = data.Password
+                              Code_Challenge = data.Code_Challenge
+                              Code_Challenge_Method = data.Code_Challenge_Method }
             }

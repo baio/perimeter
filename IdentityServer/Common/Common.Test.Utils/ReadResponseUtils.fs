@@ -13,12 +13,11 @@ module ReadResponseUtils =
         response.Content.ReadAsStringAsync()
 
     let readAsJsonAsync<'a> (response: HttpResponseMessage) =
-        task {
-
-            let! stream = response.Content.ReadAsStringAsync()
-            let json = JsonConvert.DeserializeObject<'a>(stream) (*
-                            JsonSerializer.DeserializeAsync<'a>
-                            (stream, Utf8Json.Resolvers.StandardResolver.CamelCase) //; JsonSerializer.DeserializeAsync<'a>(stream)
-            *)
+        task {            
+            let! str = response.Content.ReadAsStringAsync()
+            let json = JsonConvert.DeserializeObject<'a>(str)
             return json
         }
+
+    let readResponseHader (name: string) (response: HttpResponseMessage) =                    
+        response.Headers.GetValues(name) |> Seq.head
