@@ -23,7 +23,7 @@ module LogInValidation =
            response_type = "code"
            state = "state"
            redirect_uri = "http://localhost:4200"
-           scope = [| "open_id"; "profile"; "email" |]
+           scope = "open_id profile email" 
            email = signUpData.Email
            password = signUpData.Password
            code_challenge = "123"
@@ -56,7 +56,7 @@ module LogInValidation =
                 let! result = testFixture.HttpPostAsync userToken "/auth/login" {| logInData with client_id = "" |}
                 do ensureBadRequest result
 
-                let! result' = readAsJsonAsync<ErrorDTO<Map<string, string array>>> result
+                let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
 
                 let expected =
                     {| Message = "Some data is not valid"
@@ -72,7 +72,7 @@ module LogInValidation =
                 let! result = testFixture.HttpPostAsync userToken "/auth/login" {|  |}
                 do ensureBadRequest result
 
-                let! result' = readAsJsonAsync<ErrorDTO<Map<string, string array>>> result
+                let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
 
                 let expected =
                     [ ("client_id", [| "EMPTY_STRING" |])
@@ -82,7 +82,7 @@ module LogInValidation =
                       ("password", [| "EMPTY_STRING" |])
                       ("redirect_uri", [| "EMPTY_STRING" |])
                       ("response_type", [| "EMPTY_STRING" |])
-                      ("scope", [| "EMPTY_VALUE" |]) ]
+                      ("scope", [| "EMPTY_STRING" |]) ]
                     |> Map
 
                 result'.Data |> should equal expected
@@ -95,7 +95,7 @@ module LogInValidation =
                                   {| logInData with response_type = "not_code" |}
                 do ensureBadRequest result
 
-                let! result' = readAsJsonAsync<ErrorDTO<Map<string, string array>>> result
+                let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
 
                 let expected =
                     [ ("response_type", [| "NOT_CONTAINS_STRING:code" |]) ] |> Map
@@ -112,7 +112,7 @@ module LogInValidation =
                                   {| logInData with redirect_uri = "redirect_uri" |}
                 do ensureBadRequest result
 
-                let! result' = readAsJsonAsync<ErrorDTO<Map<string, string array>>> result
+                let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
 
                 let expected =
                     [ ("redirect_uri", [| "NOT_URL_STRING" |]) ] |> Map
@@ -125,10 +125,10 @@ module LogInValidation =
         [<Fact>]
         member __.``E scopes doesn't contain required scopes``() =
             task {
-                let! result = testFixture.HttpPostAsync userToken "/auth/login" {| logInData with scope = [||] |}
+                let! result = testFixture.HttpPostAsync userToken "/auth/login" {| logInData with scope = "openid" |}
                 do ensureBadRequest result
 
-                let! result' = readAsJsonAsync<ErrorDTO<Map<string, string array>>> result
+                let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
 
                 let expected =
                     [ ("scope", [| "NOT_CONTAINS_ALL_STRING:openid,profile" |]) ] |> Map
@@ -145,7 +145,7 @@ module LogInValidation =
                                   {| logInData with email = "not_email" |}
                 do ensureBadRequest result
 
-                let! result' = readAsJsonAsync<ErrorDTO<Map<string, string array>>> result
+                let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
 
                 let expected =
                     [ ("email", [| "NOT_EMAIL_STRING" |]) ] |> Map
@@ -162,7 +162,7 @@ module LogInValidation =
                                   {| logInData with code_challenge_method = "not_S256" |}
                 do ensureBadRequest result
 
-                let! result' = readAsJsonAsync<ErrorDTO<Map<string, string array>>> result
+                let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
 
                 let expected =
                     [ ("code_challenge_method", [| "NOT_CONTAINS_STRING:S256" |]) ] |> Map

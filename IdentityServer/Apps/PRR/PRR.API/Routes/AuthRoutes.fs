@@ -107,7 +107,7 @@ module private Handlers =
 
     let private bindLogInCodeQuery =
         ((fun (x: Data) -> x.Code) <!> bindJsonAsync<Data>)
-        >>= ((bindSysQuery (LogIn.GetCode >> Queries.LogIn)) >> noneFails (UnAuthorized None))
+        >>= ((bindSysQuery (LogIn.GetCode >> Queries.LogIn)) >> noneFails (unAuthorized "Code not found"))
 
     let logInTokenHandler =
         sysWrapOK (logInToken <!> getLogInTokenEnv <*> bindLogInCodeQuery <*> bindValidateJsonAsync validateData)

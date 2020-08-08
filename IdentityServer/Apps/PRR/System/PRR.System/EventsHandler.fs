@@ -69,6 +69,9 @@ module private EventsHandler =
         | QueryFailureEvent data ->
             printf "Query fails %O" data
             Seq.empty
+        | _ ->
+            printf "Event not handled %O" evt
+            Seq.empty
 
     let eventsHandler env (commandsRef: Lazy<IActorRef<Commands>>) (sys: Actor<_>) =
         let rec loop() =

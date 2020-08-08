@@ -3,16 +3,12 @@
 open Common.Domain.Models
 open Common.Domain.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open FSharpx
-open Microsoft.FSharp.Linq
-open Models
 open PRR.Data.DataContext
-open PRR.Data.Entities
-open System
-open System.Linq
 
 [<AutoOpen>]
 module internal UserHelpers =
+    
+    let private DEFAULT_CLIENT_ID = "__DEFAULT_CLIENT_ID__"
 
     let getUserId (dataContext: DbDataContext) (email, password) =
         query {
@@ -21,3 +17,17 @@ module internal UserHelpers =
                 select user.Id
         }
         |> toSingleOptionAsync
+
+
+    let getClientId (dataContext: DbDataContext) clientId email =
+        task {
+            if clientId = DEFAULT_CLIENT_ID then
+                return! query {
+                            for app in dataContext.Applications do
+                                where (app.Domain.Tenant.User.Email = email)
+                                select app.ClientId
+                        }
+                        |> LinqHelpers.toSingleExnAsync (unAuthorized "Tenant's management API is not found")
+            else
+                return clientId
+        }

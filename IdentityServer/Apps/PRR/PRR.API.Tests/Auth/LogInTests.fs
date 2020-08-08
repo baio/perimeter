@@ -45,6 +45,7 @@ module LogIn =
 
     let redirectUri = "http://localhost:4200"
 
+
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
     type ``login-api``(testFixture: TestFixture, output: ITestOutputHelper) =
         do setConsoleOutput output
@@ -63,19 +64,19 @@ module LogIn =
         [<Priority(1)>]
         member __.``A Login with wrong Client_Id should give error``() =
 
-            let clientId = "123" 
+            let clientId = "123"
 
             let logInData: PRR.Domain.Auth.LogIn.Models.Data =
                 { Client_Id = clientId
                   Response_Type = "code"
                   State = "state"
                   Redirect_Uri = redirectUri
-                  Scope = [| "open_id"; "profile"; "email" |]
+                  Scope = "open_id profile email"
                   Email = signUpData.Email
                   Password = signUpData.Password
                   Code_Challenge = codeChellenge
                   Code_Challenge_Method = "S256" }
-            
+
             task {
                 let! result = logIn' testFixture logInData
                 do ensureUnauthorized result }
@@ -91,15 +92,15 @@ module LogIn =
                   Response_Type = "code"
                   State = "state"
                   Redirect_Uri = redirectUri
-                  Scope = [| "open_id"; "profile"; "email" |]
+                  Scope = "open_id profile email"
                   Email = signUpData.Email
                   Password = signUpData.Password
                   Code_Challenge = codeChellenge
                   Code_Challenge_Method = "S256" }
-                
+
 
             task {
-                let! authCode = logIn testFixture logInData                
+                let! authCode = logIn testFixture logInData
 
                 let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
                     { Grant_Type = "code"
@@ -107,9 +108,10 @@ module LogIn =
                       Redirect_Uri = logInData.Redirect_Uri
                       Client_Id = clientId
                       Code_Verifier = sprintf "%s1" codeVerfier }
-                
+
                 let! result = testFixture.HttpPostAsync' "/auth/token" loginTokenData
-                do ensureUnauthorized result }
+                do ensureUnauthorized result
+            }
 
 
         [<Fact>]
@@ -123,7 +125,7 @@ module LogIn =
                   Response_Type = "code"
                   State = "state"
                   Redirect_Uri = redirectUri
-                  Scope = [| "open_id"; "profile"; "email" |]
+                  Scope = "open_id profile email"
                   Email = signUpData.Email
                   Password = signUpData.Password
                   Code_Challenge = codeChellenge

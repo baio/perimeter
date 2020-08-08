@@ -104,7 +104,6 @@ module LinqHelpers =
     let saveChangesAsync (dbContext: DbContext) = dbContext.SaveChangesAsync() |> ignoreTask
 
     let addRemoveRange (dbContext: DbContext) (a: 'a seq, (r: 'a seq)) =
-        sprintf "555 %A %A" a r
         a |> addRange dbContext
         r |> removeRange dbContext
         ()

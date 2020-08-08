@@ -1,15 +1,10 @@
 ﻿namespace PRR.Domain.Auth.LogInToken
 
 open Common.Domain.Models
-open Common.Utils
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Models
-open PRR.Data.DataContext
-open PRR.Domain.Auth.SignIn.Models
 open PRR.Domain.Auth.LogInToken
-open System.Security.Claims
-open System.Threading.Tasks
 
 [<AutoOpen>]
 module internal SignInUser =
@@ -36,10 +31,11 @@ module internal SignInUser =
 
     let signInUser env (tokenData: TokenData) clientId =
         task {
+            let! clientId = PRR.Domain.Auth.LogIn.UserHelpers.getClientId env.DataContext clientId tokenData.Email
             match! getClientDomainAudiences env.DataContext clientId with
             | Some { DomainId = domainId; Audiences = audiences } ->
                 let! userRolePemissions = getUserDomainRolesPermissions env.DataContext (domainId, tokenData.Email)
                 return signInUser' env audiences tokenData userRolePemissions
             | None ->
-                return! raise (UnAuthorized None)
+                return raise (unAuthorized "Client is not found")
         }

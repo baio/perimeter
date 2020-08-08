@@ -9,18 +9,19 @@ open PRR.System.Models
 open System
 
 [<AutoOpen>]
-module Authorize =
-
-    let private DEFAULT_CLIENT_ID = "__DEFAULT_CLIENT_ID__"
+module Authorize =    
 
     let validateData (data: Data): BadRequestError array =
+        let scope =
+            if data.Scope = null then ""
+            else data.Scope
         [| (validateNullOrEmpty "client_id" data.Client_Id)
            (validateNullOrEmpty "response_type" data.Response_Type)
            (validateContains [| "code" |] "response_type" data.Response_Type)
            (validateNullOrEmpty "redirect_uri" data.Redirect_Uri)
            (validateUrl "redirect_uri" data.Redirect_Uri)
-           (validateNull "scope" data.Scope)
-           (validateContainsAll [| "openid"; "profile" |] "scope" data.Scope)
+           (validateNullOrEmpty "scope" scope)
+           (validateContainsAll [| "openid"; "profile" |] "scope" (scope.Split " "))
            (validateNullOrEmpty "email" data.Email)
            (validateEmail "email" data.Email)
            (validateNullOrEmpty "password" data.Password)
@@ -28,19 +29,6 @@ module Authorize =
            (validateNullOrEmpty "code_challenge_method" data.Code_Challenge_Method)
            (validateContains [| "S256" |] "code_challenge_method" data.Code_Challenge_Method) |]
         |> Array.choose id
-
-    let private getClientId (dataContext: DbDataContext) clientId email =
-        task {
-            if clientId = DEFAULT_CLIENT_ID then
-                return! query {
-                            for app in dataContext.Applications do
-                                where (app.Domain.Tenant.User.Email = email)
-                                select app.ClientId
-                        }
-                        |> LinqHelpers.toSingleExnAsync (unAuthorized "Tenant's management API is not found")
-            else
-                return clientId
-        }
 
     let logIn: LogIn =
         fun env data ->
@@ -76,7 +64,7 @@ module Authorize =
                         ({ Code = code
                            ClientId = data.Client_Id
                            CodeChallenge = data.Code_Challenge
-                           Scopes = data.Scope
+                           Scopes = (data.Scope.Split " ")
                            UserId = userId
                            ExpiresAt = expiresAt
                            RedirectUri = data.Redirect_Uri }: LogIn.Item)
@@ -84,5 +72,5 @@ module Authorize =
 
                     return (result, evt)
                 | None ->
-                    return! raise UnAuthorized'
+                    return! raise (unAuthorized "Wrong email or password")
             }
