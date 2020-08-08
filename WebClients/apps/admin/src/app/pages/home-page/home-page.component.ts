@@ -14,7 +14,7 @@ export class HomePageComponent implements OnInit {
 
     async onLogin() {
         const loginUrl = await this.authService.createLoginUrl();
-        if (!window['Cypress']) {
+        if (true) {
             window.location.href = loginUrl;
         } else {
             console.warn('cypress env dont redirect');
