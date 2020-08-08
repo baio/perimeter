@@ -5,6 +5,17 @@
 export const environment = {
     production: false,
     baseUrl: 'https://localhost:5001',
+    auth: {
+        baseUrl: 'http://localhost:4201/auth',
+        loginPath: 'login',
+        tokenPath: 'token',
+        logoutPath: 'logout',
+        returnUri: 'http://localhost:4200/cb',
+        clientId: '__DEFAULT_CLIENT_ID__',
+        scope: 'open_id profile',
+        stateStringLength: 64,
+        pkceRandomStringLength: 10,
+    },
 };
 
 /*

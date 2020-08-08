@@ -57,4 +57,4 @@ import { ForgotPasswordResetPageComponent } from './forgot-password-reset-page/f
         ForgotPasswordResetPageComponent,
     ],
 })
-export class AuthPagesModule {}
+export class IPPagesModule {}

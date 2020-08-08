@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router'; // CLI imports router
 import {
-    AuthPagesModule,
+    IPPagesModule,
     LoginPageComponent,
     SignupPageComponent,
     SignupConfirmSentPageComponent,
@@ -43,7 +43,7 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forRoot(routes, { enableTracing: false }),
-        AuthPagesModule,
+        IPPagesModule,
     ],
     exports: [RouterModule],
 })
