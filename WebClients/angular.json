@@ -67,13 +67,14 @@
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
                         "browserTarget": "admin:build",
-                        "proxyConfig": "apps/admin/proxy.conf.json"
+                        "proxyConfig": "apps/admin/proxy.conf.json",
+                        "port": 4201
                     },
                     "configurations": {
                         "production": {
                             "browserTarget": "admin:build:production"
                         }
-                    }
+                    }                    
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",

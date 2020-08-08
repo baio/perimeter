@@ -96,6 +96,7 @@ export class SignupPageComponent implements OnInit {
                     err.error
                 );
             } else {
+                console.log('???', err);
                 this.errorMessage = err.message;
             }
         } finally {

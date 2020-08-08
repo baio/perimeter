@@ -1,7 +1,7 @@
 export const getRandomString = (l: number) => {
     const arr = new Uint32Array(l);
     window.crypto.getRandomValues(arr);
-    return Array.from(arr, (dec) => '0' + dec.toString(16).substr(-2)).join();
+    return Array.from(arr, (dec) => '0' + dec.toString(16).substr(-2)).join('');
 };
 
 export const getSHA256 = (plain: string) => {

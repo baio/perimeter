@@ -6,6 +6,3 @@ export * from './lib/pages/signup-confirm-sent-page/signup-confirm-sent-page.com
 export * from './lib/pages/signup-confirm-page/signup-confirm-page.component';
 export * from './lib/pages/forgot-password-sent-page/forgot-password-sent-page.component';
 export * from './lib/pages/forgot-password-reset-page/forgot-password-reset-page.component';
-export * from './lib/auth-service/auth.service';
-export * from './lib/auth-service/auth.module';
-export * from './lib/auth-service/models';

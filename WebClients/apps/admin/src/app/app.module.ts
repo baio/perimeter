@@ -6,7 +6,10 @@ import * as AllIcons from '@ant-design/icons-angular/icons';
 import { NZ_ICONS } from 'ng-zorro-antd/icon';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { HttpBaseUrlInterceptorModule } from '@perimeter/common';
+import {
+    HttpBaseUrlInterceptorModule,
+    HttpErrorMessageInterceptorModule,
+} from '@perimeter/common';
 import { environment } from '../environments/environment';
 import { AuthModule } from '@perimeter/ngx-auth';
 
@@ -24,6 +27,7 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(
         HttpClientModule,
         AppRoutingModule,
         AuthModule.forRoot(environment.baseUrl, environment.auth),
+        HttpErrorMessageInterceptorModule,
         HttpBaseUrlInterceptorModule.forRoot({ baseUrl: environment.baseUrl }),
     ],
     providers: [{ provide: NZ_ICONS, useValue: icons }],

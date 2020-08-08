@@ -1,4 +1,9 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+} from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { FormValidators } from '@perimeter/common';
@@ -20,7 +25,8 @@ export class LoginPageComponent implements OnInit {
     constructor(
         fb: FormBuilder,
         private readonly dataAccess: AuthDataAccessService,
-        private readonly activatedRoute: ActivatedRoute
+        private readonly activatedRoute: ActivatedRoute,
+        private readonly cdr: ChangeDetectorRef
     ) {
         this.form = fb.group({
             email: [null, [FormValidators.empty, Validators.email]],
@@ -78,12 +84,13 @@ export class LoginPageComponent implements OnInit {
 
     async submitForm() {
         try {
-            this.dataAccess
+            await this.dataAccess
                 .login(this.loginParams, this.form.value)
                 .toPromise();
         } catch (_err) {
             const err = _err as HttpErrorResponse;
             this.errorMessage = err.message;
+            this.cdr.markForCheck();
         }
     }
 }

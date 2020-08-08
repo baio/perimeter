@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { LoginResult, LoginResultErrorType, TokensResult } from './models';
 import { base64arrayEncode, getRandomString, getSHA256 } from './utils';
@@ -13,7 +13,7 @@ import {
 export interface IAuthConfig {
     baseUrl: string;
     loginPath: string;
-    tokenPath: string;
+    tokenUrl: string;
     logoutPath: string;
     returnUri: string;
     clientId: string;
@@ -37,9 +37,9 @@ export class AuthService {
         const codeVerifier = getRandomString(
             this.config.pkceRandomStringLength
         );
-        const sha256 = await getSHA256(codeVerifier);
-        const codeChallenge = base64arrayEncode(sha256);
-        const state = btoa(getRandomString(this.config.stateStringLength));
+        const hashed = await getSHA256(codeVerifier);
+        const codeChallenge = base64arrayEncode(hashed);
+        const state = getRandomString(this.config.stateStringLength);
 
         sessionStorage.setItem(AUTH_CODE_VERIFIER, codeVerifier);
         sessionStorage.setItem(AUTH_STATE, state);
@@ -72,12 +72,9 @@ export class AuthService {
             client_id: this.config.clientId,
             code_verifier: sessionCodeVerifier,
         };
-        try {            
+        try {
             const result = await this.http
-                .post<TokensResult>(
-                    `${this.config.baseUrl}/${this.config.tokenPath}`,
-                    payload
-                )
+                .post<TokensResult>(`${this.config.tokenUrl}`, payload)
                 .toPromise();
             sessionStorage.setItem(ID_TOKEN, result.id_token);
             sessionStorage.setItem(ACCESS_TOKEN, result.access_token);
