@@ -1,5 +1,7 @@
 ﻿namespace PRR.API.Infra
 
+open System
+
 //https://stackoverflow.com/questions/38043954/generate-unique-hash-code-based-on-string
 
 [<AutoOpen>]
@@ -7,14 +9,17 @@ module HashProvider =
 
     open System.Security.Cryptography
     open System.Text
-
+    
     let getSha256Hash (shaHash: SHA256) (input: string) =
-        // Convert the input string to a byte array and compute the hash.
-        let data =
-            input
-            |> Encoding.UTF8.GetBytes
-            |> shaHash.ComputeHash
+        input
+        |> Encoding.UTF8.GetBytes
+        |> shaHash.ComputeHash 
+        
 
+    let getSha256HexHash (shaHash: SHA256) (input: string) =
+        // Convert the input string to a byte array and compute the hash.
+        let data = getSha256Hash shaHash input
+        
         // Create a new Stringbuilder to collect the bytes
         // and create a string.
         let sBuilder = StringBuilder()
@@ -27,11 +32,12 @@ module HashProvider =
             |> ignore
 
         // Return the hexadecimal string.
-        sBuilder.ToString()
+        
+        sBuilder.ToString() 
 
     let getGuidSha256Hash (shaHash: SHA256) () =
         let input = System.Guid.NewGuid().ToString()
-        getSha256Hash shaHash input
+        getSha256HexHash shaHash input
 
     type HashProvider(hash256: SHA256) =
         interface IHashProvider with

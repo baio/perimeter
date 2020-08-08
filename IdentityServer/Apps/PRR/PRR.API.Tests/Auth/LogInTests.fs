@@ -37,14 +37,13 @@ module LogIn =
     let codeVerfier = randomString 128
 
     let sha256 = SHA256.Create()
-    let codeChellenge = HashProvider.getSha256Hash sha256 codeVerfier
+    let codeChellenge = SHA256Provider.getSha256Base64Hash sha256 codeVerfier
 
     let mutable testContext: UserTestContext option = None
 
     let mutable permissionId: int option = None
 
     let redirectUri = "http://localhost:4200"
-
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
     type ``login-api``(testFixture: TestFixture, output: ITestOutputHelper) =

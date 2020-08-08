@@ -1,7 +1,7 @@
 export interface TokensResult {
-    access_token: string;
-    id_token: string;
-    refresh_token: string;
+    accessToken: string;
+    idToken: string;
+    refreshToken: string;
 }
 
 export interface LoginResultOk {

@@ -14,7 +14,7 @@ export const environment = {
         clientId: '__DEFAULT_CLIENT_ID__',
         scope: 'open_id profile',
         stateStringLength: 64,
-        pkceRandomStringLength: 10,
+        pkceCodeVerifierLength: 128,
     },
 };
 

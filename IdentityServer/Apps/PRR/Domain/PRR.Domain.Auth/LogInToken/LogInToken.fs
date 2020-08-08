@@ -9,9 +9,20 @@ open Models
 open PRR.System.Models
 open System
 open System.Security.Cryptography
+open System.Text.Encodings.Web
+open System.Text.RegularExpressions
 
 [<AutoOpen>]
 module SignIn =
+
+    let private replace (pat: string) (rep: string) (str: string) =
+        Regex.Replace(str, pat, rep)
+
+    // TODO !!!
+    let private cleanup =
+        replace "\+" "-"
+        >> replace "\/" "_"
+        >> replace "=+$" ""
 
     let validateData (data: Data): BadRequestError array =
         [| (validateNullOrEmpty "client_id" data.Client_Id)
@@ -29,8 +40,19 @@ module SignIn =
             if (item.ExpiresAt < DateTime.UtcNow) then raise (unAuthorized "code expires")
             if data.Client_Id <> item.ClientId then raise (unAuthorized "client_id mismatch")
             if data.Redirect_Uri <> item.RedirectUri then raise (unAuthorized "redirect_uri mismatch")
-            let codeChallenge = env.Sha256Provider data.Code_Verifier
-            if codeChallenge <> item.CodeChallenge then raise (unAuthorized "code_verifier code_challenge mismatch")
+            let codeChallenge =
+                env.Sha256Provider(data.Code_Verifier)
+            // TODO : Tests !
+            let itemCodeChallenge =
+                item.CodeChallenge |> replace " " "+"
+
+            printfn "****"
+            printfn "Code_Verifier %s" data.Code_Verifier
+            printfn "1 codeChallenge %s" codeChallenge
+            printfn "2 codeChallenge %s" itemCodeChallenge
+            printfn "****"
+
+            if codeChallenge <> itemCodeChallenge then raise (unAuthorized "code_verifier code_challenge mismatch")
             task {
                 match! getUserDataForToken dataContext item.UserId with
                 | Some tokenData ->

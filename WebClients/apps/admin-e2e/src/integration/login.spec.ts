@@ -34,9 +34,9 @@ describe('login flow', () => {
         cy.url().should('not.include', '/auth/login');
 
         cy.window().then((win) => {
-            expect(win.sessionStorage.getItem('id_token')).not.equal(null);
-            expect(win.sessionStorage.getItem('access_token')).not.equal(null);
-            expect(win.localStorage.getItem('refresh_token')).not.equal(null);
+            assert.isTrue(!!win.sessionStorage.getItem('id_token'));
+            assert.isTrue(!!win.sessionStorage.getItem('access_token'));
+            assert.isTrue(!!win.localStorage.getItem('refresh_token'));
         });
     });
 });

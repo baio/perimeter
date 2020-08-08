@@ -19,7 +19,7 @@ export interface IAuthConfig {
     clientId: string;
     scope: string;
     stateStringLength: number;
-    pkceRandomStringLength: number;
+    pkceCodeVerifierLength: number;
 }
 
 export const PERIMETER_AUTH_CONFIG = new InjectionToken(
@@ -35,14 +35,18 @@ export class AuthService {
 
     async createLoginUrl() {
         const codeVerifier = getRandomString(
-            this.config.pkceRandomStringLength
+            this.config.pkceCodeVerifierLength
         );
+
         const hashed = await getSHA256(codeVerifier);
         const codeChallenge = base64arrayEncode(hashed);
         const state = getRandomString(this.config.stateStringLength);
 
         sessionStorage.setItem(AUTH_CODE_VERIFIER, codeVerifier);
         sessionStorage.setItem(AUTH_STATE, state);
+
+        console.log('codeVerifier', codeVerifier);
+        console.log('codeChallenge', codeChallenge);
 
         return `${this.config.baseUrl}/${this.config.loginPath}?client_id=${
             this.config.clientId
@@ -76,9 +80,9 @@ export class AuthService {
             const result = await this.http
                 .post<TokensResult>(`${this.config.tokenUrl}`, payload)
                 .toPromise();
-            sessionStorage.setItem(ID_TOKEN, result.id_token);
-            sessionStorage.setItem(ACCESS_TOKEN, result.access_token);
-            localStorage.setItem(REFRESH_TOKEN, result.refresh_token);
+            sessionStorage.setItem(ID_TOKEN, result.idToken);
+            sessionStorage.setItem(ACCESS_TOKEN, result.accessToken);
+            localStorage.setItem(REFRESH_TOKEN, result.refreshToken);
         } finally {
             sessionStorage.removeItem(AUTH_CODE_VERIFIER);
             sessionStorage.removeItem(AUTH_STATE);

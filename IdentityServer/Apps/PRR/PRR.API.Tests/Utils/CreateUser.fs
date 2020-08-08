@@ -16,17 +16,18 @@ module CreateUser =
 
     let logIn' (testFixture: TestFixture) (data: PRR.Domain.Auth.LogIn.Models.Data) =
         testFixture.HttpPostAsync' "/auth/login" data
-    
+
     let logIn (testFixture: TestFixture) (data: PRR.Domain.Auth.LogIn.Models.Data) =
         task {
             let! result = logIn' testFixture data
-            let result = readResponseHader "Location" result            
+            let result = readResponseHader "Location" result
             let uri = Uri(result)
             return HttpUtility.ParseQueryString(uri.Query).Get("code")
         }
-               
+
     let sha256 = SHA256.Create()
     let random = Random()
+
 
 
     [<CLIMutable>]
@@ -46,7 +47,7 @@ module CreateUser =
 
         let codeVerfier = randomString 128
 
-        (codeVerfier, (HashProvider.getSha256Hash sha256 codeVerfier))
+        (codeVerfier, (SHA256Provider.getSha256Base64Hash sha256 codeVerfier))
 
 
     let createUser' signInUnderSampleDomain (env: UserTestContext) (userData: SignUp.Models.Data) =
@@ -81,7 +82,7 @@ module CreateUser =
                   Code_Challenge = codeChallenge
                   Code_Challenge_Method = "S256" }
 
-            let! code = logIn env.TestFixture logInData 
+            let! code = logIn env.TestFixture logInData
 
             let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
                 { Grant_Type = "code"
