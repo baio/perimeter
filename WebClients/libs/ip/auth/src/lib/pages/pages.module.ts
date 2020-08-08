@@ -14,7 +14,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AdminDataAccessModule } from '@admin/data-access';
+import { AuthDataAccessModule } from '@ip/data-access';
 import { SignupConfirmSentPageComponent } from './signup-confirm-sent-page/signup-confirm-sent-page.component';
 import { SignupConfirmPageComponent } from './signup-confirm-page/signup-confirm-page.component';
 import { ForgotPasswordSentPageComponent } from './forgot-password-sent-page/forgot-password-sent-page.component';
@@ -34,7 +34,7 @@ import { ForgotPasswordResetPageComponent } from './forgot-password-reset-page/f
         NzSelectModule,
         NzModalModule,
         NzAlertModule,
-        AdminDataAccessModule,
+        AuthDataAccessModule,
     ],
     declarations: [
         LoginPageComponent,
@@ -57,4 +57,4 @@ import { ForgotPasswordResetPageComponent } from './forgot-password-reset-page/f
         ForgotPasswordResetPageComponent,
     ],
 })
-export class AdminAuthPagesModule {}
+export class AuthPagesModule {}

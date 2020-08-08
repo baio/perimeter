@@ -7,4 +7,4 @@ import { AuthDataAccessService } from './auth.data-access.service';
     imports: [CommonModule, HttpClientModule],
     providers: [AuthDataAccessService],
 })
-export class AdminDataAccessModule {}
+export class AuthDataAccessModule {}

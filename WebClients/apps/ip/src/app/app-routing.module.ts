@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router'; // CLI imports router
 import {
+    AuthPagesModule,
     LoginPageComponent,
     SignupPageComponent,
     SignupConfirmSentPageComponent,
@@ -40,7 +41,10 @@ const routes: Routes = [
 
 // configures NgModule imports and exports
 @NgModule({
-    imports: [RouterModule.forRoot(routes, { enableTracing: true })],
+    imports: [
+        RouterModule.forRoot(routes, { enableTracing: true }),
+        AuthPagesModule,
+    ],
     exports: [RouterModule],
 })
 export class AppRoutingModule {}

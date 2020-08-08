@@ -1,4 +1,3 @@
-import { AdminAuthPagesModule } from '@admin/auth';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -7,7 +6,7 @@ import * as AllIcons from '@ant-design/icons-angular/icons';
 import { NZ_ICONS } from 'ng-zorro-antd/icon';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { HttpBaseUrlInterceptorModule } from '@admin/common';
+import { HttpBaseUrlInterceptorModule } from '@perimeter/common';
 import { environment } from '../environments/environment';
 
 const antDesignIcons = AllIcons as {
@@ -22,7 +21,6 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(
     imports: [
         BrowserModule,
         HttpClientModule,
-        AdminAuthPagesModule,
         AppRoutingModule,
         HttpBaseUrlInterceptorModule.forRoot({ baseUrl: environment.baseUrl }),
     ],

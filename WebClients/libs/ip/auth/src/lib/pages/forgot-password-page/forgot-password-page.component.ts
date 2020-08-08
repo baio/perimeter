@@ -5,8 +5,8 @@ import {
     ChangeDetectorRef,
 } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { FormValidators } from '@admin/common';
-import { AuthDataAccessService } from '@admin/data-access';
+import { FormValidators } from '@perimeter/common';
+import { AuthDataAccessService } from '@ip/data-access';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 

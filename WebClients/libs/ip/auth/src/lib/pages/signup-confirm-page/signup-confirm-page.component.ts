@@ -6,7 +6,7 @@ import {
     AfterViewInit,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthDataAccessService } from '@admin/data-access';
+import { AuthDataAccessService } from '@ip/data-access';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({

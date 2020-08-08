@@ -32,18 +32,6 @@
     "api": {
       "tags": []
     },
-    "api-interfaces": {
-      "tags": []
-    },
-    "admin-auth": {
-      "tags": []
-    },
-    "admin-data-access": {
-      "tags": []
-    },
-    "admin-common": {
-      "tags": []
-    },
     "perimeter-ng-auth": {
       "tags": []
     },
