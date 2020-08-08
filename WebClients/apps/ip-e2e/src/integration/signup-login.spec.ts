@@ -6,10 +6,10 @@ describe('signup login page', () => {
         )
     );
     */
-    it.skip('when user open loign page without required query params display error', () => {
-        cy.visit(
-            '/auth/login'
-        )
-        cy.url().should('include', '/auth/forgot-password');
+    it('when user open loign page without required query params display error', () => {
+        cy.visit('/auth/login');
+        cy.url().should('include', '/auth/login');
+
+        cy.dataCy('error-message').should('be.visible');
     });
 });

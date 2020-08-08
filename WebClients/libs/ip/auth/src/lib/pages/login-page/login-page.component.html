@@ -1,4 +1,14 @@
 <nz-alert
+    *ngIf="errorMessage"
+    data-cy="error-message"
+    nz-row
+    nzType="error"
+    nzCloseable
+    [nzMessage]="errorMessage"
+>
+</nz-alert>
+
+<nz-alert
     *ngIf="queryEvent === 'sign-up-confirm-success'"
     data-cy="sign-up-confirm-success"
     nz-row

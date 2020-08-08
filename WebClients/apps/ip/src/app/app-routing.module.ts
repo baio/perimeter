@@ -42,7 +42,7 @@ const routes: Routes = [
 // configures NgModule imports and exports
 @NgModule({
     imports: [
-        RouterModule.forRoot(routes, { enableTracing: true }),
+        RouterModule.forRoot(routes, { enableTracing: false }),
         AuthPagesModule,
     ],
     exports: [RouterModule],
