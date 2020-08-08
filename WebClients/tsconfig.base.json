@@ -20,10 +20,9 @@
       "@admin/data-access": ["libs/admin/data-access/src/index.ts"],
       "@admin/common": ["libs/admin/common/src/index.ts"],
       "@perimeter/ngx-auth": ["libs/perimeter/ng-auth/src/index.ts"],
-      "@data-avail/ip/auth": ["libs/ip/auth/src/index.ts"],
-      "@data-avail/ip/data-access": ["libs/ip/data-access/src/index.ts"],
-      "@data-avail/common": ["libs/common/src/index.ts"],
-      "@data-avail/perimeter/common": ["libs/perimeter/common/src/index.ts"]
+      "@ip/auth": ["libs/ip/auth/src/index.ts"],
+      "@ip/data-access": ["libs/ip/data-access/src/index.ts"],
+      "@perimeter/common": ["libs/perimeter/common/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

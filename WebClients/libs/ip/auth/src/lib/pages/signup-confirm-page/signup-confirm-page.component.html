@@ -1,0 +1,12 @@
+<p *ngIf="!errorMessage">Validating...</p>
+
+<nz-alert
+    data-cy="signup-confirm-error"
+    nz-row
+    *ngIf="errorMessage"
+    nzType="error"
+    nzCloseable
+    nzMessage="Error"
+    [nzDescription]="errorMessage"
+>
+</nz-alert>
