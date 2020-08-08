@@ -46,6 +46,22 @@
     },
     "perimeter-ng-auth": {
       "tags": []
+    },
+    "ip": {
+      "tags": []
+    },
+    "ip-e2e": {
+      "tags": [],
+      "implicitDependencies": ["ip"]
+    },
+    "ip-auth": {
+      "tags": []
+    },
+    "ip-data-access": {
+      "tags": []
+    },
+    "perimeter-common": {
+      "tags": []
     }
   }
 }
