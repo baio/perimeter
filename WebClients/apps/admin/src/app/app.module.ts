@@ -23,7 +23,7 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(
         BrowserModule,
         HttpClientModule,
         AppRoutingModule,
-        AuthModule.forRoot(environment.auth),
+        AuthModule.forRoot(environment.baseUrl, environment.auth),
         HttpBaseUrlInterceptorModule.forRoot({ baseUrl: environment.baseUrl }),
     ],
     providers: [{ provide: NZ_ICONS, useValue: icons }],

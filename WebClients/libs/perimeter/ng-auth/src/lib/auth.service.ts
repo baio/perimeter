@@ -1,9 +1,14 @@
-import { Injectable, InjectionToken, Inject } from '@angular/core';
-import { getRandomString, getSHA256, base64arrayEncode } from './utils';
 import { HttpClient } from '@angular/common/http';
-import { throwError } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { AuthResult } from './models';
+import { Inject, Injectable, InjectionToken } from '@angular/core';
+import { LoginResult, LoginResultErrorType, TokensResult } from './models';
+import { base64arrayEncode, getRandomString, getSHA256 } from './utils';
+import {
+    AUTH_CODE_VERIFIER,
+    AUTH_STATE,
+    ID_TOKEN,
+    ACCESS_TOKEN,
+    REFRESH_TOKEN,
+} from './constants';
 
 export interface IAuthConfig {
     baseUrl: string;
@@ -36,8 +41,8 @@ export class AuthService {
         const codeChallenge = base64arrayEncode(sha256);
         const state = btoa(getRandomString(this.config.stateStringLength));
 
-        sessionStorage.setItem('auth_code_verifier', codeVerifier);
-        sessionStorage.setItem('auth_state', state);
+        sessionStorage.setItem(AUTH_CODE_VERIFIER, codeVerifier);
+        sessionStorage.setItem(AUTH_STATE, state);
 
         return `${this.config.baseUrl}/${this.config.loginPath}?client_id=${
             this.config.clientId
@@ -49,10 +54,8 @@ export class AuthService {
     }
 
     async token(code: string, state: string) {
-        const sessionCodeVerifier = sessionStorage.getItem(
-            'auth_code_verifier'
-        );
-        const sessionState = sessionStorage.getItem('auth_state');
+        const sessionCodeVerifier = sessionStorage.getItem(AUTH_CODE_VERIFIER);
+        const sessionState = sessionStorage.getItem(AUTH_STATE);
         if (!sessionStorage) {
             throw new Error('Session code_verifier not found');
         }
@@ -69,19 +72,41 @@ export class AuthService {
             client_id: this.config.clientId,
             code_verifier: sessionCodeVerifier,
         };
-        try {
+        try {            
             const result = await this.http
-                .post<AuthResult>(
+                .post<TokensResult>(
                     `${this.config.baseUrl}/${this.config.tokenPath}`,
                     payload
                 )
                 .toPromise();
-            sessionStorage.setItem('id_token', result.id_token);
-            sessionStorage.setItem('access_token', result.access_token);
-            localStorage.setItem('refresh_token', result.refresh_token);
+            sessionStorage.setItem(ID_TOKEN, result.id_token);
+            sessionStorage.setItem(ACCESS_TOKEN, result.access_token);
+            localStorage.setItem(REFRESH_TOKEN, result.refresh_token);
         } finally {
-            sessionStorage.removeItem('auth_code_verifier');
-            sessionStorage.removeItem('auth_state');
+            sessionStorage.removeItem(AUTH_CODE_VERIFIER);
+            sessionStorage.removeItem(AUTH_STATE);
+        }
+    }
+
+    parseLoginRedirect(prms: { [key: string]: string }): LoginResult {
+        if (prms['error']) {
+            return {
+                kind: 'error',
+                error: prms['error'] as LoginResultErrorType,
+                description: prms['error_description'],
+                uri: prms['error_uri'],
+            };
+        } else if (prms['code']) {
+            return {
+                kind: 'ok',
+                code: prms['code'],
+                state: prms['state'],
+            };
+        } else {
+            return {
+                kind: 'error',
+                error: 'code_not_found',
+            };
         }
     }
 }

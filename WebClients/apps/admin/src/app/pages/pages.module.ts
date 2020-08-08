@@ -12,6 +12,7 @@ import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HomePageComponent } from './home-page/home-page.component';
 import { BrowserModule } from '@angular/platform-browser';
+import { LoginCbPageComponent } from './login-cb-page/login-cb-page.component';
 
 @NgModule({
     imports: [
@@ -26,12 +27,9 @@ import { BrowserModule } from '@angular/platform-browser';
         NzCheckboxModule,
         NzSelectModule,
         NzModalModule,
-        NzAlertModule
+        NzAlertModule,
     ],
-    declarations: [
-        HomePageComponent
-    ],
-    exports: [
-    ],
+    declarations: [HomePageComponent, LoginCbPageComponent],
+    exports: [],
 })
 export class AdminPagesModule {}

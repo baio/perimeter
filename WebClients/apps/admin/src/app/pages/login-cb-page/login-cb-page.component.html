@@ -1,0 +1,10 @@
+<h2 *ngIf="!errorMessage">Processing...</h2>
+
+<nz-alert
+    *ngIf="errorMessage"
+    data-cy="error-message"
+    nz-row
+    nzType="error"
+    [nzMessage]="errorMessage"
+>
+</nz-alert>
