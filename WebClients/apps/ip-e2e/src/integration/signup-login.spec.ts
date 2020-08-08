@@ -12,4 +12,12 @@ describe('signup login page', () => {
 
         cy.dataCy('error-message').should('be.visible');
     });
+
+    it('loign success', () => {
+        cy.visit(
+            '/auth/login?client_id=__DEFAULT_CLIENT_ID__&response_type=code&state=123&redirect_uri=http%3A%2F%2Flocalhost%3A4200&scope=client_id+profile&code_challenge=f3965ea75b28a63717ad1fddef81578e3fa451d3955dfd1489911d74552ed7&code_challenge_method=S256'
+        );
+
+        cy.dataCy('error-message').should('not.exist');
+    });
 });

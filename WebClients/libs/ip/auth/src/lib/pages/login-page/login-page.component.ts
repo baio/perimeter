@@ -30,17 +30,20 @@ export class LoginPageComponent implements OnInit {
 
     ngOnInit(): void {
         const urlParams = this.activatedRoute.snapshot.params;
+        const urlQueryParams = this.activatedRoute.snapshot.queryParams;
 
         this.queryEvent = urlParams['event'];
 
         const parsedParams: LoginParams = {
-            client_id: urlParams['client_id'],
-            response_type: urlParams['response_type'] as any,
-            state: urlParams['state'],
-            redirect_uri: urlParams['redirect_uri'],
-            scope: urlParams['scope'],
-            code_challenge: urlParams['code_challenge'],
-            code_challenge_method: urlParams['code_challenge_method'] as any,
+            client_id: urlQueryParams['client_id'],
+            response_type: urlQueryParams['response_type'] as any,
+            state: urlQueryParams['state'],
+            redirect_uri: urlQueryParams['redirect_uri'],
+            scope: urlQueryParams['scope'],
+            code_challenge: urlQueryParams['code_challenge'],
+            code_challenge_method: urlQueryParams[
+                'code_challenge_method'
+            ] as any,
         };
 
         const errors = [];
