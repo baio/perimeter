@@ -29,42 +29,73 @@
 
 <form nz-form [formGroup]="form" class="login-form" (ngSubmit)="submitForm()">
     <nz-form-item>
-        <nz-form-control nzErrorTip="Please input your username!">
+        <nz-form-control [nzErrorTip]="emailErrorTpl">
             <nz-input-group nzPrefixIcon="user">
                 <input
+                    data-cy="email"
                     type="text"
                     nz-input
                     formControlName="email"
                     placeholder="Email"
                 />
+                <ng-template #emailErrorTpl let-control>
+                    <span
+                        data-cy="email-required-error"
+                        *ngIf="control.hasError('empty')"
+                    >
+                        E-mail is required!
+                    </span>
+                    <span
+                        data-cy="email-invalid-error"
+                        *ngIf="control.hasError('email')"
+                    >
+                        The input is not valid E-mail!
+                    </span>
+                </ng-template>
             </nz-input-group>
         </nz-form-control>
     </nz-form-item>
     <nz-form-item>
-        <nz-form-control nzErrorTip="Please input your Password!">
+        <nz-form-control [nzErrorTip]="passwordErrorTpl">
             <nz-input-group nzPrefixIcon="lock">
                 <input
+                    data-cy="password"
                     type="password"
                     nz-input
                     formControlName="password"
                     placeholder="Password"
                 />
+                <ng-template #passwordErrorTpl let-control>
+                    <span
+                        data-cy="password-required-error"
+                        *ngIf="control.hasError('empty')"
+                    >
+                        Password should not be empty
+                    </span>
+                </ng-template>
             </nz-input-group>
         </nz-form-control>
     </nz-form-item>
     <div nz-row class="login-form-margin">
+        <!--
         <div nz-col [nzSpan]="12">
             <label nz-checkbox formControlName="remember">
                 <span>Remember me</span>
             </label>
         </div>
+        -->
         <div nz-col [nzSpan]="12">
-            <a data-cy="forgot-password" class="login-form-forgot" routerLink="../forgot-password"
+            <a
+                data-cy="forgot-password"
+                class="login-form-forgot"
+                routerLink="../forgot-password"
                 >Forgot password</a
             >
         </div>
     </div>
     <button
+        data-cy="submit"
+        [disabled]="form.invalid || !loginParams"
         nz-button
         class="login-form-button login-form-margin"
         [nzType]="'primary'"

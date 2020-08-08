@@ -1,8 +1,9 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { getLoginParamsFromUrl } from '../../auth-service/utils';
-import { LoginParams } from '../../auth-service/models';
+import { FormValidators } from '@perimeter/common';
+import { LoginParams, AuthDataAccessService } from '@ip/data-access';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
     selector: 'ip-login-page',
@@ -11,22 +12,21 @@ import { LoginParams } from '../../auth-service/models';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginPageComponent implements OnInit {
+    loginParams: LoginParams;
     errorMessage: string;
     queryEvent: string;
     public readonly form: FormGroup;
 
     constructor(
         fb: FormBuilder,
+        private readonly dataAccess: AuthDataAccessService,
         private readonly activatedRoute: ActivatedRoute
     ) {
         this.form = fb.group({
-            email: [null, [Validators.required]],
-            password: [null, [Validators.required]],
-            remember: [true],
+            email: [null, [FormValidators.empty, Validators.email]],
+            password: [null, [FormValidators.empty]],
         });
     }
-
-    submitForm(): void {}
 
     ngOnInit(): void {
         const urlParams = this.activatedRoute.snapshot.params;
@@ -67,14 +67,23 @@ export class LoginPageComponent implements OnInit {
             errors.push('code_challenge_method');
         }
 
-        console.log(parsedParams);
-
         if (errors.length > 0) {
             this.errorMessage = `Following parameters not defined: ${errors.join(
                 ', '
             )}`;
+        } else {
+            this.loginParams = parsedParams;
         }
+    }
 
-        console.log('???', this.errorMessage);
+    async submitForm() {
+        try {
+            this.dataAccess
+                .login(this.loginParams, this.form.value)
+                .toPromise();
+        } catch (_err) {
+            const err = _err as HttpErrorResponse;
+            this.errorMessage = err.message;
+        }
     }
 }
