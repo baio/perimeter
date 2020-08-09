@@ -3,20 +3,12 @@
 open Common.Domain.Models
 
 open PRR.Data.DataContext
+open PRR.Domain.Auth
 open PRR.System.Models
 open System.Threading.Tasks
 
 [<AutoOpen>]
 module Models =
-
-    type JwtConfig =
-        { IdTokenSecret: string
-          AccessTokenSecret: string
-          IdTokenExpiresIn: int<minutes>
-          AccessTokenExpiresIn: int<minutes>
-          RefreshTokenExpiresIn: int<minutes>
-          CodeExpiresIn: int<minutes> }
-
     type SignInData =
         { ClientId: ClientId
           // RedirectUri: Uri

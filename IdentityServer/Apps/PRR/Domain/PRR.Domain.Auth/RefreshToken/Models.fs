@@ -2,6 +2,7 @@
 
 open Common.Domain.Models
 open PRR.Data.DataContext
+open PRR.Domain.Auth
 open PRR.Domain.Auth.SignIn
 open PRR.System.Models
 open System

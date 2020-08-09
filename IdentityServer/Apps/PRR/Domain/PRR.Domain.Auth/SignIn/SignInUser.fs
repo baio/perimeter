@@ -6,6 +6,7 @@ open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Models
 open PRR.Data.DataContext
+open PRR.Domain.Auth
 open System.Security.Claims
 open System.Threading.Tasks
 

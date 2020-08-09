@@ -3,13 +3,12 @@
 open Common.Domain.Models
 
 open PRR.Data.DataContext
-open PRR.Domain.Auth.SignIn
+open PRR.Domain.Auth
 open PRR.System.Models
 open System.Threading.Tasks
 
 [<AutoOpen>]
 module Models =
-
     type Data =
         { Grant_Type: string
           Code: Token

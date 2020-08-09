@@ -1,17 +1,13 @@
 ﻿namespace PRR.API.Infra
-open Akka.Actor
-open Akkling
-open PRR.Domain.Auth.SignIn.Models
+
 open Common.Domain.Models
-open PRR.System.Models
-open PRR.System.Models.Events
+open PRR.Domain.Auth
 
 [<AutoOpen>]
-module Models = 
+module Models =
 
     type AppConfig =
-        {
-          SignUpTokenExpiresIn: int<minutes>
+        { SignUpTokenExpiresIn: int<minutes>
           ResetPasswordTokenExpiresIn: int<minutes>
           PasswordSecret: string
           Jwt: JwtConfig }
@@ -20,11 +16,10 @@ module Models =
         abstract GetConfig: (unit -> AppConfig) with get
 
     type IHashProvider =
-        abstract GetHash: (unit -> string) with get                
+        abstract GetHash: (unit -> string) with get
 
     type IPasswordSaltProvider =
         abstract SaltPassword: (string -> string) with get
 
     type ISHA256Provider =
-        abstract GetSHA256: (string -> string)  with get              
-
+        abstract GetSHA256: (string -> string) with get

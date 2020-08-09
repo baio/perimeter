@@ -5,6 +5,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="JwtConfig.fs" />
+        <Compile Include="LogIn\Models.fs" />
+        <Compile Include="LogIn\UserHelpers.fs" />
+        <Compile Include="LogIn\LogIn.fs" />
+        <Compile Include="LogInToken\Models.fs" />
+        <Compile Include="LogInToken\UserHelpers.fs" />
+        <Compile Include="LogInToken\CreateClaims.fs" />
+        <Compile Include="LogInToken\CreateToken.fs" />
+        <Compile Include="LogInToken\LogInTokenUser.fs" />
+        <Compile Include="LogInToken\LogInToken.fs" />
         <Compile Include="validatePassword.fs" />
         <Compile Include="SignUp\Models.fs" />
         <Compile Include="SignUp\SignUp.fs" />
@@ -28,15 +38,6 @@
         <Compile Include="ResetPassword\ResetPassword.fs" />
         <Compile Include="UpdatePassword\Models.fs" />
         <Compile Include="UpdatePassword\UpdatePassword.fs" />
-        <Compile Include="LogIn\Models.fs" />
-        <Compile Include="LogIn\UserHelpers.fs" />
-        <Compile Include="LogIn\LogIn.fs" />
-        <Compile Include="LogInToken\Models.fs" />
-        <Compile Include="LogInToken\UserHelpers.fs" />
-        <Compile Include="LogInToken\CreateClaims.fs" />
-        <Compile Include="LogInToken\CreateToken.fs" />
-        <Compile Include="LogInToken\LogInTokenUser.fs" />
-        <Compile Include="LogInToken\LogInToken.fs" />
     </ItemGroup>
 
     <ItemGroup>
