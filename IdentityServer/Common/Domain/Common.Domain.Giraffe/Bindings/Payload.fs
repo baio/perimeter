@@ -15,6 +15,7 @@ module Payload =
     type private PropertyBag = BoundModelValue of System.Type
 
     let bindJsonAsync<'a> (ctx: HttpContext) =
+        // As soon as model bound first time it erased from context, so we should persist one if we want to bind it many times        
         task {
             let t = typeof<'a>
             let (f, v) = ctx.Items.TryGetValue(BoundModelValue t)
@@ -32,5 +33,14 @@ module Payload =
             match validator model with
             | [||] -> return model
             | errors ->
-                return! TaskUtils.raiseTask (BadRequest errors)
+                return raise (BadRequest errors)
+        }
+
+    let bindValidateFormAsync<'a> validator (ctx: HttpContext) =
+        task {
+            let! model = ctx.BindFormAsync<'a>()
+            match validator model with
+            | [||] -> return model
+            | errors ->
+                return raise (BadRequest errors)
         }

@@ -43,10 +43,8 @@ export class AuthDataAccessService {
             ...prms,
             ...data,
         };
-        console.log('111', payload);
         return this.http.post('auth/login', payload).pipe(
-            catchError((err: HttpErrorResponse) => {
-                debugger;
+            catchError((err: HttpErrorResponse) => {        
                 if (err.status === 404 && err.url) {
                     // redirect
                     window.location.href = err.url;

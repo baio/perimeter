@@ -9,6 +9,7 @@ open System.Threading.Tasks
 [<AutoOpen>]
 module Models =
 
+    [<CLIMutable>]
     type Data =
         { Client_Id: ClientId
           Response_Type: string

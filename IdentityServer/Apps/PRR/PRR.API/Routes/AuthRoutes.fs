@@ -94,7 +94,7 @@ module private Handlers =
         sprintf "%s?code=%s&state=%s" res.RedirectUri res.Code res.State
 
     let logInHandler =
-        sysWrapRedirect getRedirectUrl (logIn <!> getLogInEnv <*> bindValidateJsonAsync validateData)
+        sysWrapRedirect getRedirectUrl (logIn <!> getLogInEnv <*> bindValidateFormAsync validateData)
 
     open PRR.Domain.Auth.LogInToken
 
