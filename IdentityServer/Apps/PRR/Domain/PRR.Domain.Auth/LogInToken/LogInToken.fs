@@ -60,5 +60,5 @@ module SignIn =
                     let evt = item.Code |> UserLogInTokenSuccessEvent
                     return (result, evt)
                 | None ->
-                    return! raiseTask (unAuthorized "User is not found")
+                    return! raiseTask (unAuthorized "user is not found")
             }

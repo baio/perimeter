@@ -96,7 +96,6 @@ export class LoginPageComponent implements OnInit {
     ngOnInit(): void {}
 
     onSubmit(form: HTMLFormElement) {
-        debugger;
         form.submit();
     }
 }
