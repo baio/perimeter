@@ -8,4 +8,5 @@ module SignUpSuccess =
           LastName: string
           Email: string
           Password: string
-          Token: string }
+          Token: string
+          QueryString: string option }

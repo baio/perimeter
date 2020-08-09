@@ -38,7 +38,8 @@ module private SignUpToken =
                                   Email = x.Email
                                   Password = env.PasswordSalter x.Password
                                   Token = x.Token
-                                  ExpiredAt = DateTime.UtcNow.AddMinutes(float (int env.TokenExpiresIn)) }
+                                  ExpiredAt = DateTime.UtcNow.AddMinutes(float (int env.TokenExpiresIn))
+                                  QueryString = x.QueryString }
                             return Persist(Event(TokenAdded item))
                         | RemoveTokensWithEmail(email) ->
                             // TODO : Async

@@ -103,7 +103,7 @@ export class ForgotPasswordResetPageComponent implements OnInit {
         if (!this.errorMessage) {
             this.router.navigate(
                 ['..', 'login', { event: 'reset-password-success' }],
-                { relativeTo: this.activatedRoute }
+                { relativeTo: this.activatedRoute, preserveQueryParams: true }
             );
         }
     }

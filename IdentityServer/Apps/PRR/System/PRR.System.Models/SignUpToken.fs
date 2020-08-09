@@ -16,6 +16,7 @@ module SignUpToken =
         Password: string
         Token: string
         ExpiredAt: DateTime
+        QueryString: string option
     }
 
     // Queries

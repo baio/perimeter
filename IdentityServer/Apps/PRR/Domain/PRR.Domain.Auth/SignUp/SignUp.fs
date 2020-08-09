@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.SignUp
 
+open Akkling
 open Common.Domain.Models
 open Common.Domain.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
@@ -40,6 +41,9 @@ module SignUp =
                          LastName = data.LastName
                          Token = hash
                          Password = data.Password
-                         Email = data.Email }
+                         Email = data.Email
+                         QueryString =
+                             if System.String.IsNullOrEmpty data.QueryString then None
+                             else (Some data.QueryString) }
                        |> UserSignedUpEvent
             }

@@ -38,7 +38,7 @@ export class SignupConfirmPageComponent implements OnInit {
             .then(() =>
                 this.router.navigate(
                     ['..', 'login', { event: 'sign-up-confirm-success' }],
-                    { relativeTo: this.activatedRoute }
+                    { relativeTo: this.activatedRoute, preserveQueryParams: true }
                 )
             )
             .catch((_err) => {

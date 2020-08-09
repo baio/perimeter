@@ -1,12 +1,7 @@
 ﻿namespace PRR.API.Infra
 
-open Common.Utils
 open PRR.API.Infra.Mail
 open PRR.System.Models
-open SendGrid
-open SendGrid.Helpers.Mail
-open System
-open System.Threading.Tasks
 
 [<AutoOpen>]
 module SendMail =
@@ -16,11 +11,14 @@ module SendMail =
         sprintf """
             <h2>Hello %s %s</h2>
             <p>
-                This is you <a href="%s/%s?token=%s">link</a> to activate %s account.
+                This is you <a href="%s/%s?token=%s%s">link</a> to activate %s account.
                 <br>
                 Cheers, %s
             </p>
-        """ item.FirstName item.LastName proj.BaseUrl proj.ConfirmSignUpUrl item.Token proj.Name proj.Name
+        """ item.FirstName item.LastName proj.BaseUrl proj.ConfirmSignUpUrl item.Token
+            (match item.QueryString with
+             | Some x -> (sprintf "&%s" x)
+             | None -> "") proj.Name proj.Name
 
     let private getResetPasswordHtml (proj: ProjectEnv) (item: ResetPassword.Item) =
         sprintf """

@@ -1,3 +1,4 @@
+const email = 'marikab627@fazmail.net';
 const password = '#6VvR&^';
 
 describe('login flow', () => {
@@ -23,7 +24,7 @@ describe('login flow', () => {
         }).as('token');
 
         cy.dataCy('email')
-            .type('maxp@scal.io')
+            .type(email)
             .dataCy('password')
             .type(password)
             .dataCy('submit')

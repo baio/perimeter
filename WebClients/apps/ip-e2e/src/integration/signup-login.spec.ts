@@ -1,3 +1,4 @@
+const email = 'test@mail.dev';
 const password = '#6VvR&^';
 
 describe('signup login page', () => {
@@ -26,7 +27,7 @@ describe('signup login page', () => {
         }).as('login');
 
         cy.dataCy('email')
-            .type('test@mail.dev')
+            .type(email)
             .dataCy('password')
             .type(password)
             .dataCy('submit')
@@ -34,7 +35,7 @@ describe('signup login page', () => {
 
         cy.get('@login').should((req: any) => {
             expect(req.method).to.equal('POST');
-            expect( req.request.body).to.deep.equal({
+            expect(req.request.body).to.deep.equal({
                 client_id: '__DEFAULT_CLIENT_ID__',
                 response_type: 'code',
                 state: '123',
@@ -43,7 +44,7 @@ describe('signup login page', () => {
                 code_challenge:
                     'f3965ea75b28a63717ad1fddef81578e3fa451d3955dfd1489911d74552ed7',
                 code_challenge_method: 'S256',
-                email: 'test@mail.dev',
+                email,
                 password: '#6VvR&^',
             });
         });

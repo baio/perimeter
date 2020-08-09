@@ -43,10 +43,12 @@ export class AuthDataAccessService {
             ...prms,
             ...data,
         };
+        console.log('111', payload);
         return this.http.post('auth/login', payload).pipe(
             catchError((err: HttpErrorResponse) => {
+                debugger;
                 if (err.status === 404 && err.url) {
-                    // redirect 
+                    // redirect
                     window.location.href = err.url;
                 } else {
                     return throwError(err);
@@ -55,8 +57,12 @@ export class AuthDataAccessService {
         );
     }
 
-    signUp(data: SignUpData): Observable<any> {
-        return this.http.post('auth/sign-up', data);
+    signUp(data: SignUpData, queryString: string): Observable<any> {
+        const payload = {
+            ...data,
+            queryString,
+        };
+        return this.http.post('auth/sign-up', payload);
     }
 
     signUpConfirm(token: string): Observable<any> {

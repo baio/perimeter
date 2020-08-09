@@ -25,6 +25,7 @@ import { ActivatedRoute, Router } from '@angular/router';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignupPageComponent implements OnInit {
+    qs: string;
     isSubmitting = false;
     errorMessage: string;
     isAgreementVisible = false;
@@ -62,7 +63,10 @@ export class SignupPageComponent implements OnInit {
         });
     }
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        // login info in qs
+        this.qs = window.location.search;
+    }
 
     updateConfirmValidator(): void {
         /** wait for refresh value */
@@ -85,7 +89,7 @@ export class SignupPageComponent implements OnInit {
     async submitForm() {
         try {
             this.isSubmitting = true;
-            await this.authDataAccess.signUp(this.form.value).toPromise();
+            await this.authDataAccess.signUp(this.form.value, this.qs).toPromise();
             this.errorMessage = null;
         } catch (_err) {
             const err = _err as HttpErrorResponse;
@@ -96,7 +100,6 @@ export class SignupPageComponent implements OnInit {
                     err.error
                 );
             } else {
-                console.log('???', err);
                 this.errorMessage = err.message;
             }
         } finally {
