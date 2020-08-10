@@ -50,6 +50,12 @@
     },
     "perimeter-common": {
       "tags": []
+    },
+    "admin-domains": {
+      "tags": []
+    },
+    "admin-shared": {
+      "tags": []
     }
   }
 }

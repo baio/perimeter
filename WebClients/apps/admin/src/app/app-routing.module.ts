@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router'; // CLI imports router
-import { AdminPagesModule } from './pages/pages.module';
+import { RouterModule, Routes } from '@angular/router'; // CLI imports router
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { LoginCbPageComponent } from './pages/login-cb-page/login-cb-page.component';
+import { AdminPagesModule } from './pages/pages.module';
 
 const routes: Routes = [
     {
@@ -10,8 +10,13 @@ const routes: Routes = [
         component: LoginCbPageComponent,
     },
     {
+        path: 'home',
+        component: HomePageComponent,
+    },
+    {
         path: '',
-        component: HomePageComponent
+        redirectTo: 'domains',
+        pathMatch: 'full'
     },
 ]; // sets up routes constant where you define your routes
 
@@ -20,7 +25,7 @@ const routes: Routes = [
     imports: [
         AdminPagesModule,
         RouterModule.forRoot(routes, {
-            enableTracing: false,
+            enableTracing: true,
             initialNavigation: true,
         }),
     ],

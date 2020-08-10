@@ -12,6 +12,8 @@ import {
 } from '@perimeter/common';
 import { environment } from '../environments/environment';
 import { AuthModule } from '@perimeter/ngx-auth';
+import { AdminDomainsModule } from '@admin/domains';
+import { RouterModule } from '@angular/router';
 
 const antDesignIcons = AllIcons as {
     [key: string]: IconDefinition;
@@ -26,6 +28,8 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(
         BrowserModule,
         HttpClientModule,
         AppRoutingModule,
+        AdminDomainsModule,
+        RouterModule,
         AuthModule.forRoot(environment.baseUrl, environment.auth),
         HttpErrorMessageInterceptorModule,
         HttpBaseUrlInterceptorModule.forRoot({ baseUrl: environment.baseUrl }),

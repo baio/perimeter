@@ -17,12 +17,12 @@
     "baseUrl": ".",
     "paths": {
       "@admin/auth": ["libs/admin/auth/src/index.ts"],
-      "@admin/data-access": ["libs/admin/data-access/src/index.ts"],
-      "@admin/common": ["libs/admin/common/src/index.ts"],
       "@perimeter/ngx-auth": ["libs/perimeter/ng-auth/src/index.ts"],
       "@ip/auth": ["libs/ip/auth/src/index.ts"],
       "@ip/data-access": ["libs/ip/data-access/src/index.ts"],
-      "@perimeter/common": ["libs/perimeter/common/src/index.ts"]
+      "@perimeter/common": ["libs/perimeter/common/src/index.ts"],
+      "@admin/domains": ["libs/admin/domains/src/index.ts"],
+      "@admin/shared": ["libs/admin/shared/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
