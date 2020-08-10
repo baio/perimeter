@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router'; // CLI imports router
-import { FormComponent as DomainsFormComponent } from './domains/form/form.component';
+import { MainLayoutComponent, MainLayoutModule } from '@admin/shared';
 import { ListComponent as DomainsListComponent } from './domains/list/list.component';
-import { MainLayoutComponent, AdminSharedModule } from '@admin/shared';
 
 const routes: Routes = [
     {
@@ -19,8 +18,8 @@ const routes: Routes = [
 
 // configures NgModule imports and exports
 @NgModule({
-    declarations: [DomainsListComponent, DomainsFormComponent],
-    imports: [AdminSharedModule, RouterModule.forChild(routes)],
+    declarations: [],
+    imports: [MainLayoutModule, RouterModule.forChild(routes)],
     exports: [RouterModule],
 })
 export class AdminDomainsRoutingModule {}

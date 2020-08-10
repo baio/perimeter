@@ -14,6 +14,7 @@ import { environment } from '../environments/environment';
 import { AuthModule } from '@perimeter/ngx-auth';
 import { AdminDomainsModule } from '@admin/domains';
 import { RouterModule } from '@angular/router';
+import { NZ_I18N, en_US } from 'ng-zorro-antd';
 
 const antDesignIcons = AllIcons as {
     [key: string]: IconDefinition;
@@ -34,7 +35,13 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(
         HttpErrorMessageInterceptorModule,
         HttpBaseUrlInterceptorModule.forRoot({ baseUrl: environment.baseUrl }),
     ],
-    providers: [{ provide: NZ_ICONS, useValue: icons }],
+    providers: [
+        { provide: NZ_ICONS, useValue: icons },
+        {
+            provide: NZ_I18N,
+            useValue: en_US,
+        },
+    ],
     bootstrap: [AppComponent],
 })
 export class AppModule {}

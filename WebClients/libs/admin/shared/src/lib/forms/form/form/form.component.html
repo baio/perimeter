@@ -1,0 +1,54 @@
+<nz-drawer
+    [nzTitle]="title"
+    (nzOnClose)="onClose()">
+    <div
+        data-cy="drawer"
+        *ngIf="view$ | async as view">
+        <nz-spin
+            [nzSize]="'large'"
+            [nzSpinning]="view.status === 'submitting'">
+            <hlc-nz-form
+                [definition]="definition"
+                [value]="view.value"
+                #hlcForm>
+            </hlc-nz-form>
+
+            <div class="ant-drawer-footer">
+                <nz-alert
+                    *ngIf="view.error"
+                    style="margin-bottom: 10px; text-align: left;"
+                    nzType="error"
+                    [nzMessage]="view.error">
+                </nz-alert>
+
+                <button
+                    data-cy="drawer-submit"
+                    nz-button
+                    nzType="primary"
+                    [disabled]="view.submitDisabled"
+                    (click)="onSubmit(hlcForm.form.value)">
+                    Submit
+                </button>
+
+                <button
+                    data-cy="drawer-close"
+                    nz-button
+                    nzType="default"
+                    (click)="onClose()">
+                    Cancel
+                </button>
+
+                <button
+                    *ngIf="!!removeItemDataAccess && !view.isNew"
+                    style="float: right;"
+                    data-cy="drawer-remove"
+                    nz-button
+                    nzType="default"
+                    nzDanger
+                    (click)="onRemove(view.value)">
+                    Delete
+                </button>
+            </div>
+        </nz-spin>
+    </div>
+</nz-drawer>

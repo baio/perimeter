@@ -23,11 +23,13 @@
             "aot": true,
             "assets": ["apps/admin/src/favicon.ico", "apps/admin/src/assets"],
             "styles": [
+              "node_modules/quill/dist/quill.snow.css",
               "node_modules/ng-zorro-antd/src/ng-zorro-antd.min.css",
               "node_modules/ng-zorro-antd/resizable/style/index.min.css",
               "apps/admin/src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "preserveSymlinks": true
           },
           "configurations": {
             "production": {
@@ -523,6 +525,38 @@
             "tsConfig": "libs/admin/shared/tsconfig.spec.json",
             "passWithNoTests": true,
             "setupFile": "libs/admin/shared/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/angular:component": {
+          "style": "scss"
+        }
+      }
+    },
+    "admin-data-access": {
+      "projectType": "library",
+      "root": "libs/admin/data-access",
+      "sourceRoot": "libs/admin/data-access/src",
+      "prefix": "data-avail",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/admin/data-access/tsconfig.lib.json",
+              "libs/admin/data-access/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/admin/data-access/**/*"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/admin/data-access/jest.config.js",
+            "tsConfig": "libs/admin/data-access/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "libs/admin/data-access/src/test-setup.ts"
           }
         }
       },

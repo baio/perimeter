@@ -1,0 +1,13 @@
+<ng-content></ng-content>
+
+<hlc-nz-table
+    [dataProvider]="dataProvider"
+    [definition]="hlcDefinition"
+    [useDragDrop]="orderMode === 'on'"
+    [viewOptions]="viewOptions"
+    (actionClick)="onActionClick($event)"
+    (rowClick)="onRowClick($event)"
+    (rowDrop)="onRowDrop($event)">
+</hlc-nz-table>
+
+<router-outlet></router-outlet>

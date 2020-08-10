@@ -1,0 +1,45 @@
+<nz-page-header
+    [nzBackIcon]="hasBackButton ? 'arrow-left' : null"
+    (nzBack)="onBack()"
+>
+    <nz-page-header-title *ngIf="title">{{ title }}</nz-page-header-title>
+
+    <nz-page-header-subtitle *ngIf="subTitle">{{
+        subTitle
+    }}</nz-page-header-subtitle>
+
+    <nz-page-header-extra *ngIf="canAdd">
+        <button
+            data-cy="create-item-button"
+            nz-button
+            nzShape="circle"
+            nzType="primary"
+            *ngIf="canAdd"
+            (click)="onAdd()"
+        >
+            <i nz-icon nzType="plus"></i>
+        </button>
+    </nz-page-header-extra>
+
+    <nz-page-header-content>
+        <ng-container [formGroup]="filterForm">
+            <div nz-row [nzGutter]="16">
+                <div nz-col class="gutter-row" [nzSpan]="9">
+                    <nz-input-group [nzSuffix]="suffixIconSearch">
+                        <input
+                            formControlName="text"
+                            nz-input
+                            type="text"
+                            [placeholder]="searchPlaceholder"
+                            (change)="onFilter()"
+                        />
+                    </nz-input-group>
+
+                    <ng-template #suffixIconSearch>
+                        <i nz-icon nzType="search"></i>
+                    </ng-template>
+                </div>
+            </div>
+        </ng-container>
+    </nz-page-header-content>
+</nz-page-header>
