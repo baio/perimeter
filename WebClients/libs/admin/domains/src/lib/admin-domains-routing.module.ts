@@ -6,6 +6,8 @@ import { AppsListComponent } from './domain/apps/list/list.component';
 import { PoolLayoutComponent } from './pool/pool-layout/pool-layout.component';
 import { DomainLayoutComponent } from './domain/domain-layout/domain-layout.component';
 import { AppFormComponent } from './domain/apps/form/form.component';
+import { ApiFormComponent } from './domain/apis/form/form.component';
+import { ApisListComponent } from './domain/apis/list/list.component';
 
 const routes: Routes = [
     {
@@ -33,6 +35,16 @@ const routes: Routes = [
                             {
                                 path: ':id',
                                 component: AppFormComponent,
+                            },
+                        ],
+                    },
+                    {
+                        path: 'apis',
+                        component: ApisListComponent,
+                        children: [
+                            {
+                                path: ':id',
+                                component: ApiFormComponent,
                             },
                         ],
                     },

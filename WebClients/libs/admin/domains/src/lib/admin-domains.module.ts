@@ -21,6 +21,8 @@ import {
 import { DomainLayoutComponent } from './domain/domain-layout/domain-layout.component';
 import { PoolLayoutComponent } from './pool/pool-layout/pool-layout.component';
 import { AppFormComponent } from './domain/apps/form/form.component';
+import { ApisListComponent } from './domain/apis/list/list.component';
+import { ApiFormComponent } from './domain/apis/form/form.component';
 @NgModule({
     imports: [
         CommonModule,
@@ -43,6 +45,8 @@ import { AppFormComponent } from './domain/apps/form/form.component';
         DomainsListComponent,
         DomainsFormComponent,
         AppFormComponent,
+        ApisListComponent,
+        ApiFormComponent,
     ],
 })
 export class AdminDomainsModule {}
