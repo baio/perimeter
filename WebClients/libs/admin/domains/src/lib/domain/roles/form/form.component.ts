@@ -1,4 +1,4 @@
-import { ApisDataAccessService } from '@admin/data-access';
+import { ApisDataAccessService, RolesDataAccessService } from '@admin/data-access';
 import { AdminForm } from '@admin/shared';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -25,7 +25,7 @@ export class RoleFormComponent {
 
     constructor(
         private readonly activatedRoute: ActivatedRoute,
-        private readonly dataAccess: ApisDataAccessService,
+        private readonly dataAccess: RolesDataAccessService,
         private readonly router: Router
     ) {}
 }

@@ -1,9 +1,9 @@
 import { Permission } from '../models';
 
-export interface ApiItem {
+export interface RoleItem {
     id: number;
     name: string;
-    identifier: string;
+    description: string;
     permissions: Permission[];
     dateCreated: string;
 }

@@ -1,4 +1,7 @@
-import { ApisDataAccessService } from '@admin/data-access';
+import {
+    ApisDataAccessService,
+    RolesDataAccessService,
+} from '@admin/data-access';
 import { AdminList } from '@admin/shared';
 import { Component, OnInit } from '@angular/core';
 import { HlcNzTable } from '@nz-holistic/nz-list';
@@ -17,7 +20,7 @@ export class RolesListComponent implements OnInit {
         id,
     }) => this.dataAccess.removeItem(id);
 
-    constructor(private readonly dataAccess: ApisDataAccessService) {}
+    constructor(private readonly dataAccess: RolesDataAccessService) {}
 
     ngOnInit(): void {}
 }
