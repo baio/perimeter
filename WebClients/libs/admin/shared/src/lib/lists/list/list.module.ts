@@ -6,14 +6,24 @@ import {
     HLC_NZ_TABLE_CELL_MAP,
     HLC_NZ_IMG_COLUMN_CONFIG,
     HlcNzImgColumnConfig,
+    HlcNzCustomCellDirective,
 } from '@nz-holistic/nz-list';
 import { AdminListComponent } from './list.component';
-import { tableCellMap, tableCellMapComponents, tableCellMapModules } from './table-cell-map';
+import {
+    tableCellMap,
+    tableCellMapComponents,
+    tableCellMapModules,
+} from './table-cell-map';
 
 @NgModule({
     declarations: [AdminListComponent],
-    exports: [AdminListComponent],
-    imports: [BrowserModule, HlcNzTableModule, RouterModule, ...tableCellMapModules],
+    exports: [AdminListComponent, HlcNzCustomCellDirective],
+    imports: [
+        BrowserModule,
+        HlcNzTableModule,
+        RouterModule,
+        ...tableCellMapModules,
+    ],
     providers: [
         {
             provide: HLC_NZ_TABLE_CELL_MAP,

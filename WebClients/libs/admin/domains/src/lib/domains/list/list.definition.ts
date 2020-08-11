@@ -9,6 +9,11 @@ export const listDefinition: AdminList.TableDefinition = {
             decorator: 'ellipsis',
         },
         {
+            id: 'envs',
+            title: 'Environments',
+            customCell: true,
+        },
+        {
             id: 'created',
             title: 'Created',
             format: 'dateTime',

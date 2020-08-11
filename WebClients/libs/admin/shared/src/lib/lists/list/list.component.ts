@@ -8,6 +8,12 @@ import {
     OnInit,
     Output,
     ViewChild,
+    Optional,
+    SkipSelf,
+    Inject,
+    ContentChildren,
+    QueryList,
+    forwardRef,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdminListService } from '../../common';
@@ -19,6 +25,9 @@ import {
     HLC_NZ_TABLE_FILTER_VALUE_CHANGE_DELAY,
     RowClickEvent,
     RowDropEvent,
+    HlcNzTableCustomCellsProvider,
+    HLC_NZ_TABLE_CUSTOM_CELLS_PROVIDER,
+    HlcNzCustomCellDirective,
 } from '@nz-holistic/nz-list';
 import { NzModalService } from 'ng-zorro-antd';
 import { merge, Subject } from 'rxjs';
@@ -31,6 +40,7 @@ import {
     addDefinitionLinkButtonAction,
     DELETE_ACTION_ID,
 } from './utils';
+import { concat } from 'lodash/fp';
 
 @Component({
     selector: 'admin-list',
@@ -38,11 +48,16 @@ import {
     styleUrls: ['./list.component.scss'],
     providers: [
         { provide: HLC_NZ_TABLE_FILTER_VALUE_CHANGE_DELAY, useValue: 0 },
+        {
+            provide: HLC_NZ_TABLE_CUSTOM_CELLS_PROVIDER,
+            useExisting: forwardRef(() => AdminListComponent),
+        },
         HlcNzTableFilterService,
         AdminListService,
     ],
 })
-export class AdminListComponent implements OnInit, OnDestroy, AfterViewInit {
+export class AdminListComponent
+    implements HlcNzTableCustomCellsProvider, OnInit, OnDestroy, AfterViewInit {
     @Input()
     canAdd = true;
 
@@ -72,18 +87,28 @@ export class AdminListComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private readonly destroy$ = new Subject();
     hlcDefinition: HlcNzTable.TableDefinition;
-    orderMode: 'on' | 'off' = 'off';
 
     viewOptions: HlcNzTable.ViewOptions = {
         hidePager: false,
         hideSort: false,
     };
 
+    /**
+     * Custom cells
+     */
+    @ContentChildren(HlcNzCustomCellDirective) customCellsContent: QueryList<
+        HlcNzCustomCellDirective
+    >;
+
     constructor(
         private modalService: NzModalService,
         private readonly activatedRoute: ActivatedRoute,
         private readonly listService: AdminListService,
-        private readonly router: Router
+        private readonly router: Router,
+        @Optional()
+        @SkipSelf()
+        @Inject(HLC_NZ_TABLE_CUSTOM_CELLS_PROVIDER)
+        private readonly containerCustomCellsProvider?: HlcNzTableCustomCellsProvider
     ) {}
 
     ngOnInit() {
@@ -135,8 +160,7 @@ export class AdminListComponent implements OnInit, OnDestroy, AfterViewInit {
         });
     }
 
-    async onRowDrop($event: RowDropEvent) {
-    }
+    async onRowDrop($event: RowDropEvent) {}
 
     onActionClick(action: ActionClickEvent) {
         this.actionClick.emit(action);
@@ -160,5 +184,14 @@ export class AdminListComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private reload() {
         this.hlcList.reload();
+    }
+
+    get customCells() {
+        return concat(
+            this.customCellsContent ? this.customCellsContent.toArray() : [],
+            (this.containerCustomCellsProvider &&
+                this.containerCustomCellsProvider.customCells) ||
+                []
+        );
     }
 }

@@ -3,8 +3,7 @@
 <hlc-nz-table
     [dataProvider]="dataProvider"
     [definition]="hlcDefinition"
-    [useDragDrop]="orderMode === 'on'"
-    [viewOptions]="viewOptions"
+    [viewOptions]="viewOptions"    
     (actionClick)="onActionClick($event)"
     (rowClick)="onRowClick($event)"
     (rowDrop)="onRowDrop($event)">

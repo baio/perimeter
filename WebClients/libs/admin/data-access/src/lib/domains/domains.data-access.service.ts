@@ -22,6 +22,13 @@ export class DomainsDataAccessService {
                     id: 1,
                     name: 'first',
                     dateCreated: new Date().toISOString(),
+                    envs: [
+                        {
+                            id: 1,
+                            name: 'dev',
+                            isMain: true,
+                        },
+                    ],
                 },
             ],
             pager: { total: 1, size: 1, index: 1 },
