@@ -19,14 +19,14 @@ import {
 } from 'ng-zorro-antd';
 
 import {
-    bazaFieldContainersComponents,
-    bazaFieldContainersMap,
-    bazaFieldContainersModules,
+    adminFieldContainersComponents,
+    adminFieldContainersMap,
+    adminFieldContainersModules,
 } from './field-containers-map';
 import {
-    bazaFieldsComponents,
-    bazaFieldsMap,
-    bazaFieldsModules,
+    adminFieldsComponents,
+    adminFieldsMap,
+    adminFieldsModules,
 } from './fields-map';
 import { AdminFormComponent } from './form/form.component';
 
@@ -41,19 +41,19 @@ import { AdminFormComponent } from './form/form.component';
         NzDrawerModule,
         NzSpinModule,
         RouterModule,
-        ...bazaFieldsModules,
-        ...bazaFieldContainersModules,
+        ...adminFieldsModules,
+        ...adminFieldContainersModules,
     ],
     providers: [
         {
             provide: HLC_FIELDS_LAYOUT_MAP,
             multi: true,
-            useValue: bazaFieldsMap,
+            useValue: adminFieldsMap,
         },
         {
             provide: HLC_FORM_FIELD_WRAPPER_MAP,
             multi: true,
-            useValue: bazaFieldContainersMap,
+            useValue: adminFieldContainersMap,
         },
         {
             provide: HLC_NZ_VALIDATION_ERRORS_MAP_CONFIG,
@@ -62,8 +62,8 @@ import { AdminFormComponent } from './form/form.component';
         HlcNzInputErrorDisplayStrategy,
     ],
     entryComponents: [
-        ...bazaFieldsComponents,
-        ...bazaFieldContainersComponents,
+        ...adminFieldsComponents,
+        ...adminFieldContainersComponents,
     ],
 })
 export class AdminFormModule {}

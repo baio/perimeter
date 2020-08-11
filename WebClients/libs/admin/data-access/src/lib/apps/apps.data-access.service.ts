@@ -37,4 +37,23 @@ export class AppsDataAccessService {
     ): Observable<HlcNzTable.Data.DataProviderResult<any>> {
         return of(null);
     }
+
+    loadItem(id: number): Observable<AppItem> {
+        return of({
+            id: 1,
+            name: 'first',
+            clientId: 'xxx',
+            idTokenExpiresIn: 10,
+            refreshTokenExpiresIn: 2500,
+            dateCreated: new Date().toISOString(),
+        });
+    }
+
+    createItem(data: Partial<AppItem>): Observable<AppItem> {
+        return of(data as any);
+    }
+
+    updateItem(id: number, data: Partial<AppItem>): Observable<AppItem> {
+        return of(data as any);
+    }
 }

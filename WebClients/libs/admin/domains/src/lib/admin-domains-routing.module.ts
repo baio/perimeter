@@ -5,6 +5,7 @@ import { DomainsListComponent } from './pool/domains/list/list.component';
 import { AppsListComponent } from './domain/apps/list/list.component';
 import { PoolLayoutComponent } from './pool/pool-layout/pool-layout.component';
 import { DomainLayoutComponent } from './domain/domain-layout/domain-layout.component';
+import { AppFormComponent } from './domain/apps/form/form.component';
 
 const routes: Routes = [
     {
@@ -28,6 +29,12 @@ const routes: Routes = [
                     {
                         path: 'apps',
                         component: AppsListComponent,
+                        children: [
+                            {
+                                path: ':id',
+                                component: AppFormComponent,
+                            },
+                        ],
                     },
                 ],
             },

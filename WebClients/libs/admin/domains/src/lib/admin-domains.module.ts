@@ -20,6 +20,7 @@ import {
 } from 'ng-zorro-antd';
 import { DomainLayoutComponent } from './domain/domain-layout/domain-layout.component';
 import { PoolLayoutComponent } from './pool/pool-layout/pool-layout.component';
+import { AppFormComponent } from './domain/apps/form/form.component';
 @NgModule({
     imports: [
         CommonModule,
@@ -35,12 +36,13 @@ import { PoolLayoutComponent } from './pool/pool-layout/pool-layout.component';
         NzBreadCrumbModule,
         NzMenuModule,
     ],
-    declarations: [        
+    declarations: [
         DomainLayoutComponent,
         PoolLayoutComponent,
         AppsListComponent,
         DomainsListComponent,
         DomainsFormComponent,
+        AppFormComponent,
     ],
 })
 export class AdminDomainsModule {}

@@ -7,19 +7,19 @@ import {
     AdminImageUploadComponent,
 } from '../../forms/fields';
 
-export const bazaFieldsMap = {
+export const adminFieldsMap = {
     AdminDateTimeDisplay: AdminDateTimeDisplayComponent,
     AdminRichText: AdminRichTextComponent,
     AdminImageUpload: AdminImageUploadComponent,
 };
 
-export const bazaFieldsComponents = [
+export const adminFieldsComponents = [
     AdminDateTimeDisplayComponent,
     AdminRichTextComponent,
     AdminImageUploadComponent,
 ];
 
-export const bazaFieldsModules = [
+export const adminFieldsModules = [
     AdminDateTimeDisplayModule,
     AdminRichTextModule,
     AdminImageUploadModule,

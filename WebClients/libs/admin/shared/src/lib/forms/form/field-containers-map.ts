@@ -6,17 +6,17 @@ import {
 import { AdminLengthCounterContainerComponent } from '../field-container/length-counter-field-container/length-counter-field-container.component';
 import { AdminLengthCounterFieldContainerModule } from '../field-container/length-counter-field-container/length-counter-field-container.module';
 
-export const bazaFieldContainersMap: HlcFormFieldWrapperMap = {
+export const adminFieldContainersMap: HlcFormFieldWrapperMap = {
     default: HlcNzInputContainerComponent,
     lengthCounter: AdminLengthCounterContainerComponent,
 };
 
-export const bazaFieldContainersComponents = [
+export const adminFieldContainersComponents = [
     HlcNzInputContainerComponent,
     AdminLengthCounterContainerComponent,
 ];
 
-export const bazaFieldContainersModules = [
+export const adminFieldContainersModules = [
     HlcNzInputContainerModule,
     AdminLengthCounterFieldContainerModule,
 ];

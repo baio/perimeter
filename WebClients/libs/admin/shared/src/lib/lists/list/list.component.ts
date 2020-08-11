@@ -71,6 +71,9 @@ export class AdminListComponent
     title: string;
 
     @Input()
+    rowClickMode: 'navigate' | 'none' = 'navigate';
+
+    @Input()
     removeItemDataAccess: AdminList.Data.RemoveItemDataAccess | undefined;
 
     @Output()
@@ -155,11 +158,11 @@ export class AdminListComponent
 
     onRowClick($event: RowClickEvent) {
         this.rowClick.emit($event);
-        /*
-        this.router.navigate(['.', $event.row.id], {
-            relativeTo: this.activatedRoute,
-        });
-        */
+        if (this.rowClickMode === 'navigate') {
+            this.router.navigate(['.', $event.row.id], {
+                relativeTo: this.activatedRoute,
+            });
+        }
     }
 
     async onRowDrop($event: RowDropEvent) {}

@@ -1,20 +1,21 @@
+import { AdminDomainsModule } from '@admin/domains';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router';
 import { IconDefinition } from '@ant-design/icons-angular';
 import * as AllIcons from '@ant-design/icons-angular/icons';
-import { NZ_ICONS } from 'ng-zorro-antd/icon';
-import { AppComponent } from './app.component';
-import { AppRoutingModule } from './app-routing.module';
+import { HlcNzFormModule } from '@nz-holistic/nz-forms';
 import {
     HttpBaseUrlInterceptorModule,
-    HttpErrorMessageInterceptorModule,
+    HttpErrorMessageInterceptorModule
 } from '@perimeter/common';
-import { environment } from '../environments/environment';
 import { AuthModule } from '@perimeter/ngx-auth';
-import { AdminDomainsModule } from '@admin/domains';
-import { RouterModule } from '@angular/router';
-import { NZ_I18N, en_US } from 'ng-zorro-antd';
+import { en_US, NZ_I18N } from 'ng-zorro-antd';
+import { NZ_ICONS } from 'ng-zorro-antd/icon';
+import { environment } from '../environments/environment';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
 
 const antDesignIcons = AllIcons as {
     [key: string]: IconDefinition;
@@ -30,6 +31,7 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(
         HttpClientModule,
         AppRoutingModule,
         AdminDomainsModule,
+        HlcNzFormModule.forRoot(),
         RouterModule,
         AuthModule.forRoot(environment.baseUrl, environment.auth),
         HttpErrorMessageInterceptorModule,
