@@ -23,6 +23,14 @@ import { PoolLayoutComponent } from './pool/pool-layout/pool-layout.component';
 import { AppFormComponent } from './domain/apps/form/form.component';
 import { ApisListComponent } from './domain/apis/list/list.component';
 import { ApiFormComponent } from './domain/apis/form/form.component';
+import { AdminsListComponent } from './domain/admins/list/list.component';
+import { AdminFormComponent } from './domain/admins/form/form.component';
+import { PermsListComponent } from './domain/perms/list/list.component';
+import { PermFormComponent } from './domain/perms/form/form.component';
+import { RolesListComponent } from './domain/roles/list/list.component';
+import { RoleFormComponent } from './domain/roles/form/form.component';
+import { UsersListComponent } from './domain/users/list/list.component';
+import { UserFormComponent } from './domain/users/form/form.component';
 @NgModule({
     imports: [
         CommonModule,
@@ -47,6 +55,14 @@ import { ApiFormComponent } from './domain/apis/form/form.component';
         AppFormComponent,
         ApisListComponent,
         ApiFormComponent,
+        AdminsListComponent,
+        AdminFormComponent,
+        PermsListComponent,
+        PermFormComponent,
+        RolesListComponent,
+        RoleFormComponent,
+        UsersListComponent,
+        UserFormComponent,
     ],
 })
 export class AdminDomainsModule {}

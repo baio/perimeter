@@ -8,6 +8,14 @@ import { DomainLayoutComponent } from './domain/domain-layout/domain-layout.comp
 import { AppFormComponent } from './domain/apps/form/form.component';
 import { ApiFormComponent } from './domain/apis/form/form.component';
 import { ApisListComponent } from './domain/apis/list/list.component';
+import { PermsListComponent } from './domain/perms/list/list.component';
+import { PermFormComponent } from './domain/perms/form/form.component';
+import { RolesListComponent } from './domain/roles/list/list.component';
+import { RoleFormComponent } from './domain/roles/form/form.component';
+import { UsersListComponent } from './domain/users/list/list.component';
+import { UserFormComponent } from './domain/users/form/form.component';
+import { AdminsListComponent } from './domain/admins/list/list.component';
+import { AdminFormComponent } from './domain/admins/form/form.component';
 
 const routes: Routes = [
     {
@@ -45,6 +53,46 @@ const routes: Routes = [
                             {
                                 path: ':id',
                                 component: ApiFormComponent,
+                            },
+                        ],
+                    },
+                    {
+                        path: 'perms',
+                        component: PermsListComponent,
+                        children: [
+                            {
+                                path: ':id',
+                                component: PermFormComponent,
+                            },
+                        ],
+                    },
+                    {
+                        path: 'roles',
+                        component: RolesListComponent,
+                        children: [
+                            {
+                                path: ':id',
+                                component: RoleFormComponent,
+                            },
+                        ],
+                    },
+                    {
+                        path: 'users',
+                        component: UsersListComponent,
+                        children: [
+                            {
+                                path: ':id',
+                                component: UserFormComponent,
+                            },
+                        ],
+                    },
+                    {
+                        path: 'admins',
+                        component: AdminsListComponent,
+                        children: [
+                            {
+                                path: ':id',
+                                component: AdminFormComponent,
                             },
                         ],
                     },

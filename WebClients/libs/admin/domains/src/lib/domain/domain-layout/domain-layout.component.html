@@ -7,10 +7,18 @@
             <li nz-menu-item nzMatchRouter>
                 <a [routerLink]="['.', 'apis']">APIs</a>
             </li>
-            <li nz-menu-item nzMatchRouter>Users</li>
-            <li nz-menu-item nzMatchRouter>Roles</li>
-            <li nz-menu-item nzMatchRouter>Scopes</li>
-            <li nz-menu-item nzMatchRouter>Permissions</li>
+            <li nz-menu-item nzMatchRouter>
+                <a [routerLink]="['.', 'users']">Users</a>
+            </li>
+            <li nz-menu-item nzMatchRouter>
+                <a [routerLink]="['.', 'perms']">Permissions</a>
+            </li>
+            <li nz-menu-item nzMatchRouter>
+                <a [routerLink]="['.', 'roles']">Roles</a>
+            </li>
+            <li nz-menu-item nzMatchRouter>
+                <a [routerLink]="['.', 'admins']">Admins</a>
+            </li>
         </ul>
     </nz-sider>
     <nz-layout class="inner-layout">
