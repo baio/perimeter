@@ -13,6 +13,7 @@ import {
 export interface IAuthConfig {
     baseUrl: string;
     loginPath: string;
+    signupPath: string;
     tokenUrl: string;
     logoutPath: string;
     returnUri: string;
@@ -33,7 +34,7 @@ export class AuthService {
         private readonly http: HttpClient
     ) {}
 
-    async createLoginUrl() {
+    private async createPKCEAuthQuery() {
         const codeVerifier = getRandomString(
             this.config.pkceCodeVerifierLength
         );
@@ -48,7 +49,7 @@ export class AuthService {
         console.log('codeVerifier', codeVerifier);
         console.log('codeChallenge', codeChallenge);
 
-        return `${this.config.baseUrl}/${this.config.loginPath}?client_id=${
+        return `client_id=${
             this.config.clientId
         }&response_type=code&state=${state}&redirect_uri=${encodeURI(
             this.config.returnUri
@@ -56,6 +57,17 @@ export class AuthService {
             this.config.scope
         )}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
     }
+
+    async createLoginUrl() {
+        const q = await this.createPKCEAuthQuery();
+        return `${this.config.baseUrl}/${this.config.loginPath}?${q}`;
+    }
+
+    async createSignUpUrl() {
+        const q = await this.createPKCEAuthQuery();
+        return `${this.config.baseUrl}/${this.config.signupPath}?${q}`;
+    }
+
 
     async token(code: string, state: string) {
         const sessionCodeVerifier = sessionStorage.getItem(AUTH_CODE_VERIFIER);

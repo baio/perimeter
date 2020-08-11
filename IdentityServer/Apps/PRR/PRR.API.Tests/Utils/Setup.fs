@@ -21,7 +21,7 @@ module Setup =
         let storageBlobContainer = context.Configuration.GetValue("Test:AzureStorage:BlobContainer")
         let storageTable = context.Configuration.GetValue("Test:AzureStorage:Table")       
             
-        PRR.DATA.DataContextMigrations.DataContextHelpers.RecreateDataContext(connectionString)
+        PRR.Data.DataContextMigrations.DataContextHelpers.RecreateDataContext(connectionString)
         Common.Test.Utils.AzureBlob.removeBlobContainer storageConnectionString storageBlobContainer
         Common.Test.Utils.AzureBlob.removeTable storageConnectionString storageTable
         ()

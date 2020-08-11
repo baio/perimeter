@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PRR.Data.DataContext;
 
-namespace PRR.DATA.DataContextMigrations
+namespace PRR.Data.DataContextMigrations
 {
     public static class DataContextHelpers
     {

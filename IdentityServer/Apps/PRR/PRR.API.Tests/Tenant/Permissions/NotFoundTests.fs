@@ -22,7 +22,8 @@ module NotFound =
         { FirstName = "First"
           LastName = "XXX"
           Email = "user1@user.com"
-          Password = "#6VvR&^" }
+          Password = "#6VvR&^"
+          QueryString = null }
 
     let users =
         System.Collections.Generic.List<_>

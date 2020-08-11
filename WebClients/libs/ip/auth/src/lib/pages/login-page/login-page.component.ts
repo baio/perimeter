@@ -76,6 +76,8 @@ export class LoginPageComponent implements OnInit {
             this.errorMessage = `Following parameters not defined: ${errors.join(
                 ', '
             )}`;
+
+            this.loginParams = {} as any;
         } else {
             this.loginParams = parsedParams;
         }
@@ -91,6 +93,7 @@ export class LoginPageComponent implements OnInit {
             code_challenge: [this.loginParams.code_challenge],
             code_challenge_method: [this.loginParams.code_challenge_method],
         });
+
     }
 
     ngOnInit(): void {}

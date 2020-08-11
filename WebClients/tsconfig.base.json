@@ -30,5 +30,5 @@
       "@admin/data-access": ["libs/admin/data-access/src/index.ts"]
     }
   },
-  "exclude": ["node_modules", "tmp", "nz-holistic-libs", "**/*.spec.ts", "apps/*-e2e", "**/*.e2e-spec.ts", "tools"]
+  "exclude": ["node_modules", "tmp", "nz-holistic-libs"]
 }

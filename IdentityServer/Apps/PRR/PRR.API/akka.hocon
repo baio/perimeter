@@ -13,8 +13,6 @@ actor {
   }
 }
 
-
-
 # Configure journal
 akka.persistence.journal.plugin = akka.persistence.journal.azure-table
 #akka.persistence.journal.azure-table.connection-string = "DefaultEndpointsProtocol=https;AccountName=hlc7home7app;AccountKey=UdPfh17HXy/4J9By+U/BYc/h1ECkDomoP74hg4RrEROazLdVuP+eg65NyUsC8EaweDnpS3huqtZljIZcNzusFA==;EndpointSuffix=core.windows.net"

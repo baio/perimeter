@@ -1,7 +1,7 @@
-const email = 'marikab627@fazmail.net';
-const password = '#6VvR&^';
-
 describe('login flow', () => {
+    const email = 'hahijo5833@acceptmail.net';
+    const password = '#6VvR&^';
+
     before(() => {
         cy.window().then((win) => {
             win.sessionStorage.clear();
@@ -9,19 +9,12 @@ describe('login flow', () => {
         });
     });
 
-    beforeEach(() => cy.visit('/'));
+    beforeEach(() => cy.visit('/home'));
 
     it('login success', () => {
         cy.dataCy('login-button').click();
 
         cy.url().should('include', '/auth/login');
-
-        cy.server();
-
-        cy.route({
-            method: 'POST',
-            url: '**/auth/token',
-        }).as('token');
 
         cy.dataCy('email')
             .type(email)
@@ -30,9 +23,9 @@ describe('login flow', () => {
             .dataCy('submit')
             .click();
 
-        cy.wait('@token');
+        cy.url().should('include', '/login-cb');
 
-        cy.url().should('not.include', '/auth/login');
+        cy.url().should('not.include', '/login-cb');
 
         cy.window().then((win) => {
             assert.isTrue(!!win.sessionStorage.getItem('id_token'));

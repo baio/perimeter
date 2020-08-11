@@ -25,20 +25,23 @@ export class SignupConfirmPageComponent implements OnInit {
         private readonly cdr: ChangeDetectorRef
     ) {}
 
-    ngOnInit() {
+    async ngOnInit() {
         const token = this.activatedRoute.snapshot.queryParams['token'];
         if (!token) {
             this.errorMessage = 'Token is not found in query string';
             return;
         }
 
-        this.authDataAccess
+        await this.authDataAccess
             .signUpConfirm(token)
             .toPromise()
             .then(() =>
                 this.router.navigate(
                     ['..', 'login', { event: 'sign-up-confirm-success' }],
-                    { relativeTo: this.activatedRoute, preserveQueryParams: true }
+                    {
+                        relativeTo: this.activatedRoute,
+                        preserveQueryParams: true,
+                    }
                 )
             )
             .catch((_err) => {

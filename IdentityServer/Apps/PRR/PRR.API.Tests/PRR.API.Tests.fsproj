@@ -5,7 +5,8 @@
 
         <IsPackable>false</IsPackable>
         <GenerateProgramFile>false</GenerateProgramFile>
-        <Configurations>Debug;Release;Test</Configurations>
+        <Configurations>Debug;Release;Test;E2E</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -20,6 +21,12 @@
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
       <DefineConstants>TRACE;TEST</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'E2E' ">
+      <DefineConstants>TRACE;ASPNETCORE_ENVIRONMENT=Test;TEST</DefineConstants>
+      <Optimize>false</Optimize>
+      <Tailcalls>true</Tailcalls>
     </PropertyGroup>
 
     <ItemGroup>

@@ -8,6 +8,7 @@ export const environment = {
     auth: {
         baseUrl: 'http://localhost:4200/auth',
         loginPath: 'login',
+        signupPath: 'register',
         tokenUrl: 'auth/token',
         logoutPath: 'logout',
         returnUri: 'http://localhost:4201/login-cb',

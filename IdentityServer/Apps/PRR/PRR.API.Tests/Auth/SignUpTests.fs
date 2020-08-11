@@ -25,7 +25,8 @@ module SignUp =
         { FirstName = "First"
           LastName = "Last"
           Email = "user@user.com"
-          Password = "#6VvR&^" }
+          Password = "#6VvR&^"
+          QueryString = null }
 
     let sendMail: SendMail =
         fun data ->
@@ -86,7 +87,8 @@ module SignUp =
                     { FirstName = ""
                       LastName = ""
                       Email = "xxx"
-                      Password = "#6VvR&^" }
+                      Password = "#6VvR&^"
+                      QueryString = null }
 
                 let! result = testFixture.HttpPostAsync' "/auth/sign-up" invalidUserData
 
@@ -120,7 +122,8 @@ module SignUp =
                                     Email = userData.Email
                                     Token = userToken
                                     Password = x.Password
-                                    ExpiredAt = x.ExpiredAt } }
+                                    ExpiredAt = x.ExpiredAt
+                                    QueryString = None } }
 
 
 

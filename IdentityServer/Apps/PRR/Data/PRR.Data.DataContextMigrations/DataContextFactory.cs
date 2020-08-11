@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using PRR.Data.DataContext;
-using PRR.DATA.DataContextMigrations;
+using PRR.Data.DataContextMigrations;
 
 namespace PRR.Data.DataContextMigrations
 {

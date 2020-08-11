@@ -3,7 +3,8 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <Configurations>Debug;Release;Test</Configurations>
+        <Configurations>Debug;Release;Test;E2E</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -12,6 +13,12 @@
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|AnyCPU'">
       <DefineConstants>DEBUG;TRACE;TEST</DefineConstants>
+      <Optimize>false</Optimize>
+      <Tailcalls>true</Tailcalls>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'E2E' ">
+      <DefineConstants>DEBUG;TRACE;E2E</DefineConstants>
       <Optimize>false</Optimize>
       <Tailcalls>true</Tailcalls>
     </PropertyGroup>
@@ -32,6 +39,9 @@
         <Content Include="appsettings.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="appsettings.e2e.json">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
         <Compile Include="Routes\DIHelpers.fs" />
         <Compile Include="Routes\AuthRoutes.fs" />
         <Compile Include="Routes\MeRoutes.fs" />
@@ -47,6 +57,9 @@
         <Compile Include="Routes\Tenant\DomainUserRoleRoutes.fs" />
         <Compile Include="Routes\Tenant\TenantRoutes.fs" />
         <Compile Include="Program.fs" />
+        <Content Include="akka.e2e.hocon">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
         <Content Include="akka.hocon">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
@@ -65,6 +78,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\Common\Domain\Common.Domain.Giraffe\Common.Domain.Giraffe.fsproj" />
       <ProjectReference Include="..\..\..\Common\Domain\Common.Domain.Utils\Common.Domain.Utils.fsproj" />
+      <ProjectReference Include="..\Data\PRR.Data.DataContextMigrations\PRR.Data.DataContextMigrations.csproj" />
       <ProjectReference Include="..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
       <ProjectReference Include="..\Domain\PRR.Domain.Auth\PRR.Domain.Auth.fsproj" />
       <ProjectReference Include="..\Domain\PRR.Domain.Tenant\PRR.Domain.Tenant.fsproj" />

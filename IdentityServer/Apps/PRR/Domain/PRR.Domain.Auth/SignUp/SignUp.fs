@@ -35,7 +35,11 @@ module SignUp =
 
                 if sameEmailUsersCount > 0 then return raise (Conflict "User with the same email already exist")
 
+#if E2E
+                let hash = "HASH"
+#else
                 let hash = env.HashProvider()
+#endif
 
                 return { FirstName = data.FirstName
                          LastName = data.LastName
@@ -44,6 +48,6 @@ module SignUp =
                          Email = data.Email
                          QueryString =
                              if System.String.IsNullOrEmpty data.QueryString then None
-                             else (Some data.QueryString) }
+                             else (Some (data.QueryString.TrimStart('?'))) }
                        |> UserSignedUpEvent
             }

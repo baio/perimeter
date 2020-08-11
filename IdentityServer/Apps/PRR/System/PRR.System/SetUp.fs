@@ -27,14 +27,13 @@ module Setup =
             member __.DataContext = dataContext
             member __.Dispose() = serviceScope.Dispose()
 
-
-    let setUp env =
+    let setUp' env confFileName =
         let ss =
             Strategy.OneForOne(fun error ->
                 printf "++++Error %O" error
                 Directive.Escalate)
 
-        let confPath = sprintf "%s/%s" (System.IO.Directory.GetCurrentDirectory()) "akka.hocon"
+        let confPath = sprintf "%s/%s" (System.IO.Directory.GetCurrentDirectory()) confFileName
 
         let conf = System.IO.File.ReadAllText confPath
 
@@ -57,3 +56,6 @@ module Setup =
           EventsRef = events
           CommandsRef = commands
           QueriesRef = queries } :> ICQRSSystem
+
+    let setUp env =
+        setUp' env "akka.hocon"

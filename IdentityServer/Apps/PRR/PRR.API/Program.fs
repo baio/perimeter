@@ -133,6 +133,15 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
 #if TEST
     //For tests
     services.AddSingleton<SystemEnv>(fun _ -> systemEnv) |> ignore
+#endif
+
+#if E2E
+    let sys = setUp' systemEnv "akka.e2e.hocon"
+    services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore
+    // Recreate db on start
+    let dataContext = services.BuildServiceProvider().GetService<DbDataContext>()
+    dataContext.Database.EnsureDeleted();
+    dataContext.Database.Migrate();
 #else
     // Tests must initialize sys by themselves
     let sys = setUp systemEnv

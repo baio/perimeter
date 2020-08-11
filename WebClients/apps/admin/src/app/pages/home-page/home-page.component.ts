@@ -16,4 +16,11 @@ export class HomePageComponent implements OnInit {
         const loginUrl = await this.authService.createLoginUrl();
         window.location.href = loginUrl;
     }
+
+    async onSignUp() {
+        const loginUrl = await this.authService.createSignUpUrl();
+        console.log('111', loginUrl);
+        window.location.href = loginUrl;
+    }
+
 }

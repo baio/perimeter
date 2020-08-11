@@ -23,7 +23,8 @@ module MultiUsers =
         { FirstName = "First"
           LastName = "XXX"
           Email = "user1@user.com"
-          Password = "#6VvR&^" }
+          Password = "#6VvR&^"
+          QueryString = null }
 
     let user1Password = "123"
 
@@ -31,7 +32,8 @@ module MultiUsers =
         { FirstName = "Second"
           LastName = "YYY"
           Email = "user2@user.com"
-          Password = "#6VvR&^" }
+          Password = "#6VvR&^"
+          QueryString = null }
 
     let user2Password = "123"
 
