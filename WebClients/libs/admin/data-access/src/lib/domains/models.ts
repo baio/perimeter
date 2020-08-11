@@ -1,3 +1,5 @@
+// Domain
+
 export interface DomainEnv {
     id: number;
     name: string;

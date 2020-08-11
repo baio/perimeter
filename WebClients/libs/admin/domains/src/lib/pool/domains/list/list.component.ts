@@ -9,7 +9,7 @@ import { DomainsDataAccessService } from '@admin/data-access';
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.scss'],
 })
-export class ListComponent implements OnInit {
+export class DomainsListComponent implements OnInit {
     readonly listDefinition = listDefinition;
     readonly dataProvider: HlcNzTable.Data.DataProvider = (state) =>
         this.dataAccess.loadList(state);

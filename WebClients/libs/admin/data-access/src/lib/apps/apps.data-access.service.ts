@@ -2,16 +2,16 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HlcNzTable } from '@nz-holistic/nz-list';
 import { Observable, of } from 'rxjs';
-import { DomainItem } from './models';
+import { AppItem } from './models';
 import { mapListRequestParams } from '../utils';
 
 @Injectable()
-export class DomainsDataAccessService {
+export class AppsDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
     loadList(
         searchParams: HlcNzTable.Data.DataProviderState
-    ): Observable<HlcNzTable.Data.DataProviderResult<DomainItem>> {
+    ): Observable<HlcNzTable.Data.DataProviderResult<AppItem>> {
         const params = mapListRequestParams(searchParams);
         if (searchParams.filter && searchParams.filter.text) {
             params['filter.name'] = searchParams.filter.text;
@@ -21,14 +21,10 @@ export class DomainsDataAccessService {
                 {
                     id: 1,
                     name: 'first',
+                    clientId: 'xxx',
+                    idTokenExpiresIn: 10,
+                    refreshTokenExpiresIn: 2500,
                     dateCreated: new Date().toISOString(),
-                    envs: [
-                        {
-                            id: 1,
-                            name: 'dev',
-                            isMain: true,
-                        },
-                    ],
                 },
             ],
             pager: { total: 1, size: 1, index: 1 },

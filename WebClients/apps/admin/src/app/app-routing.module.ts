@@ -15,7 +15,7 @@ const routes: Routes = [
     },
     {
         path: '',
-        redirectTo: 'domains',
+        redirectTo: 'domains/pool',
         pathMatch: 'full'
     },
 ]; // sets up routes constant where you define your routes

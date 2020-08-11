@@ -11,6 +11,7 @@
             nz-button
             nzSize="small"
             nzType="link"
+            [routerLink]="['..', item.id, 'apps']"
         >
             <i *ngIf="item.isMain" nz-icon nzType="crown" nzTheme="outline"></i>
             {{ item.name }}

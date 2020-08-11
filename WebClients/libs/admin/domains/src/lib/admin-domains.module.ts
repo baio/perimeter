@@ -6,11 +6,20 @@ import {
     AdminListHeaderModule,
     AdminFormModule,
 } from '@admin/shared';
-import { FormComponent as DomainsFormComponent } from './domains/form/form.component';
-import { ListComponent as DomainsListComponent } from './domains/list/list.component';
+import { FormComponent as DomainsFormComponent } from './pool/domains/form/form.component';
+import { DomainsListComponent } from './pool/domains/list/list.component';
+import { AppsListComponent } from './domain/apps/list/list.component';
 
 import { DataAccessModule } from '@admin/data-access';
-import { NzButtonModule, NzIconModule } from 'ng-zorro-antd';
+import {
+    NzButtonModule,
+    NzIconModule,
+    NzLayoutModule,
+    NzBreadCrumbModule,
+    NzMenuModule,
+} from 'ng-zorro-antd';
+import { DomainLayoutComponent } from './domain/domain-layout/domain-layout.component';
+import { PoolLayoutComponent } from './pool/pool-layout/pool-layout.component';
 @NgModule({
     imports: [
         CommonModule,
@@ -22,7 +31,16 @@ import { NzButtonModule, NzIconModule } from 'ng-zorro-antd';
         DataAccessModule,
         NzButtonModule,
         NzIconModule,
+        NzLayoutModule,
+        NzBreadCrumbModule,
+        NzMenuModule,
     ],
-    declarations: [DomainsListComponent, DomainsFormComponent],
+    declarations: [        
+        DomainLayoutComponent,
+        PoolLayoutComponent,
+        AppsListComponent,
+        DomainsListComponent,
+        DomainsFormComponent,
+    ],
 })
 export class AdminDomainsModule {}

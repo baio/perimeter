@@ -155,9 +155,11 @@ export class AdminListComponent
 
     onRowClick($event: RowClickEvent) {
         this.rowClick.emit($event);
+        /*
         this.router.navigate(['.', $event.row.id], {
             relativeTo: this.activatedRoute,
         });
+        */
     }
 
     async onRowDrop($event: RowDropEvent) {}
