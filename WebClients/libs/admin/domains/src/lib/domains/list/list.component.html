@@ -5,5 +5,15 @@
 >
     <admin-list-header title="Domains" searchPlaceholder="Search by name">
     </admin-list-header>
-    <ng-template hlcNzCustomCell="envs" let-row="row"> xxx </ng-template>
+    <ng-template hlcNzCustomCell="envs" let-items>
+        <button
+            *ngFor="let item of items"
+            nz-button
+            nzSize="small"
+            nzType="link"
+        >
+            <i *ngIf="item.isMain" nz-icon nzType="crown" nzTheme="outline"></i>
+            {{ item.name }}
+        </button>
+    </ng-template>
 </admin-list>

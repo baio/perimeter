@@ -10,6 +10,7 @@ import { FormComponent as DomainsFormComponent } from './domains/form/form.compo
 import { ListComponent as DomainsListComponent } from './domains/list/list.component';
 
 import { DataAccessModule } from '@admin/data-access';
+import { NzButtonModule, NzIconModule } from 'ng-zorro-antd';
 @NgModule({
     imports: [
         CommonModule,
@@ -19,6 +20,8 @@ import { DataAccessModule } from '@admin/data-access';
         AdminListHeaderModule,
         DataAccessModule,
         DataAccessModule,
+        NzButtonModule,
+        NzIconModule,
     ],
     declarations: [DomainsListComponent, DomainsFormComponent],
 })

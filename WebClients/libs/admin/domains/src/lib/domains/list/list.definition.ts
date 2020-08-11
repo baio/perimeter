@@ -1,7 +1,7 @@
 import { AdminList } from '@admin/shared';
 
 export const listDefinition: AdminList.TableDefinition = {
-    sort: 'created',
+    sort: 'dateCreated',
     cols: [
         {
             id: 'name',
@@ -14,7 +14,7 @@ export const listDefinition: AdminList.TableDefinition = {
             customCell: true,
         },
         {
-            id: 'created',
+            id: 'dateCreated',
             title: 'Created',
             format: 'dateTime',
             sort: 'dateCreated',
