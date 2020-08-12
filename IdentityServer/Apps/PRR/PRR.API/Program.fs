@@ -67,14 +67,19 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     services.AddAuthorization() |> ignore
     services.AddAuthentication(fun options ->
             options.DefaultAuthenticateScheme <- JwtBearerDefaults.AuthenticationScheme
-            options.DefaultChallengeScheme <- JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(fun x ->
+            options.DefaultChallengeScheme <- JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(fun x ->
             x.RequireHttpsMetadata <- false
             x.SaveToken <- true
             x.TokenValidationParameters <-
                 TokenValidationParameters
                     (ValidateIssuerSigningKey = true, IssuerSigningKey = issuerSigningKey, ValidateIssuer = false,
-                     ValidateAudience = false, ValidateLifetime = true))
+                     ValidateAudience = false,
+#if E2E
+                     ValidateLifetime = false
+#else
+                     ValidateLifetime = true
+#endif
+                    ))
     |> ignore
 
     services.AddCors() |> ignore
@@ -134,19 +139,18 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
           EventHandledCallback = fun _ -> () }
 
 #if TEST
+    // Tests must initialize sys by themselves
     //For tests
     services.AddSingleton<SystemEnv>(fun _ -> systemEnv) |> ignore
 #endif
 
 #if E2E
-    let sys = setUp' systemEnv "akka.e2e.hocon"
-    services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore
+    let akkaConfFile = "akka.e2e.hocon"
 #else
-    // Tests must initialize sys by themselves
-    let sys = setUp systemEnv
-    services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore
+    let akkaConfFile = "akka.hocon"
 #endif
-
+    let sys = setUp' systemEnv akkaConfFile
+    services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore
 
 let configureLogging (builder: ILoggingBuilder) =
     builder.AddFilter(fun l -> l.Equals LogLevel.Error).AddConsole().AddDebug() |> ignore
@@ -155,8 +159,6 @@ let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigu
     config.AddJsonFile("appsettings.json", false, true)
           .AddJsonFile(sprintf "appsettings.%s.json" context.HostingEnvironment.EnvironmentName, true)
           .AddEnvironmentVariables() |> ignore
-
-
 
 [<EntryPoint>]
 let main _ =
