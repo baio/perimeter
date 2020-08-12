@@ -1,15 +1,24 @@
 import { Component, OnInit } from '@angular/core';
+import { definition } from './form.definition';
+import { AdminForm } from '@admin/shared';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DomainsDataAccessService } from '@admin/data-access';
 
 @Component({
-  selector: 'admin-domain-form',
-  templateUrl: './form.component.html',
-  styleUrls: ['./form.component.scss']
+    selector: 'admin-domain-pool-form',
+    templateUrl: './form.component.html',
+    styleUrls: ['./form.component.scss'],
 })
-export class FormComponent implements OnInit {
+export class DomainPoolFormComponent implements OnInit {
+    readonly definition = definition;
 
-  constructor() { }
+    readonly storeValueDataAccess: AdminForm.Data.StoreValueDataAccess = (
+        item: any
+    ) => this.dataAccess.createItem(item);
 
-  ngOnInit(): void {
-  }
-
+    constructor(
+        private readonly activatedRoute: ActivatedRoute,
+        private readonly dataAccess: DomainsDataAccessService,
+        private readonly router: Router
+    ) {}
 }

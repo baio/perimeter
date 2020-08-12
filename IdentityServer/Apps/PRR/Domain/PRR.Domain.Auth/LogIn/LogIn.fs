@@ -12,9 +12,7 @@ open System
 module Authorize =    
 
     let validateData (data: Data): BadRequestError array =
-        let scope =
-            if data.Scope = null then ""
-            else data.Scope
+        let scope = if data.Scope = null then "" else data.Scope
         [| (validateNullOrEmpty "client_id" data.Client_Id)
            (validateNullOrEmpty "response_type" data.Response_Type)
            (validateContains [| "code" |] "response_type" data.Response_Type)

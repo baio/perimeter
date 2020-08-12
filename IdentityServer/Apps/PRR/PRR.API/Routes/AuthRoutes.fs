@@ -4,7 +4,6 @@ open Common.Domain.Giraffe
 open Common.Domain.Models
 open Common.Utils.ReaderTask
 open Giraffe
-open Microsoft.AspNetCore.Http
 open PRR.API
 open PRR.System.Models
 
@@ -97,16 +96,23 @@ module private Handlers =
             | Ok res ->
                 sprintf "%s?code=%s&state=%s" res.RedirectUri res.Code res.State
             | Error ex ->
-                let referer = ctx.Request.Headers.["Referer"] |> Seq.head
                 printf "Error %O" ex
-                // TODO
+                let referer =
+                    match ctx.Request.Headers.["Referer"] |> Seq.tryHead with
+                    | Some r -> r
+                    | None _ -> "http://fail"
+
+                let concatError err =
+                    sprintf "%s%serror=%s" referer
+                        (if referer.Contains "?" then "&"
+                         else "?") err
                 match ex with
                 | :? BadRequest ->
-                    sprintf "%s&error=invalid_request" referer
+                    concatError "invalid_request"
                 | :? UnAuthorized ->
-                    sprintf "%s&error=unauthorized_client" referer
+                    concatError "unauthorized_client"
                 | _ ->
-                    sprintf "%s&error=server_error" referer
+                    concatError "server_error"
 
     let logInHandler =
         sysWrapRedirect getRedirectUrl (logIn <!> getLogInEnv <*> bindValidateFormAsync validateData)

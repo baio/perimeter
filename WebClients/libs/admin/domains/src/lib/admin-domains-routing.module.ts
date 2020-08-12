@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router'; // CLI imports router
 import { MainLayoutComponent, MainLayoutModule } from '@admin/shared';
-import { DomainsListComponent } from './pool/domains/list/list.component';
+import { DomainsPoolListComponent } from './pool/domains/list/list.component';
 import { AppsListComponent } from './domain/apps/list/list.component';
 import { PoolLayoutComponent } from './pool/pool-layout/pool-layout.component';
 import { DomainLayoutComponent } from './domain/domain-layout/domain-layout.component';
@@ -16,6 +16,7 @@ import { UsersListComponent } from './domain/users/list/list.component';
 import { UserFormComponent } from './domain/users/form/form.component';
 import { AdminsListComponent } from './domain/admins/list/list.component';
 import { AdminFormComponent } from './domain/admins/form/form.component';
+import { DomainPoolFormComponent } from './pool/domains/form/form.component';
 
 const routes: Routes = [
     {
@@ -28,7 +29,13 @@ const routes: Routes = [
                 children: [
                     {
                         path: 'pool',
-                        component: DomainsListComponent,
+                        component: DomainsPoolListComponent,
+                        children: [
+                            {
+                                path: 'new',
+                                component: DomainPoolFormComponent,
+                            },
+                        ],
                     },
                 ],
             },

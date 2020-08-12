@@ -42,6 +42,21 @@ module private DomainPoolHandlers =
     let getOne (id: int) =
         wrap (getOne id <!> dataContext)
 
+    let bindListQuery =
+        bindListQuery
+            ((function
+             | "name" ->
+                 Some SortField.Name
+             | _ -> None),
+             (function
+             | "name" ->
+                 Some FilterField.Name
+             | _ -> None))
+        |> ofReader
+
+    let getList =
+        wrap (getList <!> getDataContext' <*> (doublet <!> tenantId <*> bindListQuery))
+
 module DomainPool =
 
     let createRoutes() =
@@ -52,4 +67,5 @@ module DomainPool =
                        wrapAudienceGuard fromDomainPoolId domainPoolId >=> choose
                                                                                [ PUT >=> updateHandler domainPoolId
                                                                                  DELETE >=> removeHandler domainPoolId
-                                                                                 GET >=> getOne domainPoolId ]) ])
+                                                                                 GET >=> getOne domainPoolId ])
+                   GET >=> getList ])

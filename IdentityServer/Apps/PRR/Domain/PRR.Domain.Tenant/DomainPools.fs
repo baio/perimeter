@@ -9,6 +9,7 @@ open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
 open System.Linq
+open System.Threading.Tasks
 
 module DomainPools =
 
@@ -19,6 +20,7 @@ module DomainPools =
     [<CLIMutable>]
     type DomainGetLike =
         { Id: int
+          IsMain: Boolean
           EnvName: string }
 
     [<CLIMutable>]
@@ -120,4 +122,49 @@ module DomainPools =
                   Domains =
                       p.Domains.Select(fun x ->
                           { Id = x.Id
+                            IsMain = x.IsMain
                             EnvName = x.EnvName }) } @>)
+
+    //
+    type SortField = Name
+
+    type FilterField = Name
+
+    type ListQuery = ListQuery<SortField, FilterField>
+
+    [<CLIMutable>]
+    type ListResponse = ListResponse<GetLike>
+
+    type GetList = DbDataContext -> (TenantId * ListQuery) -> Task<ListResponse>
+
+    let getFilterFieldExpr filterValue =
+        function
+        | FilterField.Name ->
+            <@ fun (domain: DomainPool) ->
+                let like = %(ilike filterValue)
+                like domain.Name @>
+
+    let getSortFieldExpr =
+        function
+        | SortField.Name -> <@ fun (domain: DomainPool) -> domain.Name @>
+
+    let getList: GetList =
+        fun dataContext (tenantId, prms) ->
+
+            let domainPools =
+                handleListQuery dataContext.DomainPools getFilterFieldExpr getSortFieldExpr prms
+
+            query {
+                for domainPool in domainPools do
+                    where (domainPool.TenantId = tenantId)
+                    select
+                        { Id = domainPool.Id
+                          Name = domainPool.Name
+                          DateCreated = domainPool.DateCreated
+                          Domains =
+                              domainPool.Domains.Select(fun x ->
+                                  { Id = x.Id
+                                    IsMain = x.IsMain
+                                    EnvName = x.EnvName }) }
+            }
+            |> executeListQuery prms

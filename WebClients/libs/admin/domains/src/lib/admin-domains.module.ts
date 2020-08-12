@@ -6,8 +6,8 @@ import {
     AdminListHeaderModule,
     AdminFormModule,
 } from '@admin/shared';
-import { FormComponent as DomainsFormComponent } from './pool/domains/form/form.component';
-import { DomainsListComponent } from './pool/domains/list/list.component';
+import { DomainPoolFormComponent } from './pool/domains/form/form.component';
+import { DomainsPoolListComponent } from './pool/domains/list/list.component';
 import { AppsListComponent } from './domain/apps/list/list.component';
 
 import { DataAccessModule } from '@admin/data-access';
@@ -50,8 +50,8 @@ import { UserFormComponent } from './domain/users/form/form.component';
         DomainLayoutComponent,
         PoolLayoutComponent,
         AppsListComponent,
-        DomainsListComponent,
-        DomainsFormComponent,
+        DomainsPoolListComponent,
+        DomainPoolFormComponent,
         AppFormComponent,
         ApisListComponent,
         ApiFormComponent,

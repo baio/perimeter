@@ -5,11 +5,11 @@ import { AdminList } from '@admin/shared';
 import { DomainsDataAccessService } from '@admin/data-access';
 
 @Component({
-    selector: 'admin-domains-list',
+    selector: 'admin-domains-pool-list',
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.scss'],
 })
-export class DomainsListComponent implements OnInit {
+export class DomainsPoolListComponent implements OnInit {
     readonly listDefinition = listDefinition;
     readonly dataProvider: HlcNzTable.Data.DataProvider = (state) =>
         this.dataAccess.loadList(state);

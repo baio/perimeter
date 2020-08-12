@@ -142,8 +142,8 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     // Tests must initialize sys by themselves
     //For tests
     services.AddSingleton<SystemEnv>(fun _ -> systemEnv) |> ignore
-#endif
-
+#else
+    let akkaConfFile = "akka.e2e.hocon"
 #if E2E
     let akkaConfFile = "akka.e2e.hocon"
 #else
@@ -151,6 +151,7 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
 #endif
     let sys = setUp' systemEnv akkaConfFile
     services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore
+#endif
 
 let configureLogging (builder: ILoggingBuilder) =
     builder.AddFilter(fun l -> l.Equals LogLevel.Error).AddConsole().AddDebug() |> ignore

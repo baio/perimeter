@@ -55,11 +55,24 @@ module ClientFixture =
                 return! httpPostAsync' client path payload
             }
 
+        member __.HttpPostFormAsync' path payload =
+            task {
+                use client = __.Server.CreateClient()
+                return! httpPostFormAsync' client path payload
+            }
+
         member __.HttpPostAsync bearer path payload =
             task {
                 use client = __.Server.CreateClient()
                 return! httpPostAsync client bearer path payload
             }
+            
+        member __.HttpPostFormJsonAsync bearer path payload =
+            task {
+                use client = __.Server.CreateClient()
+                return! httpPostFormJsonAsync client bearer path payload
+            }
+            
 
         member __.HttpPutAsync' path payload =
             task {

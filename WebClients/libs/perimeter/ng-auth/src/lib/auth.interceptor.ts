@@ -24,8 +24,9 @@ export class AuthInterceptor implements HttpInterceptor {
     ): Observable<HttpEvent<any>> {
         const url = request.url;
         const accessToken = sessionStorage.getItem(ACCESS_TOKEN);
+        const hasSchema = url.startsWith('http://') || url.startsWith('https://');
         const isTheSameBaseUrl = url.startsWith(this.appBaseUrl);
-        if (accessToken && isTheSameBaseUrl) {
+        if (accessToken && (!hasSchema || isTheSameBaseUrl)) {
             request = request.clone({
                 headers: request.headers.append(
                     'Authorization',

@@ -81,7 +81,7 @@ module CRUD =
 
         [<Fact>]
         [<Priority(3)>]
-        member __.``C Get domain must be success``() =
+        member __.``C.1 Get domain must be success``() =
             task {
                 let expected: PostLike =
                     { Name = "Domain 1 Updated" }
@@ -94,6 +94,19 @@ module CRUD =
                 result.name |> should equal expected.Name
                 result.dateCreated |> should be (not' null)
             }
+            
+        [<Fact>]
+        [<Priority(3)>]
+        member __.``C.2 Get domains list be success``() =
+            task {
+                let! result = testFixture.HttpGetAsync userToken "/tenant/domain-pools"
+                do! ensureSuccessAsync result
+                let! result = readAsJsonAsync<ListResponse> result
+                result |> should be (not' null)
+                result.Pager |> should be (not' null)
+                result.Items |> should be (not' null)
+            }
+            
             
         // TODO : Created domain pool must contains domain manager api / app and sample api / app
         // Tenant Owner must be the owner of the domain. Domain Pool Creator must be in Super-Admin role              

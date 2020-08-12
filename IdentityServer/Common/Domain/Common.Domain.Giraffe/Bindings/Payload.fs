@@ -1,5 +1,6 @@
 ﻿namespace Common.Domain.Giraffe
 
+open Common.Domain.Models.Exceptions
 open Common.Domain.Models
 open Common.Utils
 open System.Globalization
@@ -38,9 +39,14 @@ module Payload =
 
     let bindValidateFormAsync<'a> validator (ctx: HttpContext) =
         task {
-            let! model = ctx.BindFormAsync<'a>()
-            match validator model with
-            | [||] -> return model
-            | errors ->
-                return raise (BadRequest errors)
+            try
+                let! model = ctx.BindFormAsync<'a>()
+                match validator model with
+                | [||] -> return model
+                | errors ->
+                    return raise (BadRequest errors)
+            with  
+            | ex ->
+                printfn "--- %O" ex
+                return raise (BadRequest [| (BadRequestCommonError ex.Message) |])
         }

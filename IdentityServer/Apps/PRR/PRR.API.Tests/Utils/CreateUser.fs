@@ -15,19 +15,30 @@ open System.Web
 module CreateUser =
 
     let logIn' (testFixture: TestFixture) (data: PRR.Domain.Auth.LogIn.Models.Data) =
-        testFixture.HttpPostAsync' "/auth/login" data
+        testFixture.HttpPostFormAsync' "/auth/login"
+            (Map
+                (seq {
+                    ("Client_Id", data.Client_Id)
+                    ("Response_Type", data.Response_Type)
+                    ("State", data.State)
+                    ("Redirect_Uri", data.Redirect_Uri)
+                    ("Scope", data.Scope)
+                    ("Email", data.Email)
+                    ("Password", data.Password)
+                    ("Code_Challenge", data.Code_Challenge)
+                    ("Code_Challenge_Method", data.Code_Challenge_Method)
+                 }))
 
     let logIn (testFixture: TestFixture) (data: PRR.Domain.Auth.LogIn.Models.Data) =
         task {
             let! result = logIn' testFixture data
-            let result = readResponseHader "Location" result
-            let uri = Uri(result)
+            let location = readResponseHader "Location" result
+            let uri = Uri(location)
             return HttpUtility.ParseQueryString(uri.Query).Get("code")
         }
 
     let sha256 = SHA256.Create()
     let random = Random()
-
 
 
     [<CLIMutable>]
@@ -48,7 +59,6 @@ module CreateUser =
         let codeVerfier = randomString 128
 
         (codeVerfier, (SHA256Provider.getSha256Base64Hash sha256 codeVerfier))
-
 
     let createUser' signInUnderSampleDomain (env: UserTestContext) (userData: SignUp.Models.Data) =
         task {

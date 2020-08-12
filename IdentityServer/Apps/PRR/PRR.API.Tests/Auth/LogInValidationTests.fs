@@ -54,25 +54,18 @@ module LogInValidation =
         [<Fact>]
         member __.``A Login data with empty client_id should give validation error``() =
             task {
-                let! result = testFixture.HttpPostAsync userToken "/auth/login" {| logInData with client_id = "" |}
-                do ensureBadRequest result
-
-                let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
-
-                let expected =
-                    {| Message = "Some data is not valid"
-                       Data = Map [ ("client_id", [| "EMPTY_STRING" |]) ] |}
-
-
-                result'.Data |> should equal expected.Data
+                let! result = testFixture.HttpPostFormJsonAsync userToken "/auth/login" {| logInData with client_id = "" |}
+                do! ensureRedirectErrorAsync result                
             }
 
         [<Fact>]
         member __.``B All empty fields should give validation error``() =
             task {
                 let! result = testFixture.HttpPostAsync userToken "/auth/login" {|  |}
-                do ensureBadRequest result
-
+                do! ensureRedirectErrorAsync result
+                
+                
+                (*
                 let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
 
                 let expected =
@@ -87,6 +80,7 @@ module LogInValidation =
                     |> Map
 
                 result'.Data |> should equal expected
+                *)
             }
 
         [<Fact>]
@@ -94,8 +88,9 @@ module LogInValidation =
             task {
                 let! result = testFixture.HttpPostAsync userToken "/auth/login"
                                   {| logInData with response_type = "not_code" |}
-                do ensureBadRequest result
-
+                                  
+                do! ensureRedirectErrorAsync result
+                (*
                 let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
 
                 let expected =
@@ -104,6 +99,7 @@ module LogInValidation =
                 printf "+++ %A" result'.Data
 
                 result'.Data |> should equal expected
+                *)
             }
 
         [<Fact>]
@@ -111,6 +107,9 @@ module LogInValidation =
             task {
                 let! result = testFixture.HttpPostAsync userToken "/auth/login"
                                   {| logInData with redirect_uri = "redirect_uri" |}
+                
+                do! ensureRedirectErrorAsync result
+                (*
                 do ensureBadRequest result
 
                 let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
@@ -121,12 +120,15 @@ module LogInValidation =
                 printf "+++ %A" result'.Data
 
                 result'.Data |> should equal expected
+                *)
             }
 
         [<Fact>]
         member __.``E scopes doesn't contain required scopes``() =
             task {
                 let! result = testFixture.HttpPostAsync userToken "/auth/login" {| logInData with scope = "openid" |}
+                do! ensureRedirectErrorAsync result
+                (*
                 do ensureBadRequest result
 
                 let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
@@ -137,6 +139,7 @@ module LogInValidation =
                 printf "+++ %A" result'.Data
 
                 result'.Data |> should equal expected
+                *)
             }
 
         [<Fact>]
@@ -144,6 +147,8 @@ module LogInValidation =
             task {
                 let! result = testFixture.HttpPostAsync userToken "/auth/login"
                                   {| logInData with email = "not_email" |}
+                do! ensureRedirectErrorAsync result                  
+                (*                                      
                 do ensureBadRequest result
 
                 let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
@@ -154,6 +159,7 @@ module LogInValidation =
                 printf "+++ %A" result'.Data
 
                 result'.Data |> should equal expected
+                *)
             }
 
         [<Fact>]
@@ -161,6 +167,8 @@ module LogInValidation =
             task {
                 let! result = testFixture.HttpPostAsync userToken "/auth/login"
                                   {| logInData with code_challenge_method = "not_S256" |}
+                do! ensureRedirectErrorAsync result                                  
+                (*                                  
                 do ensureBadRequest result
 
                 let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
@@ -171,4 +179,5 @@ module LogInValidation =
                 printf "+++ %A" result'.Data
 
                 result'.Data |> should equal expected
+                *)
             }
