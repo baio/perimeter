@@ -43,9 +43,8 @@ export class AuthService {
         const codeChallenge = base64arrayEncode(hashed);
         const state = getRandomString(this.config.stateStringLength);
 
-        sessionStorage.setItem(AUTH_CODE_VERIFIER, codeVerifier);
-        sessionStorage.setItem(AUTH_STATE, state);
-
+        localStorage.setItem(AUTH_CODE_VERIFIER, codeVerifier);
+        localStorage.setItem(AUTH_STATE, state);
         console.log('codeVerifier', codeVerifier);
         console.log('codeChallenge', codeChallenge);
 
@@ -68,11 +67,10 @@ export class AuthService {
         return `${this.config.baseUrl}/${this.config.signupPath}?${q}`;
     }
 
-
     async token(code: string, state: string) {
-        const sessionCodeVerifier = sessionStorage.getItem(AUTH_CODE_VERIFIER);
-        const sessionState = sessionStorage.getItem(AUTH_STATE);
-        if (!sessionStorage) {
+        const sessionCodeVerifier = localStorage.getItem(AUTH_CODE_VERIFIER);
+        const sessionState = localStorage.getItem(AUTH_STATE);
+        if (!sessionCodeVerifier) {
             throw new Error('Session code_verifier not found');
         }
         if (!sessionState) {
@@ -96,8 +94,8 @@ export class AuthService {
             sessionStorage.setItem(ACCESS_TOKEN, result.accessToken);
             localStorage.setItem(REFRESH_TOKEN, result.refreshToken);
         } finally {
-            sessionStorage.removeItem(AUTH_CODE_VERIFIER);
-            sessionStorage.removeItem(AUTH_STATE);
+            localStorage.removeItem(AUTH_CODE_VERIFIER);
+            localStorage.removeItem(AUTH_STATE);
         }
     }
 

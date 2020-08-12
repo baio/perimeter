@@ -1,0 +1,1 @@
+?client_id=__DEFAULT_CLIENT_ID__&response_type=code&state=AFbfKae-YkX_1l9OKXF_NFfgPXfaOklRLr8idbzcz7jqePNJgvrVfQpiOsdtEj9r&redirect_uri=http:%2F%2Flocalhost:4201%2Flogin-cb&scope=open_id%20profile&code_challenge=oi%2FBuzDVHtU5lG0wdL4FpAyMb%20BVBBY%20C1%20BSdCcnbA%3D&code_challenge_method=S256

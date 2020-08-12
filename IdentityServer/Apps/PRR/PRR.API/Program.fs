@@ -30,6 +30,9 @@ let webApp =
         [ Auth.createRoutes()
           Me.createRoutes()
           Tenant.createRoutes()
+#if E2E
+          E2E.createRoutes()
+#endif
           setStatusCode 404 >=> text "Not Found" ]
 
 let createDbContext (connectionString: string) =
@@ -47,7 +50,7 @@ let configureApp (app: IApplicationBuilder) =
     (match env.IsDevelopment() with
      | true -> app.UseDeveloperExceptionPage()
      | false -> app.UseGiraffeErrorHandler errorHandler)
-        .UseHttpsRedirection()        
+        .UseHttpsRedirection()
         .UseAuthentication()
         .UseAuthorization()
         .UseCors(configureCors)
@@ -81,7 +84,7 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     let sha256 = SHA256.Create()
     let hashProvider = HashProvider sha256
     let sha256Provider = SHA256Provider sha256
-    
+
     services.AddSingleton<IConfig, Config>() |> ignore
     services.AddSingleton<IPermissionsFromRoles, PermissionsFromRoles>() |> ignore
     services.AddSingleton<IHashProvider>(hashProvider) |> ignore
@@ -115,11 +118,11 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
 
     let sendGridApiKey = context.Configuration.GetValue("SendGridApiKey")
     let mailSender = PRR.API.Infra.Mail.SendGridMail.createSendMail sendGridApiKey
-    
+
     let systemEnv: SystemEnv =
         { SendMail = createSendMail mailEnv mailSender
           GetDataContextProvider =
-              fun () -> new DataContextProvider(services.BuildServiceProvider().CreateScope()) :> IDataContextProvider              
+              fun () -> new DataContextProvider(services.BuildServiceProvider().CreateScope()) :> IDataContextProvider
           HashProvider = (hashProvider :> IHashProvider).GetHash
           PasswordSalter = services.BuildServiceProvider().GetService<IPasswordSaltProvider>().SaltPassword
           AuthConfig =
@@ -138,10 +141,6 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
 #if E2E
     let sys = setUp' systemEnv "akka.e2e.hocon"
     services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore
-    // Recreate db on start
-    let dataContext = services.BuildServiceProvider().GetService<DbDataContext>()
-    dataContext.Database.EnsureDeleted();
-    dataContext.Database.Migrate();
 #else
     // Tests must initialize sys by themselves
     let sys = setUp systemEnv
@@ -156,6 +155,8 @@ let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigu
     config.AddJsonFile("appsettings.json", false, true)
           .AddJsonFile(sprintf "appsettings.%s.json" context.HostingEnvironment.EnvironmentName, true)
           .AddEnvironmentVariables() |> ignore
+
+
 
 [<EntryPoint>]
 let main _ =
