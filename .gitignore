@@ -340,3 +340,4 @@ ASALocalRun/
 healthchecksdb
 symbolCache.db
 .ionide/*
+WebClients/apps/admin-e2e/stickyVariable.txt
