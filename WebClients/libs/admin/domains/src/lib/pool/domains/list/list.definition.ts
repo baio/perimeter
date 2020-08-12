@@ -7,6 +7,7 @@ export const listDefinition: AdminList.TableDefinition = {
             id: 'name',
             title: 'Name',
             decorator: 'ellipsis',
+            sort: true,
         },
         {
             id: 'envs',
