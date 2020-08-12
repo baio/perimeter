@@ -45,14 +45,12 @@ module SignIn =
             // TODO : Tests !
             let itemCodeChallenge =
                 item.CodeChallenge |> replace " " "+"
-
             printfn "****"
             printfn "Code_Verifier %s" data.Code_Verifier
             printfn "1 codeChallenge %s" codeChallenge
             printfn "2 codeChallenge %s" itemCodeChallenge
             printfn "****"
-
-            if codeChallenge <> itemCodeChallenge then raise (unAuthorized "code_verifier code_challenge mismatch")
+            if codeChallenge <> itemCodeChallenge then raise (unAuthorized "code_verifier code_challenge mismatch")            
             task {
                 match! getUserDataForToken dataContext item.UserId with
                 | Some tokenData ->

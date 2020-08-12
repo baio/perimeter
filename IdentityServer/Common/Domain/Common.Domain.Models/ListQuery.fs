@@ -14,8 +14,7 @@ module ListQuery =
     type Pager =
         { Index: int
           Size: int }
-
-
+    
     type ListQuery<'s, 'f when 'f: comparison> =
         { Sort: Sort<'s> option
           Filters: Map<'f, string>

@@ -9,7 +9,7 @@ import { EMAIL, PASSWORD } from './_setup';
 // https://github.com/cypress-io/cypress/issues/461
 
 
-describe.skip('signup flow', () => {
+describe('signup flow', () => {
     // `before` will be invoked every time for specs in same describe, why ???
     describe('register', () => {
         before(() => {

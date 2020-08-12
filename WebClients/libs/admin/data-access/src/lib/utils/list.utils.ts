@@ -8,16 +8,16 @@ export const mapListResponse = <T extends HlcNzTable.Row = HlcNzTable.Row>(
 ) => (resultDTO: ListDTO.ListResponse): HlcNzTable.Data.DataProviderResult<T> => ({
     data: resultDTO.items.map(mapItemFun),
     pager: {
-        index: resultDTO.pager.page,
-        size: resultDTO.pager.limit,
-        total: resultDTO.pager.length
+        index: resultDTO.pager.index,
+        size: resultDTO.pager.size,
+        total: resultDTO.pager.total
     }
 });
 
 export const mapListRequestParams = (request: HlcNzTable.Data.DataProviderState): ListDTO.ListRequestQueryParams => {
     const res = {
-        page: request.pager.index.toString(),
-        limit: request.pager.size.toString()
+        index: request.pager.index.toString(),
+        size: request.pager.size.toString()
     };
 
     const resSort = request.sort

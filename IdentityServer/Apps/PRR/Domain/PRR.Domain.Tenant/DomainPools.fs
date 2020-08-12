@@ -5,10 +5,13 @@ open Common.Domain.Utils
 open Common.Domain.Utils.CRUD
 open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open FSharpx.Linq
+open Microsoft.EntityFrameworkCore
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
 open System.Linq
+open System.Linq.Expressions
 open System.Threading.Tasks
 
 module DomainPools =
@@ -126,7 +129,9 @@ module DomainPools =
                             EnvName = x.EnvName }) } @>)
 
     //
-    type SortField = Name
+    type SortField =
+        | Name
+        | DateCreated
 
     type FilterField = Name
 
@@ -146,7 +151,8 @@ module DomainPools =
 
     let getSortFieldExpr =
         function
-        | SortField.Name -> <@ fun (domain: DomainPool) -> domain.Name @>
+        | SortField.DateCreated -> SortDate <@ fun (domain: DomainPool) -> domain.DateCreated @>
+        | SortField.Name -> SortString <@ fun (domain: DomainPool) -> domain.Name @>
 
     let getList: GetList =
         fun dataContext (tenantId, prms) ->

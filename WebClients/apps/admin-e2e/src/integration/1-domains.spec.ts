@@ -8,8 +8,20 @@ describe('domains', () => {
         );
     });
 
-    it('create domain', () => {
-        cy.dataCy('create-item').click();
-        cy.url().should('include', '/domains/pool/new');
+    describe('create / edit', () => {
+        it('create domain', () => {
+            cy.dataCy('create-item').click();
+            cy.url().should('include', '/domains/pool/new');
+            cy.formField('name').type('new').submitButton().click();
+            cy.url().should('not.include', '/domains/pool/new');
+        });
     });
+
+    /*
+    describe('list of items', () => {
+        it('default list count', () => {
+            cy.get('table').find('tr').should('have.length', 2);
+        });
+    });
+    */
 });

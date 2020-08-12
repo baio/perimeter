@@ -47,6 +47,8 @@ module private DomainPoolHandlers =
             ((function
              | "name" ->
                  Some SortField.Name
+             | "dateCreated" ->
+                 Some SortField.DateCreated
              | _ -> None),
              (function
              | "name" ->

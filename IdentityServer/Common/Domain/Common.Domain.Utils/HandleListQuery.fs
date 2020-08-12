@@ -6,8 +6,8 @@ module HandleListQuery =
     open FSharpx.Reader
 
     let handleListQuery q getFilterFieldExpr getSortFieldExpr prms =
-        returnM q
-        >>= handleFilter getFilterFieldExpr
+        returnM q       
         >>= handleSort getSortFieldExpr
+        >>= handleFilter getFilterFieldExpr
         >>= handlePagination
         <| prms

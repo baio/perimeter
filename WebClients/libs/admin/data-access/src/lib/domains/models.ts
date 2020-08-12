@@ -2,7 +2,7 @@
 
 export interface DomainEnv {
     id: number;
-    name: string;
+    envName: string;
     isMain: boolean;
 }
 

@@ -1,7 +1,7 @@
 export namespace ListDTO {
     export interface ListRequestQueryParams {
-        page: string;
-        limit: string;
+        index: string;
+        size: string;
         sort?: string;
         filter?: any;
         [param: string]: string | string[];
@@ -9,6 +9,6 @@ export namespace ListDTO {
 
     export interface ListResponse<T = { id: number } & any> {
         items: T[];
-        pager: { length: number; limit: number; page: number };
+        pager: { total: number; size: number; index: number };
     }
 }

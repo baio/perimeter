@@ -10,6 +10,7 @@
 // eslint-disable-next-line @typescript-eslint/no-namespace
 import { resolve } from 'url';
 import { writeFileSync, readFileSync } from 'fs';
+import { EMAIL, PASSWORD } from '../integration/_setup';
 
 declare namespace Cypress {
     interface Chainable<Subject> {
@@ -36,6 +37,14 @@ Cypress.Commands.add('dataCy', (value, selector = '') => {
     return cy.get(`[data-cy=${value}]${selector}`);
 });
 
+Cypress.Commands.add('formField', (value) => {
+    return cy.get(`.hlc-form-input-${value} input`);
+});
+
+Cypress.Commands.add('submitButton', () => {
+    return cy.dataCy('drawer-submit');
+});
+
 Cypress.Commands.add('refreshDb', () => {
     const baseUrl = Cypress.env('apiBaseUrl');
 
@@ -46,6 +55,33 @@ Cypress.Commands.add('refreshDb', () => {
     return cy.request('POST', url);
 });
 
+/*
+Cypress.Commands.add('signUp', () => {
+    const baseUrl = Cypress.env('apiBaseUrl');
+    const signUpData = {
+        email: EMAIL,
+        password: PASSWORD,
+        firsName: 'test',
+        lastName: 'user',
+    };
+    const signUpUrl = resolve(baseUrl, 'auth/sign-up');
+
+    const signUpConfirmData = {
+        token: Cypress.env('confirmSignupToken'),
+    };
+    const signUpConfirmUrl = resolve(baseUrl, 'auth/sign-up/confirm');
+
+    cy.request('POST', signUpUrl, signUpData).request(
+        'POST',
+        signUpConfirmUrl,
+        signUpConfirmData
+    );
+});
+
+Cypress.Commands.add('reset', () => {
+    cy.refreshDb();
+});
+*/
 
 Cypress.Commands.add('stickyVariable', (value) => {
     if (value) {

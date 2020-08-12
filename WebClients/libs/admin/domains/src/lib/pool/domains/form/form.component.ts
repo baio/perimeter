@@ -9,7 +9,7 @@ import { DomainsDataAccessService } from '@admin/data-access';
     templateUrl: './form.component.html',
     styleUrls: ['./form.component.scss'],
 })
-export class DomainPoolFormComponent implements OnInit {
+export class DomainPoolFormComponent {
     readonly definition = definition;
 
     readonly storeValueDataAccess: AdminForm.Data.StoreValueDataAccess = (

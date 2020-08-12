@@ -6,7 +6,16 @@ import { DomainItem } from './models';
 import { mapListRequestParams, mapListResponse } from '../utils';
 import { map } from 'rxjs/operators';
 
-const mapItem = (item) => item;
+const mapItem = (item) => ({
+    id: item.id,
+    name: item.name,
+    dateCreated: item.dateCreated,
+    envs: item.domains.map((m) => ({
+        id: m.id,
+        name: m.envName,
+        isMain: m.isMain,
+    })),
+});
 
 @Injectable()
 export class DomainsDataAccessService {
@@ -22,6 +31,10 @@ export class DomainsDataAccessService {
         return this.http
             .get(`tenant/domain-pools`, { params })
             .pipe(map(mapListResponse(mapItem, searchParams)));
+    }
+
+    createItem(data: { name: string }): Observable<any> {
+        return this.http.post(`tenant/domain-pools`, data);
     }
 
     removeItem(

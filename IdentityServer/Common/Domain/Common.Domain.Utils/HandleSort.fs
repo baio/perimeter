@@ -1,34 +1,44 @@
 ﻿namespace Common.Domain.Utils
 
-open Microsoft.FSharp.Linq
+open System
+open System.Linq
 
 [<AutoOpen>]
 module HandleOrder =
 
-    open System.Linq
     open Common.Domain.Models
     open FSharpx.Reader
 
-    let handleSortExpr (sort: Sort<'s>) fn q =
+    type SortExpr<'a> =
+        | SortDate of Quotations.Expr<'a -> DateTime>
+        | SortString of Quotations.Expr<'a -> string>
 
-        let sortByExpr = <@ fun item -> (%(fn) sort.Field) item @>
+    let handleSortExpr (sort: Sort<'s>) fn (q: IQueryable<'a>) =
 
-        let asc =
+        // Look ! Type safety ! vomiting
+        match sort.Order, (fn sort.Field) with
+        | SortOrder.Asc, SortDate fn' ->
             query {
                 for i in q do
-                    sortBy ((%sortByExpr) i)
+                    sortBy ((%fn') i)
             }
-
-        let desc =
+        | SortOrder.Desc, SortDate fn' ->
             query {
                 for i in q do
-                    sortByDescending ((%sortByExpr) i)
+                    sortByDescending ((%fn') i)
+            }
+        | SortOrder.Asc, SortString fn' ->
+            query {
+                for i in q do
+                    sortBy ((%fn') i)
+            }
+        | SortOrder.Desc, SortString fn' ->
+            query {
+                for i in q do
+                    sortByDescending ((%fn') i)
             }
 
 
-        match sort.Order with
-        | SortOrder.Asc -> asc
-        | SortOrder.Desc -> desc
 
     let handleSort' sort fn q =
         match sort with
