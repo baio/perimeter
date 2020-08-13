@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { listDefinition } from './list.definition';
-import { HlcNzTable } from '@nz-holistic/nz-list';
+import { HlcNzTable, ActionClickEvent } from '@nz-holistic/nz-list';
 import { AdminList } from '@admin/shared';
 import { DomainsDataAccessService } from '@admin/data-access';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'admin-domains-pool-list',
@@ -17,7 +18,19 @@ export class DomainsPoolListComponent implements OnInit {
         id,
     }) => this.dataAccess.removeItem(id);
 
-    constructor(private readonly dataAccess: DomainsDataAccessService) {}
+    constructor(
+        private readonly dataAccess: DomainsDataAccessService,
+        private readonly router: Router,
+        private readonly activatedRoute: ActivatedRoute
+    ) {}
 
     ngOnInit(): void {}
+
+    onActionClick($event: ActionClickEvent) {
+        if ($event.actionId === 'add-env') {
+            this.router.navigate(['.', $event.row.id, 'new-env'], {
+                relativeTo: this.activatedRoute,
+            });
+        }
+    }
 }

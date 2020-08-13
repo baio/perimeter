@@ -76,6 +76,9 @@ export class AdminFormComponent implements OnInit, AfterViewInit {
 
     @Output()
     formCreated = new EventEmitter<FormCreatedEvent>();
+    
+    // tslint:disable-next-line: no-output-native
+    @Output() close = new EventEmitter();
 
     @ViewChild(HlcNzFormComponent, { static: false })
     hlcForm: HlcNzFormComponent;
@@ -221,6 +224,7 @@ export class AdminFormComponent implements OnInit, AfterViewInit {
         if (this.mode === 'routed') {
             this.router.navigate(['..'], { relativeTo: this.activatedRoute });
         }
+        this.close.emit();
     }
 
     onSubmit(value: any) {

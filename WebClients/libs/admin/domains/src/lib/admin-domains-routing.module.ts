@@ -17,6 +17,7 @@ import { UserFormComponent } from './domain/users/form/form.component';
 import { AdminsListComponent } from './domain/admins/list/list.component';
 import { AdminFormComponent } from './domain/admins/form/form.component';
 import { DomainPoolFormComponent } from './pool/domains/form/form.component';
+import { CreateEnvFormComponent } from './pool/domains/create-env-form/create-env-form.component';
 
 const routes: Routes = [
     {
@@ -31,6 +32,10 @@ const routes: Routes = [
                         path: 'pool',
                         component: DomainsPoolListComponent,
                         children: [
+                            {
+                                path: ':id/new-env',
+                                component: CreateEnvFormComponent,
+                            },
                             {
                                 path: ':id',
                                 component: DomainPoolFormComponent,

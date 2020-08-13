@@ -21,4 +21,10 @@ export const listDefinition: AdminList.TableDefinition = {
             sort: 'dateCreated',
         },
     ],
+    rowActions: [
+        {
+            id: 'add-env',
+            iconType: 'plus-square'
+        }
+    ]
 };

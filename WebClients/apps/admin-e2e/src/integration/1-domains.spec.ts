@@ -1,6 +1,5 @@
 // tslint:disable: no-unused-expression
 describe('domains', () => {
-
     const UPDATED_NAME = 'updated domain';
 
     before(() => cy.reinitDb());
@@ -67,6 +66,17 @@ describe('domains', () => {
             cy.rows().should('have.length', 1);
             cy.rows(0, 0).should('contain.text', UPDATED_NAME);
         });
+    });
 
+    describe('add env', () => {
+        it('add env', () => {
+            cy.rows(0).find('.table-actions a').eq(0).click();
+            cy.url().should('match', /\/domains\/pool\/\d+\/new-env/);
+        });
+
+        it('create', () => {
+            cy.formField('name').type('stage').submitButton().click();
+            cy.url().should('not.match', /\/domains\/pool\/\d+\/new-env/);
+        });
     });
 });

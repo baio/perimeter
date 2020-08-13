@@ -74,6 +74,7 @@ Cypress.Commands.add('reinitDb', () => {
             cy
                 .window()
                 .then((win) => {
+                    // TODO 
                     win.sessionStorage.setItem('access_token', resp.body.accessToken)
                 })
         );

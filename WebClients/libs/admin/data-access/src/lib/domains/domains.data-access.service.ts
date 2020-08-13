@@ -41,6 +41,12 @@ export class DomainsDataAccessService {
         return this.http.post(`tenant/domain-pools`, data);
     }
 
+    createEnvItem(domainId: number, data: { name: string }): Observable<any> {
+        return this.http.post(`tenant/domain-pools/${domainId}/domains`, {
+            envName: data.name,
+        });
+    }
+
     updateItem(id: number, data: { name: string }): Observable<any> {
         return this.http.put(`tenant/domain-pools/${id}`, data);
     }

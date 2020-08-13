@@ -17,6 +17,7 @@ import {
     NzLayoutModule,
     NzBreadCrumbModule,
     NzMenuModule,
+    NzDividerModule,
 } from 'ng-zorro-antd';
 import { DomainLayoutComponent } from './domain/domain-layout/domain-layout.component';
 import { PoolLayoutComponent } from './pool/pool-layout/pool-layout.component';
@@ -31,6 +32,7 @@ import { RolesListComponent } from './domain/roles/list/list.component';
 import { RoleFormComponent } from './domain/roles/form/form.component';
 import { UsersListComponent } from './domain/users/list/list.component';
 import { UserFormComponent } from './domain/users/form/form.component';
+import { CreateEnvFormComponent } from './pool/domains/create-env-form/create-env-form.component';
 @NgModule({
     imports: [
         CommonModule,
@@ -45,6 +47,7 @@ import { UserFormComponent } from './domain/users/form/form.component';
         NzLayoutModule,
         NzBreadCrumbModule,
         NzMenuModule,
+        NzDividerModule,
     ],
     declarations: [
         DomainLayoutComponent,
@@ -63,6 +66,7 @@ import { UserFormComponent } from './domain/users/form/form.component';
         RoleFormComponent,
         UsersListComponent,
         UserFormComponent,
+        CreateEnvFormComponent,
     ],
 })
 export class AdminDomainsModule {}

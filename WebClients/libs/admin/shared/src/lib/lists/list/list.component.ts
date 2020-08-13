@@ -146,7 +146,6 @@ export class AdminListComponent
         )
             .pipe(takeUntil(this.destroy$))
             .subscribe(() => {
-                console.log('????');
                 this.hlcList.reload();
             });
     }

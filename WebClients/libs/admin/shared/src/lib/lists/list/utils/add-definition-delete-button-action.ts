@@ -7,16 +7,19 @@ export const addDefinitionDeleteButtonAction = (
 ): HlcNzTable.TableDefinition => ({
     ...definition,
     rowActions: (row) => {
-        const rowActions = typeof definition.rowActions === 'function' ? definition.rowActions(row) : definition.rowActions || [];
+        const rowActions =
+            typeof definition.rowActions === 'function'
+                ? definition.rowActions(row)
+                : definition.rowActions || [];
 
         return [
+            ...rowActions,
             {
                 alt: 'Delete',
                 id: DELETE_ACTION_ID,
                 iconType: 'delete',
                 class: 'table-delete',
             },
-            ...rowActions,
         ];
     },
 });

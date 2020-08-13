@@ -2,17 +2,19 @@
     [definition]="listDefinition"
     [dataProvider]="dataProvider"
     [removeItemDataAccess]="removeItemDataAccess"
+    (actionClick)="onActionClick($event)"
 >
     <admin-list-header title="Domains" searchPlaceholder="Search by name">
     </admin-list-header>
     <ng-template hlcNzCustomCell="envs" let-items>
         <button
             (click)="$event.preventDefault();"
-            *ngFor="let item of items"
+            *ngFor="let item of items; let last = last"
             nz-button
             nzSize="small"
-            nzType="link"
+            nzType="outline"
             [routerLink]="['..', item.id, 'apps']"
+            style="margin-right: 5px;"
         >
             <i *ngIf="item.isMain" nz-icon nzType="crown" nzTheme="outline"></i>
             {{ item.name }}
