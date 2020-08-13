@@ -44,8 +44,17 @@ describe('domains', () => {
             cy.rows(0).get('td').first().should('contain.text', 'new');
         });
 
-        it('sort by create change rows positions', () => {
+        it('sort by created change rows positions', () => {
             cy.get('table thead th').eq(2).click().click();
+            cy.rows(0, 0).should('contain.text', 'updated name');
+            cy.rows(1, 0).should('contain.text', 'new');
+        });
+
+        it('sort by name change rows positions', () => {
+            cy.get('table thead th').eq(0).click();
+            cy.rows(0, 0).should('contain.text', 'new');
+            cy.rows(1, 0).should('contain.text', 'updated name');
+            cy.get('table thead th').eq(0).click();
             cy.rows(0, 0).should('contain.text', 'updated name');
             cy.rows(1, 0).should('contain.text', 'new');
         });
