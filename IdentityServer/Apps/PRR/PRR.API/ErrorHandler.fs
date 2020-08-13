@@ -9,7 +9,8 @@ open System
 module ErrorHandler =
 
     type ErrorDTO =
-        { Message: string 
+        { Message: string
+          Field: string
           Code: string }
 
     type ErrorDataDTO<'a> =
@@ -40,6 +41,7 @@ module ErrorHandler =
         | :? NotFound ->
             RequestErrors.NOT_FOUND
                 { Message = "Not Found"
+                  Field = null
                   Code = null }
         | :? UnAuthorized as e ->
             let msg =
@@ -48,13 +50,22 @@ module ErrorHandler =
                 | None -> "Not Authorized"
             RequestErrors.UNAUTHORIZED "Bearer" "App"
                 { Message = msg
+                  Field = null
                   Code = null }
         | :? Forbidden ->
             RequestErrors.FORBIDDEN "Forbidden"
         | :? Conflict as e ->
-            RequestErrors.CONFLICT
-                { Message = e.Data0
-                  Code = e.Data0 }
+            match e.Data0 with
+            | ConflictErrorField(field, code) ->
+                RequestErrors.CONFLICT
+                    { Message = null
+                      Field = field
+                      Code = (sprintf "%O" code) }
+            | ConflictErrorCommon msg ->
+                RequestErrors.CONFLICT
+                    { Message = msg
+                      Field = null
+                      Code = null }
         | :? BadRequest as e ->
             e.Data0
             |> mapBadRequestErrors

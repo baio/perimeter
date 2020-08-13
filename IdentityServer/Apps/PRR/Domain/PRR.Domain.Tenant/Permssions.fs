@@ -1,6 +1,7 @@
 ﻿namespace PRR.Domain.Tenant
 
 open Common.Domain.Models.Exceptions
+open Common.Domain.Models.ForbiddenError
 open Common.Domain.Utils
 open Common.Domain.Utils.CRUD
 open FSharp.Control.Tasks.V2.ContextInsensitive
@@ -39,13 +40,13 @@ module Permissions =
                                      }
                                      |> toCountAsync
 
-                if sameNameCount > 0 then raise (Conflict "DOMAIN_PERMISSION_NAME_ALREADY_EXISTS")
+                if sameNameCount > 0 then raise (Conflict (ConflictErrorField ("name", UNIQUE)))
 
                 try
                     do! saveChangesAsync dbContext
                 with
                 // This is duplicate checking the case covered before with sameNameCount
-                | UniqueConstraintException "IX_Permissions_Name_ApiId" "DOMAIN_PERMISSION_NAME_UNIQUE" ex ->
+                | UniqueConstraintException "IX_Permissions_Name_ApiId" (ConflictErrorField ("name", UNIQUE)) ex ->
                     return raise ex
                 | ex ->
                     return raise ex

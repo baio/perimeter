@@ -45,6 +45,7 @@ export const mapBadRequestResponseToFormValidationErrors = (
         if (errs && errs.length) {
             const verrors = errs.map(mapServerError).filter((f) => !!f);
             const mverrors = mergeAll(verrors);
+            form.controls[key].updateValueAndValidity();
             form.controls[key].setErrors(mverrors);
         }
     });

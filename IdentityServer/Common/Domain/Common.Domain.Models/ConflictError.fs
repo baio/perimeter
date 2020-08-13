@@ -3,11 +3,11 @@
 [<AutoOpen>]
 module ForbiddenError =
     
-    type ForbiddenErrorCode =
+    type ConflictErrorCode =
         | UNIQUE
                 
-    type ForbiddenError =
-        | ForbiddenErrorField of string * ForbiddenErrorCode
-        | ForbiddenErrorCommon of string
+    type ConflictError =
+        | ConflictErrorField of string * ConflictErrorCode
+        | ConflictErrorCommon of string
 
 

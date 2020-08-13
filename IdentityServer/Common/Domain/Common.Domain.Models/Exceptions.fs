@@ -13,6 +13,6 @@ module Exceptions =
 
     exception Forbidden
 
-    exception Conflict of string
+    exception Conflict of ConflictError
         
     exception BadRequest of BadRequestError array

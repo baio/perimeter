@@ -11,6 +11,8 @@ declare namespace Cypress {
 
         rows(index?: number, cellIndex?: number): Chainable<JQuery<HTMLElement>>;
 
+        cancelButton(): Chainable<JQuery<HTMLElement>>;
+
         submitButton(): Chainable<JQuery<HTMLElement>>;
 
         resetDb(): Chainable<Window>;

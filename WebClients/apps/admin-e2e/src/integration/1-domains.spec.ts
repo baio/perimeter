@@ -28,7 +28,7 @@ describe('domains', () => {
         });
     });
 
-    describe.only('create', () => {
+    describe('create', () => {
         it('create domain', () => {
             cy.dataCy('create-item').click();
             cy.url().should('include', '/domains/pool/new');
@@ -41,6 +41,7 @@ describe('domains', () => {
             cy.url().should('include', '/domains/pool/new');
             cy.formField('name').type('new').submitButton().click();
             cy.url().should('include', '/domains/pool/new');
+            cy.cancelButton().click();
         });
 
     });

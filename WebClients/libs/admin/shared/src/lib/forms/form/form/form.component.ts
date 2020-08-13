@@ -1,8 +1,19 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Optional, Output, ViewChild } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    EventEmitter,
+    Input,
+    OnInit,
+    Optional,
+    Output,
+    ViewChild,
+    ChangeDetectorRef,
+} from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HlcNzFormComponent } from '@nz-holistic/nz-forms';
-import { NzNotificationService, NzModalService } from 'ng-zorro-antd';
+import { mapServerError } from '@perimeter/common';
+import { NzModalService, NzNotificationService } from 'ng-zorro-antd';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import {
     catchError,
@@ -18,9 +29,9 @@ import {
     tap,
     withLatestFrom,
 } from 'rxjs/operators';
+import { AdminListService } from '../../../common';
 import { AdminForm } from '../models';
 import { delayWhile } from './utils';
-import { AdminListService } from '../../../common';
 
 const MESSAGE_UPDATE_SUCCESS = 'Update success';
 const MESSAGE_CREATE_SUCCESS = 'Create success';
@@ -76,7 +87,7 @@ export class AdminFormComponent implements OnInit, AfterViewInit {
 
     @Output()
     formCreated = new EventEmitter<FormCreatedEvent>();
-    
+
     // tslint:disable-next-line: no-output-native
     @Output() close = new EventEmitter();
 
@@ -90,7 +101,9 @@ export class AdminFormComponent implements OnInit, AfterViewInit {
 
     get itemId$() {
         return this.mode === 'routed'
-            ? this.activatedRoute.params.pipe(map(({ id }) => (id === 'new' ? null : +id)))
+            ? this.activatedRoute.params.pipe(
+                  map(({ id }) => (id === 'new' ? null : +id))
+              )
             : of(null);
     }
 
@@ -99,6 +112,7 @@ export class AdminFormComponent implements OnInit, AfterViewInit {
         private readonly activatedRoute: ActivatedRoute,
         private readonly notificationService: NzNotificationService,
         private readonly modalService: NzModalService,
+        private readonly cdr: ChangeDetectorRef,
         @Optional() private readonly listService?: AdminListService
     ) {}
 
@@ -107,13 +121,23 @@ export class AdminFormComponent implements OnInit, AfterViewInit {
             this.value || !this.loadValueDataAccess
                 ? of(this.value)
                 : this.itemId$.pipe(
-                      switchMap((id) => (id !== null ? this.loadValueDataAccess(id) : of(null))),
+                      switchMap((id) =>
+                          id !== null ? this.loadValueDataAccess(id) : of(null)
+                      ),
                       shareReplay(1)
                   );
 
         const valueLoad$ = value$.pipe(
-            map((value) => ({ status: 'none' as FormStatus, value, error: null })),
-            startWith({ status: 'loading' as FormStatus, value: null, error: null })
+            map((value) => ({
+                status: 'none' as FormStatus,
+                value,
+                error: null,
+            })),
+            startWith({
+                status: 'loading' as FormStatus,
+                value: null,
+                error: null,
+            })
         );
 
         const submit$ = this.submit$.pipe(
@@ -122,27 +146,60 @@ export class AdminFormComponent implements OnInit, AfterViewInit {
         );
 
         const valueSubmit$ = merge(
-            submit$.pipe(map((value) => ({ status: 'submitting' as FormStatus, value, error: null }))),
+            submit$.pipe(
+                map((value) => ({
+                    status: 'submitting' as FormStatus,
+                    value,
+                    error: null,
+                }))
+            ),
             submit$.pipe(
                 withLatestFrom(value$),
                 switchMap(([value, currentValue]) =>
                     this.storeValueDataAccess(value, currentValue).pipe(
                         tap((res) => {
                             if (this.listService) {
-                                value.id ? this.listService.onRowUpdated(res) : this.listService.onRowAdded(res);
+                                value.id
+                                    ? this.listService.onRowUpdated(res)
+                                    : this.listService.onRowAdded(res);
                             }
                             this.form.markAsPristine();
                         }),
-                        map((res) => ({ status: 'none' as FormStatus, value: res, error: null })),
+                        map((res) => ({
+                            status: 'none' as FormStatus,
+                            value: res,
+                            error: null,
+                        })),
                         tap(() => {
                             if (this.closeOnStoreSuccess) {
-                                const successMessage = value.id ? MESSAGE_UPDATE_SUCCESS : MESSAGE_CREATE_SUCCESS;
-                                this.notificationService.success(successMessage, '');
+                                const successMessage = value.id
+                                    ? MESSAGE_UPDATE_SUCCESS
+                                    : MESSAGE_CREATE_SUCCESS;
+                                this.notificationService.success(
+                                    successMessage,
+                                    ''
+                                );
                                 this.onClose();
                             }
                         }),
                         catchError((error) => {
-                            return of({ status: 'none' as FormStatus, value, error });
+                            const msg = mapServerError(this.form, error);
+                            /*
+                            this.form.updateValueAndValidity({
+                                onlySelf: false,
+                                emitEvent: true,
+                            });
+                            */
+                            console.log(
+                                '???',
+                                this.form.controls['name'].errors
+                            );
+                            // this.form.controls['name'].updateValueAndValidity();
+                            return of({
+                                status: 'none' as FormStatus,
+                                value,
+                                error: msg,
+                            });
                         })
                     )
                 )
@@ -150,27 +207,44 @@ export class AdminFormComponent implements OnInit, AfterViewInit {
         );
 
         const itemRemove$ = merge(
-            this.remove$.pipe(map((value) => ({ status: 'submitting' as FormStatus, value, error: null }))),
+            this.remove$.pipe(
+                map((value) => ({
+                    status: 'submitting' as FormStatus,
+                    value,
+                    error: null,
+                }))
+            ),
             this.remove$.pipe(
                 switchMap((value) =>
                     this.removeItemDataAccess(value).pipe(
                         tap(() => {
                             const successMessage = MESSAGE_REMOVE_SUCCESS;
-                            this.notificationService.success(successMessage, '');
+                            this.notificationService.success(
+                                successMessage,
+                                ''
+                            );
                             this.onClose();
                             if (this.listService) {
                                 this.listService.onRowRemoved(value);
                             }
                         }),
                         catchError((error) => {
-                            return of({ status: 'none' as FormStatus, value, error });
+                            return of({
+                                status: 'none' as FormStatus,
+                                value,
+                                error,
+                            });
                         })
                     )
                 )
             )
         );
 
-        const valueWithStatus$ = merge(valueLoad$, valueSubmit$, itemRemove$).pipe(shareReplay(1));
+        const valueWithStatus$ = merge(
+            valueLoad$,
+            valueSubmit$,
+            itemRemove$
+        ).pipe(shareReplay(1));
 
         const formCreated$ = delayWhile(valueWithStatus$, () => !!this.form);
 
@@ -186,16 +260,25 @@ export class AdminFormComponent implements OnInit, AfterViewInit {
             distinctUntilChanged()
         );
 
-        const submitDisabled$ = combineLatest([formValueChanged$, statusChanged$]).pipe(
+        const submitDisabled$ = combineLatest([
+            formValueChanged$,
+            statusChanged$,
+        ]).pipe(
             delay(0),
             map(([form, status]) => {
-                return !form || form.pristine || form.invalid || status !== 'none';
+                return (
+                    !form || form.pristine || form.invalid || status !== 'none'
+                );
             }),
             startWith(true),
             distinctUntilChanged()
         );
 
-        this.view$ = combineLatest([valueWithStatus$, this.itemId$, submitDisabled$]).pipe(
+        this.view$ = combineLatest([
+            valueWithStatus$,
+            this.itemId$,
+            submitDisabled$,
+        ]).pipe(
             map(([{ value, status, error }, itemId, submitDisabled]) => ({
                 value,
                 status,
@@ -205,9 +288,15 @@ export class AdminFormComponent implements OnInit, AfterViewInit {
             }))
         );
 
-        formCreated$.pipe(take(1), withLatestFrom(this.view$, this.itemId$)).subscribe(([_, val, itemId]) => {
-            this.formCreated.emit({ form: this.form, loadedVale: val.value, itemId });
-        });
+        formCreated$
+            .pipe(take(1), withLatestFrom(this.view$, this.itemId$))
+            .subscribe(([_, val, itemId]) => {
+                this.formCreated.emit({
+                    form: this.form,
+                    loadedVale: val.value,
+                    itemId,
+                });
+            });
     }
 
     ngAfterViewInit() {}
@@ -234,7 +323,8 @@ export class AdminFormComponent implements OnInit, AfterViewInit {
     onRemove(value: any) {
         this.modalService.confirm({
             nzTitle: 'Do you want to delete this item?',
-            nzContent: "You are about to delete item, you can't restore it later.",
+            nzContent:
+                "You are about to delete item, you can't restore it later.",
             nzOkText: 'Yes',
             nzCancelText: 'No',
             nzOnOk: () => {

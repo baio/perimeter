@@ -42,7 +42,7 @@ module Roles =
 
     let create: Create<DomainId * PostLike, int, DbDataContext> =
         validateCreateCatch<Role, _, _, _> (function
-            | UniqueConstraintException "IX_Roles_Name_DomainId" "DOMAIN_ROLE_NAME_UNIQUE" ex ->
+            | UniqueConstraintException "IX_Roles_Name_DomainId" (ConflictErrorField ("name", UNIQUE)) ex ->
                 raise ex
             | ex ->
                 raise ex) (doublet() >> validatePermissions) (fun (domainId, dto) ->

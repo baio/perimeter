@@ -51,6 +51,10 @@ Cypress.Commands.add('submitButton', () => {
     return cy.dataCy('drawer-submit');
 });
 
+Cypress.Commands.add('cancelButton', () => {
+    return cy.dataCy('drawer-close');
+});
+
 Cypress.Commands.add('resetDb', () => {
     const baseUrl = Cypress.env('apiBaseUrl');
 

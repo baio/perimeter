@@ -107,7 +107,7 @@ module DomainPools =
             try
                 do! saveChangesAsync dataContext
             with
-            | UniqueConstraintException "IX_DomainPools_TenantId_Name" "NAME_UNIQUE" ex ->
+            | UniqueConstraintException "IX_DomainPools_TenantId_Name" (ConflictErrorField ("name", UNIQUE)) ex ->
                 return raise ex
             | ex ->
                 return raise ex

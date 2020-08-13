@@ -33,7 +33,7 @@ module SignUp =
                                            }
                                            |> toCountAsync
 
-                if sameEmailUsersCount > 0 then return raise (Conflict "User with the same email already exist")
+                if sameEmailUsersCount > 0 then return raise (Conflict(ConflictErrorField("name", UNIQUE)))
 
 #if E2E
                 let hash = "HASH"
@@ -48,6 +48,6 @@ module SignUp =
                          Email = data.Email
                          QueryString =
                              if System.String.IsNullOrEmpty data.QueryString then None
-                             else (Some (data.QueryString.TrimStart('?'))) }
+                             else (Some(data.QueryString.TrimStart('?'))) }
                        |> UserSignedUpEvent
             }
