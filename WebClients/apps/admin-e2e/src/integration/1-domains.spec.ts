@@ -1,5 +1,8 @@
 // tslint:disable: no-unused-expression
 describe('domains', () => {
+
+    const UPDATED_NAME = 'updated domain';
+
     before(() => cy.reinitDb());
     before(() => {
         cy.visit('domains/pool');
@@ -18,7 +21,7 @@ describe('domains', () => {
         it('edit form data', () => {
             cy.formField('name')
                 .clear()
-                .type('updated name')
+                .type(UPDATED_NAME)
                 .submitButton()
                 .click();
             cy.url().should('not.match', /\/domains\/pool\/\d+/);
@@ -46,17 +49,24 @@ describe('domains', () => {
 
         it('sort by created change rows positions', () => {
             cy.get('table thead th').eq(2).click().click();
-            cy.rows(0, 0).should('contain.text', 'updated name');
+            cy.rows(0, 0).should('contain.text', UPDATED_NAME);
             cy.rows(1, 0).should('contain.text', 'new');
         });
 
         it('sort by name change rows positions', () => {
             cy.get('table thead th').eq(0).click();
             cy.rows(0, 0).should('contain.text', 'new');
-            cy.rows(1, 0).should('contain.text', 'updated name');
+            cy.rows(1, 0).should('contain.text', UPDATED_NAME);
             cy.get('table thead th').eq(0).click();
-            cy.rows(0, 0).should('contain.text', 'updated name');
+            cy.rows(0, 0).should('contain.text', UPDATED_NAME);
             cy.rows(1, 0).should('contain.text', 'new');
         });
+
+        it('filter by updated should give 1 item', () => {
+            cy.dataCy('text-search').type('domain').type('{enter}');
+            cy.rows().should('have.length', 1);
+            cy.rows(0, 0).should('contain.text', UPDATED_NAME);
+        });
+
     });
 });

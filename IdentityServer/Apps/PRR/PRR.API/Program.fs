@@ -97,10 +97,11 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     services.AddSingleton<IPasswordSaltProvider, PasswordSaltProvider>() |> ignore
 
     // Configure DataContext
+    let loggerFactory = LoggerFactory.Create(fun builder -> builder.AddConsole() |> ignore)
     let connectionString = context.Configuration.GetConnectionString "PostgreSQL"
     services.AddDbContext<DbDataContext>
         ((fun o ->
-        let o' = o.EnableSensitiveDataLogging true
+        let o' = o.UseLoggerFactory(loggerFactory).EnableSensitiveDataLogging true
         NpgsqlDbContextOptionsExtensions.UseNpgsql
             (o', connectionString, (fun b -> b.MigrationsAssembly("PRR.Data.DataContextMigrations") |> ignore))
         |> ignore))
@@ -160,6 +161,8 @@ let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigu
     config.AddJsonFile("appsettings.json", false, true)
           .AddJsonFile(sprintf "appsettings.%s.json" context.HostingEnvironment.EnvironmentName, true)
           .AddEnvironmentVariables() |> ignore
+
+
 
 [<EntryPoint>]
 let main _ =

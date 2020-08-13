@@ -22,7 +22,8 @@ module LinqHelpers =
             printf "%O" ex
             raise ex
 
-    let toListAsync = EntityFrameworkQueryableExtensions.ToListAsync
+    let toListAsync =
+        EntityFrameworkQueryableExtensions.ToListAsync
 
     let toCountAsync = EntityFrameworkQueryableExtensions.CountAsync
 
@@ -114,7 +115,6 @@ module LinqHelpers =
         2nd current without incoming
     *)
     let splitAddRemove incoming current =
-        sprintf "444 %A %A" current incoming
         (Seq.except current incoming), (Seq.except incoming current)
 
     let splitAddRemoveRange dbContext incoming =
