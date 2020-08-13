@@ -10,7 +10,7 @@ using PRR.Data.DataContext;
 namespace PRR.Data.DataContextMigrations.Migrations
 {
     [DbContext(typeof(DbDataContext))]
-    [Migration("20200805192946_Initial")]
+    [Migration("20200813190743_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -142,9 +142,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PoolId");
-
                     b.HasIndex("TenantId");
+
+                    b.HasIndex("PoolId", "EnvName")
+                        .IsUnique();
 
                     b.ToTable("Domains");
                 });
@@ -170,7 +171,8 @@ namespace PRR.Data.DataContextMigrations.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TenantId");
+                    b.HasIndex("TenantId", "Name")
+                        .IsUnique();
 
                     b.ToTable("DomainPools");
                 });

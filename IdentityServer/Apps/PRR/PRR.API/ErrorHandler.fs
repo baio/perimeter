@@ -9,7 +9,8 @@ open System
 module ErrorHandler =
 
     type ErrorDTO =
-        { Message: string }
+        { Message: string 
+          Code: string }
 
     type ErrorDataDTO<'a> =
         { Message: string
@@ -37,17 +38,23 @@ module ErrorHandler =
         printf "Error : %O" ex
         match ex with
         | :? NotFound ->
-            RequestErrors.NOT_FOUND { Message = "Not Found" }
+            RequestErrors.NOT_FOUND
+                { Message = "Not Found"
+                  Code = null }
         | :? UnAuthorized as e ->
             let msg =
                 match e.Data0 with
                 | Some x -> x
                 | None -> "Not Authorized"
-            RequestErrors.UNAUTHORIZED "Bearer" "App" { Message = msg }
+            RequestErrors.UNAUTHORIZED "Bearer" "App"
+                { Message = msg
+                  Code = null }
         | :? Forbidden ->
             RequestErrors.FORBIDDEN "Forbidden"
         | :? Conflict as e ->
-            RequestErrors.CONFLICT { Message = e.Data0 }
+            RequestErrors.CONFLICT
+                { Message = e.Data0
+                  Code = e.Data0 }
         | :? BadRequest as e ->
             e.Data0
             |> mapBadRequestErrors

@@ -41,12 +41,14 @@ namespace PRR.Data.DataContext
 
             modelBuilder.Entity<DomainPool>(entity =>
             {
+                entity.HasIndex(x => new {x.TenantId, x.Name}).IsUnique();
                 entity.Property(x => x.DateCreated).HasDefaultValueSql("now()");
                 entity.HasOne(x => x.Tenant).WithMany(x => x.DomainPools).OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Domain>(entity =>
             {
+                entity.HasIndex(x => new {x.PoolId, x.EnvName}).IsUnique();
                 entity.Property(x => x.IsMain).HasDefaultValue(false);
                 entity.Property(x => x.DateCreated).HasDefaultValueSql("now()");
                 entity.HasOne(x => x.Pool).WithMany(x => x.Domains).OnDelete(DeleteBehavior.Cascade);

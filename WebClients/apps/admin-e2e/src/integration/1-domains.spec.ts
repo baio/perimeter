@@ -28,13 +28,21 @@ describe('domains', () => {
         });
     });
 
-    describe('create', () => {
+    describe.only('create', () => {
         it('create domain', () => {
             cy.dataCy('create-item').click();
             cy.url().should('include', '/domains/pool/new');
             cy.formField('name').type('new').submitButton().click();
             cy.url().should('not.include', '/domains/pool/new');
         });
+
+        it('create domain with same name should fail', () => {
+            cy.dataCy('create-item').click();
+            cy.url().should('include', '/domains/pool/new');
+            cy.formField('name').type('new').submitButton().click();
+            cy.url().should('include', '/domains/pool/new');
+        });
+
     });
 
     describe('list', () => {

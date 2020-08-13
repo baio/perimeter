@@ -140,9 +140,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PoolId");
-
                     b.HasIndex("TenantId");
+
+                    b.HasIndex("PoolId", "EnvName")
+                        .IsUnique();
 
                     b.ToTable("Domains");
                 });
@@ -168,7 +169,8 @@ namespace PRR.Data.DataContextMigrations.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TenantId");
+                    b.HasIndex("TenantId", "Name")
+                        .IsUnique();
 
                     b.ToTable("DomainPools");
                 });

@@ -3,6 +3,7 @@
 open Common.Domain.Models
 open Common.Domain.Utils
 open Common.Domain.Utils.CRUD
+open Common.Domain.Utils.UniqueConstraintException
 open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx.Linq
@@ -103,7 +104,13 @@ module DomainPools =
             else
                 addUserRoles ownerEmail domain [ Seed.Roles.DomainOwner.Id ] dataContext
 
-            do! saveChangesAsync dataContext
+            try
+                do! saveChangesAsync dataContext
+            with
+            | UniqueConstraintException "IX_DomainPools_TenantId_Name" "NAME_UNIQUE" ex ->
+                return raise ex
+            | ex ->
+                return raise ex
 
             return domainPool.Id
         }
