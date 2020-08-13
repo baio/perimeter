@@ -32,7 +32,7 @@ const routes: Routes = [
                         component: DomainsPoolListComponent,
                         children: [
                             {
-                                path: 'new',
+                                path: ':id',
                                 component: DomainPoolFormComponent,
                             },
                         ],

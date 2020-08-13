@@ -3,6 +3,7 @@ import { definition } from './form.definition';
 import { AdminForm } from '@admin/shared';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomainsDataAccessService } from '@admin/data-access';
+import { of } from 'rxjs';
 
 @Component({
     selector: 'admin-domain-pool-form',
@@ -14,7 +15,11 @@ export class DomainPoolFormComponent {
 
     readonly storeValueDataAccess: AdminForm.Data.StoreValueDataAccess = (
         item: any
-    ) => this.dataAccess.createItem(item);
+    ) => item.id ? this.dataAccess.createItem(item) : this.dataAccess.updateItem(item.id, item);
+
+    readonly loadValueDataAccess: AdminForm.Data.LoadValueDataAccess = (
+        id: number
+    ) => id ? this.dataAccess.loadItem(id) : of({});
 
     constructor(
         private readonly activatedRoute: ActivatedRoute,

@@ -7,6 +7,7 @@ open Microsoft.EntityFrameworkCore
 open PRR.Domain.Auth.SignUpConfirm
 open PRR.System.Models
 open System
+open System.Threading
 
 module E2E =
 
@@ -47,6 +48,8 @@ module E2E =
                   task {
                       let! evt = signUpConfirm signupEnv signupItem
                       sys.EventsRef <! evt
+                      //
+                      Thread.Sleep(10)
                       let! res = PRR.Domain.Auth.LogInEmail.logInEmail loginEnv "__DEFAULT_CLIENT_ID__"
                                      signupItem.Email signupItem.Password
                       // login

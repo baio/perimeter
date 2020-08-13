@@ -1,5 +1,4 @@
 <admin-list
-    rowClickMode="none"
     [definition]="listDefinition"
     [dataProvider]="dataProvider"
     [removeItemDataAccess]="removeItemDataAccess"
@@ -8,6 +7,7 @@
     </admin-list-header>
     <ng-template hlcNzCustomCell="envs" let-items>
         <button
+            (click)="$event.preventDefault();"
             *ngFor="let item of items"
             nz-button
             nzSize="small"

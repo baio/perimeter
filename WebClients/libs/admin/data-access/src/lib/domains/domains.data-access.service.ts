@@ -33,8 +33,16 @@ export class DomainsDataAccessService {
             .pipe(map(mapListResponse(mapItem, searchParams)));
     }
 
+    loadItem(id: number): Observable<DomainItem> {
+        return this.http.get(`tenant/domain-pools/${id}`).pipe(map(mapItem));
+    }
+
     createItem(data: { name: string }): Observable<any> {
         return this.http.post(`tenant/domain-pools`, data);
+    }
+
+    updateItem(id: number, data: { name: string }): Observable<any> {
+        return this.http.put(`tenant/domain-pools/${id}`, data);
     }
 
     removeItem(

@@ -41,11 +41,15 @@ Cypress.Commands.add('formField', (value) => {
     return cy.get(`.hlc-form-input-${value} input`);
 });
 
+Cypress.Commands.add('rows', () => {
+    return cy.get('tbody').find('tr');
+});
+
 Cypress.Commands.add('submitButton', () => {
     return cy.dataCy('drawer-submit');
 });
 
-Cypress.Commands.add('refreshDb', () => {
+Cypress.Commands.add('resetDb', () => {
     const baseUrl = Cypress.env('apiBaseUrl');
 
     const refreshDbUrl = Cypress.env('resetDbUrl');
@@ -53,6 +57,24 @@ Cypress.Commands.add('refreshDb', () => {
     const url = resolve(baseUrl, refreshDbUrl);
 
     return cy.request('POST', url);
+});
+
+Cypress.Commands.add('reinitDb', () => {
+    const baseUrl = Cypress.env('apiBaseUrl');
+
+    const refreshDbUrl = Cypress.env('reinitDbUrl');
+
+    const url = resolve(baseUrl, refreshDbUrl);
+
+    return cy
+        .request('POST', url)
+        .then((resp) =>
+            cy
+                .window()
+                .then((win) => {
+                    win.sessionStorage.setItem('access_token', resp.body.accessToken)
+                })
+        );
 });
 
 /*

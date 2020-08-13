@@ -17,7 +17,7 @@ describe('signup flow', () => {
                 win.sessionStorage.clear();
                 win.localStorage.clear();
             });
-            return cy.refreshDb();
+            return cy.resetDb();
         });
 
         it('visit register', () => {
