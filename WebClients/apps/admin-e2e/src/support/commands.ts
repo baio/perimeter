@@ -41,8 +41,10 @@ Cypress.Commands.add('formField', (value) => {
     return cy.get(`.hlc-form-input-${value} input`);
 });
 
-Cypress.Commands.add('rows', () => {
-    return cy.get('tbody').find('tr');
+Cypress.Commands.add('rows', (index?: number, cellIndex?: number) => {
+    const res = cy.get('tbody').find('tr');
+    const res1 = index !== undefined ? res.eq(index) : res;
+    return cellIndex !== undefined ? res1.find('td').eq(cellIndex) : res1;
 });
 
 Cypress.Commands.add('submitButton', () => {

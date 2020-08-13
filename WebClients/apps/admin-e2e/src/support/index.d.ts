@@ -9,7 +9,7 @@ declare namespace Cypress {
 
         formField(value: string): Chainable<JQuery<HTMLElement>>;
 
-        rows(): Chainable<JQuery<HTMLElement>>;
+        rows(index?: number, cellIndex?: number): Chainable<JQuery<HTMLElement>>;
 
         submitButton(): Chainable<JQuery<HTMLElement>>;
 

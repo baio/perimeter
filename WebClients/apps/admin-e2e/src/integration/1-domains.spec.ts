@@ -33,10 +33,21 @@ describe('domains', () => {
             cy.formField('name').type('new').submitButton().click();
             cy.url().should('not.include', '/domains/pool/new');
         });
+    });
 
+    describe('list', () => {
         it('rows count 2 : sample + created', () => {
             cy.rows().should('have.length', 2);
         });
-    });
 
+        it('latest item on top', () => {
+            cy.rows(0).get('td').first().should('contain.text', 'new');
+        });
+
+        it('sort by create change rows positions', () => {
+            cy.get('table thead th').eq(2).click().click();
+            cy.rows(0, 0).should('contain.text', 'updated name');
+            cy.rows(1, 0).should('contain.text', 'new');
+        });
+    });
 });
