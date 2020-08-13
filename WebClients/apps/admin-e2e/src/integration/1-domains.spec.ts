@@ -5,7 +5,28 @@ describe('domains', () => {
         cy.visit('domains/pool');
     });
 
-    describe.skip('create / edit', () => {
+    describe('edit', () => {
+        it('load domain edit form data', () => {
+            cy.rows().first().click();
+            cy.url().should('match', /\/domains\/pool\/\d+/);
+            cy.formField('name').should((input) => {
+                const val = input.val();
+                expect(val).be.not.empty;
+            });
+        });
+
+        it('edit form data', () => {
+            cy.formField('name')
+                .clear()
+                .type('updated name')
+                .submitButton()
+                .click();
+            cy.url().should('not.match', /\/domains\/pool\/\d+/);
+            cy.rows().should('have.length', 1);
+        });
+    });
+
+    describe('create', () => {
         it('create domain', () => {
             cy.dataCy('create-item').click();
             cy.url().should('include', '/domains/pool/new');
@@ -15,17 +36,7 @@ describe('domains', () => {
 
         it('rows count 2 : sample + created', () => {
             cy.rows().should('have.length', 2);
-        })
+        });
     });
 
-    describe('edit', () => {
-        it('edit domain', () => {
-            cy.rows().first().click();
-            cy.url().should('match', /\/domains\/pool\/\d+/);
-            cy.formField('name').should( input => {
-                const val = input.val();                
-                expect(val).be.not.empty;
-            });
-        })
-    });
 });

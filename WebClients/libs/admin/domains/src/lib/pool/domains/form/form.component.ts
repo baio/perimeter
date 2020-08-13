@@ -15,7 +15,7 @@ export class DomainPoolFormComponent {
 
     readonly storeValueDataAccess: AdminForm.Data.StoreValueDataAccess = (
         item: any
-    ) => item.id ? this.dataAccess.createItem(item) : this.dataAccess.updateItem(item.id, item);
+    ) => item.id ? this.dataAccess.updateItem(item.id, item) : this.dataAccess.createItem(item);
 
     readonly loadValueDataAccess: AdminForm.Data.LoadValueDataAccess = (
         id: number
