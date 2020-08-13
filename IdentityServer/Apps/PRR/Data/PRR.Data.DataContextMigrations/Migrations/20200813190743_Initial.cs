@@ -373,19 +373,21 @@ namespace PRR.Data.DataContextMigrations.Migrations
                 column: "DomainId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DomainPools_TenantId",
+                name: "IX_DomainPools_TenantId_Name",
                 table: "DomainPools",
-                column: "TenantId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Domains_PoolId",
-                table: "Domains",
-                column: "PoolId");
+                columns: new[] { "TenantId", "Name" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Domains_TenantId",
                 table: "Domains",
                 column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Domains_PoolId_EnvName",
+                table: "Domains",
+                columns: new[] { "PoolId", "EnvName" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DomainUserRole_DomainId",
