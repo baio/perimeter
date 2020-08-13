@@ -13,7 +13,7 @@ open System.Text.Encodings.Web
 open System.Text.RegularExpressions
 
 [<AutoOpen>]
-module SignIn =
+module LogInToken =
 
     let private replace (pat: string) (rep: string) (str: string) =
         Regex.Replace(str, pat, rep)

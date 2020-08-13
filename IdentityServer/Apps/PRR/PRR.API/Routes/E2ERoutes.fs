@@ -1,15 +1,54 @@
 ﻿namespace PRR.API.Routes
 
+open Akkling
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Giraffe
 open Microsoft.EntityFrameworkCore
+open PRR.Domain.Auth.SignUpConfirm
+open PRR.System.Models
+open System
 
 module E2E =
 
-    let createRoutes() =
+    let private recreatedDb ctx =
+        let dataContext = getDataContext ctx
+        dataContext.Database.EnsureDeleted() |> ignore
+        dataContext.Database.Migrate() |> ignore
 
-        route "/e2e/reset" >=> POST >=> fun next ctx ->
-            // Recreate db on start
-            let dataContext = getDataContext ctx
-            dataContext.Database.EnsureDeleted() |> ignore
-            dataContext.Database.Migrate() |> ignore
-            Successful.NO_CONTENT next ctx
+    let createRoutes() =
+        choose
+            [ route "/e2e/reset" >=> POST >=> fun next ctx ->
+                // Recreate db on start
+                recreatedDb ctx
+                Successful.NO_CONTENT next ctx
+
+              route "/e2e/reinit" >=> POST >=> fun next ctx ->
+                  let dataContext = getDataContext ctx
+                  let sys = ctx.GetService<ICQRSSystem>()
+                  recreatedDb ctx
+                  // signup
+                  let signupEnv = { DataContext = dataContext }
+
+                  let signupItem: SignUpToken.Item =
+                      { FirstName = "test"
+                        LastName = "user"
+                        Email = "test@user.dev"
+                        Password = "123"
+                        Token = ""
+                        ExpiredAt = DateTime.UtcNow.AddDays(1.)
+                        QueryString = None }
+                  // login
+                  let loginEnv: PRR.Domain.Auth.LogInToken.Models.Env =
+                      { DataContext = getDataContext ctx
+                        HashProvider = getHash ctx
+                        Sha256Provider = getSHA256 ctx
+                        JwtConfig = (getConfig ctx).Jwt }
+
+                  task {
+                      let! evt = signUpConfirm signupEnv signupItem
+                      sys.EventsRef <! evt
+                      let! res = PRR.Domain.Auth.LogInEmail.logInEmail loginEnv "__DEFAULT_CLIENT_ID__"
+                                     signupItem.Email signupItem.Password
+                      // login
+                      return! Successful.OK res next ctx
+                  } ]
