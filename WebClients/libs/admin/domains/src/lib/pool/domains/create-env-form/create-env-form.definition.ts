@@ -5,7 +5,7 @@ export const definition: AdminForm.FormDefinition = {
     kind: 'fields',
     fields: [
         {
-            id: 'name',
+            id: 'envName',
             kind: 'Text',
             label: 'Name',
             validators: [Validators.required],

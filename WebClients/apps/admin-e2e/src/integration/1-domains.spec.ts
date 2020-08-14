@@ -43,7 +43,6 @@ describe('domains', () => {
             cy.url().should('include', '/domains/pool/new');
             cy.cancelButton().click();
         });
-
     });
 
     describe('list', () => {
@@ -77,15 +76,21 @@ describe('domains', () => {
         });
     });
 
-    describe('add env', () => {
+    describe.only('add env', () => {
         it('add env', () => {
             cy.rows(0).find('.table-actions a').eq(0).click();
             cy.url().should('match', /\/domains\/pool\/\d+\/new-env/);
         });
 
         it('create', () => {
-            cy.formField('name').type('stage').submitButton().click();
+            cy.formField('envName').type('stage').submitButton().click();
             cy.url().should('not.match', /\/domains\/pool\/\d+\/new-env/);
+        });
+
+        it('add env with the same name should give error', () => {
+            cy.rows(0).find('.table-actions a').eq(0).click();
+            cy.formField('envName').type('stage').submitButton().click();
+            cy.url().should('match', /\/domains\/pool\/\d+\/new-env/);
         });
     });
 });

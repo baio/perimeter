@@ -112,7 +112,6 @@ export class AdminFormComponent implements OnInit, AfterViewInit {
         private readonly activatedRoute: ActivatedRoute,
         private readonly notificationService: NzNotificationService,
         private readonly modalService: NzModalService,
-        private readonly cdr: ChangeDetectorRef,
         @Optional() private readonly listService?: AdminListService
     ) {}
 
@@ -183,18 +182,8 @@ export class AdminFormComponent implements OnInit, AfterViewInit {
                             }
                         }),
                         catchError((error) => {
+                            // debugger;
                             const msg = mapServerError(this.form, error);
-                            /*
-                            this.form.updateValueAndValidity({
-                                onlySelf: false,
-                                emitEvent: true,
-                            });
-                            */
-                            console.log(
-                                '???',
-                                this.form.controls['name'].errors
-                            );
-                            // this.form.controls['name'].updateValueAndValidity();
                             return of({
                                 status: 'none' as FormStatus,
                                 value,
