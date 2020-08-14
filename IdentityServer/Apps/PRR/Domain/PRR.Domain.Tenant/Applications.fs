@@ -1,10 +1,12 @@
 ﻿namespace PRR.Domain.Tenant
 
 open Common.Domain.Models
+open Common.Domain.Utils
 open Common.Domain.Utils.CRUD
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
+open System.Threading.Tasks
 
 module Applications =
 
@@ -54,3 +56,49 @@ module Applications =
                   DateCreated = p.DateCreated
                   IdTokenExpiresIn = p.IdTokenExpiresIn
                   RefreshTokenExpiresIn = p.RefreshTokenExpiresIn } @>)
+
+    //
+    type SortField =
+        | Name
+        | DateCreated
+
+    type FilterField = Name
+
+    type ListQuery = ListQuery<SortField, FilterField>
+
+    [<CLIMutable>]
+    type ListResponse = ListResponse<GetLike>
+
+    type GetList = DbDataContext -> (TenantId * ListQuery) -> Task<ListResponse>
+
+    let getFilterFieldExpr filterValue =
+        function
+        | FilterField.Name ->
+            <@ fun (domain: Application) ->
+                let like = %(ilike filterValue)
+                like domain.Name @>
+
+    let getSortFieldExpr =
+        function
+        | SortField.DateCreated -> SortDate <@ fun (domain: Application) -> domain.DateCreated @>
+        | SortField.Name -> SortString <@ fun (domain: Application) -> domain.Name @>
+
+    let getList: GetList =
+        fun dataContext (domainId, prms) ->
+
+            let apps =
+                handleListQuery dataContext.Applications getFilterFieldExpr getSortFieldExpr prms
+
+            query {
+                for p in apps do
+                    where (p.DomainId = domainId)
+                    select
+                        { Id = p.Id
+                          Name = p.Name
+                          ClientId = p.ClientId
+                          ClientSecret = p.ClientSecret
+                          DateCreated = p.DateCreated
+                          IdTokenExpiresIn = p.IdTokenExpiresIn
+                          RefreshTokenExpiresIn = p.RefreshTokenExpiresIn }
+            }
+            |> executeListQuery prms

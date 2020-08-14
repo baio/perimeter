@@ -31,14 +31,32 @@ module private ApplicationHandlers =
     let getOne (id: int) =
         wrap (getOne id <!> dataContext)
 
+    let bindListQuery =
+        bindListQuery
+            ((function
+             | "name" ->
+                 Some SortField.Name
+             | "dateCreated" ->
+                 Some SortField.DateCreated
+             | _ -> None),
+             (function
+             | "name" ->
+                 Some FilterField.Name
+             | _ -> None))
+        |> ofReader
+
+    let getList domainId =
+        wrap (getList <!> getDataContext' <*> ((doublet domainId) <!> bindListQuery))
+
 module Application =
 
     let createRoutes() =
-        subRoutef "/tenant/domains/%i/applications" (fun domianId ->
+        subRoutef "/tenant/domains/%i/applications" (fun domainId ->
             // TODO : Check domain belongs user
             (choose
-                [ POST >=> createHandler domianId
+                [ POST >=> createHandler domainId
                   // TODO : Check app belongs domain
-                  PUT >=> routef "/%i" (updateHandler domianId)
+                  PUT >=> routef "/%i" (updateHandler domainId)
                   DELETE >=> routef "/%i" removeHandler
+                  GET >=> getList domainId
                   GET >=> routef "/%i" getOne ]))

@@ -3,33 +3,26 @@ import { Injectable } from '@angular/core';
 import { HlcNzTable } from '@nz-holistic/nz-list';
 import { Observable, of } from 'rxjs';
 import { AppItem } from './models';
-import { mapListRequestParams } from '../utils';
+import { mapListRequestParams, mapListResponse } from '../utils';
+import { map } from 'rxjs/operators';
+
+const mapItem = (x) => x;
 
 @Injectable()
 export class AppsDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
     loadList(
+        domainId: number,
         searchParams: HlcNzTable.Data.DataProviderState
     ): Observable<HlcNzTable.Data.DataProviderResult<AppItem>> {
         const params = mapListRequestParams(searchParams);
         if (searchParams.filter && searchParams.filter.text) {
             params['filter.name'] = searchParams.filter.text;
         }
-        return of({
-            data: [
-                {
-                    id: 1,
-                    name: 'first',
-                    clientId: 'xxx',
-                    idTokenExpiresIn: 10,
-                    refreshTokenExpiresIn: 2500,
-                    dateCreated: new Date().toISOString(),
-                },
-            ],
-            pager: { total: 1, size: 1, index: 1 },
-        });
-        //return this.http.get(BLOG_PATH, { params }).pipe(map(mapListResponse(mapItem, searchParams)));
+        return this.http
+            .get(`/tenant/domains/${domainId}/applications`, { params })
+            .pipe(map(mapListResponse(mapItem, searchParams)));
     }
 
     removeItem(
