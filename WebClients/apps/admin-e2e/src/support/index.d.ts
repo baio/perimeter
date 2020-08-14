@@ -15,6 +15,10 @@ declare namespace Cypress {
 
         submitButton(): Chainable<JQuery<HTMLElement>>;
 
+        confirmNoButton(): Chainable<JQuery<HTMLElement>>;
+
+        confirmYesButton(): Chainable<JQuery<HTMLElement>>;
+
         resetDb(): Chainable<Window>;
 
         reinitDb(): Chainable<Window>;

@@ -42,7 +42,7 @@ Cypress.Commands.add('formField', (value) => {
 });
 
 Cypress.Commands.add('rows', (index?: number, cellIndex?: number) => {
-    const res = cy.get('tbody').find('tr');
+    const res = cy.get('tbody tr.ant-table-row');
     const res1 = index !== undefined ? res.eq(index) : res;
     return cellIndex !== undefined ? res1.find('td').eq(cellIndex) : res1;
 });
@@ -53,6 +53,14 @@ Cypress.Commands.add('submitButton', () => {
 
 Cypress.Commands.add('cancelButton', () => {
     return cy.dataCy('drawer-close');
+});
+
+Cypress.Commands.add('confirmNoButton', () => {
+    return cy.get('.ant-modal-confirm-body-wrapper button.ant-btn').eq(0);
+});
+
+Cypress.Commands.add('confirmYesButton', () => {
+    return cy.get('.ant-modal-confirm-body-wrapper button.ant-btn').eq(1);
 });
 
 Cypress.Commands.add('resetDb', () => {

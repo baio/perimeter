@@ -76,7 +76,7 @@ describe('domains', () => {
         });
     });
 
-    describe.only('add env', () => {
+    describe('add env', () => {
         it('add env', () => {
             cy.rows(0).find('.table-actions a').eq(0).click();
             cy.url().should('match', /\/domains\/pool\/\d+\/new-env/);
@@ -91,6 +91,20 @@ describe('domains', () => {
             cy.rows(0).find('.table-actions a').eq(0).click();
             cy.formField('envName').type('stage').submitButton().click();
             cy.url().should('match', /\/domains\/pool\/\d+\/new-env/);
+            cy.cancelButton().click();
+        });
+    });
+
+    describe('delete', () => {
+        it('remove domain', () => {
+            cy.rows(0).find('.table-actions a').eq(1).click();
+            cy.confirmYesButton().click();
+            cy.rows().should('have.length', 0);
+        });
+
+        it('after reset filter there should be 1 rows', () => {
+            cy.dataCy('text-search').clear().type('{enter}');
+            cy.rows().should('have.length', 1);
         });
     });
 });

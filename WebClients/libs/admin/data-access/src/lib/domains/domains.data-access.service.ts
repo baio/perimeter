@@ -41,7 +41,10 @@ export class DomainsDataAccessService {
         return this.http.post(`tenant/domain-pools`, data);
     }
 
-    createEnvItem(domainId: number, data: { envName: string }): Observable<any> {
+    createEnvItem(
+        domainId: number,
+        data: { envName: string }
+    ): Observable<any> {
         return this.http.post(`tenant/domain-pools/${domainId}/domains`, data);
     }
 
@@ -49,9 +52,7 @@ export class DomainsDataAccessService {
         return this.http.put(`tenant/domain-pools/${id}`, data);
     }
 
-    removeItem(
-        id: number
-    ): Observable<HlcNzTable.Data.DataProviderResult<any>> {
-        return of(null);
+    removeItem(id: number): Observable<any> {
+        return this.http.delete(`tenant/domain-pools/${id}`);
     }
 }

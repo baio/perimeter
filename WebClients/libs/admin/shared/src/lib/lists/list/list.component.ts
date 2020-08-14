@@ -169,7 +169,6 @@ export class AdminListComponent
 
     onActionClick(action: ActionClickEvent) {
         this.actionClick.emit(action);
-
         if (action.actionId === DELETE_ACTION_ID) {
             this.modalService.confirm({
                 nzTitle: 'Do you want to delete this item?',
