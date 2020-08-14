@@ -5,7 +5,8 @@ export const listDefinition: AdminList.TableDefinition = {
     cols: [
         {
             id: 'name',
-            title: 'Name'
+            title: 'Name',
+            sort: true,
         },
         {
             id: 'clientId',

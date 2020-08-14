@@ -28,11 +28,11 @@ describe('apps', () => {
                 .submitButton()
                 .click();
             cy.url().should('not.match', /\/domains\/\d+\/apps\/\d+/);
-            cy.rows().should('have.length', 1);
+            cy.rows().should('have.length', 2);
         });
     });
 
-    describe.only('create', () => {
+    describe('create', () => {
         it('create domain', () => {
             cy.dataCy('create-item').click();
             cy.url().should('match', /\/domains\/\d+\/apps\/new/);
@@ -64,8 +64,8 @@ describe('apps', () => {
     });
 
     describe('list', () => {
-        it('rows count 2 : sample + created', () => {
-            cy.rows().should('have.length', 2);
+        it('rows count : sample + created', () => {
+            cy.rows().should('have.length', 3);
         });
 
         it('latest item on top', () => {
@@ -74,54 +74,31 @@ describe('apps', () => {
 
         it('sort by created change rows positions', () => {
             cy.get('table thead th').eq(2).click().click();
-            cy.rows(0, 0).should('contain.text', UPDATED_NAME);
-            cy.rows(1, 0).should('contain.text', 'new');
+            cy.rows(1, 0).should('contain.text', UPDATED_NAME);
+            cy.rows(2, 0).should('contain.text', 'new');
         });
 
         it('sort by name change rows positions', () => {
             cy.get('table thead th').eq(0).click();
-            cy.rows(0, 0).should('contain.text', 'new');
-            cy.rows(1, 0).should('contain.text', UPDATED_NAME);
+            cy.rows(2, 0).should('contain.text', 'updated');
+            // cy.rows(1, 0).should('contain.text', UPDATED_NAME);
             cy.get('table thead th').eq(0).click();
-            cy.rows(0, 0).should('contain.text', UPDATED_NAME);
-            cy.rows(1, 0).should('contain.text', 'new');
-        });
-
-        it('filter by updated should give 1 item', () => {
-            cy.dataCy('text-search').type('domain').type('{enter}');
-            cy.rows().should('have.length', 1);
-            cy.rows(0, 0).should('contain.text', UPDATED_NAME);
-        });
-    });
-
-    describe('add env', () => {
-        it('add env', () => {
-            cy.rows(0).find('.table-actions a').eq(0).click();
-            cy.url().should('match', /\/domains\/pool\/\d+\/new-env/);
-        });
-
-        it('create', () => {
-            cy.formField('envName').type('stage').submitButton().click();
-            cy.url().should('not.match', /\/domains\/pool\/\d+\/new-env/);
-        });
-
-        it('add env with the same name should give error', () => {
-            cy.rows(0).find('.table-actions a').eq(0).click();
-            cy.formField('envName').type('stage').submitButton().click();
-            cy.url().should('match', /\/domains\/pool\/\d+\/new-env/);
-            cy.cancelButton().click();
+            // cy.rows(0, 0).should('contain.text', UPDATED_NAME);
+            cy.rows(0, 0).should('contain.text', 'updated');
         });
     });
 
     describe('delete', () => {
-        it('remove domain', () => {
-            cy.rows(0).find('.table-actions a').eq(1).click();
+        it('remove', () => {
+            cy.rows().find('.table-actions a').eq(0).click();
             cy.confirmYesButton().click();
-            cy.rows().should('have.length', 0);
+            cy.rows().should('have.length', 2);
         });
+    });
 
+    describe('filter', () => {
         it('after reset filter there should be 1 rows', () => {
-            cy.dataCy('text-search').clear().type('{enter}');
+            cy.dataCy('text-search').type('new').type('{enter}');
             cy.rows().should('have.length', 1);
         });
     });
