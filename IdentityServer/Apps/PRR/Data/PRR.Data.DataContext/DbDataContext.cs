@@ -56,6 +56,7 @@ namespace PRR.Data.DataContext
 
             modelBuilder.Entity<Application>(entity =>
             {
+                entity.HasIndex(x => new {x.DomainId, x.Name}).IsUnique();
                 entity.HasIndex(x => x.ClientId).IsUnique();
                 entity.Property(x => x.DateCreated).HasDefaultValueSql("now()");
                 entity.HasOne(x => x.Domain).WithMany(x => x.Applications).OnDelete(DeleteBehavior.Cascade);
@@ -65,6 +66,7 @@ namespace PRR.Data.DataContext
 
             modelBuilder.Entity<Api>(entity =>
             {
+                entity.HasIndex(x => new {x.DomainId, x.Name}).IsUnique();
                 entity.HasIndex(x => x.Identifier).IsUnique();
                 entity.Property(x => x.IsUserManagement).HasDefaultValue(false);
                 entity.Property(x => x.DateCreated).HasDefaultValueSql("now()");

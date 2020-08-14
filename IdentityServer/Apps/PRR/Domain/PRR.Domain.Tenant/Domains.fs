@@ -38,17 +38,21 @@ module Domains =
         }
         |> notFoundRaiseError Forbidden
 
+    let catch =
+        function
+        | UniqueConstraintException "IX_Domains_PoolId_EnvName" (ConflictErrorField("envName", UNIQUE)) ex ->
+            raise ex
+        | ex ->
+            raise ex
+
     let create: Create<DomainPoolId * PostLike, int, DbDataContext> =
-        createCatch<Domain, _, _, _> (function
-            | UniqueConstraintException "IX_Domains_PoolId_EnvName" (ConflictErrorField("envName", UNIQUE)) ex ->
-                raise ex
-            | ex ->
-                raise ex)
+        createCatch<Domain, _, _, _> catch
             (fun (domainPoolId, dto) -> Domain(PoolId = Nullable(domainPoolId), EnvName = dto.EnvName, IsMain = false))
             (fun x -> x.Id)
 
     let update: Update<int, PostLike, DbDataContext> =
-        update<Domain, _, _, _> (fun id -> Domain(Id = id)) (fun dto entity -> entity.EnvName <- dto.EnvName)
+        updateCatch<Domain, _, _, _> catch (fun id -> Domain(Id = id))
+            (fun dto entity -> entity.EnvName <- dto.EnvName)
 
     let remove: Remove<int, DbDataContext> =
         remove (fun id -> Role(Id = id))

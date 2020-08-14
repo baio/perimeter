@@ -25,28 +25,33 @@ export class AppsDataAccessService {
             .pipe(map(mapListResponse(mapItem, searchParams)));
     }
 
-    removeItem(
-        id: number
-    ): Observable<HlcNzTable.Data.DataProviderResult<any>> {
-        return of(null);
+    removeItem(domainId: number, id: number): Observable<any> {
+        return this.http.delete(
+            `/tenant/domains/${domainId}/applications/${id}`
+        );
     }
 
-    loadItem(id: number): Observable<AppItem> {
-        return of({
-            id: 1,
-            name: 'first',
-            clientId: 'xxx',
-            idTokenExpiresIn: 10,
-            refreshTokenExpiresIn: 2500,
-            dateCreated: new Date().toISOString(),
-        });
+    loadItem(domainId: number, id: number): Observable<AppItem> {
+        return this.http.get<AppItem>(
+            `/tenant/domains/${domainId}/applications/${id}`
+        );
     }
 
-    createItem(data: Partial<AppItem>): Observable<AppItem> {
-        return of(data as any);
+    createItem(domainId: number, data: Partial<AppItem>): Observable<AppItem> {
+        return this.http.post<AppItem>(
+            `/tenant/domains/${domainId}/applications`,
+            data
+        );
     }
 
-    updateItem(id: number, data: Partial<AppItem>): Observable<AppItem> {
-        return of(data as any);
+    updateItem(
+        domainId: number,
+        id: number,
+        data: Partial<AppItem>
+    ): Observable<AppItem> {
+        return this.http.put<AppItem>(
+            `/tenant/domains/${domainId}/applications/${id}`,
+            data
+        );
     }
 }

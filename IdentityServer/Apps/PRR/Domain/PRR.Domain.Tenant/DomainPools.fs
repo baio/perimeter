@@ -74,6 +74,13 @@ module DomainPools =
         |> Seq.map (fun roleId -> DomainUserRole(UserEmail = userEmail, Domain = domain, RoleId = roleId))
         |> addRange dataContext
 
+    let catch =
+        function
+        | UniqueConstraintException "IX_DomainPools_TenantId_Name" (ConflictErrorField("name", UNIQUE)) ex ->
+            raise ex
+        | ex ->
+            raise ex
+
     let create ((userId, tenantId, data): UserId * TenantId * PostLike) (env: Env) =
         let dataContext = env.DataContext
 
@@ -106,19 +113,15 @@ module DomainPools =
 
             try
                 do! saveChangesAsync dataContext
-            with
-            | UniqueConstraintException "IX_DomainPools_TenantId_Name" (ConflictErrorField ("name", UNIQUE)) ex ->
-                return raise ex
-            | ex ->
-                return raise ex
+            with ex -> return catch ex
 
             return domainPool.Id
         }
 
     //
-
     let update: Update<int, PostLike, DbDataContext> =
-        update<DomainPool, _, _, _> (fun id -> DomainPool(Id = id)) (fun dto entity -> entity.Name <- dto.Name)
+        updateCatch<DomainPool, _, _, _> catch (fun id -> DomainPool(Id = id))
+            (fun dto entity -> entity.Name <- dto.Name)
 
     let remove: Remove<int, DbDataContext> =
         remove (fun id -> DomainPool(Id = id))

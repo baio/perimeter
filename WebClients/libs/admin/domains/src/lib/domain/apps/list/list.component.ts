@@ -17,7 +17,7 @@ export class AppsListComponent implements OnInit {
         this.dataAccess.loadList(this.domainId, state);
     readonly removeItemDataAccess: AdminList.Data.RemoveItemDataAccess = ({
         id,
-    }) => this.dataAccess.removeItem(id);
+    }) => this.dataAccess.removeItem(this.domainId, id);
 
     constructor(
         activatedRoute: ActivatedRoute,

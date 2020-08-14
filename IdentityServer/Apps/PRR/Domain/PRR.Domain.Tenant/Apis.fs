@@ -43,8 +43,15 @@ module Apis =
     type CreateEnv =
         { AccessTokenExpiresIn: int<minutes> }
 
+    let catch =
+        function
+        | UniqueConstraintException "IX_Apis_DomainId_Name" (ConflictErrorField("name", UNIQUE)) ex ->
+            raise ex
+        | ex ->
+            raise ex
+
     let create (env: CreateEnv): Create<DomainId * PostLike, int, DbDataContext> =
-        validateCreate<Api, _, _, _> (doublet() >> validatePermissions) (fun (domainId, dto) ->
+        validateCreateCatch<Api, _, _, _> catch (doublet() >> validatePermissions) (fun (domainId, dto) ->
             Api
                 (Name = dto.Name, Identifier = dto.Identifier, DomainId = domainId, IsUserManagement = false,
                  AccessTokenExpiresIn = int env.AccessTokenExpiresIn,
@@ -54,7 +61,7 @@ module Apis =
                       |> Seq.toArray))) (fun x -> x.Id)
 
     let update: Update<int, DomainId * PostLike, DbDataContext> =
-        validateUpdate<Api, _, _, _> validatePermissions (fun id -> Api(Id = id)) (fun (_, dto) entity ->
+        validateUpdateCatch<Api, _, _, _> catch validatePermissions (fun id -> Api(Id = id)) (fun (_, dto) entity ->
             entity.Name <- dto.Name
             entity.Identifier <- dto.Identifier
             entity.Permissions <-

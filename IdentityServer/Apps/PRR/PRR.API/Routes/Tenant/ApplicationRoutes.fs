@@ -58,5 +58,5 @@ module Application =
                   // TODO : Check app belongs domain
                   PUT >=> routef "/%i" (updateHandler domainId)
                   DELETE >=> routef "/%i" removeHandler
-                  GET >=> getList domainId
-                  GET >=> routef "/%i" getOne ]))
+                  GET >=> routef "/%i" getOne
+                  GET >=> getList domainId ]))

@@ -12,8 +12,7 @@ module Applications =
 
     [<CLIMutable>]
     type PostLike =
-        { Name: string
-          ClientId: string }
+        { Name: string }
 
     [<CLIMutable>]
     type GetLike =
@@ -30,18 +29,24 @@ module Applications =
           IdTokenExpiresIn: int<minutes>
           RefreshTokenExpiresIn: int<minutes> }
 
+    let catch =
+        function
+        | UniqueConstraintException "IX_Applications_DomainId_Name" (ConflictErrorField("name", UNIQUE)) ex ->
+            raise ex
+        | ex ->
+            raise ex
+
     let create (env: CreateEnv): Create<DomainId * PostLike, int, DbDataContext> =
-        create<Application, _, _, _>
-            (fun (domainId, dto) ->
+        createCatch<Application, _, _, _> catch (fun (domainId, dto) ->
             Application
-                (Name = dto.Name, ClientId = dto.ClientId, DomainId = domainId, ClientSecret = env.HashProvider(),
-                 IdTokenExpiresIn = int env.IdTokenExpiresIn, RefreshTokenExpiresIn = int env.RefreshTokenExpiresIn,
-                 Flow = FlowType.PKCE, AllowedCallbackUrls = "*")) (fun x -> x.Id)
+                (Name = dto.Name, ClientId = Guid.NewGuid().ToString(), DomainId = domainId,
+                 ClientSecret = env.HashProvider(), IdTokenExpiresIn = int env.IdTokenExpiresIn,
+                 RefreshTokenExpiresIn = int env.RefreshTokenExpiresIn, Flow = FlowType.PKCE, AllowedCallbackUrls = "*"))
+            (fun x -> x.Id)
 
     let update: Update<int, DomainId * PostLike, DbDataContext> =
-        update<Application, _, _, _> (fun id -> Application(Id = id)) (fun (_, dto) entity ->
-            entity.Name <- dto.Name
-            entity.ClientId <- dto.ClientId)
+        updateCatch<Application, _, _, _> catch (fun id -> Application(Id = id))
+            (fun (_, dto) entity -> entity.Name <- dto.Name)
 
     let remove: Remove<int, DbDataContext> =
         remove (fun id -> Application(Id = id))

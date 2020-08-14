@@ -10,22 +10,24 @@ import { AppsDataAccessService } from '@admin/data-access';
     styleUrls: ['./form.component.scss'],
 })
 export class AppFormComponent {
+    private readonly domainId: number;
     readonly definition = definition;
-
     readonly loadValueDataAccess: AdminForm.Data.LoadValueDataAccess = (
         id: number
-    ) => this.dataAccess.loadItem(id);
+    ) => this.dataAccess.loadItem(this.domainId, id);
 
     readonly storeValueDataAccess: AdminForm.Data.StoreValueDataAccess = (
         item: any
     ) =>
         item.id
-            ? this.dataAccess.updateItem(item.id, item)
-            : this.dataAccess.createItem(item);
+            ? this.dataAccess.updateItem(this.domainId, item.id, item)
+            : this.dataAccess.createItem(this.domainId, item);
 
     constructor(
         private readonly activatedRoute: ActivatedRoute,
         private readonly dataAccess: AppsDataAccessService,
         private readonly router: Router
-    ) {}
+    ) {
+        this.domainId = +activatedRoute.parent.parent.snapshot.params['id'];
+    }
 }

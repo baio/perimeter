@@ -46,6 +46,7 @@ module CRUD =
 
     let validateCreate<'b, 'a, 'c, 'dbContext when 'b: not struct and 'dbContext :> DbContext> =
         validateCreateCatch<'b, 'a, 'c, 'dbContext> (fun ex -> raise ex)
+
     type Update<'id, 'dto, 'dbContext when 'dbContext :> DbContext> = 'id * 'dto -> ('dbContext -> Task<unit>)
 
     let updateTask<'b, 'id, 'a, 'dbContext when 'b: not struct and 'dbContext :> DbContext> (dto2enty: 'id -> 'b)
@@ -64,12 +65,20 @@ module CRUD =
                 return! updateTask dto2enty mapEntity x dbContext
             }
 
-    let update<'b, 'id, 'a, 'dbContext when 'b: not struct and 'dbContext :> DbContext> (dto2enty: 'id -> 'b)
-        (mapEntity: 'a -> 'b -> unit): Update<'id, 'a, 'dbContext> =
+    let updateCatch<'b, 'id, 'a, 'dbContext when 'b: not struct and 'dbContext :> DbContext> exceptionHandler
+        (dto2enty: 'id -> 'b) (mapEntity: 'a -> 'b -> unit): Update<'id, 'a, 'dbContext> =
         fun (id, dto) dbContext ->
             let entity = dto2enty id
             update dbContext (mapEntity dto) entity
-            saveCRUDChangeAsync dbContext
+            task {
+                try
+                    do! saveChangesAsync dbContext
+                with ex ->
+                    return exceptionHandler ex
+            }
+
+    let update<'b, 'id, 'a, 'dbContext when 'b: not struct and 'dbContext :> DbContext> =
+        updateCatch<'b, 'id, 'a, 'dbContext> (fun ex -> raise ex)
 
     let validateUpdate<'b, 'id, 'a, 'dbContext when 'b: not struct and 'dbContext :> DbContext> (validate: 'id * 'a -> ('dbContext -> Task<unit>))
         (dto2enty: 'id -> 'b) (mapEntity: 'a -> 'b -> unit): Update<'id, 'a, 'dbContext> =
@@ -79,6 +88,13 @@ module CRUD =
                 return! update dto2enty mapEntity x dbContext
             }
 
+    let validateUpdateCatch<'b, 'id, 'a, 'dbContext when 'b: not struct and 'dbContext :> DbContext> exceptionHandler
+        (validate: 'id * 'a -> ('dbContext -> Task<unit>)) (dto2enty: 'id -> 'b) (mapEntity: 'a -> 'b -> unit): Update<'id, 'a, 'dbContext> =
+        fun x dbContext ->
+            task {
+                do! validate x dbContext
+                return! updateCatch exceptionHandler dto2enty mapEntity x dbContext
+            }
     type Remove<'id, 'dbContext when 'dbContext :> DbContext> = 'id -> 'dbContext -> Task<unit>
 
     let remove<'b, 'id, 'dbContext when 'b: not struct and 'dbContext :> DbContext> (dto2entity: 'id -> 'b): Remove<'id, 'dbContext> =
