@@ -1,22 +1,22 @@
 <nz-layout>
     <nz-sider nzWidth="200px" nzTheme="light">
         <ul nz-menu nzMode="inline" class="sider-menu">
-            <li nz-menu-item nzMatchRouter>
+            <li data-cy="apps-menu-item" nz-menu-item nzMatchRouter>
                 <a [routerLink]="['.', 'apps']">Applications</a>
             </li>
-            <li nz-menu-item nzMatchRouter>
+            <li data-cy="apis-menu-item" nz-menu-item nzMatchRouter>
                 <a [routerLink]="['.', 'apis']">APIs</a>
             </li>
-            <li nz-menu-item nzMatchRouter>
+            <li data-cy="users-menu-item" nz-menu-item nzMatchRouter>
                 <a [routerLink]="['.', 'users']">Users</a>
             </li>
-            <li nz-menu-item nzMatchRouter>
+            <li data-cy="permissions-menu-item" nz-menu-item nzMatchRouter>
                 <a [routerLink]="['.', 'perms']">Permissions</a>
             </li>
-            <li nz-menu-item nzMatchRouter>
+            <li data-cy="roles-menu-item" nz-menu-item nzMatchRouter>
                 <a [routerLink]="['.', 'roles']">Roles</a>
             </li>
-            <li nz-menu-item nzMatchRouter>
+            <li data-cy="admins-menu-item" nz-menu-item nzMatchRouter>
                 <a [routerLink]="['.', 'admins']">Admins</a>
             </li>
         </ul>

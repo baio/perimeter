@@ -8,6 +8,7 @@ open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
 open System.Linq
+open System.Threading.Tasks
 
 module Apis =
 
@@ -15,6 +16,7 @@ module Apis =
     type PostLike =
         { Name: string
           Identifier: string
+          AccessTokenExpiresIn: int
           PermissionIds: int seq }
 
     [<CLIMutable>]
@@ -28,6 +30,7 @@ module Apis =
           Name: string
           Identifier: string
           DateCreated: System.DateTime
+          AccessTokenExpiresIn: int
           Permissions: PermissionGetLike seq }
 
     let private validatePermissions (_, (domainId, dto: PostLike)) (dataContext: DbDataContext) =
@@ -79,7 +82,56 @@ module Apis =
                   Name = p.Name
                   Identifier = p.Identifier
                   DateCreated = p.DateCreated
+                  AccessTokenExpiresIn = p.AccessTokenExpiresIn
                   Permissions =
                       p.Permissions.Select(fun x ->
                           { Id = x.Id
                             Name = x.Name }) } @>)
+
+    //
+    type SortField =
+        | Name
+        | DateCreated
+
+    type FilterField = Name
+
+    type ListQuery = ListQuery<SortField, FilterField>
+
+    [<CLIMutable>]
+    type ListResponse = ListResponse<GetLike>
+
+    type GetList = DbDataContext -> (TenantId * ListQuery) -> Task<ListResponse>
+
+    let getFilterFieldExpr filterValue =
+        function
+        | FilterField.Name ->
+            <@ fun (domain: Api) ->
+                let like = %(ilike filterValue)
+                like domain.Name @>
+
+    let getSortFieldExpr =
+        function
+        | SortField.DateCreated -> SortDate <@ fun (domain: Api) -> domain.DateCreated @>
+        | SortField.Name -> SortString <@ fun (domain: Api) -> domain.Name @>
+
+    let getList: GetList =
+        fun dataContext (domainId, prms) ->
+
+            let apps =
+                handleListQuery dataContext.Apis getFilterFieldExpr getSortFieldExpr prms
+
+            query {
+                for p in apps do
+                    where (p.DomainId = domainId)
+                    select
+                        { Id = p.Id
+                          Name = p.Name
+                          Identifier = p.Identifier
+                          DateCreated = p.DateCreated
+                          AccessTokenExpiresIn = p.AccessTokenExpiresIn
+                          Permissions =
+                              p.Permissions.Select(fun x ->
+                                  { Id = x.Id
+                                    Name = x.Name }) }
+            }
+            |> executeListQuery prms

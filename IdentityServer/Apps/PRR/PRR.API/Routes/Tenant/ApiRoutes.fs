@@ -26,14 +26,32 @@ module private ApiHandlers =
     let getOne (id: int) =
         wrap (getOne id <!> dataContext)
 
+    let bindListQuery =
+        bindListQuery
+            ((function
+             | "name" ->
+                 Some SortField.Name
+             | "dateCreated" ->
+                 Some SortField.DateCreated
+             | _ -> None),
+             (function
+             | "name" ->
+                 Some FilterField.Name
+             | _ -> None))
+        |> ofReader
+
+    let getList domainId =
+        wrap (getList <!> getDataContext' <*> ((doublet domainId) <!> bindListQuery))
+
 module Api =
 
     let createRoutes() =
-        subRoutef "/tenant/domains/%i/apis" (fun domianId ->
+        subRoutef "/tenant/domains/%i/apis" (fun domainId ->
             // TODO : Check domain belongs user
             (choose
-                [ POST >=> createHandler domianId
+                [ POST >=> createHandler domainId
                   // TODO : Check api belongs domain
-                  PUT >=> routef "/%i" (updateHandler domianId)
+                  PUT >=> routef "/%i" (updateHandler domainId)
                   DELETE >=> routef "/%i" removeHandler
-                  GET >=> routef "/%i" getOne ]))
+                  GET >=> routef "/%i" getOne
+                  GET >=> getList domainId ]))

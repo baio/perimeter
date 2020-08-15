@@ -16,5 +16,12 @@ export const definition: AdminForm.FormDefinition = {
             label: 'Identifier',
             validators: [Validators.required],
         },
+        {
+            id: 'accessTokenExpiresIn',
+            kind: 'Number',
+            label: 'Access Token Expires in Minutes',
+            validators: [Validators.required],
+        },
+
     ],
 };
