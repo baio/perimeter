@@ -16,6 +16,8 @@ export class AdminPermissionsColumnComponent {
     @Input()
     permissions: IPermission[];
 
+    @Input() hasEditButton = false;
+
     @Output() clicked = new EventEmitter<MouseEvent>();
 
     constructor() {}

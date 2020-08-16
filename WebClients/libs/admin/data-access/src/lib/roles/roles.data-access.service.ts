@@ -5,8 +5,19 @@ import { Observable, of } from 'rxjs';
 import { RoleItem } from './models';
 import { mapListRequestParams, mapListResponse } from '../utils';
 import { map } from 'rxjs/operators';
+import { Permission } from '../models';
 
-const mapItem = (x) => x;
+const mapItem = (x) => {
+    const m = { ...x };
+    m.permissionIds = (x.permissions || []).map((a) => a.id);
+    return m;
+};
+
+const mapPayload = (x) => {
+    const m = { ...x };
+    delete m.permissions;
+    return m;
+};
 
 @Injectable()
 export class RolesDataAccessService {
@@ -25,6 +36,12 @@ export class RolesDataAccessService {
             .pipe(map(mapListResponse(mapItem, searchParams)));
     }
 
+    loadPermissions(domainId: number): Observable<Permission[]> {
+        return this.http.get<Permission[]>(
+            `/tenant/domains/${domainId}/permissions`
+        );
+    }
+
     removeItem(domainId: number, id: number): Observable<any> {
         return this.http.delete(`/tenant/domains/${domainId}/roles/${id}`);
     }
@@ -41,7 +58,7 @@ export class RolesDataAccessService {
     ): Observable<RoleItem> {
         return this.http.post<RoleItem>(
             `/tenant/domains/${domainId}/roles`,
-            data
+            mapPayload(data)
         );
     }
 
@@ -52,7 +69,7 @@ export class RolesDataAccessService {
     ): Observable<RoleItem> {
         return this.http.put<RoleItem>(
             `/tenant/domains/${domainId}/roles/${id}`,
-            data
+            mapPayload(data)
         );
     }
 }

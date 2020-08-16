@@ -1,6 +1,7 @@
 ﻿namespace PRR.API.Routes.Tenant
 
 open Common.Domain.Giraffe
+open Common.Domain.Models
 open Common.Utils
 open Common.Utils.ReaderTask
 open FSharp.Control.Tasks.V2.ContextInsensitive
@@ -20,10 +21,10 @@ module private DomainHandlers =
     let updateHandler id =
         wrap (update <!> ((doublet id) <!> bindJsonAsync<PostLike>) <*> dataContext)
 
-    let removeHandler (id: int) =
+    let removeHandler (id: DomainId) =
         wrap (remove id <!> dataContext)
 
-    let getOne (id: int) =
+    let getOne (id: DomainId) =
         wrap (getOne id <!> dataContext)
 
 module Domain =

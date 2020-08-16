@@ -1,8 +1,9 @@
-import { RolesDataAccessService } from '@admin/data-access';
+import { RolesDataAccessService, Permission } from '@admin/data-access';
 import { AdminForm } from '@admin/shared';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { definition } from './form.definition';
+import { getDefinition } from './form.definition';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'admin-role-form',
@@ -11,7 +12,8 @@ import { definition } from './form.definition';
 })
 export class RoleFormComponent {
     private readonly domainId: number;
-    readonly definition = definition;
+    readonly definition: AdminForm.FormDefinition; // = definition;
+    private readonly permissions$: Observable<Permission[]>;
     readonly loadValueDataAccess: AdminForm.Data.LoadValueDataAccess = (
         id: number
     ) => this.dataAccess.loadItem(this.domainId, id);
@@ -29,5 +31,7 @@ export class RoleFormComponent {
         private readonly router: Router
     ) {
         this.domainId = +activatedRoute.parent.parent.snapshot.params['id'];
+        this.permissions$ = dataAccess.loadPermissions(this.domainId);
+        this.definition = getDefinition(this.permissions$);
     }
 }

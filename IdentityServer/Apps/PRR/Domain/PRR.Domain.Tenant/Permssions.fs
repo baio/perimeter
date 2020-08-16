@@ -115,3 +115,15 @@ module Permissions =
                           DateCreated = p.DateCreated }
             }
             |> executeListQuery prms
+
+    let getAllDomainPermissions (domainId: DomainId) (dataContext: DbDataContext) =
+        query {
+            for p in dataContext.Permissions do
+                where (p.Api.DomainId = domainId)
+                select
+                    { Id = p.Id
+                      Name = p.Name
+                      Description = p.Description
+                      DateCreated = p.DateCreated }
+        }
+        |> toListAsync

@@ -12,6 +12,10 @@ export const listDefinition: AdminList.TableDefinition = {
             id: 'permissions',
             title: 'Permissions',
             kind: 'Permissions',
+            // TODO !
+            props: {
+                hasEditButton: true
+            } as any
         },
         {
             id: 'identifier',

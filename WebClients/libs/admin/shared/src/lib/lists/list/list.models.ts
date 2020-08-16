@@ -6,6 +6,7 @@ export namespace AdminList {
         export interface AdminPermissionsColumn
             extends HlcNzTable.MapColumns.MapColumn<{
                 permissions: string[];
+                hasEditButton?: boolean;
                 clicked?: Subject<MouseEvent>;
             }> {
             kind: 'Permissions';

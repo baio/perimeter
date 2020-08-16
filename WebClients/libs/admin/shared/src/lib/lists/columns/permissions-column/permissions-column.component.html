@@ -1,11 +1,8 @@
 <div style="display: inline-flex;">
-    <nz-tag nzColor="blue">
+    <nz-tag nzColor="blue" *ngIf="hasEditButton">
         <i nz-icon nzType="edit" nzSize="small" nzTheme="outline"></i>
     </nz-tag>
-    <nz-tag
-        (click)="onClick($event)"
-        *ngFor="let item of permissions; let last = last"
-    >
+    <nz-tag (click)="onClick($event)" *ngFor="let item of permissions">
         {{ item.name }}
     </nz-tag>
 </div>

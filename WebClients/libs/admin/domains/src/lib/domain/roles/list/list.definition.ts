@@ -5,7 +5,8 @@ export const listDefinition: AdminList.TableDefinition = {
     cols: [
         {
             id: 'name',
-            title: 'Name'
+            title: 'Name',
+            sort: true,
         },
         {
             id: 'description',
@@ -14,6 +15,7 @@ export const listDefinition: AdminList.TableDefinition = {
         {
             id: 'permissions',
             title: 'Permissions',
+            kind: 'Permissions',
         },
         {
             id: 'dateCreated',

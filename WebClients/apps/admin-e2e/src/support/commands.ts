@@ -38,7 +38,25 @@ Cypress.Commands.add('dataCy', (value, selector = '') => {
 });
 
 Cypress.Commands.add('formField', (value) => {
-    return cy.get(`.hlc-form-input-${value} input, .hlc-form-input-${value} textarea`);
+    return cy.get(
+        `.hlc-form-input-${value} input, .hlc-form-input-${value} textarea`
+    );
+});
+
+Cypress.Commands.add('formSelect', (value) => {
+    return cy.get(`.hlc-form-input-${value} nz-select`);
+});
+
+Cypress.Commands.add('formSelectChoose', (value, index) => {
+    return cy
+        .formSelect(value)
+        .click()
+        .get('nz-option-item .ant-select-item-option-content')
+        .eq(index)
+        .click()
+        .formSelect(value)
+        .find('nz-select-top-control')
+        .click(100, 0, { force: true });
 });
 
 Cypress.Commands.add('rows', (index?: number, cellIndex?: number) => {
@@ -80,16 +98,12 @@ Cypress.Commands.add('reinitDb', () => {
 
     const url = resolve(baseUrl, refreshDbUrl);
 
-    return cy
-        .request('POST', url)
-        .then((resp) =>
-            cy
-                .window()
-                .then((win) => {
-                    // TODO 
-                    win.sessionStorage.setItem('access_token', resp.body.accessToken)
-                })
-        );
+    return cy.request('POST', url).then((resp) =>
+        cy.window().then((win) => {
+            // TODO
+            win.sessionStorage.setItem('access_token', resp.body.accessToken);
+        })
+    );
 });
 
 /*
