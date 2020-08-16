@@ -1,9 +1,9 @@
 import { ApisDataAccessService } from '@admin/data-access';
 import { AdminList } from '@admin/shared';
 import { Component, OnInit } from '@angular/core';
-import { HlcNzTable } from '@nz-holistic/nz-list';
+import { HlcNzTable, ActionClickEvent } from '@nz-holistic/nz-list';
 import { listDefinition } from './list.definition';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 
 @Component({
     selector: 'admin-apis-list',
@@ -20,11 +20,20 @@ export class ApisListComponent implements OnInit {
     }) => this.dataAccess.removeItem(this.domainId, id);
 
     constructor(
-        activatedRoute: ActivatedRoute,
+        private readonly router: Router,
+        private readonly activatedRoute: ActivatedRoute,
         private readonly dataAccess: ApisDataAccessService
     ) {
         this.domainId = +activatedRoute.parent.snapshot.params['id'];
     }
 
     ngOnInit(): void {}
+
+    onActionClick($event: ActionClickEvent) {
+        if ($event.actionId === 'permissions') {
+            this.router.navigate(['.', $event.row.id, 'permissions'], {
+                relativeTo: this.activatedRoute,
+            });
+        }
+    }
 }

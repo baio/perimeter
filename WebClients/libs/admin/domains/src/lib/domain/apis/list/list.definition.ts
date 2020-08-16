@@ -19,4 +19,10 @@ export const listDefinition: AdminList.TableDefinition = {
             sort: 'dateCreated',
         },
     ],
+    rowActions: [
+        {
+            id: 'permissions',
+            iconType: 'lock'
+        }
+    ]
 };

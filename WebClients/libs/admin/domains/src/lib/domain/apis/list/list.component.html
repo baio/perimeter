@@ -2,6 +2,7 @@
     [definition]="listDefinition"
     [dataProvider]="dataProvider"
     [removeItemDataAccess]="removeItemDataAccess"
+    (actionClick)="onActionClick($event)"
 >
     <admin-list-header
         title="Apis"

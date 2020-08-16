@@ -1,15 +1,16 @@
 // tslint:disable: no-unused-expression
-describe('apis', () => {
+describe('perms', () => {
     const UPDATED_NAME = 'updated name';
     before(() => cy.reinitDb());
     before(() => {
         cy.visit('domains/pool');
         cy.dataCy('env-btn').click();
         cy.dataCy('apis-menu-item').click();
+        cy.rows(1).find('.table-actions a').eq(0).click();
     });
 
-    it('app should be open', () => {
-        cy.url().should('include', 'apis');
+    it.only('app should be open', () => {
+        cy.url().should('include', 'permissions');
     });
 
     describe('edit', () => {

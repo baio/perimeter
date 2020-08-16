@@ -59,22 +59,22 @@ const routes: Routes = [
                         ],
                     },
                     {
+                        path: 'apis/:id/permissions',
+                        component: PermsListComponent,
+                        children: [
+                            {
+                                path: ':id',
+                                component: PermFormComponent,
+                            },
+                        ],
+                    },
+                    {
                         path: 'apis',
                         component: ApisListComponent,
                         children: [
                             {
                                 path: ':id',
                                 component: ApiFormComponent,
-                            },
-                        ],
-                    },
-                    {
-                        path: 'perms',
-                        component: PermsListComponent,
-                        children: [
-                            {
-                                path: ':id',
-                                component: PermFormComponent,
                             },
                         ],
                     },
