@@ -1,4 +1,11 @@
-<nz-tag (click)="onClick($event)" *ngFor="let item of permissions; let last = last">
-    {{ item.name }}
-    <nz-divider nzType="vertical" *ngIf="!last"></nz-divider>
-</nz-tag>
+<div style="display: inline-flex;">
+    <nz-tag nzColor="blue">
+        <i nz-icon nzType="edit" nzSize="small" nzTheme="outline"></i>
+    </nz-tag>
+    <nz-tag
+        (click)="onClick($event)"
+        *ngFor="let item of permissions; let last = last"
+    >
+        {{ item.name }}
+    </nz-tag>
+</div>
