@@ -237,3 +237,21 @@ module LinqHelpers =
             sprintf "INSERT INTO \"%s\" (%s) VALUES (%s) ON CONFLICT (%s) DO UPDATE SET %s" tableName keys keyValues
                 conflictKeys setKeys
         context.Database.ExecuteSqlRawAsync(command, setValues)
+
+    
+    let queryRawAsync <'a>(context: DbContext) (mp: obj -> 'a) q =       
+        use  command = context.Database.GetDbConnection().CreateCommand()
+        command.CommandText <- q
+        task {
+            use! result = command.ExecuteReaderAsync()
+            let mutable f = true
+            let list = System.Collections.Generic.List<obj[]>()
+            while f do 
+                let! f' = result.ReadAsync()
+                f <- f'
+                if f then
+                    let arr = Array.create result.FieldCount null
+                    result.GetValues arr |> ignore
+                    list.Add arr
+            return list |> Seq.map mp                                    
+        }

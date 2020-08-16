@@ -21,7 +21,7 @@ export class UsersDataAccessService {
     ): Observable<HlcNzTable.Data.DataProviderResult<UserRole>> {
         const params = mapListRequestParams(searchParams);
         if (searchParams.filter && searchParams.filter.text) {
-            params['filter.name'] = searchParams.filter.text;
+            params['filter.email'] = searchParams.filter.text;
         }
         return this.http
             .get(`/tenant/domains/${domainId}/users/roles`, { params })

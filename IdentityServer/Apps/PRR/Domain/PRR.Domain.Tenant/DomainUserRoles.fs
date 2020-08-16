@@ -6,6 +6,7 @@ open Common.Domain.Utils
 open Common.Domain.Utils.CRUD
 open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open Microsoft.EntityFrameworkCore
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
@@ -80,16 +81,19 @@ module DomainUserRoles =
 
     type GetList = DbDataContext -> (DomainId * ListQuery) -> Task<ListResponse>
 
+    [<CLIMutable>]
+    type UserEmailData =
+        { UserEmail: string }
 
     let getFilterFieldExpr filterValue = function
         | FilterField.UserEmail ->
-            <@ fun (x: string) ->
+            <@ fun (x: DomainUserRole) ->
                 let like = %(ilike filterValue)
-                like x @>
+                like x.UserEmail @>
 
     let getSortFieldExpr =
         function
-        | SortField.UserEmail -> SortString <@ fun (x: string) -> x @>
+        | SortField.UserEmail -> SortString <@ fun (x: DomainUserRole) -> x.UserEmail @>
 
     let getList: GetList =
         fun dataContext (domainId, prms) ->
@@ -97,22 +101,27 @@ module DomainUserRoles =
             let dur =
                 (query {
                     for p in dataContext.DomainUserRole do
-                        select p.UserEmail
+                        select p
                  })
-                    .Distinct()
 
             let dur2 = handleListQuery dur getFilterFieldExpr getSortFieldExpr prms
 
-            query {
-                for userEmail in dur2 do
-                    join p in dataContext.DomainUserRole on (userEmail = p.UserEmail)
-                    where (p.DomainId = domainId)
-                    select
-                        (Tuple.Create
-                            (p.UserEmail,
-                             { Id = p.Role.Id
-                               Name = p.Role.Name }))
-            }
+            let dur3 = dur2.Select(fun x -> x.UserEmail).Distinct()
+
+            let dur4 = dur.Select(fun x -> x.UserEmail).Distinct()
+
+            let q =
+                query {
+                    for p0 in dur3 do
+                        join p in dataContext.DomainUserRole on (p0 = p.UserEmail)
+                        where (p.DomainId = domainId)
+                        select
+                            (Tuple.Create
+                                (p.UserEmail,
+                                 { Id = p.Role.Id
+                                   Name = p.Role.Name }))
+                }
+            q
             |> executeGroupByQuery prms (fun (userEmail, roles) ->
                    { UserEmail = userEmail
-                     Roles = roles }) dur
+                     Roles = roles }) dur4
