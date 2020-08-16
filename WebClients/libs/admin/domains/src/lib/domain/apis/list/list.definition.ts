@@ -9,6 +9,11 @@ export const listDefinition: AdminList.TableDefinition = {
             sort: true,
         },
         {
+            id: 'permissions',
+            title: 'Permissions',
+            kind: 'Permissions',
+        },
+        {
             id: 'identifier',
             title: 'Identifier',
         },
@@ -22,7 +27,7 @@ export const listDefinition: AdminList.TableDefinition = {
     rowActions: [
         {
             id: 'permissions',
-            iconType: 'lock'
-        }
-    ]
+            iconType: 'lock',
+        },
+    ],
 };

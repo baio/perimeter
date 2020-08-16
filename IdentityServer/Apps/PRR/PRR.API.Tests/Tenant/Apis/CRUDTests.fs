@@ -46,6 +46,7 @@ module CRUD =
           name: string
           identifier: string
           permissions: PermissionGetLikeDto []
+          accessTokenExpiresIn: int
           dateCreated: System.DateTime }
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
@@ -85,6 +86,7 @@ module CRUD =
                 let data: PostLike =
                     { Name = "Api 1"
                       Identifier = "xxx"
+                      AccessTokenExpiresIn = 15
                       PermissionIds = [ ] }
                 let! result = testFixture.HttpPostAsync userToken (sprintf "/tenant/domains/%i/apis" domainId) data
                 do! ensureSuccessAsync result
@@ -100,6 +102,7 @@ module CRUD =
                 let expected: GetLikeDto =
                     { name = "Api 1"
                       identifier = "xxx"
+                      accessTokenExpiresIn = 15
                       permissions = [||]
                       id = -1
                       dateCreated = DateTime.UtcNow }
@@ -123,6 +126,7 @@ module CRUD =
                 let data: PostLike =
                     { Name = "Api 1 Updated"
                       Identifier = "yyy"
+                      AccessTokenExpiresIn = 15
                       PermissionIds = [ ] }
                 let! result = testFixture.HttpPutAsync userToken
                                   (sprintf "/tenant/domains/%i/apis/%i" domainId apiId.Value) data
@@ -141,6 +145,7 @@ module CRUD =
                       permissions =
                           [| |]
                       id = -1
+                      accessTokenExpiresIn = 15
                       dateCreated = DateTime.UtcNow }
                 let! result = testFixture.HttpGetAsync userToken
                                   (sprintf "/tenant/domains/%i/apis/%i" domainId apiId.Value)

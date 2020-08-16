@@ -8,7 +8,7 @@ describe('apis', () => {
         cy.dataCy('apis-menu-item').click();
     });
 
-    it('app should be open', () => {
+    it.only('app should be open', () => {
         cy.url().should('include', 'apis');
     });
 

@@ -1,4 +1,9 @@
-export const tableCellMap = {};
+import { AdminPermissionsColumnComponent } from '../columns/permissions-column/permissions-column.component';
+import { AdminPermissionsColumnModule } from '../columns/permissions-column/permissions-column.module';
 
-export const tableCellMapComponents = [];
-export const tableCellMapModules = [];
+export const tableCellMap = {
+    Permissions: AdminPermissionsColumnComponent,
+};
+
+export const tableCellMapComponents = [AdminPermissionsColumnComponent];
+export const tableCellMapModules = [AdminPermissionsColumnModule];

@@ -2,19 +2,18 @@ import { HlcNzTable } from '@nz-holistic/nz-list';
 import { Observable } from 'rxjs';
 
 export namespace AdminList {
-    /*
     export namespace Columns {
-        export interface AdminStateColumn extends HlcNzTable.MapColumns.MapColumn<{ state: AdminSate }> {
-            kind: 'AdminState';
+        export interface AdminPermissionsColumn
+            extends HlcNzTable.MapColumns.MapColumn<{ permissions: string[] }> {
+            kind: 'Permissions';
         }
 
-        export type CustomMapColumns = AdminStateColumn;
+        export type CustomMapColumns = AdminPermissionsColumn;
     }
-    */
 
     export interface TableDefinition
         extends HlcNzTable.TableDefinition<
-            /*Columns.CustomMapColumns |*/ HlcNzTable.MapColumns.Column
+            Columns.CustomMapColumns | HlcNzTable.MapColumns.Column
         > {
         hasLinkButton?: string | boolean;
     }
