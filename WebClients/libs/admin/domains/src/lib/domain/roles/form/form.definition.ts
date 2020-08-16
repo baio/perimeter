@@ -11,9 +11,9 @@ export const definition: AdminForm.FormDefinition = {
             validators: [Validators.required],
         },
         {
-            id: 'identifier',
-            kind: 'Text',
-            label: 'Identifier',
+            id: 'description',
+            kind: 'TextArea',
+            label: 'Description',
             validators: [Validators.required],
         },
     ],

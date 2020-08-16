@@ -8,6 +8,7 @@ open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
 open System.Linq
+open System.Threading.Tasks
 
 module Roles =
 
@@ -81,3 +82,49 @@ module Roles =
                       p.RolesPermissions.Select(fun x ->
                           { Id = x.PermissionId
                             Name = x.Permission.Name }) } @>)
+    //
+    type SortField =
+        | Name
+        | DateCreated
+
+    type FilterField = Text
+
+    type ListQuery = ListQuery<SortField, FilterField>
+
+    [<CLIMutable>]
+    type ListResponse = ListResponse<GetLike>
+
+    type GetList = DbDataContext -> (DomainId * ListQuery) -> Task<ListResponse>
+
+    let getFilterFieldExpr filterValue =
+        function
+        | FilterField.Text ->
+            <@ fun (domain: Role) ->
+                let like = %(ilike filterValue)
+                (like domain.Name) || (like domain.Description) @>
+
+    let getSortFieldExpr =
+        function
+        | SortField.DateCreated -> SortDate <@ fun (perm: Role) -> perm.DateCreated @>
+        | SortField.Name -> SortString <@ fun (perm: Role) -> perm.Name @>
+
+    let getList: GetList =
+        fun dataContext (domainId, prms) ->
+
+            let roles =
+                handleListQuery dataContext.Roles getFilterFieldExpr getSortFieldExpr prms
+
+            query {
+                for p in roles do
+                    where (p.DomainId = Nullable(domainId))
+                    select
+                        { Id = p.Id
+                          Name = p.Name
+                          Description = p.Description
+                          DateCreated = p.DateCreated
+                          Permissions =
+                              p.RolesPermissions.Select(fun x ->
+                                  { Id = x.PermissionId
+                                    Name = x.Permission.Name }) }
+            }
+            |> executeListQuery prms

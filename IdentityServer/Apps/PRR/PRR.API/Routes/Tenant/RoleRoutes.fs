@@ -26,13 +26,31 @@ module private RoleHandlers =
     let getOne (id: int) =
         wrap (getOne id <!> dataContext)
 
+    let bindListQuery =
+        bindListQuery
+            ((function
+             | "name" ->
+                 Some SortField.Name
+             | "dateCreated" ->
+                 Some SortField.DateCreated
+             | _ -> None),
+             (function
+             | "text" ->
+                 Some FilterField.Text
+             | _ -> None))
+        |> ofReader
+
+    let getList domainId =
+        wrap (getList <!> getDataContext' <*> ((doublet domainId) <!> bindListQuery))
+
 module Role =
 
     let createRoutes() =
         subRoutef "/tenant/domains/%i/roles" (fun domainId ->
-            wrapAudienceGuard fromDomainId domainId
-            >=> choose
-                    [ POST >=> permissionGuard MANAGE_ROLES >=> createHandler domainId
-                      PUT >=> permissionGuard MANAGE_ROLES >=> routef "/%i" (updateHandler domainId)
-                      DELETE >=> permissionGuard MANAGE_ROLES >=> routef "/%i" removeHandler
-                      GET >=> permissionGuard READ_ROLES >=> routef "/%i" getOne ])
+            (* wrapAudienceGuard fromDomainId domainId *)
+            choose
+                [ POST >=> (* permissionGuard MANAGE_ROLES >=> *) createHandler domainId
+                  PUT >=> (* permissionGuard MANAGE_ROLES >=> *) routef "/%i" (updateHandler domainId)
+                  DELETE >=> (* permissionGuard MANAGE_ROLES >=> *) routef "/%i" removeHandler
+                  GET >=> (* permissionGuard READ_ROLES >=> *) routef "/%i" getOne
+                  GET >=> getList domainId ])

@@ -3,54 +3,56 @@ import { Injectable } from '@angular/core';
 import { HlcNzTable } from '@nz-holistic/nz-list';
 import { Observable, of } from 'rxjs';
 import { RoleItem } from './models';
-import { mapListRequestParams } from '../utils';
+import { mapListRequestParams, mapListResponse } from '../utils';
+import { map } from 'rxjs/operators';
+
+const mapItem = (x) => x;
 
 @Injectable()
 export class RolesDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
     loadList(
+        domainId: number,
         searchParams: HlcNzTable.Data.DataProviderState
     ): Observable<HlcNzTable.Data.DataProviderResult<RoleItem>> {
         const params = mapListRequestParams(searchParams);
         if (searchParams.filter && searchParams.filter.text) {
-            params['filter.name'] = searchParams.filter.text;
+            params['filter.text'] = searchParams.filter.text;
         }
-        return of({
-            data: [
-                {
-                    id: 1,
-                    name: 'first',
-                    description: 'xxx',
-                    permissions: [],
-                    dateCreated: new Date().toISOString(),
-                },
-            ],
-            pager: { total: 1, size: 1, index: 1 },
-        });
+        return this.http
+            .get(`/tenant/domains/${domainId}/roles`, { params })
+            .pipe(map(mapListResponse(mapItem, searchParams)));
     }
 
-    removeItem(
-        id: number
-    ): Observable<HlcNzTable.Data.DataProviderResult<any>> {
-        return of(null);
+    removeItem(domainId: number, id: number): Observable<any> {
+        return this.http.delete(`/tenant/domains/${domainId}/roles/${id}`);
     }
 
-    loadItem(id: number): Observable<RoleItem> {
-        return of({
-            id: 1,
-            name: 'first',
-            description: 'xxx',
-            permissions: [],
-            dateCreated: new Date().toISOString(),
-        });
+    loadItem(domainId: number, id: number): Observable<RoleItem> {
+        return this.http
+            .get(`/tenant/domains/${domainId}/roles/${id}`)
+            .pipe(map(mapItem));
     }
 
-    createItem(data: Partial<RoleItem>): Observable<RoleItem> {
-        return of(data as any);
+    createItem(
+        domainId: number,
+        data: Partial<RoleItem>
+    ): Observable<RoleItem> {
+        return this.http.post<RoleItem>(
+            `/tenant/domains/${domainId}/roles`,
+            data
+        );
     }
 
-    updateItem(id: number, data: Partial<RoleItem>): Observable<RoleItem> {
-        return of(data as any);
+    updateItem(
+        domainId: number,
+        id: number,
+        data: Partial<RoleItem>
+    ): Observable<RoleItem> {
+        return this.http.put<RoleItem>(
+            `/tenant/domains/${domainId}/roles/${id}`,
+            data
+        );
     }
 }

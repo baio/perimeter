@@ -8,8 +8,12 @@ export const listDefinition: AdminList.TableDefinition = {
             title: 'Name'
         },
         {
-            id: 'identifier',
-            title: 'Identifier',
+            id: 'description',
+            title: 'Descriptions',
+        },
+        {
+            id: 'permissions',
+            title: 'Permissions',
         },
         {
             id: 'dateCreated',

@@ -1,4 +1,4 @@
-import { ApisDataAccessService, RolesDataAccessService } from '@admin/data-access';
+import { RolesDataAccessService } from '@admin/data-access';
 import { AdminForm } from '@admin/shared';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,22 +10,24 @@ import { definition } from './form.definition';
     styleUrls: ['./form.component.scss'],
 })
 export class RoleFormComponent {
+    private readonly domainId: number;
     readonly definition = definition;
-
     readonly loadValueDataAccess: AdminForm.Data.LoadValueDataAccess = (
         id: number
-    ) => this.dataAccess.loadItem(id);
+    ) => this.dataAccess.loadItem(this.domainId, id);
 
     readonly storeValueDataAccess: AdminForm.Data.StoreValueDataAccess = (
         item: any
     ) =>
         item.id
-            ? this.dataAccess.updateItem(item.id, item)
-            : this.dataAccess.createItem(item);
+            ? this.dataAccess.updateItem(this.domainId, item.id, item)
+            : this.dataAccess.createItem(this.domainId, item);
 
     constructor(
         private readonly activatedRoute: ActivatedRoute,
         private readonly dataAccess: RolesDataAccessService,
         private readonly router: Router
-    ) {}
+    ) {
+        this.domainId = +activatedRoute.parent.parent.snapshot.params['id'];
+    }
 }
