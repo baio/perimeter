@@ -38,7 +38,7 @@ Cypress.Commands.add('dataCy', (value, selector = '') => {
 });
 
 Cypress.Commands.add('formField', (value) => {
-    return cy.get(`.hlc-form-input-${value} input`);
+    return cy.get(`.hlc-form-input-${value} input, .hlc-form-input-${value} textarea`);
 });
 
 Cypress.Commands.add('rows', (index?: number, cellIndex?: number) => {

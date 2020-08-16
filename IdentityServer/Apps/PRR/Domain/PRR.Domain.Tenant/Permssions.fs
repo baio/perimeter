@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Tenant
 
+open Common.Domain.Models
 open Common.Domain.Models.Exceptions
 open Common.Domain.Models.ForbiddenError
 open Common.Domain.Utils
@@ -9,6 +10,7 @@ open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
 open System.Linq
+open System.Threading.Tasks
 
 module Permissions =
 
@@ -40,13 +42,13 @@ module Permissions =
                                      }
                                      |> toCountAsync
 
-                if sameNameCount > 0 then raise (Conflict (ConflictErrorField ("name", UNIQUE)))
+                if sameNameCount > 0 then raise (Conflict(ConflictErrorField("name", UNIQUE)))
 
                 try
                     do! saveChangesAsync dbContext
                 with
                 // This is duplicate checking the case covered before with sameNameCount
-                | UniqueConstraintException "IX_Permissions_Name_ApiId" (ConflictErrorField ("name", UNIQUE)) ex ->
+                | UniqueConstraintException "IX_Permissions_Name_ApiId" (ConflictErrorField("name", UNIQUE)) ex ->
                     return raise ex
                 | ex ->
                     return raise ex
@@ -70,3 +72,46 @@ module Permissions =
                   Name = p.Name
                   Description = p.Description
                   DateCreated = p.DateCreated } @>)
+
+    //
+    type SortField =
+        | Name
+        | DateCreated
+
+    type FilterField = Text
+
+    type ListQuery = ListQuery<SortField, FilterField>
+
+    [<CLIMutable>]
+    type ListResponse = ListResponse<GetLike>
+
+    type GetList = DbDataContext -> (int * ListQuery) -> Task<ListResponse>
+
+    let getFilterFieldExpr filterValue =
+        function
+        | FilterField.Text ->
+            <@ fun (domain: Permission) ->
+                let like = %(ilike filterValue)
+                (like domain.Name) || (like domain.Description) @>
+
+    let getSortFieldExpr =
+        function
+        | SortField.DateCreated -> SortDate <@ fun (perm: Permission) -> perm.DateCreated @>
+        | SortField.Name -> SortString <@ fun (perm: Permission) -> perm.Name @>
+
+    let getList: GetList =
+        fun dataContext (apiId, prms) ->
+
+            let apps =
+                handleListQuery dataContext.Permissions getFilterFieldExpr getSortFieldExpr prms
+
+            query {
+                for p in apps do
+                    where (p.ApiId = Nullable(apiId))
+                    select
+                        { Id = p.Id
+                          Name = p.Name
+                          Description = p.Description
+                          DateCreated = p.DateCreated }
+            }
+            |> executeListQuery prms

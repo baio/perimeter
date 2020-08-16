@@ -2,52 +2,57 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HlcNzTable } from '@nz-holistic/nz-list';
 import { Observable, of } from 'rxjs';
-import { mapListRequestParams } from '../utils';
+import { mapListRequestParams, mapListResponse } from '../utils';
 import { Permission } from '../models';
+import { map } from 'rxjs/operators';
+
+const mapItem = (x) => x;
 
 @Injectable()
 export class PermissionsDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
     loadList(
+        apiId: number,
         searchParams: HlcNzTable.Data.DataProviderState
     ): Observable<HlcNzTable.Data.DataProviderResult<Permission>> {
         const params = mapListRequestParams(searchParams);
         if (searchParams.filter && searchParams.filter.text) {
-            params['filter.name'] = searchParams.filter.text;
+            params['filter.text'] = searchParams.filter.text;
         }
-        return of({
-            data: [
-                {
-                    id: 1,
-                    name: 'first',
-                    description: 'xxx',
-                },
-            ],
-            pager: { total: 1, size: 1, index: 1 },
-        });
-        //return this.http.get(BLOG_PATH, { params }).pipe(map(mapListResponse(mapItem, searchParams)));
+        return this.http
+            .get(`/tenant/apis/${apiId}/permissions`, { params })
+            .pipe(map(mapListResponse(mapItem, searchParams)));
     }
 
-    removeItem(
-        id: number
-    ): Observable<HlcNzTable.Data.DataProviderResult<any>> {
-        return of(null);
+    removeItem(apiId: number, id: number): Observable<any> {
+        return this.http.delete(`/tenant/apis/${apiId}/permissions/${id}`);
     }
 
-    loadItem(id: number): Observable<Permission> {
-        return of({
-            id: 1,
-            name: 'first',
-            description: 'xxx',
-        });
+    loadItem(apiId: number, id: number): Observable<Permission> {
+        return this.http
+            .get(`/tenant/apis/${apiId}/permissions/${id}`)
+            .pipe(map(mapItem));
     }
 
-    createItem(data: Partial<Permission>): Observable<Permission> {
-        return of(data as any);
+    createItem(
+        apiId: number,
+        data: Partial<Permission>
+    ): Observable<Permission> {
+        return this.http.post<Permission>(
+            `/tenant/apis/${apiId}/permissions`,
+            data
+        );
     }
 
-    updateItem(id: number, data: Partial<Permission>): Observable<Permission> {
-        return of(data as any);
+    updateItem(
+        apiId: number,
+        id: number,
+        data: Partial<Permission>
+    ): Observable<Permission> {
+        return this.http.put<Permission>(
+            `/tenant/apis/${apiId}/permissions/${id}`,
+            data
+        );
     }
 }
