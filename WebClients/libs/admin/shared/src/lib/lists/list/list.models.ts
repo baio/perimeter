@@ -1,10 +1,13 @@
 import { HlcNzTable } from '@nz-holistic/nz-list';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 export namespace AdminList {
     export namespace Columns {
         export interface AdminPermissionsColumn
-            extends HlcNzTable.MapColumns.MapColumn<{ permissions: string[] }> {
+            extends HlcNzTable.MapColumns.MapColumn<{
+                permissions: string[];
+                clicked?: Subject<MouseEvent>;
+            }> {
             kind: 'Permissions';
         }
 

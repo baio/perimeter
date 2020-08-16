@@ -27,6 +27,6 @@ export class PermFormComponent {
         activatedRoute: ActivatedRoute,
         private readonly dataAccess: PermissionsDataAccessService
     ) {
-        this.domainId = +activatedRoute.parent.parent.snapshot.params['id'];
+        this.domainId = +activatedRoute.parent.snapshot.params['id'];
     }
 }

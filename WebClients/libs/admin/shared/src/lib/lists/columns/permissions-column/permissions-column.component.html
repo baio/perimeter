@@ -1,1 +1,4 @@
-permissions
+<nz-tag (click)="onClick($event)" *ngFor="let item of permissions; let last = last">
+    {{ item.name }}
+    <nz-divider nzType="vertical" *ngIf="!last"></nz-divider>
+</nz-tag>

@@ -1,7 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { HlcDefaultBindValue } from '@nz-holistic/forms';
 
-export type BazaSate = 'PUBLISHED' | 'NOT_PUBLISHED' | 'ARCHIVED';
+export interface IPermission {
+    id: number;
+    name: string;
+}
 
 @Component({
     selector: 'admin-permissions-column',
@@ -11,7 +14,13 @@ export type BazaSate = 'PUBLISHED' | 'NOT_PUBLISHED' | 'ARCHIVED';
 export class AdminPermissionsColumnComponent {
     @HlcDefaultBindValue
     @Input()
-    permissions: string[];
+    permissions: IPermission[];
+
+    @Output() clicked = new EventEmitter<MouseEvent>();
 
     constructor() {}
+
+    onClick(event: MouseEvent) {
+        this.clicked.emit(event);
+    }
 }

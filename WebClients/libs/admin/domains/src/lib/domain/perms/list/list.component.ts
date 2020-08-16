@@ -1,12 +1,9 @@
-import {
-    ApisDataAccessService,
-    PermissionsDataAccessService,
-} from '@admin/data-access';
+import { PermissionsDataAccessService } from '@admin/data-access';
 import { AdminList } from '@admin/shared';
 import { Component, OnInit } from '@angular/core';
-import { HlcNzTable } from '@nz-holistic/nz-list';
-import { listDefinition } from './list.definition';
 import { ActivatedRoute } from '@angular/router';
+import { HlcNzTable, RowClickEvent } from '@nz-holistic/nz-list';
+import { listDefinition } from './list.definition';
 
 @Component({
     selector: 'admin-perms-list',
@@ -26,7 +23,7 @@ export class PermsListComponent implements OnInit {
         activatedRoute: ActivatedRoute,
         private readonly dataAccess: PermissionsDataAccessService
     ) {
-        this.apiId = +activatedRoute.parent.snapshot.params['id'];
+        this.apiId = +activatedRoute.snapshot.params['id'];
     }
 
     ngOnInit(): void {}

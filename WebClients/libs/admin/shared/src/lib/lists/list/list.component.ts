@@ -28,6 +28,7 @@ import {
     HlcNzTableCustomCellsProvider,
     HLC_NZ_TABLE_CUSTOM_CELLS_PROVIDER,
     HlcNzCustomCellDirective,
+    CellClickEvent,
 } from '@nz-holistic/nz-list';
 import { NzModalService } from 'ng-zorro-antd';
 import { merge, Subject } from 'rxjs';
@@ -81,6 +82,9 @@ export class AdminListComponent
 
     @Output()
     rowClick = new EventEmitter<RowClickEvent>();
+
+    @Output()
+    cellClick = new EventEmitter<CellClickEvent>();
 
     @ContentChild(AdminListHeaderComponent, { static: false })
     header: AdminListHeaderComponent;
@@ -163,6 +167,10 @@ export class AdminListComponent
                 relativeTo: this.activatedRoute,
             });
         }
+    }
+
+    onCellClick($event: CellClickEvent) {
+        this.cellClick.emit($event);
     }
 
     async onRowDrop($event: RowDropEvent) {}

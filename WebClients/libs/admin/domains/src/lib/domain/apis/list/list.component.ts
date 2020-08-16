@@ -1,17 +1,19 @@
 import { ApisDataAccessService } from '@admin/data-access';
 import { AdminList } from '@admin/shared';
-import { Component, OnInit } from '@angular/core';
-import { HlcNzTable, ActionClickEvent } from '@nz-holistic/nz-list';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CellClickEvent, HlcNzTable } from '@nz-holistic/nz-list';
+import { Subject } from 'rxjs';
 import { listDefinition } from './list.definition';
-import { ActivatedRoute, Route, Router } from '@angular/router';
 
 @Component({
     selector: 'admin-apis-list',
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.scss'],
 })
-export class ApisListComponent implements OnInit {
+export class ApisListComponent implements OnInit, OnDestroy {
     private readonly domainId: number;
+    private readonly destroy$ = new Subject();
     readonly listDefinition = listDefinition;
     readonly dataProvider: HlcNzTable.Data.DataProvider = (state) =>
         this.dataAccess.loadList(this.domainId, state);
@@ -29,8 +31,14 @@ export class ApisListComponent implements OnInit {
 
     ngOnInit(): void {}
 
-    onActionClick($event: ActionClickEvent) {
-        if ($event.actionId === 'permissions') {
+    ngOnDestroy(): void {
+        this.destroy$.next();
+    }
+
+    onCellClick($event: CellClickEvent) {
+        if ($event.col.id === 'permissions') {
+            $event.$event.preventDefault();
+            $event.$event.stopPropagation();
             this.router.navigate(['.', $event.row.id, 'permissions'], {
                 relativeTo: this.activatedRoute,
             });
