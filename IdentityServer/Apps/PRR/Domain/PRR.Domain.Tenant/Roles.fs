@@ -13,6 +13,11 @@ open System.Threading.Tasks
 module Roles =
 
     [<CLIMutable>]
+    type GetIdName =
+        { Id: int
+          Name: string }
+
+    [<CLIMutable>]
     type PostLike =
         { Name: string
           Description: string
@@ -31,6 +36,7 @@ module Roles =
           DateCreated: System.DateTime
           Permissions: PermissionGetLike seq }
 
+
     let private validatePermissions (_, (domainId, dto: PostLike)) (dataContext: DbDataContext) =
         query {
             for p in dataContext.Permissions do
@@ -43,7 +49,7 @@ module Roles =
 
     let create: Create<DomainId * PostLike, int, DbDataContext> =
         validateCreateCatch<Role, _, _, _> (function
-            | UniqueConstraintException "IX_Roles_Name_DomainId" (ConflictErrorField ("name", UNIQUE)) ex ->
+            | UniqueConstraintException "IX_Roles_Name_DomainId" (ConflictErrorField("name", UNIQUE)) ex ->
                 raise ex
             | ex ->
                 raise ex) (doublet() >> validatePermissions) (fun (domainId, dto) ->
@@ -128,3 +134,14 @@ module Roles =
                                     Name = x.Permission.Name }) }
             }
             |> executeListQuery prms
+
+
+    let getAllDomainRoles (domainId: DomainId) (dataContext: DbDataContext) =
+        query {
+            for p in dataContext.Roles do
+                where (p.DomainId = Nullable(domainId))
+                select
+                    { Id = p.Id
+                      Name = p.Name }
+        }
+        |> toListAsync

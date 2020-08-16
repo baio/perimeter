@@ -68,8 +68,7 @@ module CRUD =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
                 let data: PostLike =
-                    { Name = "App 1"
-                      ClientId = "xxx" }
+                    { Name = "App 1" }
                 let! result = testFixture.HttpPostAsync userToken (sprintf "/tenant/domains/%i/applications" domainId) data
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<int> result
@@ -109,8 +108,7 @@ module CRUD =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
                 let data: PostLike =
-                    { Name = "App 1 Updated"
-                      ClientId = "zzz" }
+                    { Name = "App 1 Updated" }
                 let! result = testFixture.HttpPutAsync userToken
                                   (sprintf "/tenant/domains/%i/applications/%i" domainId applicationId.Value) data
                 do! ensureSuccessAsync result

@@ -130,7 +130,7 @@ module LinqHelpers =
     let splitAddUpdate incoming current =
         (Seq.except current incoming), (incoming.Intersect current)
 
-    let groupByAsync''' fn x =
+    let groupByAsync''' (fn: System.Tuple<_, _> -> _) x =
         x
         |> toListAsync
         |> map (Seq.groupBy fn)

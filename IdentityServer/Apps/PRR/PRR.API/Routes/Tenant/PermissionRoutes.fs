@@ -50,7 +50,7 @@ module Permission =
 
     let createRoutes() =
         choose [
-            GET >=> routef "/tenant/domains/%i/permissions" getAllPermissions 
+            GET >=> routef "/tenant/domains/%i/permissions/all" getAllPermissions 
             subRoutef "/tenant/apis/%i/permissions" (fun apiId ->
                 (*wrapAudienceGuard fromApiId apiId >=>*)
                 choose

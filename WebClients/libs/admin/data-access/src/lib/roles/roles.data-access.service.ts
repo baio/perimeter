@@ -38,7 +38,7 @@ export class RolesDataAccessService {
 
     loadPermissions(domainId: number): Observable<Permission[]> {
         return this.http.get<Permission[]>(
-            `/tenant/domains/${domainId}/permissions`
+            `/tenant/domains/${domainId}/permissions/all`
         );
     }
 

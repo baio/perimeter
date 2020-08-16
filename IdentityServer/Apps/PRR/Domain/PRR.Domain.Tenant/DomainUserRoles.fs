@@ -10,6 +10,7 @@ open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
 open System.Linq
+open System.Threading.Tasks
 
 module DomainUserRoles =
 
@@ -25,7 +26,7 @@ module DomainUserRoles =
 
     [<CLIMutable>]
     type GetLike =
-        { Id: int
+        { UserEmail: string
           Roles: RolesGetLike seq }
 
     let private validateRoles (domainId: DomainId, dto: PostLike) (dataContext: DbDataContext) =
@@ -65,3 +66,53 @@ module DomainUserRoles =
 
             do! saveChangesAsync dbContext
         }
+
+    //
+
+    type SortField = UserEmail
+
+    type FilterField = UserEmail
+
+    type ListQuery = ListQuery<SortField, FilterField>
+
+    [<CLIMutable>]
+    type ListResponse = ListResponse<GetLike>
+
+    type GetList = DbDataContext -> (DomainId * ListQuery) -> Task<ListResponse>
+
+
+    let getFilterFieldExpr filterValue = function
+        | FilterField.UserEmail ->
+            <@ fun (x: string) ->
+                let like = %(ilike filterValue)
+                like x @>
+
+    let getSortFieldExpr =
+        function
+        | SortField.UserEmail -> SortString <@ fun (x: string) -> x @>
+
+    let getList: GetList =
+        fun dataContext (domainId, prms) ->
+
+            let dur =
+                (query {
+                    for p in dataContext.DomainUserRole do
+                        select p.UserEmail
+                 })
+                    .Distinct()
+
+            let dur2 = handleListQuery dur getFilterFieldExpr getSortFieldExpr prms
+
+            query {
+                for userEmail in dur2 do
+                    join p in dataContext.DomainUserRole on (userEmail = p.UserEmail)
+                    where (p.DomainId = domainId)
+                    select
+                        (Tuple.Create
+                            (p.UserEmail,
+                             { Id = p.Role.Id
+                               Name = p.Role.Name }))
+            }
+            |> executeGroupByQuery prms (fun (userEmail, roles) ->
+                   { UserEmail = userEmail
+                     Roles = roles }) dur

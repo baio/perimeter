@@ -11,4 +11,4 @@ module Tuples =
 
     let quadrolet a b c d = (a, b, c, d)
 
-    let ofSysTuple (x: System.Tuple<'a, 'b>) = (x.Item1, x.Item2)
+    let inline ofSysTuple (x: System.Tuple<'a, 'b>) = (x.Item1, x.Item2)

@@ -87,7 +87,7 @@ module CRUD =
                     { Name = "Api 1"
                       Identifier = "xxx"
                       AccessTokenExpiresIn = 15
-                      PermissionIds = [ ] }
+                    }
                 let! result = testFixture.HttpPostAsync userToken (sprintf "/tenant/domains/%i/apis" domainId) data
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<int> result
@@ -127,7 +127,7 @@ module CRUD =
                     { Name = "Api 1 Updated"
                       Identifier = "yyy"
                       AccessTokenExpiresIn = 15
-                      PermissionIds = [ ] }
+                    }
                 let! result = testFixture.HttpPutAsync userToken
                                   (sprintf "/tenant/domains/%i/apis/%i" domainId apiId.Value) data
                 do! ensureSuccessAsync result

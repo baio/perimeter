@@ -1,8 +1,7 @@
-import { RoleItem } from './roles/models';
-
 export interface UserRole {
     id: number;
-    name: string;
+    email: string;
+    roles: { id: number; name: string }[];
 }
 
 export interface User {
@@ -10,7 +9,10 @@ export interface User {
     email: string;
     firstName: string;
     lastName: string;
-    roles: UserRole[];
+    roles: {
+        id: number;
+        name: string;
+    }[];
 }
 
 export interface Permission {
