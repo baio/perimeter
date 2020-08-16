@@ -65,6 +65,17 @@ Cypress.Commands.add('rows', (index?: number, cellIndex?: number) => {
     return cellIndex !== undefined ? res1.find('td').eq(cellIndex) : res1;
 });
 
+Cypress.Commands.add(
+    'rowCommand',
+    (rowIndex: number, commandIndex: number) => {
+        return cy
+            .get('tbody tr.ant-table-row')
+            .eq(rowIndex)
+            .find('td .table-actions a')
+            .eq(commandIndex);
+    }
+);
+
 Cypress.Commands.add('submitButton', () => {
     return cy.dataCy('drawer-submit');
 });

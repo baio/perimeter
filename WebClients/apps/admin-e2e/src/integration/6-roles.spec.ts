@@ -82,5 +82,16 @@ describe('perms', () => {
                 cy.rows(0, 2).should('contain.text', 'read:all');
             });
         });
+
+        describe('delete', () => {
+            it('remove', () => {
+                cy.rowCommand(0, 0)
+                    .click()
+                    .confirmYesButton()
+                    .click()
+                    .rows()
+                    .should('have.length', 0);
+            });
+        });
     });
 });
