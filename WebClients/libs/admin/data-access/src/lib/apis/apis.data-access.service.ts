@@ -9,8 +9,8 @@ import { map } from 'rxjs/operators';
 const mapItem = (x) => x;
 
 const mapPayload = (x) => {
-    const m = { ...x, permissionIds: x.permissions || [] };
-    delete x.permissions;
+    const m = { ...x };
+    delete m.permissions;
     return m;
 };
 

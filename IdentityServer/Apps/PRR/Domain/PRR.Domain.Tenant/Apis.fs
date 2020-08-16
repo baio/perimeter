@@ -16,8 +16,7 @@ module Apis =
     type PostLike =
         { Name: string
           Identifier: string
-          AccessTokenExpiresIn: int
-          PermissionIds: int seq }
+          AccessTokenExpiresIn: int }
 
     [<CLIMutable>]
     type PermissionGetLike =
@@ -33,16 +32,6 @@ module Apis =
           AccessTokenExpiresIn: int
           Permissions: PermissionGetLike seq }
 
-    let private validatePermissions (_, (domainId, dto: PostLike)) (dataContext: DbDataContext) =
-        query {
-            for p in dataContext.Permissions do
-                where (p.Api.DomainId <> domainId && (%in' (dto.PermissionIds)) p.Id)
-                select p.Id
-        }
-        |> toCountAsync
-        |> map (fun cnt ->
-            if cnt > 0 then raise Forbidden)
-
     type CreateEnv =
         { AccessTokenExpiresIn: int<minutes> }
 
@@ -54,23 +43,16 @@ module Apis =
             raise ex
 
     let create (env: CreateEnv): Create<DomainId * PostLike, int, DbDataContext> =
-        validateCreateCatch<Api, _, _, _> catch (doublet() >> validatePermissions) (fun (domainId, dto) ->
+        createCatch<Api, _, _, _> catch 
+            (fun (domainId, dto) ->
             Api
                 (Name = dto.Name, Identifier = dto.Identifier, DomainId = domainId, IsUserManagement = false,
-                 AccessTokenExpiresIn = int env.AccessTokenExpiresIn,
-                 Permissions =
-                     (dto.PermissionIds
-                      |> Seq.map (fun id -> Permission(Id = id))
-                      |> Seq.toArray))) (fun x -> x.Id)
+                 AccessTokenExpiresIn = int env.AccessTokenExpiresIn, Permissions = [||])) (fun x -> x.Id)
 
     let update: Update<int, DomainId * PostLike, DbDataContext> =
-        validateUpdateCatch<Api, _, _, _> catch validatePermissions (fun id -> Api(Id = id)) (fun (_, dto) entity ->
+        updateCatch<Api, _, _, _> catch (fun id -> Api(Id = id)) (fun (_, dto) entity ->
             entity.Name <- dto.Name
-            entity.Identifier <- dto.Identifier
-            entity.Permissions <-
-                (dto.PermissionIds
-                 |> Seq.map (fun id -> Permission(Id = id))
-                 |> Seq.toArray))
+            entity.Identifier <- dto.Identifier)
 
     let remove: Remove<int, DbDataContext> =
         remove (fun id -> Api(Id = id))
