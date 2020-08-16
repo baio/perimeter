@@ -6,7 +6,7 @@ describe('perms', () => {
         cy.visit('domains/pool');
         cy.dataCy('env-btn').click();
         cy.dataCy('apis-menu-item').click();
-        cy.rows(1).find('.table-actions a').eq(0).click();
+        cy.rows(1, 1).click();
     });
 
     it('app should be open', () => {

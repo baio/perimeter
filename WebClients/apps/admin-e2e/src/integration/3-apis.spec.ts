@@ -8,7 +8,7 @@ describe('apis', () => {
         cy.dataCy('apis-menu-item').click();
     });
 
-    it.only('app should be open', () => {
+    it('app should be open', () => {
         cy.url().should('include', 'apis');
     });
 
@@ -73,7 +73,7 @@ describe('apis', () => {
             cy.rows(0).get('td').first().should('contain.text', 'new');
         });
 
-        it('sort by created change rows positions', () => {
+        it.skip('sort by created change rows positions', () => {
             cy.get('table thead th').eq(2).click().click();
             cy.rows(1, 0).should('contain.text', UPDATED_NAME);
             cy.rows(2, 0).should('contain.text', 'new');
