@@ -8,7 +8,7 @@ export namespace AdminForm {
 
     export namespace Data {
         export type StoreValueDataAccess = (item: any, currentValue?: any) => Observable<any>;
-        export type LoadValueDataAccess = (id: number) => Observable<any>;
+        export type LoadValueDataAccess = (id: number | string) => Observable<any>;
         export type RemoveItemDataAccess = (item: any) => Observable<any>;
     }
 }

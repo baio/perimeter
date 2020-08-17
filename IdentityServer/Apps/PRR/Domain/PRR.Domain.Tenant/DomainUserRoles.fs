@@ -49,7 +49,7 @@ module DomainUserRoles =
         |> fun cnt ->
             if cnt > 0 then raise Forbidden
 
-    let updateDomainRoles forbidenRoles ((domainId, dto): DomainId * PostLike) (dbContext: DbDataContext) =
+    let updateUsersRoles forbidenRoles ((domainId, dto): DomainId * PostLike) (dbContext: DbDataContext) =
         task {
             checkForbidenRoles forbidenRoles dto
             do! validateRoles (domainId, dto) dbContext
@@ -67,6 +67,25 @@ module DomainUserRoles =
 
             do! saveChangesAsync dbContext
         }
+
+    let getOne domainId userEmail (dataContext: DbDataContext) =
+        query {
+            for p in dataContext.DomainUserRole do
+                where (p.DomainId = domainId && p.UserEmail = userEmail)
+                select
+                    (Tuple.Create
+                        (p.UserEmail,
+                         { Id = p.Role.Id
+                           Name = p.Role.Name }))
+        }
+        |> groupByAsync'
+        |> map
+            (Seq.tryHead
+             >> function
+             | Some(userEmail, roles) ->
+                 { UserEmail = userEmail
+                   Roles = roles }
+             | None -> raise NotFound)
 
     //
 
@@ -95,6 +114,7 @@ module DomainUserRoles =
         function
         | SortField.UserEmail -> SortString <@ fun (x: DomainUserRole) -> x.UserEmail @>
 
+
     let getList: GetList =
         fun dataContext (domainId, prms) ->
 
@@ -110,18 +130,19 @@ module DomainUserRoles =
 
             let dur4 = dur.Select(fun x -> x.UserEmail).Distinct()
 
-            let q =
-                query {
-                    for p0 in dur3 do
-                        join p in dataContext.DomainUserRole on (p0 = p.UserEmail)
-                        where (p.DomainId = domainId)
-                        select
-                            (Tuple.Create
-                                (p.UserEmail,
-                                 { Id = p.Role.Id
-                                   Name = p.Role.Name }))
-                }
-            q
+            query {
+                for p0 in dur3 do
+                    join p in dataContext.DomainUserRole on (p0 = p.UserEmail)
+                    where (p.DomainId = domainId)
+                    select p
+            }
+            |> handleSort' prms.Sort getSortFieldExpr
+            |> fun q ->
+                q.Select(fun p ->
+                    (Tuple.Create
+                        (p.UserEmail,
+                         { Id = p.Role.Id
+                           Name = p.Role.Name })))
             |> executeGroupByQuery prms (fun (userEmail, roles) ->
                    { UserEmail = userEmail
                      Roles = roles }) dur4

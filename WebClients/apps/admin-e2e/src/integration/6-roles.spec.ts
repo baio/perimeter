@@ -1,5 +1,5 @@
 // tslint:disable: no-unused-expression
-describe('perms', () => {
+describe('roles', () => {
     before(() => cy.reinitDb());
     before(() => {
         cy.visit('domains/pool');
@@ -83,7 +83,7 @@ describe('perms', () => {
             });
         });
 
-        describe('delete', () => {
+        describe.skip('delete', () => {
             it('remove', () => {
                 cy.rowCommand(0, 0)
                     .click()

@@ -1,5 +1,5 @@
 export interface UserRole {
-    id: number;
+    id: string;
     email: string;
     roles: { id: number; name: string }[];
 }

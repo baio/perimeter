@@ -5,7 +5,7 @@ import {
 import { AdminForm } from '@admin/shared';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { definition } from './form.definition';
+import { getDefinition } from './form.definition';
 
 @Component({
     selector: 'admin-user-form',
@@ -13,22 +13,24 @@ import { definition } from './form.definition';
     styleUrls: ['./form.component.scss'],
 })
 export class UserFormComponent {
-    readonly definition = definition;
+    private readonly domainId: number;
+    readonly definition: AdminForm.FormDefinition;
 
     readonly loadValueDataAccess: AdminForm.Data.LoadValueDataAccess = (
-        id: number
-    ) => this.dataAccess.loadItem(id);
+        id: string
+    ) => this.dataAccess.loadItem(this.domainId, id);
 
     readonly storeValueDataAccess: AdminForm.Data.StoreValueDataAccess = (
         item: any
-    ) =>
-        item.id
-            ? this.dataAccess.updateItem(item.id, item)
-            : this.dataAccess.createItem(item);
+    ) => this.dataAccess.updateItem(this.domainId, item);
 
     constructor(
-        private readonly activatedRoute: ActivatedRoute,
-        private readonly dataAccess: UsersDataAccessService,
-        private readonly router: Router
-    ) {}
+        activatedRoute: ActivatedRoute,
+        private readonly dataAccess: UsersDataAccessService
+    ) {
+        this.domainId = +activatedRoute.parent.parent.snapshot.params['id'];
+        this.definition = getDefinition(
+            this.dataAccess.getAllRoles(this.domainId)
+        );
+    }
 }

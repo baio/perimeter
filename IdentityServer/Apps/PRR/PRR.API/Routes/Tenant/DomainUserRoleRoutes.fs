@@ -16,15 +16,13 @@ module private DomainUserRolesHandlers =
     let private dataContext = getDataContext |> ofReader
 
     let updateRolesHandler (forbidenRoles) (domainId: int) =
-        wrap (updateDomainRoles forbidenRoles <!> ((doublet domainId) <!> bindJsonAsync<PostLike>) <*> dataContext)
-        
+        wrap (updateUsersRoles forbidenRoles <!> ((doublet domainId) <!> bindJsonAsync<PostLike>) <*> dataContext)
 
     let bindListQuery =
         bindListQuery
             ((function
              | "email" ->
-                 Some SortField.UserEmail
-             ),
+                 Some SortField.UserEmail),
              (function
              | "email" ->
                  Some FilterField.UserEmail
@@ -33,20 +31,25 @@ module private DomainUserRolesHandlers =
 
     let getList domainId =
         wrap (getList <!> getDataContext' <*> ((doublet domainId) <!> bindListQuery))
-       
+
+    let getOne (domainId, email) =
+        wrap (getOne domainId email <!> getDataContext')
+
 module DomainUserRole =
 
     let createRoutes() =
-        choose [
-            GET >=> routef "/tenant/domains/%i/users/roles" getList                
-            POST >=> routef "/tenant/domains/%i/users/roles" (fun domainId ->
-                (* wrapAudienceGuard fromDomainId domainId *)
-                    choose
-                        [ (* permissionOptGuard MANAGE_DOMAIN_SUPER_ADMINS >=> *)
-                            updateRolesHandler [ Seed.Roles.DomainOwner.Id ] domainId
-                          (* permissionOptGuard MANAGE_DOMAIN_ADMINS >=> *)
-                            updateRolesHandler [ Seed.Roles.DomainSuperAdmin.Id; Seed.Roles.DomainOwner.Id ] domainId
-                          (* permissionOptGuard MANAGE_USERS >=> *)
-                            updateRolesHandler [ Seed.Roles.DomainAdmin.Id; Seed.Roles.DomainSuperAdmin.Id; Seed.Roles.DomainOwner.Id ] domainId
-                            RequestErrors.FORBIDDEN "User can't manage provided roles" ])
-        ]            
+        choose
+            [ GET >=> routef "/tenant/domains/%i/users/%s/roles" getOne
+              GET >=> routef "/tenant/domains/%i/users/roles" getList
+              POST >=> routef "/tenant/domains/%i/users/roles" (fun domainId ->
+                           (* wrapAudienceGuard fromDomainId domainId *)
+                           choose
+                               [ updateRolesHandler [ Seed.Roles.DomainOwner.Id ] domainId
+                                 (* permissionOptGuard MANAGE_DOMAIN_ADMINS >=> *)
+                                 updateRolesHandler [ Seed.Roles.DomainSuperAdmin.Id; Seed.Roles.DomainOwner.Id ]
+                                     domainId
+                                 (* permissionOptGuard MANAGE_USERS >=> *)
+                                 updateRolesHandler
+                                     [ Seed.Roles.DomainAdmin.Id; Seed.Roles.DomainSuperAdmin.Id; Seed.Roles.DomainOwner.Id ]
+                                     domainId
+                                 RequestErrors.FORBIDDEN "User can't manage provided roles" ]) ]

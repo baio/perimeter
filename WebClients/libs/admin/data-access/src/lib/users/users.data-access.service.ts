@@ -1,19 +1,31 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HlcNzTable } from '@nz-holistic/nz-list';
-import { Observable, of } from 'rxjs';
-import { mapListRequestParams, mapListResponse } from '../utils';
-import { User, UserRole } from '../models';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { UserRole } from '../models';
+import { mapListRequestParams, mapListResponse } from '../utils';
 
 const mapItem = (x) => ({
     ...x,
+    id: x.userEmail,
+    rolesIds: x.roles.map((m) => m.id),
     email: x.userEmail,
 });
 
 @Injectable()
 export class UsersDataAccessService {
     constructor(private readonly http: HttpClient) {}
+
+    getAllRoles(domainId: number): Observable<{ id: number; name: string }[]> {
+        return this.http.get<any[]>(`/tenant/domains/${domainId}/roles/all`);
+    }
+
+    loadItem(domainId: number, userEmail: string): Observable<UserRole> {
+        return this.http
+            .get(`/tenant/domains/${domainId}/users/${userEmail}/roles`)
+            .pipe(map(mapItem));
+    }
 
     loadList(
         domainId: number,
@@ -32,15 +44,13 @@ export class UsersDataAccessService {
         return this.http.delete(`/tenant/users/roles/${id}`);
     }
 
-    loadItem(id: number): Observable<UserRole> {
-        return this.http.get<UserRole>(`/tenant/users/roles/${id}`);
-    }
-
-    createItem(data: Partial<UserRole>): Observable<UserRole> {
-        return this.http.post<UserRole>(`/tenant/users/roles`, data);
-    }
-
-    updateItem(id: number, data: Partial<UserRole>): Observable<UserRole> {
-        return this.http.put<UserRole>(`/tenant/domains/users/${id}`, data);
+    updateItem(
+        domainId: number,
+        data: Partial<UserRole>
+    ): Observable<UserRole> {
+        return this.http.post<UserRole>(
+            `/tenant/domains/${domainId}/users/roles`,
+            data
+        );
     }
 }

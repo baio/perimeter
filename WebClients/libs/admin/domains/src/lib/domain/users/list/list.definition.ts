@@ -1,7 +1,10 @@
 import { AdminList } from '@admin/shared';
 
 export const listDefinition: AdminList.TableDefinition = {
-    sort: 'email',
+    sort: {
+        id: 'email',
+        direction: 'asc',
+    },
     cols: [
         {
             id: 'email',
@@ -12,7 +15,7 @@ export const listDefinition: AdminList.TableDefinition = {
             id: 'roles',
             title: 'Roles',
             // TODO : Rename
-            kind: 'Permissions'
+            kind: 'Permissions',
         },
     ],
 };

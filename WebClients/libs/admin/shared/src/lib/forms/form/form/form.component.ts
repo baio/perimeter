@@ -99,10 +99,10 @@ export class AdminFormComponent implements OnInit, AfterViewInit {
     private readonly remove$ = new Subject<any>();
     view$: Observable<FormView>;
 
-    get itemId$() {
+    get itemId$(): Observable<number | string> {
         return this.mode === 'routed'
             ? this.activatedRoute.params.pipe(
-                  map(({ id }) => (id === 'new' ? null : +id))
+                  map(({ id }) => (id === 'new' ? null : +id || (id as string)))
               )
             : of(null);
     }
