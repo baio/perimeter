@@ -2,7 +2,7 @@
 describe('user', () => {
     before(() => cy.reinitDb());
     before(() => {
-        cy.visit('domains/pool');
+        cy.visit('tenant/domains');
         cy.dataCy('env-btn').click();
         cy.dataCy('apis-menu-item').click();
         cy.rows(1, 1).click();

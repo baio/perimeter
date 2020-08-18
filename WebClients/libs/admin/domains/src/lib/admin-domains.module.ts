@@ -6,8 +6,8 @@ import {
     AdminListHeaderModule,
     AdminFormModule,
 } from '@admin/shared';
-import { DomainPoolFormComponent } from './pool/domains/form/form.component';
-import { DomainsPoolListComponent } from './pool/domains/list/list.component';
+import { DomainPoolFormComponent } from './tenant/domains/form/form.component';
+import { DomainsPoolListComponent } from './tenant/domains/list/list.component';
 import { AppsListComponent } from './domain/apps/list/list.component';
 
 import { DataAccessModule } from '@admin/data-access';
@@ -20,7 +20,7 @@ import {
     NzDividerModule,
 } from 'ng-zorro-antd';
 import { DomainLayoutComponent } from './domain/domain-layout/domain-layout.component';
-import { PoolLayoutComponent } from './pool/pool-layout/pool-layout.component';
+import { TenantLayoutComponent } from './tenant/tenant-layout/tenant-layout.component';
 import { AppFormComponent } from './domain/apps/form/form.component';
 import { ApisListComponent } from './domain/apis/list/list.component';
 import { ApiFormComponent } from './domain/apis/form/form.component';
@@ -32,7 +32,9 @@ import { RolesListComponent } from './domain/roles/list/list.component';
 import { RoleFormComponent } from './domain/roles/form/form.component';
 import { UsersListComponent } from './domain/users/list/list.component';
 import { UserFormComponent } from './domain/users/form/form.component';
-import { CreateEnvFormComponent } from './pool/domains/create-env-form/create-env-form.component';
+import { CreateEnvFormComponent } from './tenant/domains/create-env-form/create-env-form.component';
+import { TenantAdminsListComponent } from './tenant/tenant-admins/list/list.component';
+import { TenantAdminFormComponent } from './tenant/tenant-admins/form/form.component';
 @NgModule({
     imports: [
         CommonModule,
@@ -51,7 +53,7 @@ import { CreateEnvFormComponent } from './pool/domains/create-env-form/create-en
     ],
     declarations: [
         DomainLayoutComponent,
-        PoolLayoutComponent,
+        TenantLayoutComponent,
         AppsListComponent,
         DomainsPoolListComponent,
         DomainPoolFormComponent,
@@ -67,6 +69,8 @@ import { CreateEnvFormComponent } from './pool/domains/create-env-form/create-en
         UsersListComponent,
         UserFormComponent,
         CreateEnvFormComponent,
+        TenantAdminsListComponent,
+        TenantAdminFormComponent,
     ],
 })
 export class AdminDomainsModule {}

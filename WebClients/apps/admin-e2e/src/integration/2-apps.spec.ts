@@ -3,7 +3,7 @@ describe('apps', () => {
     const UPDATED_NAME = 'updated name';
     before(() => cy.reinitDb());
     before(() => {
-        cy.visit('domains/pool');
+        cy.visit('tenant/domains');
         cy.dataCy('env-btn').click();
     });
 

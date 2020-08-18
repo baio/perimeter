@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router'; // CLI imports router
 import { MainLayoutComponent, MainLayoutModule } from '@admin/shared';
-import { DomainsPoolListComponent } from './pool/domains/list/list.component';
+import { DomainsPoolListComponent } from './tenant/domains/list/list.component';
 import { AppsListComponent } from './domain/apps/list/list.component';
-import { PoolLayoutComponent } from './pool/pool-layout/pool-layout.component';
+import { TenantLayoutComponent } from './tenant/tenant-layout/tenant-layout.component';
 import { DomainLayoutComponent } from './domain/domain-layout/domain-layout.component';
 import { AppFormComponent } from './domain/apps/form/form.component';
 import { ApiFormComponent } from './domain/apis/form/form.component';
@@ -16,34 +16,16 @@ import { UsersListComponent } from './domain/users/list/list.component';
 import { UserFormComponent } from './domain/users/form/form.component';
 import { AdminsListComponent } from './domain/admins/list/list.component';
 import { AdminFormComponent } from './domain/admins/form/form.component';
-import { DomainPoolFormComponent } from './pool/domains/form/form.component';
-import { CreateEnvFormComponent } from './pool/domains/create-env-form/create-env-form.component';
+import { DomainPoolFormComponent } from './tenant/domains/form/form.component';
+import { CreateEnvFormComponent } from './tenant/domains/create-env-form/create-env-form.component';
+import { TenantAdminsListComponent } from './tenant/tenant-admins/list/list.component';
+import { TenantAdminFormComponent } from './tenant/tenant-admins/form/form.component';
 
 const routes: Routes = [
     {
         path: '',
         component: MainLayoutComponent,
         children: [
-            {
-                path: 'domains',
-                component: PoolLayoutComponent,
-                children: [
-                    {
-                        path: 'pool',
-                        component: DomainsPoolListComponent,
-                        children: [
-                            {
-                                path: ':id/new-env',
-                                component: CreateEnvFormComponent,
-                            },
-                            {
-                                path: ':id',
-                                component: DomainPoolFormComponent,
-                            },
-                        ],
-                    },
-                ],
-            },
             {
                 path: 'domains/:id',
                 component: DomainLayoutComponent,
@@ -105,6 +87,36 @@ const routes: Routes = [
                             {
                                 path: ':id',
                                 component: AdminFormComponent,
+                            },
+                        ],
+                    },
+                ],
+            },
+            {
+                path: 'tenant',
+                component: TenantLayoutComponent,
+                children: [
+                    {
+                        path: 'domains',
+                        component: DomainsPoolListComponent,
+                        children: [
+                            {
+                                path: ':id/new-env',
+                                component: CreateEnvFormComponent,
+                            },
+                            {
+                                path: ':id',
+                                component: DomainPoolFormComponent,
+                            },
+                        ],
+                    },
+                    {
+                        path: 'admins',
+                        component: TenantAdminsListComponent,
+                        children: [
+                            {
+                                path: ':id',
+                                component: TenantAdminFormComponent,
                             },
                         ],
                     },
