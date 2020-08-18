@@ -43,11 +43,15 @@ module private DomainUserRolesHandlers =
     let getOne (domainId, email) =
         wrap (getOne domainId email <!> getDataContext')
 
+    let remove (domainId, email) =
+        wrap (remove domainId email <!> getDataContext')
+
 module DomainUserRole =
 
     let createRoutes() =
         choose
-            [ GET >=> routef "/tenant/domains/%i/users/%s/roles" getOne
+            [ DELETE >=> routef "/tenant/domains/%i/users/%s/roles" remove
+              GET >=> routef "/tenant/domains/%i/users/%s/roles" getOne
               GET >=> routef "/tenant/domains/%i/users/roles" getUsersList
               GET >=> routef "/tenant/domains/%i/admins/roles" getDomainAdminsList
               POST >=> routef "/tenant/domains/%i/users/roles" (fun domainId ->

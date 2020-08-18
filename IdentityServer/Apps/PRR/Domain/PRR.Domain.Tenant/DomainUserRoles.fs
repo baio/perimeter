@@ -87,6 +87,11 @@ module DomainUserRoles =
                    Roles = roles }
              | None -> raise NotFound)
 
+    let remove (domainId: DomainId) (email: string) (dbContext: DbDataContext) =
+        removeRawAsync dbContext.DomainUserRole
+            {| UserEmail = email
+               DomainId = domainId |}
+
     //
 
     type SortField = UserEmail
@@ -118,7 +123,7 @@ module DomainUserRoles =
     let getSortFieldExpr =
         function
         | SortField.UserEmail -> SortString <@ fun (x: DomainUserRole) -> x.UserEmail @>
-    
+
     let getList: GetList =
         fun roleType dataContext (domainId, prms) ->
 
@@ -133,13 +138,13 @@ module DomainUserRoles =
             let dur3 = dur2.Select(fun x -> x.UserEmail).Distinct()
 
             let dur4 = dur.Select(fun x -> x.UserEmail).Distinct()
-            
+
             let roleTypeFilter =
                 match roleType with
                 | TenantManagement -> <@ fun (x: Role) -> x.IsTenantManagement @>
                 | DomainManagement -> <@ fun (x: Role) -> x.IsDomainManagement @>
                 | User -> <@ fun (x: Role) -> not x.IsDomainManagement && not x.IsTenantManagement @>
-                
+
             query {
                 for p0 in dur3 do
                     join p in dataContext.DomainUserRole on (p0 = p.UserEmail)

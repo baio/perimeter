@@ -42,7 +42,7 @@ describe('user', () => {
 
     it('roles should be open', () => {
         cy.url().should('include', 'users');
-        cy.rows().should('have.length', 1);
+        cy.rows().should('have.length', 0);
     });
 
     it('create', () => {
@@ -55,7 +55,7 @@ describe('user', () => {
             .submitButton()
             .click();
 
-        cy.rows().should('have.length', 2);
+        cy.rows().should('have.length', 1);
         cy.rows(0, 1).should('contain.text', 'admin');
     });
 
@@ -68,7 +68,7 @@ describe('user', () => {
             .submitButton()
             .click();
 
-        cy.rows().should('have.length', 2);
+        cy.rows().should('have.length', 1);
         cy.rows(0, 1).should('contain.text', 'developer');
         cy.rows(0, 1).should('contain.text', 'admin');
     });
@@ -79,6 +79,6 @@ describe('user', () => {
             .confirmYesButton()
             .click()
             .rows()
-            .should('have.length', 1);
+            .should('have.length', 0);
     });
 });
