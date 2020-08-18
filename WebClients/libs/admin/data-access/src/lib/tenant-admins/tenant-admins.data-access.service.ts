@@ -23,17 +23,18 @@ export class TenantAdminsDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
     getAllRoles(domainId: number): Observable<{ id: number; name: string }[]> {
-        return this.http.get<any[]>(`/tenant/domains/${domainId}/roles/admins`);
+        return this.http.get<any[]>(
+            `/tenant/domains/${domainId}/roles/tenant-admins`
+        );
     }
 
     loadItem(domainId: number, userEmail: string): Observable<UserRole> {
         return this.http
-            .get(`/tenant/domains/${domainId}/users/${userEmail}/roles`)
+            .get(`/tenant/admins/${userEmail}/roles`)
             .pipe(map(mapItem));
     }
 
     loadList(
-        domainId: number,
         searchParams: HlcNzTable.Data.DataProviderState
     ): Observable<HlcNzTable.Data.DataProviderResult<UserRole>> {
         const params = mapListRequestParams(searchParams);
@@ -41,13 +42,13 @@ export class TenantAdminsDataAccessService {
             params['filter.email'] = searchParams.filter.text;
         }
         return this.http
-            .get(`/tenant/domains/${domainId}/admins/roles`, { params })
+            .get(`/tenant/admins/roles`, { params })
             .pipe(map(mapListResponse(mapItem, searchParams)));
     }
 
     removeItem(domainId: number, userEmail: string): Observable<any> {
         return this.http.delete(
-            `/tenant/domains/${domainId}/users/${userEmail}/roles`
+            `/tenant/admins/${userEmail}/roles`
         );
     }
 
@@ -56,7 +57,7 @@ export class TenantAdminsDataAccessService {
         data: Partial<UserRole>
     ): Observable<UserRole> {
         return this.http.post<UserRole>(
-            `/tenant/domains/${domainId}/users/roles`,
+            `/tenant/admins/roles`,
             mapPayload(data)
         );
     }

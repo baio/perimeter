@@ -46,10 +46,10 @@ module TenantUserRole =
 
     let createRoutes() =
         choose
-            [ DELETE >=> routef "/tenant/users/%s/roles" remove
-              GET >=> routef "/tenant/users/%s/roles" getOne
-              GET >=> route "/tenant/users/roles" >=> getTenantAdminsList
-              POST >=> route "/tenant/users/roles"
+            [ DELETE >=> routef "/tenant/admins/%s/roles" remove
+              GET >=> routef "/tenant/admins/%s/roles" getOne
+              GET >=> route "/tenant/admins/roles" >=> getTenantAdminsList
+              POST >=> route "/tenant/admins/roles"
               >=> choose
                       [ permissionOptGuard MANAGE_TENANT_ADMINS >=> updateRolesHandler [ Seed.Roles.TenantOwner.Id ]
                         permissionOptGuard MANAGE_TENANT_DOMAINS

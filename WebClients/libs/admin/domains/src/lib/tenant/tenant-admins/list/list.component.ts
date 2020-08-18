@@ -1,6 +1,7 @@
 import {
     ApisDataAccessService,
     AdminsDataAccessService,
+    TenantAdminsDataAccessService,
 } from '@admin/data-access';
 import { AdminList } from '@admin/shared';
 import { Component, OnInit } from '@angular/core';
@@ -17,7 +18,7 @@ export class TenantAdminsListComponent implements OnInit {
     private readonly domainId: number;
     readonly listDefinition = listDefinition;
     readonly dataProvider: HlcNzTable.Data.DataProvider = (state) =>
-        this.dataAccess.loadList(this.domainId, state);
+        this.dataAccess.loadList(state);
     readonly removeItemDataAccess: AdminList.Data.RemoveItemDataAccess = ({
         id,
     }) => {
@@ -26,7 +27,7 @@ export class TenantAdminsListComponent implements OnInit {
 
     constructor(
         activatedRoute: ActivatedRoute,
-        private readonly dataAccess: AdminsDataAccessService
+        private readonly dataAccess: TenantAdminsDataAccessService
     ) {
         this.domainId = +activatedRoute.parent.snapshot.params['id'];
     }
