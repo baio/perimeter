@@ -98,7 +98,12 @@ module DomainUserRoles =
     [<CLIMutable>]
     type ListResponse = ListResponse<GetLike>
 
-    type GetList = DbDataContext -> (DomainId * ListQuery) -> Task<ListResponse>
+    type RoleType =
+        | TenantManagement
+        | DomainManagement
+        | User
+
+    type GetList = RoleType -> DbDataContext -> (DomainId * ListQuery) -> Task<ListResponse>
 
     [<CLIMutable>]
     type UserEmailData =
@@ -113,10 +118,9 @@ module DomainUserRoles =
     let getSortFieldExpr =
         function
         | SortField.UserEmail -> SortString <@ fun (x: DomainUserRole) -> x.UserEmail @>
-
-
+    
     let getList: GetList =
-        fun dataContext (domainId, prms) ->
+        fun roleType dataContext (domainId, prms) ->
 
             let dur =
                 (query {
@@ -129,11 +133,17 @@ module DomainUserRoles =
             let dur3 = dur2.Select(fun x -> x.UserEmail).Distinct()
 
             let dur4 = dur.Select(fun x -> x.UserEmail).Distinct()
-
+            
+            let roleTypeFilter =
+                match roleType with
+                | TenantManagement -> <@ fun (x: Role) -> x.IsTenantManagement @>
+                | DomainManagement -> <@ fun (x: Role) -> x.IsDomainManagement @>
+                | User -> <@ fun (x: Role) -> not x.IsDomainManagement && not x.IsTenantManagement @>
+                
             query {
                 for p0 in dur3 do
                     join p in dataContext.DomainUserRole on (p0 = p.UserEmail)
-                    where (p.DomainId = domainId)
+                    where (p.DomainId = domainId && (%roleTypeFilter) p.Role)
                     select p
             }
             |> handleSort' prms.Sort getSortFieldExpr

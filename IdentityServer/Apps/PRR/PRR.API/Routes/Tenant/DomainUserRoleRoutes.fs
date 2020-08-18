@@ -29,9 +29,17 @@ module private DomainUserRolesHandlers =
              | _ -> None))
         |> ofReader
 
-    let getList domainId =
-        wrap (getList <!> getDataContext' <*> ((doublet domainId) <!> bindListQuery))
+    let getUsersList domainId =
+        wrap (getList RoleType.User <!> getDataContext' <*> ((doublet domainId) <!> bindListQuery))
 
+    let getDomainAdminsList domainId =
+        wrap (getList RoleType.DomainManagement <!> getDataContext' <*> ((doublet domainId) <!> bindListQuery))
+
+    (*
+    let getTenantAdminsList domainId =
+        wrap (getList RoleType.TenantManagement <!> getDataContext' <*> ((doublet domainId) <!> bindListQuery))
+    *)        
+    
     let getOne (domainId, email) =
         wrap (getOne domainId email <!> getDataContext')
 
@@ -40,7 +48,8 @@ module DomainUserRole =
     let createRoutes() =
         choose
             [ GET >=> routef "/tenant/domains/%i/users/%s/roles" getOne
-              GET >=> routef "/tenant/domains/%i/users/roles" getList
+              GET >=> routef "/tenant/domains/%i/users/roles" getUsersList
+              GET >=> routef "/tenant/domains/%i/admins/roles" getDomainAdminsList
               POST >=> routef "/tenant/domains/%i/users/roles" (fun domainId ->
                            (* wrapAudienceGuard fromDomainId domainId *)
                            choose
