@@ -1,56 +1,18 @@
 ﻿namespace PRR.Domain.Tenant
 
 open Common.Domain.Models
-open Common.Domain.Models.Exceptions
 open Common.Domain.Utils
-open Common.Domain.Utils.CRUD
-open Common.Utils
+open DomainUserRoles
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
-open System.Linq
+open System.Threading.Tasks
 
 module TenantUserRoles =
 
-    [<CLIMutable>]
-    type PostLike =
-        { UserEmail: string
-          RolesIds: int seq }
-
-    [<CLIMutable>]
-    type RolesGetLike =
-        { Id: int
-          Name: string }
-
-    [<CLIMutable>]
-    type GetLike =
-        { Id: int
-          Roles: RolesGetLike seq }
-
-    let private validateRoles (rolesIds: int seq) (dataContext: DbDataContext) =
-        query {
-            for p in dataContext.Roles do
-                where (p.IsTenantManagement <> true && (%in' (rolesIds)) p.Id)
-                select p.Id
-        }
-        |> toCountAsync
-        |> map (fun cnt ->
-            if cnt > 0 then raise Forbidden)
-
-    let private checkForbidenRoles (forbidenRolesRoles: int seq) (dto: PostLike) =
-        dto.RolesIds
-        |> Seq.filter (forbidenRolesRoles.Contains)
-        |> Seq.length
-        |> fun cnt ->
-            if cnt > 0 then raise Forbidden
-
     let updateTenantRoles forbidenRoles ((tenantId, dto): TenantId * PostLike) (dbContext: DbDataContext) =
         task {
-
-            checkForbidenRoles forbidenRoles dto
-
-            // Find tenant's management domain
             let! domainId = query {
                                 for domain in dbContext.Domains do
                                     where (domain.TenantId = Nullable(tenantId))
@@ -58,18 +20,31 @@ module TenantUserRoles =
                             }
                             |> toSingleAsync
 
-            do! validateRoles dto.RolesIds dbContext
-            let incomingDur =
-                dto.RolesIds
-                |> Seq.map
-                    (fun roleId -> DomainUserRole(RoleId = roleId, UserEmail = dto.UserEmail, DomainId = domainId))
-
-            do! (query {
-                     for dur in dbContext.DomainUserRole do
-                         where (dur.UserEmail = dto.UserEmail && dur.DomainId = domainId)
-                         select dur
-                 }
-                 |> querySplitAddRemoveRange dbContext incomingDur)
-
-            do! saveChangesAsync dbContext
+            return updateUsersRoles forbidenRoles (domainId, dto) dbContext
         }
+
+    let private getUsersTenantManagementDomain userId (dbContext: DbDataContext) =
+        query {
+            for domain in dbContext.Domains do
+                where (domain.Tenant.UserId = userId)
+                select domain.Id
+        }
+        |> toSingleAsync
+
+    type GetList = DbDataContext -> (UserId * ListQuery) -> Task<ListResponse>
+
+    let getList: GetList =
+        fun dataContext (userId, prms) ->
+            task {
+                let! domainId = getUsersTenantManagementDomain userId dataContext
+                return! getList RoleType.TenantManagement dataContext (domainId, prms) }
+
+    let getOne userEmail userId (dataContext: DbDataContext) =
+        task {
+            let! domainId = getUsersTenantManagementDomain userId dataContext
+            return! getOne userEmail domainId dataContext }
+
+    let remove userEmail userId (dataContext: DbDataContext) =
+        task {
+            let! domainId = getUsersTenantManagementDomain userId dataContext
+            return! remove domainId userEmail dataContext }

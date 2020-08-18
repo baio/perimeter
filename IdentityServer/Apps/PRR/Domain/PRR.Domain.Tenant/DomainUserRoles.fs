@@ -30,12 +30,12 @@ module DomainUserRoles =
         { UserEmail: string
           Roles: RolesGetLike seq }
 
-    let private validateRoles (domainId: DomainId, dto: PostLike) (dataContext: DbDataContext) =
+    let private validateRoles (domainId: DomainId, rolesIds: int seq) (dataContext: DbDataContext) =
         query {
             for p in dataContext.Roles do
                 where
                     (((p.Domain <> null && p.DomainId <> Nullable(domainId)) || (p.IsTenantManagement = true))
-                     && (%in' (dto.RolesIds)) p.Id)
+                     && (%in' (rolesIds)) p.Id)
                 select p.Id
         }
         |> toCountAsync
@@ -52,7 +52,7 @@ module DomainUserRoles =
     let updateUsersRoles forbidenRoles ((domainId, dto): DomainId * PostLike) (dbContext: DbDataContext) =
         task {
             checkForbidenRoles forbidenRoles dto
-            do! validateRoles (domainId, dto) dbContext
+            do! validateRoles (domainId, dto.RolesIds) dbContext
             let incomingDur =
                 dto.RolesIds
                 |> Seq.map
@@ -68,7 +68,7 @@ module DomainUserRoles =
             do! saveChangesAsync dbContext
         }
 
-    let getOne domainId userEmail (dataContext: DbDataContext) =
+    let getOne userEmail domainId  (dataContext: DbDataContext) =
         query {
             for p in dataContext.DomainUserRole do
                 where (p.DomainId = domainId && p.UserEmail = userEmail)
@@ -161,3 +161,5 @@ module DomainUserRoles =
             |> executeGroupByQuery prms (fun (userEmail, roles) ->
                    { UserEmail = userEmail
                      Roles = roles }) dur4
+            
+    

@@ -47,7 +47,6 @@
         <Compile Include="Routes\MeRoutes.fs" />
         <Compile Include="Routes\Tenant\PermissionConstants.fs" />
         <Compile Include="Routes\Tenant\Utils.fs" />
-        <Compile Include="Routes\Tenant\TenantUserRoleRoutes.fs" />
         <Compile Include="Routes\Tenant\DomainPoolRoutes.fs" />
         <Compile Include="Routes\Tenant\DomainRoutes.fs" />
         <Compile Include="Routes\Tenant\ApiRoutes.fs" />
@@ -55,6 +54,7 @@
         <Compile Include="Routes\Tenant\PermissionRoutes.fs" />
         <Compile Include="Routes\Tenant\RoleRoutes.fs" />
         <Compile Include="Routes\Tenant\DomainUserRoleRoutes.fs" />
+        <Compile Include="Routes\Tenant\TenantUserRoleRoutes.fs" />
         <Compile Include="Routes\Tenant\TenantRoutes.fs" />
         <Compile Include="Routes\E2ERoutes.fs" />
         <Compile Include="Program.fs" />

@@ -3,16 +3,14 @@ describe('tenant-admins', () => {
     before(() => cy.reinitDb());
     before(() => {
         cy.visit('tenant/admins');
-        cy.dataCy('env-btn').click();
-        cy.dataCy('admins-menu-item').click();
     });
 
     it('roles should be open', () => {
-        cy.url().should('include', 'admins');
+        cy.url().should('include', 'tenant/admins');
         cy.rows().should('have.length', 1);
     });
 
-    it('create', () => {
+    it.skip('create', () => {
         cy.dataCy('create-item').click();
         cy.url().should('match', /\/domains\/\d+\/admins\/new/);
 

@@ -35,12 +35,7 @@ module private DomainUserRolesHandlers =
     let getDomainAdminsList domainId =
         wrap (getList RoleType.DomainManagement <!> getDataContext' <*> ((doublet domainId) <!> bindListQuery))
 
-    (*
-    let getTenantAdminsList domainId =
-        wrap (getList RoleType.TenantManagement <!> getDataContext' <*> ((doublet domainId) <!> bindListQuery))
-    *)        
-    
-    let getOne (domainId, email) =
+    let getOne (email, domainId) =
         wrap (getOne domainId email <!> getDataContext')
 
     let remove (domainId, email) =
