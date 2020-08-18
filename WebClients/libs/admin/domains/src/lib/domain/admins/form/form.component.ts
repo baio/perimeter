@@ -26,8 +26,6 @@ export class AdminFormComponent {
         private readonly dataAccess: AdminsDataAccessService
     ) {
         this.domainId = +activatedRoute.parent.parent.snapshot.params['id'];
-        this.definition = getDefinition(
-            this.dataAccess.getAllRoles(this.domainId)
-        );
+        this.definition = getDefinition(this.dataAccess.getAllRoles());
     }
 }

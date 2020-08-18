@@ -22,8 +22,8 @@ const mapPayload = (x) => ({
 export class AdminsDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
-    getAllRoles(domainId: number): Observable<{ id: number; name: string }[]> {
-        return this.http.get<any[]>(`/tenant/domains/${domainId}/roles/admins`);
+    getAllRoles(): Observable<{ id: number; name: string }[]> {
+        return this.http.get<any[]>(`/roles/admins`);
     }
 
     loadItem(domainId: number, userEmail: string): Observable<UserRole> {
