@@ -2,6 +2,7 @@
 
 open Common.Domain.Models
 open Common.Domain.Utils
+open Common.Utils.TaskUtils
 open DomainUserRoles
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
@@ -10,6 +11,16 @@ open System
 open System.Threading.Tasks
 
 module TenantUserRoles =
+
+    let private validateRoles (_, rolesIds: int seq) (dataContext: DbDataContext) =
+        query {
+            for p in dataContext.Roles do
+                where (p.IsTenantManagement <> true && (%in' (rolesIds)) p.Id)
+                select p.Id
+        }
+        |> toCountAsync
+        |> map (fun cnt ->
+            if cnt > 0 then raise Forbidden)
 
     let updateTenantRoles forbidenRoles ((tenantId, dto): TenantId * PostLike) (dbContext: DbDataContext) =
         task {
@@ -20,7 +31,7 @@ module TenantUserRoles =
                             }
                             |> toSingleAsync
 
-            return updateUsersRoles forbidenRoles (domainId, dto) dbContext
+            return updateRoles validateRoles forbidenRoles (domainId, dto) dbContext
         }
 
     let private getUsersTenantManagementDomain userId (dbContext: DbDataContext) =

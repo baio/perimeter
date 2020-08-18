@@ -49,10 +49,10 @@ module DomainUserRoles =
         |> fun cnt ->
             if cnt > 0 then raise Forbidden
 
-    let updateUsersRoles forbidenRoles ((domainId, dto): DomainId * PostLike) (dbContext: DbDataContext) =
+    let updateRoles validateRolesFn forbidenRoles ((domainId, dto): DomainId * PostLike) (dbContext: DbDataContext) =
         task {
             checkForbidenRoles forbidenRoles dto
-            do! validateRoles (domainId, dto.RolesIds) dbContext
+            do! validateRolesFn (domainId, dto.RolesIds) dbContext
             let incomingDur =
                 dto.RolesIds
                 |> Seq.map
@@ -68,7 +68,9 @@ module DomainUserRoles =
             do! saveChangesAsync dbContext
         }
 
-    let getOne userEmail domainId  (dataContext: DbDataContext) =
+    let updateUsersRoles x = x |> updateRoles validateRoles
+
+    let getOne userEmail domainId (dataContext: DbDataContext) =
         query {
             for p in dataContext.DomainUserRole do
                 where (p.DomainId = domainId && p.UserEmail = userEmail)
@@ -161,5 +163,3 @@ module DomainUserRoles =
             |> executeGroupByQuery prms (fun (userEmail, roles) ->
                    { UserEmail = userEmail
                      Roles = roles }) dur4
-            
-    

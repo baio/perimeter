@@ -10,18 +10,18 @@ describe('tenant-admins', () => {
         cy.rows().should('have.length', 1);
     });
 
-    it.skip('create', () => {
+    it('create', () => {
         cy.dataCy('create-item').click();
-        cy.url().should('match', /\/domains\/\d+\/admins\/new/);
+        cy.url().should('match', /\/tenant\/admins\/new/);
 
         cy.formField('userEmail')
             .type('adm@test.dev')
-            .formSelectSingle('roleId', 0)
+            .formSelectSingle('roleId', 1)
             .submitButton()
             .click();
 
         cy.rows().should('have.length', 2);
-        cy.rows(0, 1).should('contain.text', 'DomainSuperAdmin');
+        cy.rows(0, 1).should('contain.text', 'TenantSuperAdmin');
     });
 
     it.skip('remove', () => {

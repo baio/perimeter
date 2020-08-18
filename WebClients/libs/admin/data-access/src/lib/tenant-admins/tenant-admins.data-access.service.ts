@@ -22,15 +22,13 @@ const mapPayload = (x) => ({
 export class TenantAdminsDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
-    getAllRoles(domainId: number): Observable<{ id: number; name: string }[]> {
-        return this.http.get<any[]>(
-            `/tenant/domains/${domainId}/roles/tenant-admins`
-        );
+    getAllRoles(): Observable<{ id: number; name: string }[]> {
+        return this.http.get<any[]>(`/roles/tenant-admins`);
     }
 
-    loadItem(domainId: number, userEmail: string): Observable<UserRole> {
+    loadItem(userEmail: string): Observable<UserRole> {
         return this.http
-            .get(`/tenant/admins/${userEmail}/roles`)
+            .get(`/tenant/admins/${userEmail}`)
             .pipe(map(mapItem));
     }
 
@@ -42,22 +40,17 @@ export class TenantAdminsDataAccessService {
             params['filter.email'] = searchParams.filter.text;
         }
         return this.http
-            .get(`/tenant/admins/roles`, { params })
+            .get(`/tenant/admins`, { params })
             .pipe(map(mapListResponse(mapItem, searchParams)));
     }
 
-    removeItem(domainId: number, userEmail: string): Observable<any> {
-        return this.http.delete(
-            `/tenant/admins/${userEmail}/roles`
-        );
+    removeItem(userEmail: string): Observable<any> {
+        return this.http.delete(`/tenant/admins/${userEmail}`);
     }
 
-    updateItem(
-        domainId: number,
-        data: Partial<UserRole>
-    ): Observable<UserRole> {
+    updateItem(data: Partial<UserRole>): Observable<UserRole> {
         return this.http.post<UserRole>(
-            `/tenant/admins/roles`,
+            `/tenant/admins`,
             mapPayload(data)
         );
     }

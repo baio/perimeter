@@ -44,19 +44,28 @@ module private RoleHandlers =
         wrap (getList <!> getDataContext' <*> ((doublet domainId) <!> bindListQuery))
 
 
-    let getAllDomainRoles roleType domainId =
-        wrap (getAllDomainRoles roleType domainId <!> getDataContext')
+    let getAllUsersRoles domainId =
+        wrap (getAllRoles (RoleType.User domainId) <!> getDataContext')
+
+    let getAllAdminsRoles() =
+        wrap (getAllRoles RoleType.DomainManagement <!> getDataContext')
+
+    let getAllTenantAdminsRoles() =
+        wrap (getAllRoles RoleType.TenantManagement <!> getDataContext')
 
 module Role =
 
     let createRoutes() =
-        subRoutef "/tenant/domains/%i/roles" (fun domainId ->
-            (* wrapAudienceGuard fromDomainId domainId *)
-            choose
-                [ POST >=> (* permissionGuard MANAGE_ROLES >=> *) createHandler domainId
-                  PUT >=> (* permissionGuard MANAGE_ROLES >=> *) routef "/%i" (updateHandler domainId)
-                  DELETE >=> (* permissionGuard MANAGE_ROLES >=> *) routef "/%i" removeHandler
-                  GET >=> (* permissionGuard READ_ROLES >=> *) routef "/%i" getOne
-                  GET >=> route "/users" >=> getAllDomainRoles RoleType.User domainId
-                  GET >=> route "/admins" >=> getAllDomainRoles RoleType.DomainManagement domainId
-                  GET >=> getList domainId ])
+        choose [
+            GET >=> route "/roles/admins" >=> getAllAdminsRoles()
+            GET >=> route "/roles/tenant-admins" >=> getAllTenantAdminsRoles()
+            subRoutef "/tenant/domains/%i/roles" (fun domainId ->
+                (* wrapAudienceGuard fromDomainId domainId *)
+                choose
+                    [ POST >=> createHandler domainId
+                      PUT >=> routef "/%i" (updateHandler domainId)
+                      DELETE >=> routef "/%i" removeHandler
+                      GET >=> routef "/%i" getOne
+                      GET >=> route "/users" >=> getAllUsersRoles domainId
+                      GET >=> getList domainId ])
+        ]        

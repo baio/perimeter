@@ -138,15 +138,15 @@ module Roles =
     type RoleType =
         | TenantManagement
         | DomainManagement
-        | User
+        | User of DomainId
 
-    let getAllDomainRoles (roleType: RoleType) (domainId: DomainId) (dataContext: DbDataContext) =
+    let getAllRoles (roleType: RoleType) (dataContext: DbDataContext) =
 
         let roleTypeFilter =
             match roleType with
             | TenantManagement -> <@ fun (x: Role) -> x.IsTenantManagement @>
             | DomainManagement -> <@ fun (x: Role) -> x.IsDomainManagement @>
-            | User ->
+            | User domainId ->
                 <@ fun (x: Role) ->
                     x.DomainId = Nullable(domainId) && not x.IsDomainManagement && not x.IsTenantManagement @>
 

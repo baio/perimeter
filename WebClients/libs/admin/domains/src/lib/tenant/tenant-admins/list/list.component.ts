@@ -15,22 +15,19 @@ import { ActivatedRoute } from '@angular/router';
     styleUrls: ['./list.component.scss'],
 })
 export class TenantAdminsListComponent implements OnInit {
-    private readonly domainId: number;
     readonly listDefinition = listDefinition;
     readonly dataProvider: HlcNzTable.Data.DataProvider = (state) =>
         this.dataAccess.loadList(state);
     readonly removeItemDataAccess: AdminList.Data.RemoveItemDataAccess = ({
         id,
     }) => {
-        return this.dataAccess.removeItem(this.domainId, id);
+        return this.dataAccess.removeItem(id);
     };
 
     constructor(
         activatedRoute: ActivatedRoute,
         private readonly dataAccess: TenantAdminsDataAccessService
-    ) {
-        this.domainId = +activatedRoute.parent.snapshot.params['id'];
-    }
+    ) {}
 
     ngOnInit(): void {}
 }
