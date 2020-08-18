@@ -20,7 +20,9 @@ export class UsersListComponent implements OnInit {
         this.dataAccess.loadList(this.domainId, state);
     readonly removeItemDataAccess: AdminList.Data.RemoveItemDataAccess = ({
         id,
-    }) => this.dataAccess.removeItem(id);
+    }) => {
+        return this.dataAccess.removeItem(this.domainId, id);
+    };
 
     constructor(
         activatedRoute: ActivatedRoute,

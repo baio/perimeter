@@ -48,8 +48,7 @@ Cypress.Commands.add('formSelect', (value) => {
 });
 
 Cypress.Commands.add('formSelectChoose', (value, index) => {
-    return cy
-        .formSelect(value)
+    cy.formSelect(value)
         .click()
         .get('nz-option-item .ant-select-item-option-content')
         .eq(index)
@@ -59,22 +58,28 @@ Cypress.Commands.add('formSelectChoose', (value, index) => {
         .click(100, 0, { force: true });
 });
 
+Cypress.Commands.add('formSelectSingle', (value, index) => {
+    cy.formSelect(value)
+        .click()
+        .get('nz-option-item .ant-select-item-option-content')
+        .eq(index)
+        .click()
+        .formSelect(value);
+});
+
 Cypress.Commands.add('rows', (index?: number, cellIndex?: number) => {
     const res = cy.get('tbody tr.ant-table-row');
     const res1 = index !== undefined ? res.eq(index) : res;
     return cellIndex !== undefined ? res1.find('td').eq(cellIndex) : res1;
 });
 
-Cypress.Commands.add(
-    'rowCommand',
-    (rowIndex: number, commandIndex: number) => {
-        return cy
-            .get('tbody tr.ant-table-row')
-            .eq(rowIndex)
-            .find('td .table-actions a')
-            .eq(commandIndex);
-    }
-);
+Cypress.Commands.add('rowCommand', (rowIndex: number, commandIndex: number) => {
+    return cy
+        .get('tbody tr.ant-table-row')
+        .eq(rowIndex)
+        .find('td .table-actions a')
+        .eq(commandIndex);
+});
 
 Cypress.Commands.add('submitButton', () => {
     return cy.dataCy('drawer-submit');

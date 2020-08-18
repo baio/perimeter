@@ -44,8 +44,8 @@ module private RoleHandlers =
         wrap (getList <!> getDataContext' <*> ((doublet domainId) <!> bindListQuery))
 
 
-    let getAllDomainRoles domainId =
-        wrap (getAllDomainRoles domainId <!> getDataContext')
+    let getAllDomainRoles roleType domainId =
+        wrap (getAllDomainRoles roleType domainId <!> getDataContext')
 
 module Role =
 
@@ -57,5 +57,6 @@ module Role =
                   PUT >=> (* permissionGuard MANAGE_ROLES >=> *) routef "/%i" (updateHandler domainId)
                   DELETE >=> (* permissionGuard MANAGE_ROLES >=> *) routef "/%i" removeHandler
                   GET >=> (* permissionGuard READ_ROLES >=> *) routef "/%i" getOne
-                  GET >=> route "/all" >=> getAllDomainRoles domainId
+                  GET >=> route "/users" >=> getAllDomainRoles RoleType.User domainId
+                  GET >=> route "/admins" >=> getAllDomainRoles RoleType.DomainManagement domainId
                   GET >=> getList domainId ])

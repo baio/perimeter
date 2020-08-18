@@ -135,11 +135,24 @@ module Roles =
             }
             |> executeListQuery prms
 
+    type RoleType =
+        | TenantManagement
+        | DomainManagement
+        | User
 
-    let getAllDomainRoles (domainId: DomainId) (dataContext: DbDataContext) =
+    let getAllDomainRoles (roleType: RoleType) (domainId: DomainId) (dataContext: DbDataContext) =
+
+        let roleTypeFilter =
+            match roleType with
+            | TenantManagement -> <@ fun (x: Role) -> x.IsTenantManagement @>
+            | DomainManagement -> <@ fun (x: Role) -> x.IsDomainManagement @>
+            | User ->
+                <@ fun (x: Role) ->
+                    x.DomainId = Nullable(domainId) && not x.IsDomainManagement && not x.IsTenantManagement @>
+
         query {
             for p in dataContext.Roles do
-                where (p.DomainId = Nullable(domainId))
+                where ((%roleTypeFilter) p)
                 select
                     { Id = p.Id
                       Name = p.Name }

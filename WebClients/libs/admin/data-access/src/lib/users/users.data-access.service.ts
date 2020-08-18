@@ -18,7 +18,9 @@ export class UsersDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
     getAllRoles(domainId: number): Observable<{ id: number; name: string }[]> {
-        return this.http.get<any[]>(`/tenant/domains/${domainId}/roles/all`);
+        return this.http.get<any[]>(
+            `/tenant/domains/${domainId}/roles/users`
+        );
     }
 
     loadItem(domainId: number, userEmail: string): Observable<UserRole> {
@@ -40,8 +42,10 @@ export class UsersDataAccessService {
             .pipe(map(mapListResponse(mapItem, searchParams)));
     }
 
-    removeItem(id: number): Observable<any> {
-        return this.http.delete(`/tenant/users/roles/${id}`);
+    removeItem(domainId: number, userEmail: string): Observable<any> {
+        return this.http.delete(
+            `/tenant/domains/${domainId}/users/${userEmail}/roles`
+        );
     }
 
     updateItem(

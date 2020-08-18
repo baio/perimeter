@@ -1,21 +1,20 @@
 import { AdminList } from '@admin/shared';
 
 export const listDefinition: AdminList.TableDefinition = {
-    sort: 'dateCreated',
+    sort: {
+        id: 'email',
+        direction: 'asc',
+    },
     cols: [
         {
-            id: 'name',
-            title: 'Name'
+            id: 'email',
+            title: 'Email',
+            sort: true,
         },
         {
-            id: 'identifier',
-            title: 'Identifier',
-        },
-        {
-            id: 'dateCreated',
-            title: 'Created',
-            format: 'dateTime',
-            sort: 'dateCreated',
+            id: 'roles',
+            title: 'Roles',
+            kind: 'Permissions',
         },
     ],
 };
