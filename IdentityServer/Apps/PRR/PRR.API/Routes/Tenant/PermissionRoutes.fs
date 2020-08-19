@@ -8,6 +8,7 @@ open Giraffe
 open PRR.API.Routes
 open PRR.Domain.Tenant
 open PRR.Domain.Tenant.Permissions
+open PRR.Domain.Auth.GetAudience
 
 [<AutoOpen>]
 module private PermissionHandlers =
@@ -52,11 +53,11 @@ module Permission =
         choose [
             GET >=> routef "/tenant/domains/%i/permissions/all" getAllPermissions 
             subRoutef "/tenant/apis/%i/permissions" (fun apiId ->
-                (*wrapAudienceGuard fromApiId apiId >=>*)
+                wrapAudienceGuard fromApiId apiId >=>
                 choose
-                    [ POST >=> (* permissionGuard MANAGE_PERMISSIONS >=> *) createHandler apiId
-                      PUT >=> (* permissionGuard MANAGE_PERMISSIONS >=> *) routef "/%i" updateHandler
-                      DELETE >=> (* permissionGuard MANAGE_PERMISSIONS >=> *) routef "/%i" removeHandler
-                      GET >=> (*permissionGuard READ_PERMISSIONS >=>*) routef "/%i" getOne                      
+                    [ POST >=> permissionGuard MANAGE_PERMISSIONS >=>  createHandler apiId
+                      PUT >=> permissionGuard MANAGE_PERMISSIONS >=> routef "/%i" updateHandler
+                      DELETE >=> permissionGuard MANAGE_PERMISSIONS >=> routef "/%i" removeHandler
+                      GET >=> permissionGuard READ_PERMISSIONS >=> routef "/%i" getOne                      
                       GET >=> getList apiId ])
         ]
