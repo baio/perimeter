@@ -135,7 +135,7 @@ module MultiUsers =
 
                 let u1 = users.[0]
 
-                let! res = testFixture.HttpPostAsync u1.Token.Value "/tenant/users/roles" data
+                let! res = testFixture.HttpPostAsync u1.Token.Value "/tenant/admins" data
 
                 do! ensureSuccessAsync res
             }
@@ -175,9 +175,7 @@ module MultiUsers =
 
             task {
 
-                printf "!!! %s" users.[1].Token.Value
-
-                let! res = testFixture.HttpPostAsync users.[1].Token.Value "/tenant/users/roles" data
+                let! res = testFixture.HttpPostAsync users.[1].Token.Value "/tenant/admins" data
 
                 ensureForbidden res
             }

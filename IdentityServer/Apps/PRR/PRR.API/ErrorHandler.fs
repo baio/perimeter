@@ -76,14 +76,8 @@ module ErrorHandler =
         | _ ->
             ServerErrors.INTERNAL_ERROR ex
 
-    let mapException (ex: Exception) =
-        match ex with
-        | :? AggregateException ->
-            ex
-            |> findLeafInnerException
-            |> matchException
-        | _ ->
-            matchException ex
+    let mapException =
+        findLeafInnerException >> matchException
 
     let errorHandler (ex: Exception) (logger: ILogger) =
         clearResponse >=> (mapException ex)
