@@ -1,6 +1,7 @@
 ﻿namespace Common.Domain.Utils
 
 open Common.Domain.Models
+open Common.Domain.Models.Exceptions
 open Common.Utils
 
 [<AutoOpen>]
@@ -17,6 +18,15 @@ module UniqueConstraintException =
             |> Some
         | _ -> None
 
+    let updateNotFoundException (input: 'a :> System.Exception) =
+        match box input with
+        | :? Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException as ex when ex.HResult = -2146233088 ->
+            NotFound |> Some
+        | _ -> None
+
 
     let (|UniqueConstraintException|_|) pattern message (input: 'a :> System.Exception) =
         uniqueConstraintException pattern message input
+
+    let (|UpdateNotFoundException|_|) (input: 'a :> System.Exception) =
+        updateNotFoundException input

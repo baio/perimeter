@@ -80,22 +80,15 @@ module CRUD =
         member __.``B Get app must be success``() =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
-                let expected: GetLikeDto =
-                    { name = "App 1"
-                      clientId = "xxx"
-                      id = -1
-                      clientSecret = "xxx"
-                      dateCreated = DateTime.UtcNow
-                      idTokenExpiresIn = 100
-                      refreshTokenExpiresIn = 100 }
                 let! result = testFixture.HttpGetAsync userToken
                                   (sprintf "/tenant/domains/%i/applications/%i" domainId applicationId.Value)
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
                 result.id |> should equal applicationId.Value
-                result.name |> should equal expected.name
-                result.clientId |> should equal expected.clientId
+                
+                result.name |> should equal "App 1"
+                result.clientId |> should be (not' null)
                 result.clientSecret |> should be (not' null)
                 result.dateCreated |> should be (not' null)
                 result.idTokenExpiresIn |> should be (not' null)
@@ -119,22 +112,14 @@ module CRUD =
         member __.``D Get app after update must be success``() =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
-                let expected: GetLikeDto =
-                    { name = "App 1 Updated"
-                      clientId = "zzz"
-                      id = -1
-                      clientSecret = "xxx"
-                      dateCreated = DateTime.UtcNow
-                      idTokenExpiresIn = 100
-                      refreshTokenExpiresIn = 100 }
                 let! result = testFixture.HttpGetAsync userToken
                                   (sprintf "/tenant/domains/%i/applications/%i" domainId applicationId.Value)
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
                 result.id |> should equal applicationId.Value
-                result.name |> should equal expected.name
-                result.clientId |> should equal expected.clientId
+                result.name |> should equal "App 1 Updated"
+                result.clientId |> should be (not' null)
                 result.clientSecret |> should be (not' null)
                 result.dateCreated |> should be (not' null)
                 result.idTokenExpiresIn |> should be (not' null)

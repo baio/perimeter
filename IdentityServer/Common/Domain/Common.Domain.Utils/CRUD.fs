@@ -78,7 +78,11 @@ module CRUD =
             }
 
     let update<'b, 'id, 'a, 'dbContext when 'b: not struct and 'dbContext :> DbContext> =
-        updateCatch<'b, 'id, 'a, 'dbContext> (fun ex -> raise ex)
+        updateCatch<'b, 'id, 'a, 'dbContext> (function
+            | UpdateNotFoundException ex ->
+                raise ex
+            | ex ->
+                raise ex)
 
     let validateUpdate<'b, 'id, 'a, 'dbContext when 'b: not struct and 'dbContext :> DbContext> (validate: 'id * 'a -> ('dbContext -> Task<unit>))
         (dto2enty: 'id -> 'b) (mapEntity: 'a -> 'b -> unit): Update<'id, 'a, 'dbContext> =
@@ -95,6 +99,7 @@ module CRUD =
                 do! validate x dbContext
                 return! updateCatch exceptionHandler dto2enty mapEntity x dbContext
             }
+
     type Remove<'id, 'dbContext when 'dbContext :> DbContext> = 'id -> 'dbContext -> Task<unit>
 
     let remove<'b, 'id, 'dbContext when 'b: not struct and 'dbContext :> DbContext> (dto2entity: 'id -> 'b): Remove<'id, 'dbContext> =

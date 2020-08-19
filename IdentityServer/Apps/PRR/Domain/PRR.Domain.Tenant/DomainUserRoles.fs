@@ -33,9 +33,7 @@ module DomainUserRoles =
     let private validateRoles (domainId: DomainId, rolesIds: int seq) (dataContext: DbDataContext) =
         query {
             for p in dataContext.Roles do
-                where
-                    (((p.Domain <> null && p.DomainId <> Nullable(domainId)) || (p.IsTenantManagement = true))
-                     && (%in' (rolesIds)) p.Id)
+                where ((p.Domain <> null && p.DomainId <> Nullable(domainId)) && (%in' (rolesIds)) p.Id)
                 select p.Id
         }
         |> toCountAsync
