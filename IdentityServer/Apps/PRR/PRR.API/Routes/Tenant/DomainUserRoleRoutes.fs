@@ -46,6 +46,7 @@ module DomainUserRole =
     let createRoutes() =
         choose
             [ DELETE >=> routef "/tenant/domains/%i/users/%s/roles" remove
+              // TODO : Get rid of roles
               GET >=> routef "/tenant/domains/%i/users/%s/roles" getOne
               GET >=> routef "/tenant/domains/%i/users/roles" getUsersList
               GET >=> routef "/tenant/domains/%i/admins/roles" getDomainAdminsList
