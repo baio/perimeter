@@ -155,6 +155,7 @@ module private Handlers =
         sysWrapRedirect getRedirectUrl
             (logInSSO <!> getLogInSSOEnv <*> bindValidateFormAsync validateData <*> bindLogSSOQuery sso)
     
+    // TODO : Add cookie before login !
     let authorizeHandler next (ctx: HttpContext) =
         // https://auth0.com/docs/authorization/configure-silent-authentication
         task {
@@ -182,12 +183,18 @@ let createRoutes() =
     subRoute "/auth"
         (choose
             [ POST >=> choose
-                           [ route "/authorize" >=> authorizeHandler
+                           [
+                             // TODO : rename to login
+                             route "/authorize" >=> authorizeHandler
                              route "/sign-up/confirm" >=> signUpConfirmHandler
                              route "/sign-up" >=> signUpHandler
+                             // TODO  : remove
                              route "/sign-in" >=> signInHandler
+                             // TODO  : remove
                              route "/log-in" >=> signInTenantHandler
+                             // TODO  : remove
                              route "/log-in" >=> signInTenantHandler
+                             // TODO  : remove
                              route "/login" >=> logInHandler
                              route "/token" >=> logInTokenHandler
                              route "/refresh-token" >=> refreshTokenHandler
