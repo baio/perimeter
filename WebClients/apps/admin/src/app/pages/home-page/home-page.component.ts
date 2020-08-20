@@ -14,7 +14,7 @@ export class HomePageComponent implements OnInit {
 
     async onLogin() {
         const loginUrl = await this.authService.createLoginUrl();
-        window.location.href = loginUrl;
+        window.location.href = 'https://localhost:5001/auth/authorize'; //loginUrl;
     }
 
     async onSignUp() {

@@ -10,3 +10,4 @@ module Queries =
         | SignUpToken of SignUpToken.Queries
         | ResetPassword of ResetPassword.Queries
         | LogIn of LogIn.Queries
+        | SSO of SSO.Queries

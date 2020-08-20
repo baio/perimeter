@@ -59,6 +59,7 @@ namespace PRR.Data.DataContext
                 entity.HasIndex(x => new {x.DomainId, x.Name}).IsUnique();
                 entity.HasIndex(x => x.ClientId).IsUnique();
                 entity.Property(x => x.DateCreated).HasDefaultValueSql("now()");
+                entity.Property(x => x.SSOEnabled).HasDefaultValue(false);
                 entity.HasOne(x => x.Domain).WithMany(x => x.Applications).OnDelete(DeleteBehavior.Cascade);
                 entity.Property(d => d.Flow)
                     .HasConversion(new EnumToStringConverter<FlowType>());

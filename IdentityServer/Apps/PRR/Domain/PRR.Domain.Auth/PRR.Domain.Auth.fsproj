@@ -41,6 +41,9 @@
         <Compile Include="ResetPassword\ResetPassword.fs" />
         <Compile Include="UpdatePassword\Models.fs" />
         <Compile Include="UpdatePassword\UpdatePassword.fs" />
+        <Compile Include="LogInSSO\Models.fs" />
+        <Compile Include="LogInSSO\UserHelpers.fs" />
+        <Compile Include="LogInSSO\LogInSSO.fs" />
     </ItemGroup>
 
     <ItemGroup>

@@ -17,6 +17,7 @@
         <Compile Include="SignUpToken.fs" />
         <Compile Include="ResetPassword.fs" />
         <Compile Include="LogIn.fs" />
+        <Compile Include="SSO.fs" />
         <Compile Include="SendMail.fs" />
         <Compile Include="Commands.fs" />
         <Compile Include="Queries.fs" />

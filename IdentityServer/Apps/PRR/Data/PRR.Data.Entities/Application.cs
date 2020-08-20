@@ -39,6 +39,9 @@ namespace PRR.Data.Entities
         public string AllowedCallbackUrls { get; set; }
         
         [Required]
+        public bool SSOEnabled { get; set; }
+        
+        [Required]
         public FlowType Flow { get; set; }
 
     }

@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.LogIn
+﻿namespace PRR.Domain.Auth.LogInSSO
 
 open Common.Domain.Models
 
@@ -22,40 +22,41 @@ module Authorize =
            (validateUrl "redirect_uri" data.Redirect_Uri)
            (validateNullOrEmpty "scope" scope)
            (validateContainsAll [| "openid"; "profile" |] "scope" (scope.Split " "))
-           (validateNullOrEmpty "email" data.Email)
-           (validateEmail "email" data.Email)
-           (validateNullOrEmpty "password" data.Password)
            (validateNullOrEmpty "code_challenge" data.Code_Challenge)
            (validateNullOrEmpty "code_challenge_method" data.Code_Challenge_Method)
            (validateContains [| "S256" |] "code_challenge_method" data.Code_Challenge_Method) |]
         |> Array.choose id
 
-    let logIn: LogIn =
-        fun env data ->
+    let logInSSO: LogInSSO =
+        fun env data sso ->
+            if data.Redirect_Uri <> sso.RedirectUri then
+                raise (unAuthorized "sso return_uri mismatch")
+                                
+            if sso.ExpiresAt < DateTime.UtcNow then
+                raise (unAuthorized "sso expired")
+                
             let dataContext = env.DataContext
             task {
 
-                let! clientId = getClientId env.DataContext data.Client_Id data.Email
+                let clientId = data.Client_Id
+                                    
+                let! callbackUrls = query {
+                                        for app in dataContext.Applications do
+                                            where (app.ClientId = clientId)
+                                            select app.AllowedCallbackUrls
+                                    }
+                                    |> toSingleExnAsync (unAuthorized ("client_id not found"))
 
-                let! app = query {
-                               for app in dataContext.Applications do
-                                   where (app.ClientId = clientId)
-                                   select (Tuple.Create(app.SSOEnabled, app.AllowedCallbackUrls))
-                           }
-                           |> toSingleExnAsync (unAuthorized ("client_id not found"))
-                let ssoEnabled = app |> fst
-                let callbackUrls = app |> snd
                 if (callbackUrls <> "*" && (callbackUrls.Split(",")
                                             |> Seq.map (fun x -> x.Trim())
                                             |> Seq.contains data.Redirect_Uri
                                             |> not))
                 then return! raise (unAuthorized "return_uri mismatch")
-                let saltedPassword = env.PasswordSalter data.Password
-                match! getUserId dataContext (data.Email, saltedPassword) with
+                match! getUserId dataContext sso.Email with
                 | Some userId ->
                     let code = env.CodeGenerator()
 
-                    let result: Result =
+                    let result: PRR.Domain.Auth.LogIn.Models.Result =
                         { RedirectUri = data.Redirect_Uri
                           State = data.State
                           Code = code }
@@ -71,18 +72,7 @@ module Authorize =
                           ExpiresAt = expiresAt
                           RedirectUri = data.Redirect_Uri }
 
-
-                    let ssoItem =
-                        match ssoEnabled with
-                        | true ->
-                            Some
-                                ({ Code = code
-                                   ExpiresAt = expiresAt
-                                   Email = data.Email
-                                   RedirectUri = data.Redirect_Uri }: SSO.Item)
-                        | false -> None
-
-                    let evt = UserLogInSuccessEvent(loginItem, ssoItem)
+                    let evt = UserLogInSuccessEvent(loginItem, None)
 
                     return (result, evt)
 

@@ -53,11 +53,18 @@ module private EventsHandler =
             |> SignUpToken.AddToken
             |> SignUpTokenCommand
             |> ofOne
-        | UserLogInSuccessEvent item ->
-            item
-            |> LogIn.AddCode
-            |> LogInCommand
-            |> ofOne
+        | UserLogInSuccessEvent(loginItem, ssoItem) ->
+            seq {
+                loginItem
+                |> LogIn.AddCode
+                |> LogInCommand
+
+                match ssoItem with
+                | Some ssoItem ->
+                    ssoItem
+                    |> SSO.AddCode
+                    |> SSOCommand
+            }
         | UserLogInTokenSuccessEvent item ->
             item
             |> LogIn.RemoveCode

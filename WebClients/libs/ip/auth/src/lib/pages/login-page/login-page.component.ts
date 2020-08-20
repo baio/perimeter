@@ -24,7 +24,8 @@ export class LoginPageComponent implements OnInit {
     public readonly form: FormGroup;
 
     get submitAction() {
-        return `${this.baseUrl}/auth/login`;
+        return 'https://localhost:5001/auth/back'
+        // return `${this.baseUrl}/auth/login`;
     }
 
     constructor(

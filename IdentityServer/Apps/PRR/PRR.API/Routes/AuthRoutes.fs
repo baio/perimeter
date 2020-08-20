@@ -3,8 +3,11 @@
 open Common.Domain.Giraffe
 open Common.Domain.Models
 open Common.Utils.ReaderTask
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Giraffe
+open Microsoft.AspNetCore.Http
 open PRR.API
+open PRR.Domain.Auth.LogInSSO
 open PRR.System.Models
 
 module private Handlers =
@@ -62,7 +65,6 @@ module private Handlers =
         sysWrap
             (signUpConfirm <!> ((fun ctx -> { DataContext = getDataContext ctx }) |> ofReader) <*> bindSignUpTokenQuery)
 
-
     open PRR.Domain.Auth.ResetPassword
 
     let resetPasswordHandler =
@@ -90,6 +92,18 @@ module private Handlers =
               CodeGenerator = getHash ctx
               CodeExpiresIn = (getConfig ctx).Jwt.CodeExpiresIn })
 
+    let private concatError referer err =
+        sprintf "%s%serror=%s" referer
+            (if referer.Contains "?" then "&"
+             else "?") err
+
+    let private redirectUrl ctx err =
+        let rurl =
+            match bindHeader "Referer" ctx with
+            | Some ref -> ref
+            | None _ -> "http://referer-not-found"
+        concatError rurl err
+
     let private getRedirectUrl: GetResultUrlFun<_> =
         fun ctx ->
             function
@@ -97,22 +111,14 @@ module private Handlers =
                 sprintf "%s?code=%s&state=%s" res.RedirectUri res.Code res.State
             | Error ex ->
                 printf "Error %O" ex
-                let referer =
-                    match ctx.Request.Headers.["Referer"] |> Seq.tryHead with
-                    | Some r -> r
-                    | None _ -> "http://fail"
-
-                let concatError err =
-                    sprintf "%s%serror=%s" referer
-                        (if referer.Contains "?" then "&"
-                         else "?") err
                 match ex with
                 | :? BadRequest ->
-                    concatError "invalid_request"
+                    "invalid_request"
                 | :? UnAuthorized ->
-                    concatError "unauthorized_client"
+                    "unauthorized_client"
                 | _ ->
-                    concatError "server_error"
+                    "server_error"
+                |> redirectUrl ctx
 
     let logInHandler =
         sysWrapRedirect getRedirectUrl (logIn <!> getLogInEnv <*> bindValidateFormAsync validateData)
@@ -133,13 +139,51 @@ module private Handlers =
     let logInTokenHandler =
         sysWrapOK (logInToken <!> getLogInTokenEnv <*> bindLogInCodeQuery <*> bindValidateJsonAsync validateData)
 
+    open PRR.Domain.Auth.LogInSSO
+
+    let getLogInSSOEnv =
+        ofReader (fun ctx ->
+            { DataContext = getDataContext ctx
+              CodeGenerator = getHash ctx
+              CodeExpiresIn = (getConfig ctx).Jwt.CodeExpiresIn })
+
+    let private bindLogSSOQuery sso =
+        ofReader (fun _ -> sso)
+        >>= ((bindSysQuery (SSO.GetCode >> Queries.SSO)) >> noneFails (unAuthorized "Code not found"))
+
+    let logInSSOHandler sso =
+        sysWrapRedirect getRedirectUrl
+            (logInSSO <!> getLogInSSOEnv <*> bindValidateFormAsync validateData <*> bindLogSSOQuery sso)
+    
+    let authorizeHandler next (ctx: HttpContext) =
+        // https://auth0.com/docs/authorization/configure-silent-authentication
+        task {
+            let! promptData = bindJsonAsync<Data> ctx
+            match promptData.Prompt with
+            | Some "none" ->
+                let errRedirectUrl = redirectUrl ctx "login_required"
+                let errRedirect() = redirectTo false errRedirectUrl next ctx
+                match bindCookie "sso" ctx with
+                | Some sso ->
+                    try
+                        return! logInSSOHandler sso next ctx
+                    with _ ->
+                        // TODO : Appropriate errors !
+                        return! errRedirect()
+                | None ->
+                    return! errRedirect()
+            | None ->
+                return! logInHandler next ctx
+        }
+
 open Handlers
 
 let createRoutes() =
     subRoute "/auth"
         (choose
             [ POST >=> choose
-                           [ route "/sign-up/confirm" >=> signUpConfirmHandler
+                           [ route "/authorize" >=> authorizeHandler
+                             route "/sign-up/confirm" >=> signUpConfirmHandler
                              route "/sign-up" >=> signUpHandler
                              route "/sign-in" >=> signInHandler
                              route "/log-in" >=> signInTenantHandler
