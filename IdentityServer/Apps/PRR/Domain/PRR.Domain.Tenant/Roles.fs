@@ -5,6 +5,7 @@ open Common.Domain.Utils
 open Common.Domain.Utils.CRUD
 open Common.Utils
 open PRR.Data.DataContext
+open PRR.Data.DataContext.Seed
 open PRR.Data.Entities
 open System
 open System.Linq
@@ -144,8 +145,8 @@ module Roles =
 
         let roleTypeFilter =
             match roleType with
-            | TenantManagement -> <@ fun (x: Role) -> x.IsTenantManagement @>
-            | DomainManagement -> <@ fun (x: Role) -> x.IsDomainManagement @>
+            | TenantManagement -> <@ fun (x: Role) -> x.IsTenantManagement && x.Id <> Roles.TenantOwner.Id @>
+            | DomainManagement -> <@ fun (x: Role) -> x.IsDomainManagement && x.Id <> Roles.DomainOwner.Id @>
             | User domainId ->
                 <@ fun (x: Role) ->
                     x.DomainId = Nullable(domainId) && not x.IsDomainManagement && not x.IsTenantManagement @>

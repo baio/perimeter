@@ -81,7 +81,7 @@ module MultiUsers =
                 let u1 = users.[0]
 
                 let! _ = testFixture.HttpPostAsync u1.Token.Value
-                             (sprintf "/tenant/domains/%i/users/roles" u1.Tenant.Value.DomainId) data
+                             (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
 
                 // create user 2
                 let u2 = users.[1]

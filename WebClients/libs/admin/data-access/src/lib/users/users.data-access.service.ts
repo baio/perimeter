@@ -18,14 +18,12 @@ export class UsersDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
     getAllRoles(domainId: number): Observable<{ id: number; name: string }[]> {
-        return this.http.get<any[]>(
-            `/tenant/domains/${domainId}/roles/users`
-        );
+        return this.http.get<any[]>(`/tenant/domains/${domainId}/roles/users`);
     }
 
     loadItem(domainId: number, userEmail: string): Observable<UserRole> {
         return this.http
-            .get(`/tenant/domains/${domainId}/users/${userEmail}/roles`)
+            .get(`/tenant/domains/${domainId}/users/${userEmail}`)
             .pipe(map(mapItem));
     }
 
@@ -38,13 +36,13 @@ export class UsersDataAccessService {
             params['filter.email'] = searchParams.filter.text;
         }
         return this.http
-            .get(`/tenant/domains/${domainId}/users/roles`, { params })
+            .get(`/tenant/domains/${domainId}/users`, { params })
             .pipe(map(mapListResponse(mapItem, searchParams)));
     }
 
     removeItem(domainId: number, userEmail: string): Observable<any> {
         return this.http.delete(
-            `/tenant/domains/${domainId}/users/${userEmail}/roles`
+            `/tenant/domains/${domainId}/users/${userEmail}`
         );
     }
 
@@ -53,7 +51,7 @@ export class UsersDataAccessService {
         data: Partial<UserRole>
     ): Observable<UserRole> {
         return this.http.post<UserRole>(
-            `/tenant/domains/${domainId}/users/roles`,
+            `/tenant/domains/${domainId}/users`,
             data
         );
     }

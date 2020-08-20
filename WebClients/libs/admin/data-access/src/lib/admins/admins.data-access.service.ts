@@ -28,7 +28,7 @@ export class AdminsDataAccessService {
 
     loadItem(domainId: number, userEmail: string): Observable<UserRole> {
         return this.http
-            .get(`/tenant/domains/${domainId}/users/${userEmail}/roles`)
+            .get(`/tenant/domains/${domainId}/users/${userEmail}`)
             .pipe(map(mapItem));
     }
 
@@ -41,13 +41,13 @@ export class AdminsDataAccessService {
             params['filter.email'] = searchParams.filter.text;
         }
         return this.http
-            .get(`/tenant/domains/${domainId}/admins/roles`, { params })
+            .get(`/tenant/domains/${domainId}/admins`, { params })
             .pipe(map(mapListResponse(mapItem, searchParams)));
     }
 
     removeItem(domainId: number, userEmail: string): Observable<any> {
         return this.http.delete(
-            `/tenant/domains/${domainId}/users/${userEmail}/roles`
+            `/tenant/domains/${domainId}/users/${userEmail}`
         );
     }
 
@@ -56,7 +56,7 @@ export class AdminsDataAccessService {
         data: Partial<UserRole>
     ): Observable<UserRole> {
         return this.http.post<UserRole>(
-            `/tenant/domains/${domainId}/users/roles`,
+            `/tenant/domains/${domainId}/users`,
             mapPayload(data)
         );
     }

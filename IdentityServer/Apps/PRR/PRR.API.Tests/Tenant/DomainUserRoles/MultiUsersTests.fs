@@ -120,7 +120,7 @@ module MultiUsers =
                     { UserEmail = newUserEmail
                       RolesIds = [ u1.RoleId.Value ] }
                 let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/tenant/domains/%i/users/roles" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do! ensureSuccessAsync result
             }
 
@@ -134,7 +134,7 @@ module MultiUsers =
                     { UserEmail = u2.Data.Email
                       RolesIds = [ u1.RoleId.Value ] }
                 let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/tenant/domains/%i/users/roles" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do! ensureSuccessAsync result
             }
 
@@ -172,7 +172,7 @@ module MultiUsers =
                     { UserEmail = "other@mail.com"
                       RolesIds = [ u1.RoleId.Value ] }
                 let! result = testFixture.HttpPostAsync u2.Token.Value
-                                  (sprintf "/tenant/domains/%i/users/roles" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 ensureForbidden result
             }
 
@@ -187,7 +187,7 @@ module MultiUsers =
                     { UserEmail = u2.Data.Email
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
                 let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/tenant/domains/%i/users/roles" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do! ensureSuccessAsync result
             }
             
@@ -226,7 +226,7 @@ module MultiUsers =
                     { UserEmail = "other@mail.com"
                       RolesIds = [ u1.RoleId.Value ] }
                 let! result = testFixture.HttpPostAsync u2.Token.Value
-                                  (sprintf "/tenant/domains/%i/users/roles" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do! ensureSuccessAsync result
             }
             
@@ -240,7 +240,7 @@ module MultiUsers =
                     { UserEmail = "other1@mail.com"
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
                 let! result = testFixture.HttpPostAsync u2.Token.Value
-                                  (sprintf "/tenant/domains/%i/users/roles" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do ensureForbidden result
             }
             
@@ -255,7 +255,7 @@ module MultiUsers =
                     { UserEmail = u2.Data.Email
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainSuperAdmin.Id ] }
                 let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/tenant/domains/%i/users/roles" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do! ensureSuccessAsync result
             }
             
@@ -294,6 +294,6 @@ module MultiUsers =
                     { UserEmail = "other-admin@mail.com"
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
                 let! result = testFixture.HttpPostAsync u2.Token.Value
-                                  (sprintf "/tenant/domains/%i/users/roles" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do! ensureSuccessAsync result
             }

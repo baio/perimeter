@@ -45,19 +45,22 @@ module DomainUserRole =
 
     let createRoutes() =
         choose
-            [ DELETE >=> routef "/tenant/domains/%i/users/%s/roles" remove
-              // TODO : Get rid of roles
-              GET >=> routef "/tenant/domains/%i/users/%s/roles" getOne
-              GET >=> routef "/tenant/domains/%i/users/roles" getUsersList
-              GET >=> routef "/tenant/domains/%i/admins/roles" getDomainAdminsList
+            [ DELETE >=> routef "/tenant/domains/%i/users/%s" remove
+              GET >=> routef "/tenant/domains/%i/users/%s" getOne
+              GET >=> routef "/tenant/domains/%i/users" getUsersList
+              GET >=> routef "/tenant/domains/%i/admins" getDomainAdminsList
               POST
-              >=> routef "/tenant/domains/%i/users/roles" (fun domainId ->
+              >=> routef "/tenant/domains/%i/users" (fun domainId ->
                       // check access token contains audience from the same domain
                       wrapAudienceGuard fromDomainId domainId
                       >=> choose
-                              [ permissionOptGuard MANAGE_DOMAIN_SUPER_ADMINS >=> updateRolesHandler [ Seed.Roles.DomainOwner.Id ] domainId                                
-                                permissionOptGuard MANAGE_DOMAIN_ADMINS >=> updateRolesHandler [ Seed.Roles.DomainSuperAdmin.Id; Seed.Roles.DomainOwner.Id ] domainId
-                                permissionOptGuard MANAGE_USERS >=> updateRolesHandler
+                              [ permissionOptGuard MANAGE_DOMAIN_SUPER_ADMINS
+                                >=> updateRolesHandler [ Seed.Roles.DomainOwner.Id ] domainId
+                                permissionOptGuard MANAGE_DOMAIN_ADMINS
+                                >=> updateRolesHandler [ Seed.Roles.DomainSuperAdmin.Id; Seed.Roles.DomainOwner.Id ]
+                                        domainId
+                                permissionOptGuard MANAGE_USERS
+                                >=> updateRolesHandler
                                         [ Seed.Roles.DomainAdmin.Id; Seed.Roles.DomainSuperAdmin.Id; Seed.Roles.DomainOwner.Id ]
                                         domainId
                                 RequestErrors.FORBIDDEN "User can't manage provided roles" ]) ]
