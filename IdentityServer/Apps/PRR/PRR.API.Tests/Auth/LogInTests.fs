@@ -145,7 +145,7 @@ module LogIn =
 
                 let! result' = testFixture.HttpPostAsync' "/auth/token" loginTokenData
                 do! ensureSuccessAsync result'
-                let! result = result' |> readAsJsonAsync<PRR.Domain.Auth.SignIn.Models.SignInResult>
+                let! result = result' |> readAsJsonAsync<PRR.Domain.Auth.LogInToken.Models.Result>
                 result.AccessToken |> should be (not' Empty)
                 result.IdToken |> should be (not' Empty)
                 result.RefreshToken |> should be (not' Empty)

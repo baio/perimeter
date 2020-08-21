@@ -10,7 +10,6 @@ open PRR.API.Routes.Tenant
 open PRR.API.Tests.Utils
 open PRR.Data.Entities
 open PRR.Domain.Auth
-open PRR.Domain.Auth.SignIn
 open PRR.Domain.Auth.SignUp
 open PRR.Domain.Tenant
 open PRR.Domain.Tenant.DomainUserRoles
@@ -86,18 +85,26 @@ module MultiUsers =
                 // create user 2
                 let u2 = users.[1]
                 let! _ = createUser testContext.Value u2.Data
+                
+                let! res = logInUser testFixture u1.Tenant.Value.SampleApplicationClientId u2.Data.Email u2.Data.Password
 
+                users.[1] <- {| u2 with
+                        Token = Some(res.AccessToken)
+                        Tenant = Some(tenant) |}
+
+                (*
                 // resignin user 2 under first tenant
                 let data: SignIn.Models.SignInData =
                     { Email = u2.Data.Email
                       Password = u2.Data.Password
                       ClientId = u1.Tenant.Value.SampleApplicationClientId }
                 // re-signin 2nd tenant under 1st client
-                let! res = testFixture.HttpPostAsync' "/auth/sign-in" data >>= readAsJsonAsync<CreateUser.SignInResult>
+                let! res = testFixture.HttpPostAsync' "/auth/login" data >>= readAsJsonAsync<CreateUser.SignInResult>
 
                 users.[1] <- {| u2 with
                                     Token = Some(res.accessToken)
                                     Tenant = Some(tenant) |}
+                *)                                    
             }
 
         [<Fact>]
@@ -118,15 +125,10 @@ module MultiUsers =
             // re-signin user 1 under tenant management domain
             let u1 = users.[0]
 
-            let data: SignIn.Models.SignInData =
-                { Email = u1.Data.Email
-                  Password = u1.Data.Password
-                  ClientId = u1.Tenant.Value.TenantManagementApplicationClientId }
-
             task {
-                let! res = testFixture.HttpPostAsync' "/auth/sign-in" data >>= readAsJsonAsync<CreateUser.SignInResult>
-
-                users.[0] <- {| u1 with Token = Some(res.accessToken) |}
+                let! res = logInUser testFixture u1.Tenant.Value.SampleApplicationClientId u1.Data.Email u1.Data.Password
+                
+                users.[0] <- {| u1 with Token = Some(res.AccessToken) |}
 
                 // add user 2 manage_domains role under tenant 1
                 let data: PostLike =
@@ -146,15 +148,13 @@ module MultiUsers =
             // re-signin user 2 under tenant 1 management domain
             let u1 = users.[0]
             let u2 = users.[1]
-
-            let data: SignIn.Models.SignInData =
-                { Email = u2.Data.Email
-                  Password = u2.Data.Password
-                  ClientId = u1.Tenant.Value.TenantManagementApplicationClientId }
+            
 
             task {
-                let! res = testFixture.HttpPostAsync' "/auth/sign-in" data >>= readAsJsonAsync<CreateUser.SignInResult>
-                users.[1] <- {| u2 with Token = Some(res.accessToken) |}
+                
+                let! res = logInUser testFixture u1.Tenant.Value.SampleApplicationClientId u2.Data.Email u2.Data.Password
+           
+                users.[1] <- {| u2 with Token = Some(res.AccessToken) |}
                 let u2 = users.[1]
                 //
                 let data: DomainPools.PostLike =

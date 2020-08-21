@@ -11,12 +11,11 @@ module Events =
         | UserSignedUpEvent of SignUpSuccess
         | UserSignUpConfirmedEvent of SignUpConfirmSuccess
         | UserTenantCreatedEvent of CreatedTenantInfo
-        | UserSignInSuccessEvent of SignInSuccess
         | RefreshTokenSuccessEvent of RefreshTokenSuccess
         | SignUpTokenEvent of SignUpToken.Events
         | ResetPasswordEvent of ResetPassword.Events
         | UserLogInSuccessEvent of LogIn.Item * (SSO.Item option)
-        | UserLogInTokenSuccessEvent of Token 
+        | UserLogInTokenSuccessEvent of Token * RefreshToken.Item 
         | LogInEvent of LogIn.Events
         | SSOEvent of SSO.Events
         | ResetPasswordRequested of Email

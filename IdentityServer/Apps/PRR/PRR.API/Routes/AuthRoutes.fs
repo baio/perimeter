@@ -21,7 +21,8 @@ module private Handlers =
                            HashProvider = getHash ctx })
                          |> ofReader)
              <*> bindValidateJsonAsync validateData)
-    
+
+    (*
     open PRR.Domain.Auth.SignIn
 
     let getSignInEnv =
@@ -36,23 +37,8 @@ module private Handlers =
 
     let signInTenantHandler =
         sysWrapOK (signInTenant <!> getSignInEnv <*> bindJsonAsync)
-       
 
-    open PRR.Domain.Auth.RefreshToken
-
-    let private bindRefreshTokenQuery =
-        ((fun (x: Data) -> x.RefreshToken) <!> bindJsonAsync<Data>)
-        >>= ((bindSysQuery (RefreshToken.GetToken >> Queries.RefreshToken)) >> noneFails (UnAuthorized None))
-
-    let refreshTokenHandler =
-
-        sysWrapOK
-            (refreshToken <!> ((fun ctx ->
-                               { DataContext = getDataContext ctx
-                                 HashProvider = getHash ctx
-                                 JwtConfig = (getConfig ctx).Jwt })
-                               |> ofReader) <*> (bindAuthorizationBearerHeader >> option2Task (UnAuthorized None))
-             <*> bindRefreshTokenQuery)
+    *)
 
     open PRR.Domain.Auth.SignUpConfirm
 
@@ -138,6 +124,19 @@ module private Handlers =
     let logInTokenHandler =
         sysWrapOK (logInToken <!> getLogInTokenEnv <*> bindLogInCodeQuery <*> bindValidateJsonAsync validateData)
 
+    open PRR.Domain.Auth.RefreshToken
+
+    let private bindRefreshTokenQuery =
+        ((fun (x: Data) -> x.RefreshToken) <!> bindJsonAsync<Data>)
+        >>= ((bindSysQuery (RefreshToken.GetToken >> Queries.RefreshToken)) >> noneFails (UnAuthorized None))
+
+    let refreshTokenHandler =
+
+        sysWrapOK
+            (refreshToken <!> getLogInTokenEnv <*> (bindAuthorizationBearerHeader >> option2Task (UnAuthorized None))
+             <*> bindRefreshTokenQuery)
+
+
     open PRR.Domain.Auth.LogInSSO
 
     let getLogInSSOEnv =
@@ -153,7 +152,7 @@ module private Handlers =
     let logInSSOHandler sso =
         sysWrapRedirect getRedirectUrl
             (logInSSO <!> getLogInSSOEnv <*> bindValidateFormAsync validateData <*> bindLogSSOQuery sso)
-    
+
     let authorizeHandler next (ctx: HttpContext) =
         // https://auth0.com/docs/authorization/configure-silent-authentication
         task {
@@ -176,11 +175,11 @@ module private Handlers =
                 return! logInHandler ssoCookie next ctx
         }
 
-    let assignSSOHandler next (ctx: HttpContext) =               
+    let assignSSOHandler next (ctx: HttpContext) =
         let hasher = getHash ctx
         let token = hasher()
         ctx.Response.Cookies.Append("sso", token, CookieOptions(Secure = true, HttpOnly = true))
-        Successful.NO_CONTENT next ctx                       
+        Successful.NO_CONTENT next ctx
 
 open Handlers
 
@@ -188,20 +187,18 @@ let createRoutes() =
     subRoute "/auth"
         (choose
             [ POST >=> choose
-                           [
-                             // TODO : rename to login
-                             route "/login" >=> authorizeHandler
+                           [ route "/login" >=> authorizeHandler
                              route "/assign-sso" >=> assignSSOHandler
                              route "/sign-up/confirm" >=> signUpConfirmHandler
                              route "/sign-up" >=> signUpHandler
                              // TODO  : remove
-                             route "/sign-in" >=> signInHandler
-                             // TODO  : remove
-                             route "/log-in" >=> signInTenantHandler
+                             // route "/sign-in" >=> signInHandler
                              // TODO  : remove
                              // route "/log-in" >=> signInTenantHandler
                              // TODO  : remove
-                             route "/login" >=> logInHandler None
+                             // route "/log-in" >=> signInTenantHandler
+                             // TODO  : remove
+                             // route "/login" >=> logInHandler None
                              route "/token" >=> logInTokenHandler
                              route "/refresh-token" >=> refreshTokenHandler
                              route "/reset-password/confirm" >=> resetPasswordConfirmHandler

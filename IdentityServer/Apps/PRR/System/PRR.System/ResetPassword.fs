@@ -32,7 +32,6 @@ module private ResetPassword =
                             raise (exn "Test Restart")
                             return! loop state
                         | AddToken(email) ->
-                            printf "2222 %s" email
                             let item =
                                 { Email = email
                                   Token = env.HashProvider()

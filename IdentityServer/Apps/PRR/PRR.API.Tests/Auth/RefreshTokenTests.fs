@@ -66,38 +66,19 @@ module RefreshToken =
 
         [<Fact>]
         [<Priority(-1)>]
-        member __.BeforeAll() =
-            testFixture.OverrideServices(fun services ->
-                let sp = services.BuildServiceProvider()
-                let systemEnv = sp.GetService<SystemEnv>()
-                let systemEnv =
-                    { systemEnv with EventHandledCallback = systemEventHandled }                    
-                let sys = PRR.System.Setup.setUp systemEnv                    
-                services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore)                                                    
+        member __.``0 BeforeAll``() =
             task {
-                let! _ = testFixture.HttpPostAsync' "/auth/sign-up" ownerData
-                confirmTokenWaitHandle.WaitOne() |> ignore
-                let confirmData: SignUpConfirm.Models.Data =
-                    { Token = confirmToken }
-                let! _ = testFixture.HttpPostAsync' "/auth/sign-up/confirm" confirmData
-                tenantWaitHandle.WaitOne() |> ignore
-
-                let validUserData: SignIn.Models.SignInData =
-                    { Email = ownerData.Email
-                      Password = ownerData.Password
-                      ClientId = tenant.Value.SampleApplicationClientId }
-
-                let! result = testFixture.HttpPostAsync' "/auth/sign-in" validUserData
-                let! result = readAsJsonAsync<SignInResult> result
-                accessToken <- result.accessToken
-                refreshToken <- result.refreshToken
-
+                
+                let testContext = createUserTestContext testFixture
+                let! result = createUser'' true testContext ownerData
+                accessToken <- result.AccessToken
+                refreshToken <- result.RefreshToken
                 return ()
             }
 
         [<Fact>]
         [<Priority(1)>]
-        member __.``Wrong refresh token must be fail``() =
+        member __.``A Wrong refresh token must be fail``() =
 
             task {
 
@@ -111,7 +92,7 @@ module RefreshToken =
 
         [<Fact>]
         [<Priority(1)>]
-        member __.``Correct refresh token with wrong access token must fail``() =
+        member __.``B Correct refresh token with wrong access token must fail``() =
 
             task {
 
@@ -125,7 +106,7 @@ module RefreshToken =
 
         [<Fact>]
         [<Priority(1)>]
-        member __.``Refresh token must be success``() =
+        member __.``C Refresh token must be success``() =
 
             task {
 
@@ -154,7 +135,7 @@ module RefreshToken =
             
         [<Fact>]
         [<Priority(2)>]
-        member __.``Refresh same token second time must fail``() =
+        member __.``D Refresh same token second time must fail``() =
 
             task {
 
@@ -168,7 +149,7 @@ module RefreshToken =
 
         [<Fact>]
         [<Priority(2)>]
-        member __.``Refresh with new token must be success``() =
+        member __.``E Refresh with new token must be success``() =
 
             task {
 

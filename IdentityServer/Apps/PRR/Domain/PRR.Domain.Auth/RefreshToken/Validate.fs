@@ -3,6 +3,7 @@
 open Common.Domain.Models
 open System
 open System.Threading.Tasks
+open PRR.Domain.Auth.LogInToken
 
 [<AutoOpen>]
 module private Validate =

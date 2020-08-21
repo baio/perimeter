@@ -55,7 +55,13 @@ module LogInToken =
                 match! getUserDataForToken dataContext item.UserId with
                 | Some tokenData ->
                     let! result = signInUser env tokenData data.Client_Id
-                    let evt = item.Code |> UserLogInTokenSuccessEvent
+                    let refreshTokenItem: RefreshToken.Item = {
+                        Token = result.RefreshToken
+                        ClientId = data.Client_Id
+                        UserId = item.UserId
+                        ExpiresAt = DateTime.UtcNow.AddMinutes(float env.JwtConfig.RefreshTokenExpiresIn)                       
+                    } 
+                    let evt = UserLogInTokenSuccessEvent(item.Code, refreshTokenItem)
                     return (result, evt)
                 | None ->
                     return! raiseTask (unAuthorized "user is not found")

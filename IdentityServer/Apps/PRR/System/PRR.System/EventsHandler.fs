@@ -38,11 +38,6 @@ module private EventsHandler =
             |> ofOne
         | UserTenantCreatedEvent _ ->
             Seq.empty
-        | UserSignInSuccessEvent data ->
-            data
-            |> RefreshToken.AddToken
-            |> RefreshTokenCommand
-            |> ofOne
         | RefreshTokenSuccessEvent data ->
             data
             |> RefreshToken.UpdateToken
@@ -58,18 +53,23 @@ module private EventsHandler =
                 loginItem
                 |> LogIn.AddCode
                 |> LogInCommand
-
+                
                 match ssoItem with
                 | Some ssoItem ->
                     ssoItem
                     |> SSO.AddCode
                     |> SSOCommand
             }
-        | UserLogInTokenSuccessEvent item ->
-            item
-            |> LogIn.RemoveCode
-            |> LogInCommand
-            |> ofOne
+        | UserLogInTokenSuccessEvent (token, item) ->
+            seq {
+                token
+                |> LogIn.RemoveCode
+                |> LogInCommand
+                
+                item
+                |> RefreshToken.AddToken
+                |> RefreshTokenCommand
+            }
         | CommandFailureEvent data ->
             printf "Command fails %O" data
             Seq.empty

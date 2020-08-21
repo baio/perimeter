@@ -21,12 +21,6 @@
         <Compile Include="validatePassword.fs" />
         <Compile Include="SignUp\Models.fs" />
         <Compile Include="SignUp\SignUp.fs" />
-        <Compile Include="SignIn\Models.fs" />
-        <Compile Include="SignIn\UserHelpers.fs" />
-        <Compile Include="SignIn\CreateClaims.fs" />
-        <Compile Include="SignIn\CreateToken.fs" />
-        <Compile Include="SignIn\SignInUser.fs" />
-        <Compile Include="SignIn\SignIn.fs" />
         <Compile Include="SignUpConfirm\Models.fs" />
         <Compile Include="SignUpConfirm\SignUpConfirm.fs" />
         <Compile Include="RefreshToken\Models.fs" />

@@ -21,7 +21,7 @@ module RefreshToken =
     // Commands
     type Commands =
         | Restart
-        | AddToken of SignInSuccess
+        | AddToken of Item
         | UpdateToken of RefreshTokenSuccess
         | MakeSnapshot
 

@@ -78,6 +78,7 @@ module RefreshTokenPersistence =
                 services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore)
 
             task {
+                (*
                 let! _ = testFixture.HttpPostAsync' "/auth/sign-up" ownerData
                 confirmTokenWaitHandle.WaitOne() |> ignore
 
@@ -91,11 +92,26 @@ module RefreshTokenPersistence =
                       Password = ownerData.Password
                       ClientId = tenant.Value.SampleApplicationClientId }
 
-                let! result = testFixture.HttpPostAsync' "/auth/sign-in" validUserData
+                let! result = testFixture.HttpPostAsync' "/auth/login" validUserData
                 let! result = readAsJsonAsync<SignInResult> result
                 accessToken <- result.accessToken
                 refreshToken <- result.refreshToken
+                *)
+                
+                let testContext = createUserTestContext testFixture
+                let! result = createUser'' true testContext ownerData
+                accessToken <- result.AccessToken
+                refreshToken <- result.RefreshToken
+                return ()
+                
+                (*
+                let! result = logInUser testFixture tenant.Value.SampleApplicationClientId ownerData.Email
+                                  ownerData.Password
 
+                accessToken <- result.AccessToken
+                refreshToken <- result.RefreshToken
+                *)
+                
                 return ()
             }
 

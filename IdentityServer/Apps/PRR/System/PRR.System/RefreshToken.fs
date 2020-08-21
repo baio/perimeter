@@ -26,12 +26,7 @@ module private RefreshToken =
                         | Restart ->
                             raise (exn "Test Restart")
                             return! loop state
-                        | AddToken(x) ->
-                            let item =
-                                { ClientId = x.ClientId
-                                  UserId = x.UserId
-                                  Token = x.RefreshToken
-                                  ExpiresAt = DateTime.UtcNow.AddMinutes(float (int tokenExpiresIs)) }
+                        | AddToken(item) ->
                             return Persist(Event(TokenAdded item))
                         | UpdateToken(x) ->
                             let item =
