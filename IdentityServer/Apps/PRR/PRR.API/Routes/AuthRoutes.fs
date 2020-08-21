@@ -115,6 +115,7 @@ module private Handlers =
             { DataContext = getDataContext ctx
               HashProvider = getHash ctx
               Sha256Provider = getSHA256 ctx
+              SSOCookieExpiresIn = (getConfig ctx).SSOCookieExpiresIn
               JwtConfig = (getConfig ctx).Jwt })
 
     let private bindLogInCodeQuery =

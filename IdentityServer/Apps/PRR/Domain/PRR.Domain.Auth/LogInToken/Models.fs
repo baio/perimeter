@@ -24,6 +24,7 @@ module Models =
     type Env =
         { DataContext: DbDataContext
           JwtConfig: JwtConfig
+          SSOCookieExpiresIn: int<minutes>
           HashProvider: HashProvider
           Sha256Provider: Sha256Provider }
 

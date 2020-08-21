@@ -43,6 +43,7 @@ module E2E =
                       { DataContext = getDataContext ctx
                         HashProvider = getHash ctx
                         Sha256Provider = getSHA256 ctx
+                        SSOCookieExpiresIn = (getConfig ctx).SSOCookieExpiresIn
                         JwtConfig = (getConfig ctx).Jwt }
 
                   task {
