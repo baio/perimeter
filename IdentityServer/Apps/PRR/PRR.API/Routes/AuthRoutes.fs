@@ -21,8 +21,7 @@ module private Handlers =
                            HashProvider = getHash ctx })
                          |> ofReader)
              <*> bindValidateJsonAsync validateData)
-
-
+    
     open PRR.Domain.Auth.SignIn
 
     let getSignInEnv =
@@ -37,7 +36,7 @@ module private Handlers =
 
     let signInTenantHandler =
         sysWrapOK (signInTenant <!> getSignInEnv <*> bindJsonAsync)
-
+       
 
     open PRR.Domain.Auth.RefreshToken
 
@@ -120,8 +119,8 @@ module private Handlers =
                     "server_error"
                 |> redirectUrl ctx
 
-    let logInHandler =
-        sysWrapRedirect getRedirectUrl (logIn <!> getLogInEnv <*> bindValidateFormAsync validateData)
+    let logInHandler sso =
+        sysWrapRedirect getRedirectUrl (logIn sso <!> getLogInEnv <*> bindValidateFormAsync validateData)
 
     open PRR.Domain.Auth.LogInToken
 
@@ -155,16 +154,16 @@ module private Handlers =
         sysWrapRedirect getRedirectUrl
             (logInSSO <!> getLogInSSOEnv <*> bindValidateFormAsync validateData <*> bindLogSSOQuery sso)
     
-    // TODO : Add cookie before login !
     let authorizeHandler next (ctx: HttpContext) =
         // https://auth0.com/docs/authorization/configure-silent-authentication
         task {
+            let ssoCookie = bindCookie "sso" ctx
             let! promptData = bindJsonAsync<Data> ctx
             match promptData.Prompt with
             | Some "none" ->
                 let errRedirectUrl = redirectUrl ctx "login_required"
                 let errRedirect() = redirectTo false errRedirectUrl next ctx
-                match bindCookie "sso" ctx with
+                match ssoCookie with
                 | Some sso ->
                     try
                         return! logInSSOHandler sso next ctx
@@ -173,9 +172,15 @@ module private Handlers =
                         return! errRedirect()
                 | None ->
                     return! errRedirect()
-            | None ->
-                return! logInHandler next ctx
+            | _ ->
+                return! logInHandler ssoCookie next ctx
         }
+
+    let assignSSOHandler next (ctx: HttpContext) =               
+        let hasher = getHash ctx
+        let token = hasher()
+        ctx.Response.Cookies.Append("sso", token, CookieOptions(Secure = true, HttpOnly = true))
+        Successful.NO_CONTENT next ctx                       
 
 open Handlers
 
@@ -185,7 +190,8 @@ let createRoutes() =
             [ POST >=> choose
                            [
                              // TODO : rename to login
-                             route "/authorize" >=> authorizeHandler
+                             route "/login" >=> authorizeHandler
+                             route "/assign-sso" >=> assignSSOHandler
                              route "/sign-up/confirm" >=> signUpConfirmHandler
                              route "/sign-up" >=> signUpHandler
                              // TODO  : remove
@@ -193,9 +199,9 @@ let createRoutes() =
                              // TODO  : remove
                              route "/log-in" >=> signInTenantHandler
                              // TODO  : remove
-                             route "/log-in" >=> signInTenantHandler
+                             // route "/log-in" >=> signInTenantHandler
                              // TODO  : remove
-                             route "/login" >=> logInHandler
+                             route "/login" >=> logInHandler None
                              route "/token" >=> logInTokenHandler
                              route "/refresh-token" >=> refreshTokenHandler
                              route "/reset-password/confirm" >=> resetPasswordConfirmHandler

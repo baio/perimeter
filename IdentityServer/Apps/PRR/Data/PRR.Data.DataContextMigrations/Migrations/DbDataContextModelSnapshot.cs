@@ -102,6 +102,11 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     b.Property<int>("RefreshTokenExpiresIn")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("SSOEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId")

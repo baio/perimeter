@@ -8,8 +8,8 @@ module SSO =
 
     type Item =
         { Code: Token
+          TenantId: TenantId
           Email: string
-          RedirectUri: string
           ExpiresAt: DateTime }
 
     // Queries

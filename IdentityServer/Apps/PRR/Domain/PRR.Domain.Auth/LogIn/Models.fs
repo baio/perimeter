@@ -32,4 +32,4 @@ module Models =
           PasswordSalter: StringSalter
           CodeExpiresIn: int<minutes> }
 
-    type LogIn = Env -> Data -> Task<Result * Events>
+    type LogIn = string option -> Env -> Data -> Task<Result * Events>

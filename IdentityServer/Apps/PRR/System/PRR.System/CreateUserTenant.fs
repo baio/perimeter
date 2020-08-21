@@ -50,7 +50,7 @@ module private CreateUserTenant =
             (Domain = domain, Name = "Domain Management Application", ClientId = guid(), ClientSecret = hashProvider(),
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
              RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn), AllowedCallbackUrls = "*",
-             Flow = FlowType.PKCE) |> add' dataContext
+             Flow = FlowType.PKCE, SSOEnabled = true) |> add' dataContext
 
     let createDomainManagementApi (domain, dataContext, authConfig) =
         Api
@@ -71,7 +71,7 @@ module private CreateUserTenant =
         Application
             (Domain = domain, Name = "Tenant domains management app", ClientId = guid(), ClientSecret = hashProvider(),
              Flow = FlowType.PKCE, AllowedCallbackUrls = "*", IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
-             RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn)) |> add' dataContext
+             RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn), SSOEnabled = true) |> add' dataContext
 
     let createTenantManagementApi (domain, dataContext, authConfig) =
         Api

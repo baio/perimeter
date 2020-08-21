@@ -31,7 +31,7 @@ module Authorize =
         |> Array.choose id
 
     let logIn: LogIn =
-        fun env data ->
+        fun sso env data ->
             let dataContext = env.DataContext
             task {
 
@@ -40,11 +40,11 @@ module Authorize =
                 let! app = query {
                                for app in dataContext.Applications do
                                    where (app.ClientId = clientId)
-                                   select (Tuple.Create(app.SSOEnabled, app.AllowedCallbackUrls))
+                                   select
+                                       (Tuple.Create(app.SSOEnabled, app.AllowedCallbackUrls, app.Domain.Pool.TenantId))
                            }
                            |> toSingleExnAsync (unAuthorized ("client_id not found"))
-                let ssoEnabled = app |> fst
-                let callbackUrls = app |> snd
+                let (ssoEnabled, callbackUrls, tenantId) = app
                 if (callbackUrls <> "*" && (callbackUrls.Split(",")
                                             |> Seq.map (fun x -> x.Trim())
                                             |> Seq.contains data.Redirect_Uri
@@ -73,14 +73,15 @@ module Authorize =
 
 
                     let ssoItem =
-                        match ssoEnabled with
-                        | true ->
+                        match ssoEnabled, sso with
+                        | (true, Some sso) ->
                             Some
-                                ({ Code = code
+                                ({ Code = sso
+                                   TenantId = tenantId
                                    ExpiresAt = expiresAt
-                                   Email = data.Email
-                                   RedirectUri = data.Redirect_Uri }: SSO.Item)
-                        | false -> None
+                                   Email = data.Email }: SSO.Item)
+                        // TODO : Handle case SSO enabled but sso token not found
+                        | _ -> None
 
                     let evt = UserLogInSuccessEvent(loginItem, ssoItem)
 

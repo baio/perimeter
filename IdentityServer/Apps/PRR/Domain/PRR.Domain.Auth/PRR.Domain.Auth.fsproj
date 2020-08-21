@@ -44,6 +44,7 @@
         <Compile Include="LogInSSO\Models.fs" />
         <Compile Include="LogInSSO\UserHelpers.fs" />
         <Compile Include="LogInSSO\LogInSSO.fs" />
+        <Folder Include="AssignSSO" />
     </ItemGroup>
 
     <ItemGroup>

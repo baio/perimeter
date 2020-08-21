@@ -29,9 +29,7 @@ module Authorize =
 
     let logInSSO: LogInSSO =
         fun env data sso ->
-            if data.Redirect_Uri <> sso.RedirectUri then
-                raise (unAuthorized "sso return_uri mismatch")
-                                
+            
             if sso.ExpiresAt < DateTime.UtcNow then
                 raise (unAuthorized "sso expired")
                 
@@ -40,12 +38,17 @@ module Authorize =
 
                 let clientId = data.Client_Id
                                     
-                let! callbackUrls = query {
+                let! app = query {
                                         for app in dataContext.Applications do
                                             where (app.ClientId = clientId)
-                                            select app.AllowedCallbackUrls
+                                            select (Tuple.Create(app.Domain.Pool.TenantId, app.AllowedCallbackUrls))
                                     }
                                     |> toSingleExnAsync (unAuthorized ("client_id not found"))
+                
+                let (tenantId, callbackUrls) = app
+                
+                if tenantId <> sso.TenantId then
+                    return raise (unAuthorized "sso wrong tenant")
 
                 if (callbackUrls <> "*" && (callbackUrls.Split(",")
                                             |> Seq.map (fun x -> x.Trim())
