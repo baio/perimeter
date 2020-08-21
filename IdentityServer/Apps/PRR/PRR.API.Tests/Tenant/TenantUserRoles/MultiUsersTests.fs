@@ -91,20 +91,6 @@ module MultiUsers =
                 users.[1] <- {| u2 with
                         Token = Some(res.AccessToken)
                         Tenant = Some(tenant) |}
-
-                (*
-                // resignin user 2 under first tenant
-                let data: SignIn.Models.SignInData =
-                    { Email = u2.Data.Email
-                      Password = u2.Data.Password
-                      ClientId = u1.Tenant.Value.SampleApplicationClientId }
-                // re-signin 2nd tenant under 1st client
-                let! res = testFixture.HttpPostAsync' "/auth/login" data >>= readAsJsonAsync<CreateUser.SignInResult>
-
-                users.[1] <- {| u2 with
-                                    Token = Some(res.accessToken)
-                                    Tenant = Some(tenant) |}
-                *)                                    
             }
 
         [<Fact>]
@@ -126,7 +112,7 @@ module MultiUsers =
             let u1 = users.[0]
 
             task {
-                let! res = logInUser testFixture u1.Tenant.Value.SampleApplicationClientId u1.Data.Email u1.Data.Password
+                let! res = logInUser testFixture u1.Tenant.Value.TenantManagementApplicationClientId u1.Data.Email u1.Data.Password
                 
                 users.[0] <- {| u1 with Token = Some(res.AccessToken) |}
 
@@ -136,8 +122,10 @@ module MultiUsers =
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.TenantAdmin.Id ] }
 
                 let u1 = users.[0]
+                
+                let token = u1.Token.Value               
 
-                let! res = testFixture.HttpPostAsync u1.Token.Value "/tenant/admins" data
+                let! res = testFixture.HttpPostAsync token  "/tenant/admins" data
 
                 do! ensureSuccessAsync res
             }
@@ -152,7 +140,7 @@ module MultiUsers =
 
             task {
                 
-                let! res = logInUser testFixture u1.Tenant.Value.SampleApplicationClientId u2.Data.Email u2.Data.Password
+                let! res = logInUser testFixture u1.Tenant.Value.TenantManagementApplicationClientId u2.Data.Email u2.Data.Password
            
                 users.[1] <- {| u2 with Token = Some(res.AccessToken) |}
                 let u2 = users.[1]
