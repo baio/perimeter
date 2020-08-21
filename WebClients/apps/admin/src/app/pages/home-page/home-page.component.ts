@@ -13,8 +13,8 @@ export class HomePageComponent implements OnInit {
     ngOnInit(): void {}
 
     async onLogin() {
-        const loginUrl = await this.authService.createLoginUrl();
-        window.location.href = 'https://localhost:5001/auth/authorize'; //loginUrl;
+        const loginUrl = await this.authService.createLoginUrl(true);
+        window.location.href = loginUrl;
     }
 
     async onSignUp() {
@@ -22,5 +22,4 @@ export class HomePageComponent implements OnInit {
         console.log('111', loginUrl);
         window.location.href = loginUrl;
     }
-
 }

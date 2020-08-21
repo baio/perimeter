@@ -34,7 +34,7 @@ export class AuthService {
         private readonly http: HttpClient
     ) {}
 
-    private async createPKCEAuthQuery() {
+    private async createPKCEAuthQuery(useSSO: boolean) {
         const codeVerifier = getRandomString(
             this.config.pkceCodeVerifierLength
         );
@@ -54,16 +54,18 @@ export class AuthService {
             this.config.returnUri
         )}&scope=${encodeURI(
             this.config.scope
-        )}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
+        )}&code_challenge=${codeChallenge}&code_challenge_method=S256${
+            useSSO ? '&prompt=none' : ''
+        }`;
     }
 
-    async createLoginUrl() {
-        const q = await this.createPKCEAuthQuery();
+    async createLoginUrl(useSSO = false) {
+        const q = await this.createPKCEAuthQuery(useSSO);
         return `${this.config.baseUrl}/${this.config.loginPath}?${q}`;
     }
 
     async createSignUpUrl() {
-        const q = await this.createPKCEAuthQuery();
+        const q = await this.createPKCEAuthQuery(false);
         return `${this.config.baseUrl}/${this.config.signupPath}?${q}`;
     }
 

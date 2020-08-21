@@ -3,13 +3,15 @@ import { EMAIL, PASSWORD } from './_setup';
 // when visit page with different host, cypress will be reloaded every time
 // and clear page state completely !
 
-// The tests is not fully work due to cypress local storage issue, after signup / confirm  
+// The tests is not fully work due to cypress local storage issue, after signup / confirm
 // login should be performed manually, by open localhost:4201/home and then login !
 // The localState(auth_state) is lost during cypress tests
 // https://github.com/cypress-io/cypress/issues/461
 
+// sso
+// After 1st login try login 2nd time in the row, it should nota ask login / password again
 
-describe.skip('signup flow', () => {
+describe('signup flow', () => {
     // `before` will be invoked every time for specs in same describe, why ???
     describe('register', () => {
         before(() => {

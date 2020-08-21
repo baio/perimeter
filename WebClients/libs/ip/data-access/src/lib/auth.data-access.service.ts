@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, flatMap } from 'rxjs/operators';
 
 export interface SignUpData {
     firstName: string;
@@ -38,13 +38,13 @@ export interface LoginPassword {
 export class AuthDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
-    login(prms: LoginParams, data: LoginPassword) {
+    private _login = (prms: LoginParams, data: LoginPassword) => {
         const payload = {
             ...prms,
             ...data,
         };
         return this.http.post('auth/login', payload).pipe(
-            catchError((err: HttpErrorResponse) => {        
+            catchError((err: HttpErrorResponse) => {
                 if (err.status === 404 && err.url) {
                     // redirect
                     window.location.href = err.url;
@@ -53,6 +53,14 @@ export class AuthDataAccessService {
                 }
             })
         );
+    };
+
+    assignSSO() {
+        return this.http.post('auth/assign-sso', null);
+    }
+
+    login(prms: LoginParams, data: LoginPassword) {
+        return this.assignSSO().pipe(flatMap(() => this._login(prms, data)));
     }
 
     signUp(data: SignUpData, queryString: string): Observable<any> {

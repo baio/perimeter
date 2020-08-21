@@ -89,24 +89,31 @@ module private Handlers =
             | None _ -> "http://referer-not-found"
         concatError rurl err
 
-    let private getRedirectUrl: GetResultUrlFun<_> =
+    let private getRedirectUrl isSSO redirUrl: GetResultUrlFun<_> =
+        // TODO : Distinguish redir urls
         fun ctx ->
             function
             | Ok res ->
                 sprintf "%s?code=%s&state=%s" res.RedirectUri res.Code res.State
             | Error ex ->
                 printf "Error %O" ex
-                match ex with
-                | :? BadRequest ->
-                    "invalid_request"
-                | :? UnAuthorized ->
-                    "unauthorized_client"
-                | _ ->
-                    "server_error"
-                |> redirectUrl ctx
+                match isSSO with
+                | true -> "login_required"
+                | false ->
+                    match ex with
+                    | :? BadRequest ->
+                        "invalid_request"
+                    | :? UnAuthorized ->
+                        "unauthorized_client"
+                    | _ ->
+                        "server_error"
+                |> fun err ->
+                    if redirUrl <> null then concatError redirUrl err
+                    else redirectUrl ctx err
 
-    let logInHandler sso =
-        sysWrapRedirect getRedirectUrl (logIn sso <!> getLogInEnv <*> bindValidateFormAsync validateData)
+    let logInHandler sso redirUrl =
+        sysWrapRedirect (getRedirectUrl false redirUrl)
+            (logIn sso <!> getLogInEnv <*> bindValidateFormAsync validateData)
 
     open PRR.Domain.Auth.LogInToken
 
@@ -150,30 +157,30 @@ module private Handlers =
         ofReader (fun _ -> sso)
         >>= ((bindSysQuery (SSO.GetCode >> Queries.SSO)) >> noneFails (unAuthorized "Code not found"))
 
-    let logInSSOHandler sso =
-        sysWrapRedirect getRedirectUrl
+    let logInSSOHandler sso redirUrl =
+        sysWrapRedirect (getRedirectUrl true redirUrl)
             (logInSSO <!> getLogInSSOEnv <*> bindValidateFormAsync validateData <*> bindLogSSOQuery sso)
 
     let authorizeHandler next (ctx: HttpContext) =
         // https://auth0.com/docs/authorization/configure-silent-authentication
         task {
             let ssoCookie = bindCookie "sso" ctx
-            let! promptData = bindJsonAsync<Data> ctx
-            match promptData.Prompt with
+            let! data = bindJsonAsync<Data> ctx
+            match data.Prompt with
             | Some "none" ->
-                let errRedirectUrl = redirectUrl ctx "login_required"
+                let errRedirectUrl = sprintf "%s/%s" data.Redirect_Uri "login_required"
                 let errRedirect() = redirectTo false errRedirectUrl next ctx
                 match ssoCookie with
                 | Some sso ->
                     try
-                        return! logInSSOHandler sso next ctx
+                        return! logInSSOHandler sso data.Redirect_Uri next ctx
                     with _ ->
                         // TODO : Appropriate errors !
                         return! errRedirect()
                 | None ->
                     return! errRedirect()
             | _ ->
-                return! logInHandler ssoCookie next ctx
+                return! logInHandler ssoCookie data.Redirect_Uri next ctx
         }
 
     let assignSSOHandler next (ctx: HttpContext) =
@@ -192,14 +199,6 @@ let createRoutes() =
                              route "/assign-sso" >=> assignSSOHandler
                              route "/sign-up/confirm" >=> signUpConfirmHandler
                              route "/sign-up" >=> signUpHandler
-                             // TODO  : remove
-                             // route "/sign-in" >=> signInHandler
-                             // TODO  : remove
-                             // route "/log-in" >=> signInTenantHandler
-                             // TODO  : remove
-                             // route "/log-in" >=> signInTenantHandler
-                             // TODO  : remove
-                             // route "/login" >=> logInHandler None
                              route "/token" >=> logInTokenHandler
                              route "/refresh-token" >=> refreshTokenHandler
                              route "/reset-password/confirm" >=> resetPasswordConfirmHandler
