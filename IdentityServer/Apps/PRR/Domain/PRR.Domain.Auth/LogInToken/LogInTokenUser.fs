@@ -35,7 +35,8 @@ module internal SignInUser =
             match! getClientDomainAudiences env.DataContext clientId with
             | Some { DomainId = domainId; Audiences = audiences } ->
                 let! userRolePemissions = getUserDomainRolesPermissions env.DataContext (domainId, tokenData.Email)
-                return signInUser' env audiences tokenData userRolePemissions
+                let result = signInUser' env audiences tokenData userRolePemissions
+                return (result, clientId)
             | None ->
                 return raise (unAuthorized "Client is not found")
         }

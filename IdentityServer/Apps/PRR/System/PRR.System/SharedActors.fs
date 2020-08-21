@@ -10,7 +10,8 @@ module private SharedActors =
         { RefreshTokenActor: IActorRef<RefreshToken.Message>
           SignUpTokenActor: IActorRef<SignUpToken.Message>
           ResetPasswordActor: IActorRef<ResetPassword.Message>
-          LogInActor: IActorRef<LogIn.Message> }
+          LogInActor: IActorRef<LogIn.Message>
+          SSOActor: IActorRef<SSO.Message> }
 
     let createSharedActors sys (env: SystemEnv) (events: Lazy<IActorRef<Events>>) ss =
         let refreshTokenActor =
@@ -33,7 +34,11 @@ module private SharedActors =
         let logInActor =
             spawn sys "logIn" <| { logIn events.Value with SupervisionStrategy = Some(ss) }
 
+        let ssoActor =
+            spawn sys "sso" <| { sso events.Value with SupervisionStrategy = Some(ss) }
+        
         { RefreshTokenActor = refreshTokenActor
           SignUpTokenActor = signUpTokenActor
           ResetPasswordActor = resetPasswordActor
-          LogInActor = logInActor }
+          LogInActor = logInActor
+          SSOActor = ssoActor }

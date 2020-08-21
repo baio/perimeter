@@ -96,6 +96,7 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
             scope: [this.loginParams.scope],
             code_challenge: [this.loginParams.code_challenge],
             code_challenge_method: [this.loginParams.code_challenge_method],
+            prompt: [urlQueryParams['prompt']]
         });
     }
 
@@ -103,14 +104,18 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit(): void {
         const urlQueryParams = this.activatedRoute.snapshot.queryParams;
-        if (urlQueryParams['prompt'] === 'none') {
-            this.onSubmit(
-                document.getElementById('login_form') as HTMLFormElement
-            );
+        if (urlQueryParams['prompt'] === 'none') {            
+            const form = document.getElementById('login_form') as HTMLFormElement
+            form.submit();    
         }
     }
 
-    onSubmit(form: HTMLFormElement) {
+    async onSubmit(form: HTMLFormElement) {
+        try {
+        await this.dataAccess.assignSSO().toPromise();
+        } catch {
+            // TODO : cookie is actually set, set cookie via GET proxy ???
+        }
         form.submit();
     }
 }

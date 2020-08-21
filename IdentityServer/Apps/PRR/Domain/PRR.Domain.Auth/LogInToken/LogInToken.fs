@@ -54,10 +54,10 @@ module LogInToken =
             task {
                 match! getUserDataForToken dataContext item.UserId with
                 | Some tokenData ->
-                    let! result = signInUser env tokenData data.Client_Id
+                    let! (result, clientId) = signInUser env tokenData data.Client_Id
                     let refreshTokenItem: RefreshToken.Item =
                         { Token = result.RefreshToken
-                          ClientId = data.Client_Id
+                          ClientId = clientId
                           UserId = item.UserId
                           ExpiresAt = DateTime.UtcNow.AddMinutes(float env.SSOCookieExpiresIn) }
 

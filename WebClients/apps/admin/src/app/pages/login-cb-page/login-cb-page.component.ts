@@ -1,4 +1,9 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+} from '@angular/core';
 import { AuthService, LoginResult } from '@perimeter/ngx-auth';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -25,15 +30,22 @@ export class LoginCbPageComponent implements OnInit {
         );
         if (loginResult.kind === 'ok') {
             try {
-                await this.authService.token(loginResult.code, loginResult.state);
+                await this.authService.token(
+                    loginResult.code,
+                    loginResult.state
+                );
                 this.router.navigateByUrl('/');
             } catch (_err) {
                 const err = _err as HttpErrorResponse;
-                this.errorMessage = err.message || 'Unknown Error';                
+                this.errorMessage = err.message || 'Unknown Error';
                 this.cdr.markForCheck();
             }
         } else {
-            this.errorMessage = loginResult.error;
+            if (loginResult.error === 'login_required') {
+                window.location.href = await this.authService.createLoginUrl();
+            } else {
+                this.errorMessage = loginResult.error;
+            }
         }
     }
 }

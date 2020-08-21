@@ -38,29 +38,10 @@ export interface LoginPassword {
 export class AuthDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
-    private _login = (prms: LoginParams, data: LoginPassword) => {
-        const payload = {
-            ...prms,
-            ...data,
-        };
-        return this.http.post('auth/login', payload).pipe(
-            catchError((err: HttpErrorResponse) => {
-                if (err.status === 404 && err.url) {
-                    // redirect
-                    window.location.href = err.url;
-                } else {
-                    return throwError(err);
-                }
-            })
-        );
-    };
-
     assignSSO() {
-        return this.http.post('auth/assign-sso', null);
-    }
-
-    login(prms: LoginParams, data: LoginPassword) {
-        return this.assignSSO().pipe(flatMap(() => this._login(prms, data)));
+        return this.http.post('auth/assign-sso', null, {
+            withCredentials: true,
+        });
     }
 
     signUp(data: SignUpData, queryString: string): Observable<any> {

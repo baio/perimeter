@@ -42,6 +42,7 @@ let createDbContext (connectionString: string) =
     DbDataContext(optionsBuilder.Options)
 
 let configureCors (builder: CorsPolicyBuilder) =
+    // builder.WithOrigins([| "http://localhost:4200" |]).AllowAnyMethod().AllowAnyHeader().WithHeaders([|"Access-Control-Allow-Credentials"|]) |> ignore
     builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader() |> ignore
 
 let configureApp (app: IApplicationBuilder) =
@@ -161,6 +162,7 @@ let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigu
     config.AddJsonFile("appsettings.json", false, true)
           .AddJsonFile(sprintf "appsettings.%s.json" context.HostingEnvironment.EnvironmentName, true)
           .AddEnvironmentVariables() |> ignore
+
 
 
 

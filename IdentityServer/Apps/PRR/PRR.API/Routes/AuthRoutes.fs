@@ -165,10 +165,10 @@ module private Handlers =
         // https://auth0.com/docs/authorization/configure-silent-authentication
         task {
             let ssoCookie = bindCookie "sso" ctx
-            let! data = bindJsonAsync<Data> ctx
+            let! data = ctx.BindFormAsync<Data>()
             match data.Prompt with
             | Some "none" ->
-                let errRedirectUrl = sprintf "%s/%s" data.Redirect_Uri "login_required"
+                let errRedirectUrl = sprintf "%s?error=login_required" data.Redirect_Uri
                 let errRedirect() = redirectTo false errRedirectUrl next ctx
                 match ssoCookie with
                 | Some sso ->
@@ -186,7 +186,7 @@ module private Handlers =
     let assignSSOHandler next (ctx: HttpContext) =
         let hasher = getHash ctx
         let token = hasher()
-        ctx.Response.Cookies.Append("sso", token, CookieOptions(Secure = true, HttpOnly = true))
+        ctx.Response.Cookies.Append("sso", token)
         Successful.NO_CONTENT next ctx
 
 open Handlers

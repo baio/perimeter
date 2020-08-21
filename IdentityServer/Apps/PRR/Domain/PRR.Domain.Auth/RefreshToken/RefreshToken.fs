@@ -19,10 +19,10 @@ module RefreshToken =
                 | Success ->
                     match! getUserDataForToken env.DataContext item.UserId with
                     | Some tokenData ->
-                        let! res = signInUser env tokenData item.ClientId
+                        let! (res, clientId) = signInUser env tokenData item.ClientId
                         return (res,
                                 RefreshTokenSuccessEvent
-                                    { ClientId = item.ClientId
+                                    { ClientId = clientId
                                       UserId = tokenData.Id
                                       RefreshToken = res.RefreshToken
                                       OldRefreshToken = item.Token })

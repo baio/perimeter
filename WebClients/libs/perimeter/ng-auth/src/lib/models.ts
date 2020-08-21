@@ -18,7 +18,8 @@ export type LoginResultErrorType =
     | 'unsupported_response_type'
     | 'invalid_scope'
     | 'server_error'
-    | 'temporarily_unavailable';
+    | 'temporarily_unavailable'
+    | 'login_required';
 
 export interface LoginResultError {
     kind: 'error';
