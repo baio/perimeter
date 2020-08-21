@@ -6,6 +6,7 @@ open Common.Utils.ReaderTask
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Giraffe
 open Microsoft.AspNetCore.Http
+open Microsoft.AspNetCore.Identity
 open PRR.API
 open PRR.Domain.Auth.LogInSSO
 open PRR.System.Models
@@ -186,7 +187,7 @@ module private Handlers =
     let assignSSOHandler next (ctx: HttpContext) =
         let hasher = getHash ctx
         let token = hasher()
-        ctx.Response.Cookies.Append("sso", token)
+        ctx.Response.Cookies.Append("sso", token, CookieOptions(HttpOnly = true, Secure = true))
         Successful.NO_CONTENT next ctx
 
 open Handlers
