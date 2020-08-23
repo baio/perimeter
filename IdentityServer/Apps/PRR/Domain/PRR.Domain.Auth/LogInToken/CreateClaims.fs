@@ -7,7 +7,7 @@ open System.Security.Claims
 module private CreateClaims =
 
 
-    let createAccessTokenClaims tokenData (rolePermissions: RolePermissions seq) (audiences: string seq) =
+    let createAccessTokenClaims clientId tokenData (rolePermissions: RolePermissions seq) (audiences: string seq) =
         let roles =
             rolePermissions
             |> Seq.map (fun x -> x.Role)
@@ -23,7 +23,8 @@ module private CreateClaims =
 
         // TODO : RBA + Include permissions flag
         [| Claim("sub", tokenData.Id.ToString())
-           Claim("scope", sprintf "openid roles %s" permissions) |]
+           Claim("scope", sprintf "openid roles %s" permissions)
+           Claim("cid", CLAIM_TYPE_CID) |]
         |> Seq.append roles
         |> Seq.append auds
 

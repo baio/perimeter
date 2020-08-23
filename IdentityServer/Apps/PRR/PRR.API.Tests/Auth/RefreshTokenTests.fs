@@ -8,6 +8,7 @@ open Microsoft.Extensions.DependencyInjection
 open NUnit.Framework.Internal
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth
+open PRR.Domain.Auth.LogOut
 open PRR.Domain.Auth.SignUp
 open PRR.System.Models
 open System
@@ -182,13 +183,15 @@ module RefreshToken =
 
         [<Fact>]
         [<Priority(3)>]
-        member __.``F After logout user could not reresh token``() =
+        member __.``F After logout user could not refresh token``() =
 
             task {
 
-                let! logoutResult = testFixture.HttpPostAsync accessToken2 "/auth/logout" {|  |}
-                
-                do! ensureSuccessAsync logoutResult
+                let data: LogOut.Models.Data = { ReturnUri = "http://localhost:4200" }
+
+                let! logoutResult = testFixture.HttpPostFormJsonAsync accessToken2 "/auth/logout" data
+
+                do! ensureRedirectSuccessAsync logoutResult
 
                 let data: RefreshToken.Models.Data =
                     { RefreshToken = refreshToken2 }

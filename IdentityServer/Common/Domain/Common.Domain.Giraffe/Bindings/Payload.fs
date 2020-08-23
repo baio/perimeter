@@ -1,7 +1,7 @@
 ﻿namespace Common.Domain.Giraffe
 
-open Common.Domain.Models.Exceptions
 open Common.Domain.Models
+open Common.Domain.Models.Exceptions
 open Common.Utils
 open System.Globalization
 open System.IO
@@ -16,7 +16,7 @@ module Payload =
     type private PropertyBag = BoundModelValue of System.Type
 
     let bindJsonAsync<'a> (ctx: HttpContext) =
-        // As soon as model bound first time it erased from context, so we should persist one if we want to bind it many times        
+        // As soon as model bound first time it erased from context, so we should persist one if we want to bind it many times
         task {
             let t = typeof<'a>
             let (f, v) = ctx.Items.TryGetValue(BoundModelValue t)
@@ -45,9 +45,11 @@ module Payload =
                 | [||] -> return model
                 | errors ->
                     return raise (BadRequest errors)
-            with  
-            | ex ->
+            with ex ->
                 printfn "--- %O" ex
                 return raise (BadRequest [| (BadRequestCommonError ex.Message) |])
         }
 
+
+    let bindFormAsync<'a> (ctx: HttpContext) =
+        ctx.BindFormAsync<'a>()

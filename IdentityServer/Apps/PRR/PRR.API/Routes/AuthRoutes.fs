@@ -2,6 +2,7 @@
 
 open Common.Domain.Giraffe
 open Common.Domain.Models
+open Common.Utils
 open Common.Utils.ReaderTask
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Giraffe
@@ -9,6 +10,7 @@ open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Identity
 open PRR.API
 open PRR.Domain.Auth.LogInSSO
+open PRR.Domain.Auth.LogOut
 open PRR.System.Models
 
 module private Handlers =
@@ -22,24 +24,6 @@ module private Handlers =
                            HashProvider = getHash ctx })
                          |> ofReader)
              <*> bindValidateJsonAsync validateData)
-
-    (*
-    open PRR.Domain.Auth.SignIn
-
-    let getSignInEnv =
-        ofReader (fun ctx ->
-            { DataContext = getDataContext ctx
-              PasswordSalter = getPasswordSalter ctx
-              HashProvider = getHash ctx
-              JwtConfig = (getConfig ctx).Jwt })
-
-    let signInHandler =
-        sysWrapOK (signIn <!> getSignInEnv <*> bindJsonAsync)
-
-    let signInTenantHandler =
-        sysWrapOK (signInTenant <!> getSignInEnv <*> bindJsonAsync)
-
-    *)
 
     open PRR.Domain.Auth.SignUpConfirm
 
@@ -190,14 +174,27 @@ module private Handlers =
         ctx.Response.Cookies.Append("sso", token, CookieOptions(HttpOnly = true, Secure = true))
         Successful.NO_CONTENT next ctx
 
-    let logoutHandler next (ctx: HttpContext) =
-        let userId = tryBindUserClaimId ctx
-        match (userId) with
-        | Some(userId) ->
-            sendEvent (UserLogOutRequestedEvent(userId)) ctx
-            Successful.NO_CONTENT next ctx
-        | _ ->
-            raise (unAuthorized "User is not found")
+    open PRR.Domain.Auth.LogOut
+
+    let bindClientId = tryBindUserClaimClientId >> option2Task (unAuthorized "ClientId is not found in user claim")
+    let bindUserId = tryBindUserClaimId >> option2Task (unAuthorized "User sub si not found in user claim")
+
+    let logout data =
+        logout <!> ofReader (fun ctx -> { DataContext = getDataContext ctx }) <*> ofReader (fun _ -> data)
+        <*> (Tuples.doublet <!> bindUserId <*> bindClientId)
+
+    let logoutHandler next ctx =
+        task {
+            let! data = bindFormAsync<Data> ctx
+            try
+                let! res = logout data ctx
+                let! (result, evt) = res
+                sendEvent evt ctx
+                return! redirectTo false result.ReturnUri next ctx
+            with _ ->
+                let url = redirectUrl ctx "logout_url"
+                return! redirectTo false url next ctx
+        }
 
 open Handlers
 

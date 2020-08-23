@@ -30,7 +30,7 @@ module User =
 
 
     let tryBindUserClaimId x = x |> tryBindUserClaimInt ClaimTypes.NameIdentifier
-    
+
     let tryBindUserEmail x = x |> tryBindUserClaim ClaimTypes.Email
 
     let bindUserClaimId x =
@@ -39,6 +39,8 @@ module User =
         |> option2Task Forbidden
 
     let tryBindUserClaimDomainId x = x |> tryBindUserClaimInt CLAIM_TYPE_DOMAIN
+
+    let tryBindUserClaimClientId x = x |> tryBindUserClaim CLAIM_TYPE_CID
 
     let tryBindUserClaimDomainId' x =
         x

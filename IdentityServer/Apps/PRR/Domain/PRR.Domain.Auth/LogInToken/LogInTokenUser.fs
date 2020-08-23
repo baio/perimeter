@@ -13,10 +13,10 @@ module internal SignInUser =
     // https://jasonwatmore.com/post/2019/10/11/aspnet-core-3-jwt-authentication-tutorial-with-example-api
     // https://jasonwatmore.com/post/2020/05/25/aspnet-core-3-api-jwt-authentication-with-refresh-tokens
 
-    let signInUser' env audiences tokenData rolesPermissions =
+    let signInUser' env clientId audiences tokenData rolesPermissions =
 
         let accessToken =
-            createAccessTokenClaims tokenData rolesPermissions audiences
+            createAccessTokenClaims clientId tokenData rolesPermissions audiences
             |> (createToken env.JwtConfig.AccessTokenSecret env.JwtConfig.AccessTokenExpiresIn)
 
         let idToken =
@@ -35,7 +35,7 @@ module internal SignInUser =
             match! getClientDomainAudiences env.DataContext clientId with
             | Some { DomainId = domainId; Audiences = audiences } ->
                 let! userRolePemissions = getUserDomainRolesPermissions env.DataContext (domainId, tokenData.Email)
-                let result = signInUser' env audiences tokenData userRolePemissions
+                let result = signInUser' env clientId audiences tokenData userRolePemissions
                 return (result, clientId)
             | None ->
                 return raise (unAuthorized "Client is not found")
