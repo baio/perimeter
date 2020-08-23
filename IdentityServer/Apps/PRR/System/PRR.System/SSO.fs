@@ -29,8 +29,8 @@ module private SSO =
                             return! loop state
                         | AddCode(item) ->
                             return Persist(Event(CodeAdded(item)))
-                        | RemoveCode(email) ->
-                            let token = state |> Seq.tryFind(fun f -> f.Value.Email = email)
+                        | RemoveCode(userId) ->
+                            let token = state |> Seq.tryFind(fun f -> f.Value.UserId = userId)
                             match token with
                             | Some x ->
                                 return Persist(Event(CodeRemoved x.Key))

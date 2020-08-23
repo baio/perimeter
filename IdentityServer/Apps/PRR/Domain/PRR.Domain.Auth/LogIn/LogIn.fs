@@ -77,6 +77,7 @@ module Authorize =
                         | (true, Some sso) ->
                             Some
                                 ({ Code = sso
+                                   UserId = userId
                                    TenantId = tenantId
                                    ExpiresAt = expiresAt
                                    Email = data.Email }: SSO.Item)

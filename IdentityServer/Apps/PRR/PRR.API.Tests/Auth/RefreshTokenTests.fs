@@ -52,12 +52,12 @@ module RefreshToken =
             tenantWaitHandle.Set() |> ignore
         | CommandFailureEvent _ ->
             confirmTokenWaitHandle.Set() |> ignore
-            tenantWaitHandle.Set() |> ignore            
-        | QueryFailureEvent _ -> 
+            tenantWaitHandle.Set() |> ignore
+        | QueryFailureEvent _ ->
             confirmTokenWaitHandle.Set() |> ignore
             tenantWaitHandle.Set() |> ignore
-        | _ ->            
-            ()            
+        | _ ->
+            ()
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
     type ``refresh-token-api``(testFixture: TestFixture, output: ITestOutputHelper) =
@@ -68,7 +68,7 @@ module RefreshToken =
         [<Priority(-1)>]
         member __.``0 BeforeAll``() =
             task {
-                
+
                 let testContext = createUserTestContext testFixture
                 let! result = createUser'' true testContext ownerData
                 accessToken <- result.AccessToken
@@ -102,7 +102,7 @@ module RefreshToken =
                 let! result = testFixture.HttpPostAsync "xxx" "/auth/refresh-token" data
 
                 ensureUnauthorized result
-            }        
+            }
 
         [<Fact>]
         [<Priority(1)>]
@@ -132,7 +132,7 @@ module RefreshToken =
                 accessToken2 <- result.accessToken
                 refreshToken2 <- result.refreshToken
             }
-            
+
         [<Fact>]
         [<Priority(2)>]
         member __.``D Refresh same token second time must fail``() =
@@ -145,7 +145,7 @@ module RefreshToken =
                 let! result = testFixture.HttpPostAsync accessToken "/auth/refresh-token" data
 
                 ensureUnauthorized result
-            }            
+            }
 
         [<Fact>]
         [<Priority(2)>]
@@ -174,4 +174,28 @@ module RefreshToken =
 
                 result.accessToken |> should not' (equal accessToken2)
                 result.refreshToken |> should not' (equal refreshToken2)
+
+                accessToken2 <- result.accessToken
+                refreshToken2 <- result.refreshToken
+            }
+
+
+        [<Fact>]
+        [<Priority(3)>]
+        member __.``F After logout user could not reresh token``() =
+
+            task {
+
+                let! logoutResult = testFixture.HttpPostAsync accessToken2 "/auth/logout" {|  |}
+                
+                do! ensureSuccessAsync logoutResult
+
+                let data: RefreshToken.Models.Data =
+                    { RefreshToken = refreshToken2 }
+
+                do! System.Threading.Tasks.Task.Delay(100)
+
+                let! result = testFixture.HttpPostAsync accessToken2 "/auth/refresh-token" data
+
+                ensureUnauthorized result
             }

@@ -9,6 +9,7 @@ module SSO =
     type Item =
         { Code: Token
           TenantId: TenantId
+          UserId: UserId
           Email: string
           ExpiresAt: DateTime }
 
@@ -21,7 +22,7 @@ module SSO =
     type Commands =
         | Restart
         | AddCode of Item
-        | RemoveCode of Email
+        | RemoveCode of UserId
         | MakeSnapshot
 
     // Events

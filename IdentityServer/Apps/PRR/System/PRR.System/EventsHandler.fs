@@ -70,9 +70,9 @@ module private EventsHandler =
                 |> RefreshToken.AddToken
                 |> RefreshTokenCommand
             }
-        | UserLogOutRequestedEvent(email, userId) ->
+        | UserLogOutRequestedEvent(userId) ->
             seq {
-                email
+                userId
                 |> SSO.RemoveCode
                 |> SSOCommand
 
