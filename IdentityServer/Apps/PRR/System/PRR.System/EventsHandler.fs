@@ -94,7 +94,8 @@ module private EventsHandler =
         let rec loop() =
             actor {
                 let! evt = sys.Receive()
-                mapEventToCommand evt |> Seq.iter (fun cmd -> commandsRef.Value <! cmd)
+                let cmds = mapEventToCommand evt
+                cmds |> Seq.iter (fun cmd -> commandsRef.Value <! cmd)
                 env.EventHandledCallback evt
                 return loop()
             }

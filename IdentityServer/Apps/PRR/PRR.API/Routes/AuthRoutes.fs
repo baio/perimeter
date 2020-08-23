@@ -114,8 +114,9 @@ module private Handlers =
         ((fun (x: Data) -> x.Code) <!> bindJsonAsync<Data>)
         >>= ((bindSysQuery (LogIn.GetCode >> Queries.LogIn)) >> noneFails (unAuthorized "Code not found"))
 
-    let logInTokenHandler =
-        sysWrapOK (logInToken <!> getLogInTokenEnv <*> bindLogInCodeQuery <*> bindValidateJsonAsync validateData)
+    let logInTokenHandler next ctx =
+        sysWrapOK (logInToken <!> getLogInTokenEnv <*> bindLogInCodeQuery <*> bindValidateJsonAsync validateData) next
+            ctx
 
     open PRR.Domain.Auth.RefreshToken
 
@@ -124,7 +125,6 @@ module private Handlers =
         >>= ((bindSysQuery (RefreshToken.GetToken >> Queries.RefreshToken)) >> noneFails (UnAuthorized None))
 
     let refreshTokenHandler =
-
         sysWrapOK
             (refreshToken <!> getLogInTokenEnv <*> (bindAuthorizationBearerHeader >> option2Task (UnAuthorized None))
              <*> bindRefreshTokenQuery)
@@ -185,7 +185,9 @@ module private Handlers =
 
     let logoutHandler next ctx =
         task {
-            let! data = bindFormAsync<Data> ctx
+            let! returnUri = bindQueryString "returnUri" ctx
+                             |> option2Task (unAuthorized "redirectUri param is required")
+            let data: Data = { ReturnUri = returnUri }
             try
                 let! res = logout data ctx
                 let! (result, evt) = res
@@ -201,9 +203,9 @@ open Handlers
 let createRoutes() =
     subRoute "/auth"
         (choose
-            [ POST >=> choose
+            [ GET >=> route "/logout" >=> requiresAuth >=> logoutHandler
+              POST >=> choose
                            [ route "/login" >=> authorizeHandler
-                             route "/logout" >=> requiresAuth >=> logoutHandler
                              route "/assign-sso" >=> assignSSOHandler
                              route "/sign-up/confirm" >=> signUpConfirmHandler
                              route "/sign-up" >=> signUpHandler

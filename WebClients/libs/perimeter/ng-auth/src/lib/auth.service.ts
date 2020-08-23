@@ -11,12 +11,12 @@ import {
 } from './constants';
 
 export interface IAuthConfig {
-    baseUrl: string;
-    loginPath: string;
-    signupPath: string;
+    loginUrl: string;
+    signupUrl: string;
     tokenUrl: string;
-    logoutPath: string;
-    returnUri: string;
+    logoutUrl: string;
+    returnLoginUri: string;
+    returnLogoutUri: string;
     clientId: string;
     scope: string;
     stateStringLength: number;
@@ -51,7 +51,7 @@ export class AuthService {
         return `client_id=${
             this.config.clientId
         }&response_type=code&state=${state}&redirect_uri=${encodeURI(
-            this.config.returnUri
+            this.config.returnLoginUri
         )}&scope=${encodeURI(
             this.config.scope
         )}&code_challenge=${codeChallenge}&code_challenge_method=S256${
@@ -61,12 +61,12 @@ export class AuthService {
 
     async createLoginUrl(useSSO = false) {
         const q = await this.createPKCEAuthQuery(useSSO);
-        return `${this.config.baseUrl}/${this.config.loginPath}?${q}`;
+        return `${this.config.loginUrl}?${q}`;
     }
 
     async createSignUpUrl() {
         const q = await this.createPKCEAuthQuery(false);
-        return `${this.config.baseUrl}/${this.config.signupPath}?${q}`;
+        return `${this.config.signupUrl}?${q}`;
     }
 
     async token(code: string, state: string) {
@@ -84,7 +84,7 @@ export class AuthService {
         const payload = {
             grant_type: 'code',
             code,
-            redirect_uri: this.config.returnUri,
+            redirect_uri: this.config.returnLoginUri,
             client_id: this.config.clientId,
             code_verifier: sessionCodeVerifier,
         };
@@ -121,5 +121,24 @@ export class AuthService {
                 error: 'code_not_found',
             };
         }
+    }
+
+    logout() {
+        /*
+        const form = document.createElement('form');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', this.config.logoutUrl);
+        const inputReturnUri = document.createElement('input'); //input element, text
+        inputReturnUri.setAttribute('type', 'hidden');
+        inputReturnUri.setAttribute('returnUri', this.config.returnLogoutUri);
+        form.appendChild(inputReturnUri);
+        document.body.appendChild(form);
+        form.submit();        
+        */
+        return this.http
+            .get(
+                `${this.config.logoutUrl}?returnUri=${this.config.returnLogoutUri}`
+            )
+            .toPromise();
     }
 }
