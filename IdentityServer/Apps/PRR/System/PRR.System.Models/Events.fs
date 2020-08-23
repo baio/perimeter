@@ -21,5 +21,6 @@ module Events =
         | ResetPasswordRequested of Email
         | ResetPasswordUpdated of Email
         | CommandFailureEvent of exn
-        | QueryFailureEvent of exn 
+        | QueryFailureEvent of exn
+        | UserLogOutRequestedEvent of Email * UserId
          

@@ -53,21 +53,31 @@ module private EventsHandler =
                 loginItem
                 |> LogIn.AddCode
                 |> LogInCommand
-                
+
                 match ssoItem with
                 | Some ssoItem ->
                     ssoItem
                     |> SSO.AddCode
                     |> SSOCommand
             }
-        | UserLogInTokenSuccessEvent (token, item) ->
+        | UserLogInTokenSuccessEvent(token, item) ->
             seq {
                 token
                 |> LogIn.RemoveCode
                 |> LogInCommand
-                
+
                 item
                 |> RefreshToken.AddToken
+                |> RefreshTokenCommand
+            }
+        | UserLogOutRequestedEvent(email, userId) ->
+            seq {
+                email
+                |> SSO.RemoveCode
+                |> SSOCommand
+
+                userId
+                |> RefreshToken.RemoveToken
                 |> RefreshTokenCommand
             }
         | CommandFailureEvent data ->

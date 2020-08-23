@@ -10,7 +10,7 @@ module RefreshToken =
     // Queries
     type Item =
         { Token: Token
-          ClientId: ClientId
+          ClientId: ClientId          
           UserId: UserId
           ExpiresAt: DateTime }
 
@@ -22,12 +22,14 @@ module RefreshToken =
     type Commands =
         | Restart
         | AddToken of Item
+        | RemoveToken of UserId
         | UpdateToken of RefreshTokenSuccess
         | MakeSnapshot
 
     // Events
     type Events =
         | TokenAdded of Item
+        | TokenRemoved of Token
         | TokenUpdated of Item * Token
         
     // Messages    

@@ -72,3 +72,7 @@ module SysWrap =
         let sys = ctx.GetService<ICQRSSystem>()
         let f' a = f (x, a)
         optionFromValueResult <!> taskOfQueryActor 500<milliseconds> sys.System sys.QueriesRef f' sys.EventsRef
+
+    let sendEvent evt (ctx: HttpContext) =
+        let sys = ctx.GetService<ICQRSSystem>()
+        sys.EventsRef <! evt

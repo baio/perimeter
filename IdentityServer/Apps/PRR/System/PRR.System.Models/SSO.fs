@@ -21,7 +21,7 @@ module SSO =
     type Commands =
         | Restart
         | AddCode of Item
-        | RemoveCode of Token
+        | RemoveCode of Email
         | MakeSnapshot
 
     // Events

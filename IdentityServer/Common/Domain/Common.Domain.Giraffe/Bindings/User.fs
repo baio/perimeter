@@ -30,6 +30,8 @@ module User =
 
 
     let tryBindUserClaimId x = x |> tryBindUserClaimInt ClaimTypes.NameIdentifier
+    
+    let tryBindUserEmail x = x |> tryBindUserClaim ClaimTypes.Email
 
     let bindUserClaimId x =
         x

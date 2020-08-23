@@ -190,6 +190,14 @@ module private Handlers =
         ctx.Response.Cookies.Append("sso", token, CookieOptions(HttpOnly = true, Secure = true))
         Successful.NO_CONTENT next ctx
 
+    let logoutHandler next (ctx: HttpContext) =
+        match (tryBindUserEmail ctx), (tryBindUserClaimId ctx) with
+        | Some(email), Some(userId) ->
+            sendEvent (UserLogOutRequestedEvent(email, userId)) ctx
+            Successful.NO_CONTENT next ctx
+        | _ ->
+            raise (unAuthorized "User is not found")
+
 open Handlers
 
 let createRoutes() =
@@ -197,6 +205,7 @@ let createRoutes() =
         (choose
             [ POST >=> choose
                            [ route "/login" >=> authorizeHandler
+                             route "/logout" >=> requiresAuth >=> logoutHandler
                              route "/assign-sso" >=> assignSSOHandler
                              route "/sign-up/confirm" >=> signUpConfirmHandler
                              route "/sign-up" >=> signUpHandler

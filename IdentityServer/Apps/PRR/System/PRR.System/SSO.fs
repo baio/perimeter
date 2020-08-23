@@ -29,8 +29,13 @@ module private SSO =
                             return! loop state
                         | AddCode(item) ->
                             return Persist(Event(CodeAdded(item)))
-                        | RemoveCode(code) ->
-                            return Persist(Event(CodeRemoved(code)))
+                        | RemoveCode(email) ->
+                            let token = state |> Seq.tryFind(fun f -> f.Value.Email = email)
+                            match token with
+                            | Some x ->
+                                return Persist(Event(CodeRemoved x.Key))
+                            | None ->
+                                return! loop state
                         | MakeSnapshot ->
                             typed ctx.SnapshotStore
                             <! SaveSnapshot(SnapshotMetadata(ctx.Pid, ctx.LastSequenceNr()), state)
