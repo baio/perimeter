@@ -2,8 +2,8 @@
 describe('apis', () => {
     const UPDATED_NAME = 'updated name';
     before(() => cy.reinitDb());
+    before(() => cy.login());
     before(() => {
-        cy.visit('tenant/domains');
         cy.dataCy('env-btn').click();
         cy.dataCy('apis-menu-item').click();
     });

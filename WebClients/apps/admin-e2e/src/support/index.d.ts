@@ -43,6 +43,8 @@ declare namespace Cypress {
 
         reinitDb(): Chainable<Window>;
 
+        login(): Chainable<Window>;
+
         stickyVariable(value?: string): Chainable<string>;
     }
 }

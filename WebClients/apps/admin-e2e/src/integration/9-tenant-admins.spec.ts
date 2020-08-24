@@ -1,9 +1,8 @@
 // tslint:disable: no-unused-expression
 describe('tenant-admins', () => {
     before(() => cy.reinitDb());
-    before(() => {
-        cy.visit('tenant/admins');
-    });
+    before(() => cy.login());
+    before(() => cy.dataCy('admins-menu-item').click());
 
     it('roles should be open', () => {
         cy.url().should('include', 'tenant/admins');
@@ -21,7 +20,7 @@ describe('tenant-admins', () => {
             .click();
 
         cy.rows().should('have.length', 2);
-        cy.rows(0, 1).should('contain.text', 'TenantSuperAdmin');
+        cy.rows(0, 1).should('contain.text', 'TenantAdmin');
     });
 
     it.skip('remove', () => {

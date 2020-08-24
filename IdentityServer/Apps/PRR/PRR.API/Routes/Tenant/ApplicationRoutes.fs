@@ -56,9 +56,9 @@ module Application =
             wrapAudienceGuard fromDomainId domainId
             >=> permissionGuard MAMANGE_DOMAIN >=>
             (choose
-                [ POST >=> createHandler domainId
-                  GET >=> getList domainId
+                [ POST >=> createHandler domainId                  
                   PUT >=> routef "/%i" (updateHandler domainId)
                   DELETE >=> routef "/%i" removeHandler
                   GET >=> routef "/%i" getOne
+                  GET >=> getList domainId
                   ]))

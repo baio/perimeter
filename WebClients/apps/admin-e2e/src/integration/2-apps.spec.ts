@@ -5,22 +5,13 @@ describe('apps', () => {
     const UPDATED_NAME = 'updated name';
     before(() => cy.reinitDb());
     before(() => {
-        cy.visit('tenant/domains');        
+        cy.login();
     });
-    /*
     before(() => {
         cy.dataCy('env-btn').click();
-        cy.dataCy('email')
-            .type('test@user.dev')
-            .dataCy('password')
-            .type('123')
-            .dataCy('submit')
-            .click()
     });
-    */
 
     it('app should be open', () => {
-        cy.visit('domains/2/apps');        
         cy.url().should('include', 'apps');
     });
 

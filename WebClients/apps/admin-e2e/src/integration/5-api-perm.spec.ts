@@ -1,8 +1,8 @@
 // tslint:disable: no-unused-expression
 describe('perms', () => {
     before(() => cy.reinitDb());
+    before(() => cy.login());
     before(() => {
-        cy.visit('tenant/domains');
         cy.dataCy('env-btn').click();
         cy.dataCy('apis-menu-item').click();
         cy.rows(1, 1).click();

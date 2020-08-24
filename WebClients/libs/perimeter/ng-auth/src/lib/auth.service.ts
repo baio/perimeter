@@ -17,6 +17,7 @@ export interface IAuthConfig {
     tokenUrl: string;
     logoutUrl: string;
     returnLoginUri: string;
+    returnLoginPath?: string;
     returnLogoutUri: string;
     clientId: string;
     scope: string;
@@ -52,7 +53,7 @@ export class AuthService {
         const nonce = getRandomString(this.config.stateStringLength);
         const state = JSON.stringify({
             nonce,
-            redirectPath: opts.redirectPath,
+            redirectPath: opts.redirectPath || this.config.returnLoginPath,
         });
         localStorage.setItem(AUTH_CODE_VERIFIER, codeVerifier);
         localStorage.setItem(AUTH_STATE, state);
@@ -78,8 +79,8 @@ export class AuthService {
         return `${this.config.loginUrl}?${q}`;
     }
 
-    async createSignUpUrl(clientId?: string) {
-        const q = await this.createPKCEAuthQuery({ clientId });
+    async createSignUpUrl(opts: AuthOptions = {}) {
+        const q = await this.createPKCEAuthQuery(opts);
         return `${this.config.signupUrl}?${q}`;
     }
 

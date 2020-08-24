@@ -4,7 +4,7 @@ describe('domains', () => {
 
     before(() => cy.reinitDb());
     before(() => {
-        cy.visit('tenant/domains');
+        cy.login();
     });
 
     describe('edit', () => {
