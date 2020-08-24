@@ -115,7 +115,6 @@ export class AdminListComponent
         private readonly activatedRoute: ActivatedRoute,
         private readonly listService: AdminListService,
         private readonly router: Router,
-        private readonly cdr: ChangeDetectorRef,
         @Optional()
         @SkipSelf()
         @Inject(HLC_NZ_TABLE_CUSTOM_CELLS_PROVIDER)
@@ -211,9 +210,7 @@ export class AdminListComponent
         );
     }
 
-    onDataProviderError(err: Error) {
-        this.errorMessage = err['error'];
-        this.cdr.detectChanges();
-        console.log('2222', this.errorMessage);
+    onDataProviderError(err: Error | null) {
+        this.errorMessage = err && err['error'];
     }
 }

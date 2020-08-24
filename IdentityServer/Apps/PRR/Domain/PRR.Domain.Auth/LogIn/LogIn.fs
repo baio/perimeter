@@ -41,10 +41,12 @@ module Authorize =
                                for app in dataContext.Applications do
                                    where (app.ClientId = clientId)
                                    select
-                                       (Tuple.Create(app.SSOEnabled, app.AllowedCallbackUrls, app.Domain.Pool.TenantId))
+                                       (Tuple.Create(app.SSOEnabled, app.AllowedCallbackUrls, app.Domain.Pool.TenantId, app.Domain.TenantId))
                            }
                            |> toSingleExnAsync (unAuthorized ("client_id not found"))
-                let (ssoEnabled, callbackUrls, tenantId) = app
+                let (ssoEnabled, callbackUrls, poolTenantId, domainTenantId) = app
+                // If app is tenant management app it doesn't have pool and ref to tenant has TenantField
+                let tenantId = if domainTenantId.HasValue then domainTenantId.Value else poolTenantId
                 if (callbackUrls <> "*" && (callbackUrls.Split(",")
                                             |> Seq.map (fun x -> x.Trim())
                                             |> Seq.contains data.Redirect_Uri
@@ -69,8 +71,7 @@ module Authorize =
                           Scopes = (data.Scope.Split " ")
                           UserId = userId
                           ExpiresAt = expiresAt
-                          RedirectUri = data.Redirect_Uri }
-
+                          RedirectUri = data.Redirect_Uri }                    
 
                     let ssoItem =
                         match ssoEnabled, sso with

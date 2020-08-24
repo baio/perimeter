@@ -13,7 +13,9 @@ export class HomePageComponent implements OnInit {
     ngOnInit(): void {}
 
     async onLogin() {
-        const loginUrl = await this.authService.createLoginUrl(true);
+        const loginUrl = await this.authService.createLoginUrl({
+            useSSO: true,
+        });
         window.location.href = loginUrl;
     }
 

@@ -4,6 +4,7 @@ import { HlcNzTable, ActionClickEvent } from '@nz-holistic/nz-list';
 import { AdminList } from '@admin/shared';
 import { DomainsDataAccessService } from '@admin/data-access';
 import { Router, ActivatedRoute } from '@angular/router';
+import { AuthService } from '@perimeter/ngx-auth';
 
 @Component({
     selector: 'admin-domains-pool-list',
@@ -21,7 +22,8 @@ export class DomainsPoolListComponent implements OnInit {
     constructor(
         private readonly dataAccess: DomainsDataAccessService,
         private readonly router: Router,
-        private readonly activatedRoute: ActivatedRoute
+        private readonly activatedRoute: ActivatedRoute,
+        private readonly authService: AuthService
     ) {}
 
     ngOnInit(): void {}
@@ -32,5 +34,21 @@ export class DomainsPoolListComponent implements OnInit {
                 relativeTo: this.activatedRoute,
             });
         }
+    }
+
+    async onEnvClicked(
+        event: MouseEvent,
+        {
+            id,
+            domainManagementClientId,
+        }: { id: number; domainManagementClientId: string }
+    ) {
+        event.preventDefault();
+        event.stopPropagation();
+        await this.authService.authorize({
+            useSSO: true,
+            clientId: domainManagementClientId,
+            redirectPath: `/domains/${id}/apps`,
+        });
     }
 }

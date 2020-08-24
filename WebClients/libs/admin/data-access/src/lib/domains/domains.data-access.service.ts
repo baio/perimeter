@@ -14,6 +14,7 @@ const mapItem = (item) => ({
         id: m.id,
         name: m.envName,
         isMain: m.isMain,
+        domainManagementClientId: m.domainManagementClientId,
     })),
 });
 

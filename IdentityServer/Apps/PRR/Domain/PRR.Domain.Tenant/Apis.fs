@@ -46,7 +46,7 @@ module Apis =
         createCatch<Api, _, _, _> catch 
             (fun (domainId, dto) ->
             Api
-                (Name = dto.Name, Identifier = dto.Identifier, DomainId = domainId, IsUserManagement = false,
+                (Name = dto.Name, Identifier = dto.Identifier, DomainId = domainId, IsDomainManagement = false,
                  AccessTokenExpiresIn = int env.AccessTokenExpiresIn, Permissions = [||])) (fun x -> x.Id)
 
     let update: Update<int, DomainId * PostLike, DbDataContext> =

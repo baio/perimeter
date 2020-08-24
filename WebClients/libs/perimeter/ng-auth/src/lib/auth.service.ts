@@ -8,6 +8,7 @@ import {
     ID_TOKEN,
     ACCESS_TOKEN,
     REFRESH_TOKEN,
+    AUTH_CLIENT_ID,
 } from './constants';
 
 export interface IAuthConfig {
@@ -27,6 +28,13 @@ export const PERIMETER_AUTH_CONFIG = new InjectionToken(
     'PERIMETER_AUTH_CONFIG'
 );
 
+export interface AuthOptions {
+    useSSO?: boolean;
+    clientId?: string;
+    // Path to redirect after successful login (without base url, it will be taken from returnUri)
+    redirectPath?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     constructor(
@@ -34,38 +42,44 @@ export class AuthService {
         private readonly http: HttpClient
     ) {}
 
-    private async createPKCEAuthQuery(useSSO: boolean) {
+    private async createPKCEAuthQuery(opts: AuthOptions = {}) {
         const codeVerifier = getRandomString(
             this.config.pkceCodeVerifierLength
         );
 
         const hashed = await getSHA256(codeVerifier);
         const codeChallenge = base64arrayEncode(hashed);
-        const state = getRandomString(this.config.stateStringLength);
-
+        const nonce = getRandomString(this.config.stateStringLength);
+        const state = JSON.stringify({
+            nonce,
+            redirectPath: opts.redirectPath,
+        });
         localStorage.setItem(AUTH_CODE_VERIFIER, codeVerifier);
         localStorage.setItem(AUTH_STATE, state);
         console.log('codeVerifier', codeVerifier);
         console.log('codeChallenge', codeChallenge);
 
-        return `client_id=${
-            this.config.clientId
-        }&response_type=code&state=${state}&redirect_uri=${encodeURI(
+        const clientId = opts.clientId || this.config.clientId;
+        // TODO : Is it ok ???
+        localStorage.setItem(AUTH_CLIENT_ID, clientId);
+        return `client_id=${clientId}&response_type=code&state=${encodeURIComponent(
+            state
+        )}&redirect_uri=${encodeURI(
             this.config.returnLoginUri
         )}&scope=${encodeURI(
             this.config.scope
         )}&code_challenge=${codeChallenge}&code_challenge_method=S256${
-            useSSO ? '&prompt=none' : ''
+            opts.useSSO ? '&prompt=none' : ''
         }`;
     }
 
-    async createLoginUrl(useSSO = false) {
-        const q = await this.createPKCEAuthQuery(useSSO);
+    async createLoginUrl(opts: AuthOptions = {}) {
+        const q = await this.createPKCEAuthQuery(opts);
         return `${this.config.loginUrl}?${q}`;
     }
 
-    async createSignUpUrl() {
-        const q = await this.createPKCEAuthQuery(false);
+    async createSignUpUrl(clientId?: string) {
+        const q = await this.createPKCEAuthQuery({ clientId });
         return `${this.config.signupUrl}?${q}`;
     }
 
@@ -81,11 +95,15 @@ export class AuthService {
         if (state !== sessionState) {
             throw new Error('Session state not match');
         }
+        const parsedState = JSON.parse(state);
+
+        const clientId = localStorage.getItem(AUTH_CLIENT_ID);
+
         const payload = {
             grant_type: 'code',
             code,
             redirect_uri: this.config.returnLoginUri,
-            client_id: this.config.clientId,
+            client_id: clientId,
             code_verifier: sessionCodeVerifier,
         };
         try {
@@ -95,9 +113,11 @@ export class AuthService {
             sessionStorage.setItem(ID_TOKEN, result.idToken);
             sessionStorage.setItem(ACCESS_TOKEN, result.accessToken);
             localStorage.setItem(REFRESH_TOKEN, result.refreshToken);
+            return parsedState.redirectPath;
         } finally {
             localStorage.removeItem(AUTH_CODE_VERIFIER);
             localStorage.removeItem(AUTH_STATE);
+            localStorage.removeItem(AUTH_CLIENT_ID);
         }
     }
 
@@ -123,20 +143,16 @@ export class AuthService {
         }
     }
 
+    async authorize(opts: AuthOptions) {
+        const loginUrl = await this.createLoginUrl(opts);
+        document.location.href = loginUrl;
+    }
+
     logout() {
-        /*
-        const form = document.createElement('form');
-        form.setAttribute('method', 'post');
-        form.setAttribute('action', this.config.logoutUrl);
-        const inputReturnUri = document.createElement('input'); //input element, text
-        inputReturnUri.setAttribute('type', 'hidden');
-        inputReturnUri.setAttribute('returnUri', this.config.returnLogoutUri);
-        form.appendChild(inputReturnUri);
-        document.body.appendChild(form);
-        form.submit();        
-        */
         const accessToken = sessionStorage.getItem(ACCESS_TOKEN);
-        const url = `${this.config.logoutUrl}?return_uri=${encodeURI(this.config.returnLogoutUri)}&access_token=${accessToken}`;
+        const url = `${this.config.logoutUrl}?return_uri=${encodeURI(
+            this.config.returnLogoutUri
+        )}&access_token=${accessToken}`;
         document.location.href = url;
     }
 }

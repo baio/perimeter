@@ -25,7 +25,8 @@ module DomainPools =
     type DomainGetLike =
         { Id: int
           IsMain: Boolean
-          EnvName: string }
+          EnvName: string
+          DomainManagementClientId: ClientId }
 
     [<CLIMutable>]
     type GetLike =
@@ -66,7 +67,7 @@ module DomainPools =
         Api
             (Domain = domain, Name = "Domain Management API",
              Identifier = sprintf "https://%s.management-api-%s.com" domain.EnvName (Guid.NewGuid().ToString()),
-             IsUserManagement = true, AccessTokenExpiresIn = (int env.AuthConfig.AccessTokenExpiresIn))
+             IsDomainManagement = true, AccessTokenExpiresIn = (int env.AuthConfig.AccessTokenExpiresIn))
         |> add' env.DataContext
 
     let addUserRoles (userEmail: string) (domain: Domain) (roleIds: int seq) (dataContext: DbDataContext) =
@@ -126,17 +127,21 @@ module DomainPools =
     let remove: Remove<int, DbDataContext> =
         remove (fun id -> DomainPool(Id = id))
 
+    let private selectGet =
+        <@ fun (p: DomainPool) ->
+            { Id = p.Id
+              Name = p.Name
+              DateCreated = p.DateCreated
+              Domains =
+                  p.Domains.Select(fun x ->
+                      { Id = x.Id
+                        IsMain = x.IsMain
+                        EnvName = x.EnvName
+                        DomainManagementClientId = x.Applications.First(fun f -> f.IsDomainManagement).ClientId }) } @>
+
+
     let getOne: GetOne<int, GetLike, DbDataContext> =
-        getOne<DomainPool, _, _, _> (<@ fun p id -> p.Id = id @>)
-            (<@ fun p ->
-                { Id = p.Id
-                  Name = p.Name
-                  DateCreated = p.DateCreated
-                  Domains =
-                      p.Domains.Select(fun x ->
-                          { Id = x.Id
-                            IsMain = x.IsMain
-                            EnvName = x.EnvName }) } @>)
+        getOne<DomainPool, _, _, _> (<@ fun p id -> p.Id = id @>) selectGet
 
     //
     type SortField =
@@ -173,14 +178,6 @@ module DomainPools =
             query {
                 for domainPool in domainPools do
                     where (domainPool.TenantId = tenantId)
-                    select
-                        { Id = domainPool.Id
-                          Name = domainPool.Name
-                          DateCreated = domainPool.DateCreated
-                          Domains =
-                              domainPool.Domains.Select(fun x ->
-                                  { Id = x.Id
-                                    IsMain = x.IsMain
-                                    EnvName = x.EnvName }) }
+                    select ((%selectGet) domainPool)
             }
             |> executeListQuery prms

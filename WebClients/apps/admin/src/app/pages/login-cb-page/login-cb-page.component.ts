@@ -30,11 +30,11 @@ export class LoginCbPageComponent implements OnInit {
         );
         if (loginResult.kind === 'ok') {
             try {
-                await this.authService.token(
+                const redirectPath = await this.authService.token(
                     loginResult.code,
                     loginResult.state
                 );
-                this.router.navigateByUrl('/');
+                this.router.navigateByUrl(redirectPath || '/');
             } catch (_err) {
                 const err = _err as HttpErrorResponse;
                 this.errorMessage = err.message || 'Unknown Error';

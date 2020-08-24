@@ -37,19 +37,19 @@ module Authorize =
             task {
 
                 let! clientId = PRR.Domain.Auth.LogIn.UserHelpers.getClientId dataContext data.Client_Id sso.Email
-                                    
+                                                    
                 let! app = query {
                                         for app in dataContext.Applications do
                                             where (app.ClientId = clientId)
                                             select (Tuple.Create(app.Domain.Pool.TenantId, app.AllowedCallbackUrls))
                                     }
                                     |> toSingleExnAsync (unAuthorized ("client_id not found"))
-                
-                let (tenantId, callbackUrls) = app
+                                                                                                       
+                let (tenantId, callbackUrls) = app                               
                 
                 if tenantId <> sso.TenantId then
                     return raise (unAuthorized "sso wrong tenant")
-
+                                        
                 if (callbackUrls <> "*" && (callbackUrls.Split(",")
                                             |> Seq.map (fun x -> x.Trim())
                                             |> Seq.contains data.Redirect_Uri
