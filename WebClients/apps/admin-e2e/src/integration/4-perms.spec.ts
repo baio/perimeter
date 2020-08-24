@@ -14,7 +14,7 @@ describe('perms', () => {
     });
 
     describe('create', () => {
-        it.only('create read permission', () => {
+        it('create read permission', () => {
             cy.dataCy('create-item').click();
             cy.url().should(
                 'match',

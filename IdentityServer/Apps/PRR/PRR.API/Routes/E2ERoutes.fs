@@ -53,6 +53,8 @@ module E2E =
                       Thread.Sleep(10)
                       let! res = PRR.Domain.Auth.LogInEmail.logInEmail loginEnv "__DEFAULT_CLIENT_ID__"
                                      signupItem.Email signupItem.Password
-                      // login
-                      return! Successful.OK res next ctx
+                                     
+                      let (result, _) = res                                     
+                      
+                      return! Successful.OK result next ctx
                   } ]

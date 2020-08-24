@@ -14,6 +14,7 @@ import {
     tableCellMapComponents,
     tableCellMapModules,
 } from './table-cell-map';
+import { NzAlertModule } from 'ng-zorro-antd';
 
 @NgModule({
     declarations: [AdminListComponent],
@@ -22,6 +23,7 @@ import {
         BrowserModule,
         HlcNzTableModule,
         RouterModule,
+        NzAlertModule,
         ...tableCellMapModules,
     ],
     providers: [

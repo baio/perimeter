@@ -7,6 +7,7 @@ open Giraffe
 open PRR.API.Infra
 open PRR.API.Routes
 open PRR.Domain.Tenant.Applications
+open PRR.Domain.Auth.GetAudience
 
 [<AutoOpen>]
 module private ApplicationHandlers =
@@ -52,11 +53,12 @@ module Application =
 
     let createRoutes() =
         subRoutef "/tenant/domains/%i/applications" (fun domainId ->
-            // TODO : Check domain belongs user
+            wrapAudienceGuard fromDomainId domainId
+            >=> permissionGuard MAMANGE_DOMAIN >=>
             (choose
                 [ POST >=> createHandler domainId
-                  // TODO : Check app belongs domain
+                  GET >=> getList domainId
                   PUT >=> routef "/%i" (updateHandler domainId)
                   DELETE >=> routef "/%i" removeHandler
                   GET >=> routef "/%i" getOne
-                  GET >=> getList domainId ]))
+                  ]))

@@ -14,6 +14,7 @@ import {
     ContentChildren,
     QueryList,
     forwardRef,
+    ChangeDetectorRef,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdminListService } from '../../common';
@@ -59,6 +60,8 @@ import { concat } from 'lodash/fp';
 })
 export class AdminListComponent
     implements HlcNzTableCustomCellsProvider, OnInit, OnDestroy, AfterViewInit {
+    errorMessage: string;
+
     @Input()
     canAdd = true;
 
@@ -112,6 +115,7 @@ export class AdminListComponent
         private readonly activatedRoute: ActivatedRoute,
         private readonly listService: AdminListService,
         private readonly router: Router,
+        private readonly cdr: ChangeDetectorRef,
         @Optional()
         @SkipSelf()
         @Inject(HLC_NZ_TABLE_CUSTOM_CELLS_PROVIDER)
@@ -205,5 +209,11 @@ export class AdminListComponent
                 this.containerCustomCellsProvider.customCells) ||
                 []
         );
+    }
+
+    onDataProviderError(err: Error) {
+        this.errorMessage = err['error'];
+        this.cdr.detectChanges();
+        console.log('2222', this.errorMessage);
     }
 }

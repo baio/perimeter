@@ -114,9 +114,9 @@ Cypress.Commands.add('reinitDb', () => {
 
     const url = resolve(baseUrl, refreshDbUrl);
 
-    return cy.request('POST', url).then((resp) =>
+
+    return cy.request('POST', url).then((resp) =>        
         cy.window().then((win) => {
-            // TODO
             win.sessionStorage.setItem('access_token', resp.body.accessToken);
         })
     );
