@@ -1,5 +1,3 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router'; // CLI imports router
 import {
     IPPagesModule,
     LoginPageComponent,
@@ -10,6 +8,14 @@ import {
     ForgotPasswordSentPageComponent,
     ForgotPasswordResetPageComponent,
 } from '@ip/auth';
+import { Routes, RouterModule } from '@angular/router';
+import { NgModule } from '@angular/core';
+
+// Exclusively for cypress tests !
+// Multi host apps is critical for test with oauth protocol, cypress has poor support for these scenarios
+// https://github.com/cypress-io/cypress/issues/461
+// So we move all auth idp pages / routings under the same app
+// TODO : Should be disabled during regular builds !!!
 
 export const routes: Routes = [
     {
@@ -33,18 +39,9 @@ export const routes: Routes = [
             },
         ],
     },
-    {
-        path: '**',
-        redirectTo: 'auth/login',
-    },
 ]; // sets up routes constant where you define your routes
 
-// configures NgModule imports and exports
 @NgModule({
-    imports: [
-        RouterModule.forRoot(routes, { enableTracing: false }),
-        IPPagesModule,
-    ],
-    exports: [RouterModule],
+    imports: [IPPagesModule, RouterModule.forChild(routes)],
 })
-export class AppRoutingModule {}
+export class AuthRoutingModule {}
