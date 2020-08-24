@@ -187,9 +187,9 @@ module RefreshToken =
 
             task {
 
-                let data: LogOut.Models.Data = { ReturnUri = "http://localhost:4200" }
-
-                let! logoutResult = testFixture.HttpPostFormJsonAsync accessToken2 "/auth/logout" data
+                let! logoutResult = testFixture.HttpGetAsync'
+                                        (sprintf "/auth/logout?return_uri=%s&access_token=%s" "http://localhost:4200"
+                                             accessToken2)
 
                 do! ensureRedirectSuccessAsync logoutResult
 

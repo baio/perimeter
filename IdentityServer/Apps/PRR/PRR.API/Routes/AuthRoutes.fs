@@ -8,6 +8,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open Giraffe
 open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Identity
+open Microsoft.Extensions.Primitives
 open PRR.API
 open PRR.Domain.Auth.LogInSSO
 open PRR.Domain.Auth.LogOut
@@ -176,34 +177,40 @@ module private Handlers =
 
     open PRR.Domain.Auth.LogOut
 
-    let bindClientId = tryBindUserClaimClientId >> option2Task (unAuthorized "ClientId is not found in user claim")
-    let bindUserId = tryBindUserClaimId >> option2Task (unAuthorized "User sub si not found in user claim")
-
     let logout data =
-        logout <!> ofReader (fun ctx -> { DataContext = getDataContext ctx }) <*> ofReader (fun _ -> data)
-        <*> (Tuples.doublet <!> bindUserId <*> bindClientId)
+        logout <!> ofReader (fun ctx ->
+                       { DataContext = getDataContext ctx
+                         AccessTokenSecret = (getConfig ctx).Jwt.AccessTokenSecret })
+        <*> ofReader (fun _ -> data)
 
     let logoutHandler next ctx =
         task {
-            let! returnUri = bindQueryString "returnUri" ctx
-                             |> option2Task (unAuthorized "redirectUri param is required")
-            let data: Data = { ReturnUri = returnUri }
+            let returnUri =
+                bindQueryString "return_uri" ctx |> Options.noneFails (unAuthorized "return_uri param is not found")
+            let accessToken =
+                bindQueryString "access_token" ctx
+                |> Options.noneFails (unAuthorized "access_token param is not found")
+
+            let data: Data =
+                { ReturnUri = returnUri
+                  AccessToken = accessToken }
             try
                 let! res = logout data ctx
                 let! (result, evt) = res
                 sendEvent evt ctx
                 return! redirectTo false result.ReturnUri next ctx
             with _ ->
-                let url = redirectUrl ctx "logout_url"
+                let url = redirectUrl ctx "return_uri"
                 return! redirectTo false url next ctx
         }
+
 
 open Handlers
 
 let createRoutes() =
     subRoute "/auth"
         (choose
-            [ GET >=> route "/logout" >=> requiresAuth >=> logoutHandler
+            [ GET >=> route "/logout" >=> logoutHandler
               POST >=> choose
                            [ route "/login" >=> authorizeHandler
                              route "/assign-sso" >=> assignSSOHandler

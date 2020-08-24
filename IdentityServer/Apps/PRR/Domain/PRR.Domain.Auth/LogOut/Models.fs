@@ -10,12 +10,14 @@ module Models =
 
     [<CLIMutable>]
     type Data =
-        { ReturnUri: string }
+        { AccessToken: Token
+          ReturnUri: string }
 
     type Result =
         { ReturnUri: string }
 
     type Env =
-        { DataContext: DbDataContext }
+        { DataContext: DbDataContext
+          AccessTokenSecret: string }
 
-    type LogOut = Env -> Data -> (UserId * ClientId) -> Task<Result * Events>
+    type LogOut = Env -> Data -> Task<Result * Events>

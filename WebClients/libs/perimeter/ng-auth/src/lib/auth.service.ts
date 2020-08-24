@@ -135,10 +135,8 @@ export class AuthService {
         document.body.appendChild(form);
         form.submit();        
         */
-        return this.http
-            .get(
-                `${this.config.logoutUrl}?returnUri=${this.config.returnLogoutUri}`
-            )
-            .toPromise();
+        const accessToken = sessionStorage.getItem(ACCESS_TOKEN);
+        const url = `${this.config.logoutUrl}?return_uri=${encodeURI(this.config.returnLogoutUri)}&access_token=${accessToken}`;
+        document.location.href = url;
     }
 }

@@ -67,6 +67,7 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
         |> SymmetricSecurityKey
     services.AddAuthorization() |> ignore
     services.AddAuthentication(fun options ->
+            // https://stackoverflow.com/questions/45763149/asp-net-core-jwt-in-uri-query-parameter/53295042#53295042
             options.DefaultAuthenticateScheme <- JwtBearerDefaults.AuthenticationScheme
             options.DefaultChallengeScheme <- JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(fun x ->
             x.RequireHttpsMetadata <- false

@@ -9,9 +9,9 @@ open System.Security.Claims
 open System.Text
 
 [<AutoOpen>]
-module private ValidateAccessToken =
+module internal ValidateAccessToken =
 
-    let private validateToken (token: string) tokenValidationParameters =
+    let validateToken (token: string) tokenValidationParameters =
         let tokenHandler = JwtSecurityTokenHandler()
         try
             let (principal, securityToken) = tokenHandler.ValidateToken(token, tokenValidationParameters)
@@ -26,12 +26,19 @@ module private ValidateAccessToken =
 
     open FSharpx.Option
 
+    let getClaim' f claimType (claims: Claim seq) =
+        claims
+        |> Seq.tryFind (fun x -> x.Type = claimType)
+        >>= fun claim -> claim.Value |> f
+
+    let getClaim x = x |> getClaim' Some
+
+    let getClaimInt x = x |> getClaim' tryParseInt
+
     let validateAccessToken (token: Token) (key: string) =
         let tokenValidationParameters =
             TokenValidationParameters
                 (ValidateAudience = false, ValidateIssuer = false, ValidateIssuerSigningKey = true,
                  IssuerSigningKey = SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)), ValidateLifetime = false)
 
-        (principalCalims <!> validateToken token tokenValidationParameters)
-        >>= Seq.tryFind (fun x -> x.Type = ClaimTypes.NameIdentifier)
-        >>= fun claim -> claim.Value |> tryParseInt
+        (principalCalims <!> validateToken token tokenValidationParameters) >>= getClaimInt ClaimTypes.NameIdentifier
