@@ -11,7 +11,7 @@ import { EMAIL, PASSWORD } from './_setup';
 // sso
 // After 1st login try login 2nd time in the row, it should nota ask login / password again
 
-describe('signup flow', () => {
+describe.skip('signup flow', () => {
     // `before` will be invoked every time for specs in same describe, why ???
     describe('register', () => {
         before(() => {
