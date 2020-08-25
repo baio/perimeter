@@ -219,6 +219,6 @@ export class AdminListComponent
     }
 
     onDataProviderError(err: Error | null) {
-        this.errorMessage = err && err['error'];
+        this.errorMessage = err && err.message;
     }
 }
