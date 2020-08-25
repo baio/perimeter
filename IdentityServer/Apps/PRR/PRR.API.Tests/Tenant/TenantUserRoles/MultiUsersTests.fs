@@ -169,7 +169,7 @@ module MultiUsers =
             }
 
         [<Fact>]
-        [<Priority(6)>]
+        [<Priority(5)>]
         member __.``E remove tenant owner should give error``() =
             let u1 = users.[0]
             task {
@@ -178,7 +178,7 @@ module MultiUsers =
                 do ensureForbidden result }
 
         [<Fact>]
-        [<Priority(7)>]
+        [<Priority(5)>]
         member __.``F update tenant owner should give error``() =
             let u1 = users.[0]
             task {

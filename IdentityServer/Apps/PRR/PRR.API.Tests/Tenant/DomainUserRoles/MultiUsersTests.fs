@@ -6,6 +6,7 @@ open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx
 open FsUnit
+open PRR.API
 open PRR.API.Routes.Tenant
 open PRR.API.Tests.Utils
 open PRR.Data.Entities
@@ -301,4 +302,24 @@ module MultiUsers =
                 let! result = testFixture.HttpPostAsync u1.Token.Value
                                   (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do ensureForbidden result
+            }
+
+        [<Fact>]
+        [<Priority(13)>]
+        member __.``N trying to create user with wrong email should give bas request error``() =
+            let u1 = users.[0]
+            task {
+                let data: PostLike =
+                    { UserEmail = "test"
+                      RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
+                let! result = testFixture.HttpPostAsync u1.Token.Value
+                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+                do ensureBadRequest result
+                let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
+
+                let expected =
+                    [ ("userEmail", [| "CUSTOM:The UserEmail field is not a valid e-mail address." |]) ] |> Map
+                    
+                result'.Data |> should equal expected                                
+                
             }

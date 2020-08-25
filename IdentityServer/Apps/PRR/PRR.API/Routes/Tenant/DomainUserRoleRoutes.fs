@@ -16,7 +16,7 @@ module private DomainUserRolesHandlers =
     let private dataContext = getDataContext |> ofReader
 
     let updateRolesHandler (forbidenRoles) (domainId: int) =
-        wrap (updateUsersRoles forbidenRoles <!> ((doublet domainId) <!> bindJsonAsync<PostLike>) <*> dataContext)
+        wrap (updateUsersRoles forbidenRoles <!> ((doublet domainId) <!> bindValidateAnnotatedJsonAsync<PostLike>) <*> dataContext)
 
     let bindListQuery =
         bindListQuery

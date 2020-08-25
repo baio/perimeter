@@ -10,6 +10,7 @@ open Microsoft.EntityFrameworkCore
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
+open System.ComponentModel.DataAnnotations
 open System.Linq
 open System.Threading.Tasks
 
@@ -17,7 +18,11 @@ module DomainUserRoles =
 
     [<CLIMutable>]
     type PostLike =
-        { UserEmail: string
+        {
+          [<EmailAddress>]
+          [<Required>]
+          UserEmail: string
+          [<Required>]
           RolesIds: int seq }
 
     [<CLIMutable>]

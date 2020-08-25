@@ -20,7 +20,11 @@ module ErrorHandler =
     let mapBadRequestError =
         function
         | BadRequestFieldError(field, err) ->
-            (field, (sprintf "%O" err).Replace(" ", ":").Replace("\"", ""))
+            let errMessage =
+                match err with
+                | CUSTOM msg -> (sprintf "CUSTOM:%s" msg)
+                | _ -> (sprintf "%O" err).Replace(" ", ":").Replace("\"", "")
+            (field, errMessage)
         | BadRequestCommonError x -> ("__", x)
 
     let mapBadRequestErrors x =

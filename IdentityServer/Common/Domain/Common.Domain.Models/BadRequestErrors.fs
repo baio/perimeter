@@ -15,6 +15,7 @@ module BadRequestErrors =
         | MISS_LOWER_LETTER
         | MISS_SPECIAL_CHAR
         | MISS_DIGIT
+        | CUSTOM of string
     
     type BadRequestCommonError = string
     
