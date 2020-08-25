@@ -104,9 +104,11 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit(): void {
         const urlQueryParams = this.activatedRoute.snapshot.queryParams;
+        const form = document.getElementById('login_form') as HTMLFormElement
         if (urlQueryParams['prompt'] === 'none') {            
-            const form = document.getElementById('login_form') as HTMLFormElement
             form.submit();    
+        } else {
+            form.style.display = 'block';
         }
     }
 

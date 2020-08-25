@@ -41,11 +41,13 @@ module Authorize =
                 let! app = query {
                                         for app in dataContext.Applications do
                                             where (app.ClientId = clientId)
-                                            select (Tuple.Create(app.Domain.Pool.TenantId, app.AllowedCallbackUrls))
+                                            select (Tuple.Create(app.Domain.Pool.TenantId, app.Domain.TenantId, app.AllowedCallbackUrls))
                                     }
                                     |> toSingleExnAsync (unAuthorized ("client_id not found"))
-                                                                                                       
-                let (tenantId, callbackUrls) = app                               
+                                                                                                                                                                        
+                let (poolTenantId, managementDomainTenantId, callbackUrls) = app
+                
+                let tenantId = if managementDomainTenantId.HasValue then managementDomainTenantId.Value else poolTenantId
                 
                 if tenantId <> sso.TenantId then
                     return raise (unAuthorized "sso wrong tenant")

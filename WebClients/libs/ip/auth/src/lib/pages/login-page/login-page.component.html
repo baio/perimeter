@@ -28,6 +28,7 @@
 </nz-alert>
 
 <form
+    style="display: none;"
     nz-form
     [formGroup]="form"
     class="login-form"
@@ -60,11 +61,7 @@
         name="code_challenge_method"
         formControlName="code_challenge_method"
     />
-    <input
-        type="hidden"
-        name="prompt"
-        formControlName="prompt"
-    />
+    <input type="hidden" name="prompt" formControlName="prompt" />
 
     <nz-form-item>
         <nz-form-control [nzErrorTip]="emailErrorTpl">
