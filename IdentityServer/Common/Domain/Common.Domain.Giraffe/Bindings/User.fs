@@ -36,7 +36,7 @@ module User =
     let bindUserClaimId x =
         x
         |> tryBindUserClaimId
-        |> option2Task Forbidden
+        |> option2Task Forbidden'
 
     let tryBindUserClaimDomainId x = x |> tryBindUserClaimInt CLAIM_TYPE_DOMAIN
 
@@ -45,12 +45,12 @@ module User =
     let tryBindUserClaimDomainId' x =
         x
         |> tryBindUserClaimDomainId
-        |> option2Task Forbidden
+        |> option2Task Forbidden'
 
     let tryBindUserClaimId' x =
         x
         |> tryBindUserClaimId
-        |> option2Task Forbidden
+        |> option2Task Forbidden'
 
     let bindUserClaimsFilter<'a> fn =
         bindUserClaims

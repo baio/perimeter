@@ -11,7 +11,11 @@ module Exceptions =
     
     let unAuthorized = Some >> UnAuthorized       
 
-    exception Forbidden
+    exception Forbidden of string option
+    
+    let Forbidden' = Forbidden None
+    
+    let forbidden =  Some >> Forbidden
 
     exception Conflict of ConflictError
         

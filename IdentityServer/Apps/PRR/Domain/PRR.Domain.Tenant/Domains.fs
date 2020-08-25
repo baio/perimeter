@@ -36,7 +36,7 @@ module Domains =
                 where (dp.Id = domainId && dp.PoolId = Nullable(domainPoolId) && dp.Pool.Tenant.UserId = userId)
                 select dp.Id
         }
-        |> notFoundRaiseError Forbidden
+        |> notFoundRaiseError Forbidden'
 
     let catch =
         function

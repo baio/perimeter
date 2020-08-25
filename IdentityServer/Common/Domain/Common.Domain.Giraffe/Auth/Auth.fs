@@ -16,7 +16,7 @@ module Auth =
             | false ->
                 f next ctx
 
-    let auth' = auth'' (fun _ _ -> raise Forbidden)
+    let auth' = auth'' (fun _ _ -> raise Forbidden')
 
     let authOpt x = auth'' (fun _ _ ->
         System.Threading.Tasks.Task.FromResult(None)) x

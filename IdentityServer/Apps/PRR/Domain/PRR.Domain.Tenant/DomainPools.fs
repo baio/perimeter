@@ -41,7 +41,7 @@ module DomainPools =
                 where (dp.Id = domainPoolId && dp.Tenant.UserId = userId)
                 select dp.Id
         }
-        |> notFoundRaiseError Forbidden
+        |> notFoundRaiseError Forbidden'
 
     //
     let guid() = Guid.NewGuid().ToString()

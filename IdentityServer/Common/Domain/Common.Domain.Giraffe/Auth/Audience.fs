@@ -10,7 +10,7 @@ module Audience =
     let validateAudience aud =
         bindUserClaimsAudiences
         >> Seq.tryFind (fun x -> x = aud)
-        >> Options.noneFails Forbidden
+        >> Options.noneFails Forbidden'
 
 
     let audienceGuard aud: HttpHandler =

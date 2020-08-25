@@ -167,3 +167,25 @@ module MultiUsers =
 
                 ensureForbidden res
             }
+
+        [<Fact>]
+        [<Priority(6)>]
+        member __.``E remove tenant owner should give error``() =
+            let u1 = users.[0]
+            task {
+                let! result = testFixture.HttpDeleteAsync u1.Token.Value
+                                  (sprintf "/tenant/admins/%s" u1.Data.Email)
+                do ensureForbidden result }
+
+        [<Fact>]
+        [<Priority(7)>]
+        member __.``F update tenant owner should give error``() =
+            let u1 = users.[0]
+            task {
+                let data: PostLike =
+                    { UserEmail = u1.Data.Email
+                      RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
+                let! result = testFixture.HttpPostAsync u1.Token.Value
+                                  (sprintf "/tenant/admins") data
+                do ensureForbidden result
+            }

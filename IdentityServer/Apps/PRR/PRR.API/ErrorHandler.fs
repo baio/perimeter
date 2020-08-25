@@ -52,8 +52,15 @@ module ErrorHandler =
                 { Message = msg
                   Field = null
                   Code = null }
-        | :? Forbidden ->
-            RequestErrors.FORBIDDEN "Forbidden"
+        | :? Forbidden as e ->
+            let msg =
+                match e.Data0 with
+                | Some x -> x
+                | None -> "Forbidden"
+            RequestErrors.FORBIDDEN
+                { Message = msg
+                  Field = null
+                  Code = null }
         | :? Conflict as e ->
             match e.Data0 with
             | ConflictErrorField(field, code) ->

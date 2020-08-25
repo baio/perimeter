@@ -22,7 +22,8 @@ module private DomainUserRolesHandlers =
         bindListQuery
             ((function
              | "email" ->
-                 Some SortField.UserEmail),
+                 Some SortField.UserEmail
+             | _ -> None),
              (function
              | "email" ->
                  Some FilterField.UserEmail
