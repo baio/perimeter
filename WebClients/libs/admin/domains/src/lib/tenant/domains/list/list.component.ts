@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { listDefinition } from './list.definition';
 import { HlcNzTable, ActionClickEvent } from '@nz-holistic/nz-list';
 import { AdminList } from '@admin/shared';
-import { DomainsDataAccessService } from '@admin/data-access';
+import { DomainsDataAccessService, DomainEnv } from '@admin/data-access';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '@perimeter/ngx-auth';
 
@@ -38,10 +38,7 @@ export class DomainsPoolListComponent implements OnInit {
 
     async onEnvClicked(
         event: MouseEvent,
-        {
-            id,
-            domainManagementClientId,
-        }: { id: number; domainManagementClientId: string }
+        { id, domainManagementClientId }: DomainEnv
     ) {
         event.preventDefault();
         event.stopPropagation();

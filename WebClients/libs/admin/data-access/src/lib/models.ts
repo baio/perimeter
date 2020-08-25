@@ -1,3 +1,6 @@
+export const USER_ROLE_TENANT_OWNER_ID = -100;
+export const USER_ROLE_DOMAIN_OWNER_ID = -400;
+
 export interface UserRole {
     id: string;
     email: string;
