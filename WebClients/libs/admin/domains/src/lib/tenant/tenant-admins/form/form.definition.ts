@@ -1,10 +1,11 @@
 import { Validators } from '@angular/forms';
-import { AdminForm } from '@admin/shared';
+import { AdminForm, not$ } from '@admin/shared';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { map as _map } from 'lodash/fp';
 
 export const getDefinition = (
+    isNew$: Observable<boolean>,
     roles$: Observable<any[]>
 ): AdminForm.FormDefinition => ({
     kind: 'fields',
@@ -13,7 +14,10 @@ export const getDefinition = (
             id: 'userEmail',
             kind: 'Text',
             label: 'Name',
-            validators: [Validators.required],
+            validators: [Validators.required, Validators.email],
+            props: {
+                readonly: isNew$.pipe(not$),
+            },
         },
         {
             id: 'roleId',

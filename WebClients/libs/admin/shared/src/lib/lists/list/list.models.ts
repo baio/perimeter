@@ -28,5 +28,5 @@ export namespace AdminList {
         ) => Observable<any>;
     }
 
-    export type CheckRowFun<T extends HlcNzTable.Row> = (row: T) => boolean;    
+    export type CheckRowFun<T extends HlcNzTable.Row = HlcNzTable.Row> = (row: T) => boolean;    
 }
