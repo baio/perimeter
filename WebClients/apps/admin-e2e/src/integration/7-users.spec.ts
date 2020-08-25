@@ -5,7 +5,7 @@ describe('user', () => {
     before(() => {
         cy.dataCy('env-btn').click();
         cy.dataCy('apis-menu-item').click();
-        cy.rows(1, 1).click();
+        cy.rows(0, 1).click();
         cy.dataCy('create-item').click();
         cy.formField('name')
             .type('read:all')

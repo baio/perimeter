@@ -104,7 +104,7 @@ module Apis =
 
             query {
                 for p in apps do
-                    where (p.DomainId = domainId)
+                    where (p.DomainId = domainId && p.IsDomainManagement = false)
                     select
                         { Id = p.Id
                           Name = p.Name

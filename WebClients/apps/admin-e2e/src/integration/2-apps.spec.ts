@@ -17,7 +17,7 @@ describe('apps', () => {
 
     describe('edit', () => {
         it('load app edit form data', () => {
-            cy.rows(1).click();
+            cy.rows(0).click();
             cy.url().should('match', /\/domains\/\d+\/apps\/\d+/);
             cy.formField('name').should((input) => {
                 const val = input.val();
@@ -32,7 +32,7 @@ describe('apps', () => {
                 .submitButton()
                 .click();
             cy.url().should('not.match', /\/domains\/\d+\/apps\/\d+/);
-            cy.rows().should('have.length', 2);
+            cy.rows().should('have.length', 1);
         });
     });
 
@@ -69,7 +69,7 @@ describe('apps', () => {
 
     describe('list', () => {
         it('rows count : sample + created', () => {
-            cy.rows().should('have.length', 3);
+            cy.rows().should('have.length', 2);
         });
 
         it('latest item on top', () => {
@@ -78,25 +78,17 @@ describe('apps', () => {
 
         it('sort by created change rows positions', () => {
             cy.get('table thead th').eq(2).click().click();
-            cy.rows(1, 0).should('contain.text', UPDATED_NAME);
-            cy.rows(2, 0).should('contain.text', 'new');
+            cy.rows(0, 0).should('contain.text', UPDATED_NAME);
+            cy.rows(1, 0).should('contain.text', 'new');
         });
 
         it('sort by name change rows positions', () => {
             cy.get('table thead th').eq(0).click();
-            cy.rows(2, 0).should('contain.text', 'updated');
+            cy.rows(1, 0).should('contain.text', 'updated');
             // cy.rows(1, 0).should('contain.text', UPDATED_NAME);
             cy.get('table thead th').eq(0).click();
             // cy.rows(0, 0).should('contain.text', UPDATED_NAME);
             cy.rows(0, 0).should('contain.text', 'updated');
-        });
-    });
-
-    describe('delete', () => {
-        it('remove', () => {
-            cy.rows().find('.table-actions a').eq(0).click();
-            cy.confirmYesButton().click();
-            cy.rows().should('have.length', 2);
         });
     });
 
@@ -106,4 +98,13 @@ describe('apps', () => {
             cy.rows().should('have.length', 1);
         });
     });
+
+    describe.skip('delete', () => {
+        it('remove', () => {
+            cy.rows().find('.table-actions a').eq(0).click();
+            cy.confirmYesButton().click();
+            cy.rows().should('have.length', 0);
+        });
+    });
+
 });
