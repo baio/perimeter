@@ -36,7 +36,7 @@ module User =
     let bindUserClaimId x =
         x
         |> tryBindUserClaimId
-        |> option2Task Forbidden'
+        |> option2Task (forbidden "User sub is not found")
 
     let tryBindUserClaimDomainId x = x |> tryBindUserClaimInt CLAIM_TYPE_DOMAIN
 

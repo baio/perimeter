@@ -74,4 +74,4 @@ module Domains =
                   Roles =
                       p.Roles.Select(fun x ->
                           { Id = x.Id
-                            Name = x.Name }) } @>)  
+                            Name = x.Name }) } @>)
