@@ -23,6 +23,7 @@ export interface IAuthConfig {
     scope: string;
     stateStringLength: number;
     pkceCodeVerifierLength: number;
+    refreshTokenUrl: string;
 }
 
 export const PERIMETER_AUTH_CONFIG = new InjectionToken(
@@ -35,6 +36,54 @@ export interface AuthOptions {
     // Path to redirect after successful login (without base url, it will be taken from returnUri)
     redirectPath?: string;
 }
+
+interface JWTToken {
+    iss: string;
+    sub: string;
+    aud: string;
+    iat: number;
+    exp: number;
+}
+
+const parseJwt = (token: string): JWTToken => {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+        atob(base64)
+            .split('')
+            .map(function (c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            })
+            .join('')
+    );
+
+    return JSON.parse(jsonPayload);
+};
+
+/**
+ * Get parsed token if it exists and not expired
+ */
+const validateToken = (token: string, validateExp = true): JWTToken | null => {
+    if (token) {
+        const jwtToken = parseJwt(token);
+        console.log('token', jwtToken);
+        if (validateExp) {
+            if (!jwtToken.exp) {
+                console.warn('token.exp is undefined');
+                return null;
+            }
+            const now = new Date().getTime() / 1000;
+            if (jwtToken.exp < now) {
+                console.warn('token expired');
+                return null;
+            }
+        }
+        return jwtToken;
+    } else {
+        console.warn('idToken / accessToken not found');
+        return null;
+    }
+};
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -111,8 +160,8 @@ export class AuthService {
             const result = await this.http
                 .post<TokensResult>(`${this.config.tokenUrl}`, payload)
                 .toPromise();
-            sessionStorage.setItem(ID_TOKEN, result.idToken);
-            sessionStorage.setItem(ACCESS_TOKEN, result.accessToken);
+            localStorage.setItem(ID_TOKEN, result.idToken);
+            localStorage.setItem(ACCESS_TOKEN, result.accessToken);
             localStorage.setItem(REFRESH_TOKEN, result.refreshToken);
             return parsedState.redirectPath;
         } finally {
@@ -144,9 +193,47 @@ export class AuthService {
         }
     }
 
+    /**
+     * Will redirect to the IDP login page
+     * @param opts
+     */
     async authorize(opts: AuthOptions) {
         const loginUrl = await this.createLoginUrl(opts);
         document.location.href = loginUrl;
+    }
+
+    /**
+     * Validate id and optionally access tokens
+     * @param validateExp - does need validate token expiration date
+     * @param validateAccessToken  - does validate access token
+     */
+    validateTokens(
+        validateExp = true,
+        validateAccessToken = true
+    ): JWTToken | null {
+        const idToken = this.idToken;
+        const jwtIdToken = validateToken(idToken, validateExp);
+        if (!jwtIdToken) {
+            console.warn('idToken invalid');
+            return null;
+        }
+        if (validateAccessToken) {
+            const accessToken = this.accessToken;
+            const jwtAccessToken = validateToken(accessToken, validateExp);
+            if (!jwtAccessToken) {
+                console.warn('accessToken invalid');
+                return null;
+            }
+        }
+        return jwtIdToken;
+    }
+
+    get idToken() {
+        return localStorage.getItem(ID_TOKEN);
+    }
+
+    get accessToken() {
+        return localStorage.getItem(ACCESS_TOKEN);
     }
 
     logout() {
@@ -155,5 +242,31 @@ export class AuthService {
             this.config.returnLogoutUri
         )}&access_token=${accessToken}`;
         document.location.href = url;
+    }
+
+    async refreshToken() {
+        const refreshToken = localStorage.getItem(REFRESH_TOKEN);
+        if (!refreshToken) {
+            return false;
+        }
+        try {
+            const result = await this.http
+                .post<TokensResult>(this.config.refreshTokenUrl, {
+                    refreshToken,
+                })
+                .toPromise();
+            localStorage.setItem(ID_TOKEN, result.idToken);
+            localStorage.setItem(ACCESS_TOKEN, result.accessToken);
+            localStorage.setItem(REFRESH_TOKEN, result.refreshToken);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    resetTokens() {
+        localStorage.removeItem(ID_TOKEN);
+        localStorage.removeItem(ACCESS_TOKEN);
+        localStorage.removeItem(REFRESH_TOKEN);
     }
 }

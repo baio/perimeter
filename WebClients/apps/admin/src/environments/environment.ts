@@ -11,12 +11,13 @@ export const environment = {
         tokenUrl: 'https://localhost:5001/auth/token',
         logoutUrl: 'https://localhost:5001/auth/logout',
         returnLoginUri: 'http://localhost:4201/login-cb',
-        returnLoginPath: '/tenant/domains',
+        returnLoginPath: '/',
         returnLogoutUri: 'http://localhost:4201',
         clientId: '__DEFAULT_CLIENT_ID__',
         scope: 'open_id profile',
         stateStringLength: 64,
         pkceCodeVerifierLength: 128,
+        refreshTokenUrl: `https://localhost:5001/auth/refresh-token`,
     },
 };
 

@@ -53,8 +53,11 @@ module E2E =
                       Thread.Sleep(10)
                       let! res = PRR.Domain.Auth.LogInEmail.logInEmail loginEnv "__DEFAULT_CLIENT_ID__"
                                      signupItem.Email signupItem.Password
-                                     
-                      let (result, _) = res                                     
-                      
+
+                      let (result, _) = res
+
+
+                      ctx.Response.Cookies.Delete("sso")
+
                       return! Successful.OK result next ctx
                   } ]

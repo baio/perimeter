@@ -93,7 +93,7 @@ const routes: Routes = [
                 ],
             },
             {
-                path: 'tenant',
+                path: 'tenants/:id',
                 component: TenantLayoutComponent,
                 children: [
                     {

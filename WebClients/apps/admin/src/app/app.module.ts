@@ -17,6 +17,10 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthRoutingModule } from './auth-routing.module';
+import { AdminProfileModule } from '@admin/profile';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
 
 const antDesignIcons = AllIcons as {
     [key: string]: IconDefinition;
@@ -38,6 +42,12 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(
         AuthModule.forRoot(environment.baseUrl, environment.auth),
         HttpErrorMessageInterceptorModule,
         HttpBaseUrlInterceptorModule.forRoot({ baseUrl: environment.baseUrl }),
+        AdminProfileModule,
+        StoreModule.forRoot({}),
+        EffectsModule.forRoot(),
+        StoreDevtoolsModule.instrument({
+            logOnly: environment.production,
+        }),
     ],
     providers: [
         { provide: NZ_ICONS, useValue: icons },

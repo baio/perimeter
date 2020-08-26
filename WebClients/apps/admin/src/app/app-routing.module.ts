@@ -6,6 +6,7 @@ import { filter } from 'rxjs/operators';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { LoginCbPageComponent } from './pages/login-cb-page/login-cb-page.component';
 import { AdminPagesModule } from './pages/pages.module';
+import { BlankPageComponent } from './pages/blank-page/blank-page.component';
 
 const routes: Routes = [
     {
@@ -18,7 +19,7 @@ const routes: Routes = [
     },
     {
         path: '',
-        redirectTo: 'home',
+        component: BlankPageComponent,
         pathMatch: 'full',
     },
 ]; // sets up routes constant where you define your routes

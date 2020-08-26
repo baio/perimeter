@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AuthService } from '@perimeter/ngx-auth';
 
-const REDIRECT_PATH = '/tenant/domains';
+const REDIRECT_PATH = '/';
 
 @Component({
     selector: 'admin-home-page',

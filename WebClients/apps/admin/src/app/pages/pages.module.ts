@@ -13,6 +13,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HomePageComponent } from './home-page/home-page.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { LoginCbPageComponent } from './login-cb-page/login-cb-page.component';
+import { BlankPageComponent } from './blank-page/blank-page.component';
 
 @NgModule({
     imports: [
@@ -29,7 +30,7 @@ import { LoginCbPageComponent } from './login-cb-page/login-cb-page.component';
         NzModalModule,
         NzAlertModule,
     ],
-    declarations: [HomePageComponent, LoginCbPageComponent],
+    declarations: [HomePageComponent, LoginCbPageComponent, BlankPageComponent],
     exports: [],
 })
 export class AdminPagesModule {}
