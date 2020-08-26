@@ -101,7 +101,7 @@ export class ProfileEffects {
                             // TODO : If no domains
                             this.router.navigate([
                                 'domains',
-                                domains[0],
+                                domains[0].id,
                                 'apps',
                             ]);
                         }
