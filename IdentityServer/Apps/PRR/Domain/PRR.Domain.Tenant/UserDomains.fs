@@ -48,7 +48,7 @@ module UserDomains =
 
             let! items = query {
                              for p in dataContext.DomainUserRole do
-                                 where (p.UserEmail = userEmail)
+                                 where (p.UserEmail = userEmail && (p.Role.IsDomainManagement || p.Role.IsTenantManagement))
                                  select
                                      { Id = p.Domain.Id
                                        Tenant =
@@ -61,10 +61,7 @@ module UserDomains =
                                        PoolName = p.Domain.Pool.Name
                                        EnvName = p.Domain.EnvName
                                        ManagementClientId =
-                                           if p.Domain.Tenant = null then
-                                               (p.Domain.Applications.FirstOrDefault
-                                                   (fun p -> p.IsDomainManagement = true)).ClientId
-                                           else p.Domain.Applications.First().ClientId
+                                           (p.Domain.Applications.FirstOrDefault(fun p -> p.IsDomainManagement = true)).ClientId
                                        IsTenantManagement = p.Domain.Pool = null
                                        Role =
                                            { Id = p.Role.Id
