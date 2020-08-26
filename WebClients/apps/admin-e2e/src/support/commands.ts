@@ -116,7 +116,7 @@ Cypress.Commands.add('reinitDb', () => {
 
     return cy.request('POST', url).then((resp) =>
         cy.window().then((win) => {
-            win.sessionStorage.setItem('access_token', resp.body.accessToken);
+            win.localStorage.setItem('access_token', resp.body.accessToken);
         })
     );
 });
@@ -131,6 +131,4 @@ Cypress.Commands.add('login', () => {
         .type(PASSWORD)
         .dataCy('submit')
         .click();
-
-    cy.url().should('include', '/tenant/domains');
 });

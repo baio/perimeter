@@ -1,6 +1,10 @@
+import { clearLocalStorage } from './_setup';
+
 // tslint:disable: no-unused-expression
 describe('login', () => {
     before(() => cy.reinitDb());
+
+    before(() => clearLocalStorage());
 
     before(() => cy.visit('/'));
 
@@ -12,7 +16,15 @@ describe('login', () => {
         before(() => cy.login());
 
         it('must be redirected to first available tenant', () => {
-            cy.url().should('include', 'tenant/domains');
+            cy.url().should('match', /\/tenants\/\d+\/domains/);
+        });
+
+        describe('when move to domain', () => {
+            before(() => cy.dataCy('env-btn').click());
+
+            it('must be redirected to domain', () => {
+                cy.url().should('match', /\/domains\/\d+\/apps/);
+            });
         });
     });
 });
