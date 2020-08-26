@@ -27,4 +27,4 @@ open Handlers
 let createRoutes() =
     subRoute "/me" requiresAuth >=> choose
                                         [ route "/password" >=> PUT >=> updatePasswordHandler
-                                          route "/domains" >=> GET >=> getDomainsHandler ]
+                                          route "/management/domains" >=> GET >=> getDomainsHandler ]
