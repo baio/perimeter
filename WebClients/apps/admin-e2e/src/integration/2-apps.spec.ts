@@ -1,9 +1,10 @@
-import { EMAIL, PASSWORD } from './_setup';
+import { EMAIL, PASSWORD, clearLocalStorage } from './_setup';
 
 // tslint:disable: no-unused-expression
 describe('apps', () => {
     const UPDATED_NAME = 'updated name';
     before(() => cy.reinitDb());
+    before(() => clearLocalStorage());
     before(() => {
         cy.login();
     });

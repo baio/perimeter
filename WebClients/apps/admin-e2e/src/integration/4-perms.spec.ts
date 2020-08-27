@@ -1,7 +1,10 @@
+import { clearLocalStorage } from "./_setup";
+
 // tslint:disable: no-unused-expression
 describe('perms', () => {
     const UPDATED_NAME = 'write:all';
     before(() => cy.reinitDb());
+    before(() => clearLocalStorage());
     before(() => cy.login());
     before(() => {
         cy.dataCy('env-btn').click();

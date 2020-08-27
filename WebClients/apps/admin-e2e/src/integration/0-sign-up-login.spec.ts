@@ -76,8 +76,8 @@ describe('signup flow', () => {
             cy.url().should('not.include', '/login-cb');
 
             cy.window().then((win) => {
-                assert.isTrue(!!win.sessionStorage.getItem('id_token'));
-                assert.isTrue(!!win.sessionStorage.getItem('access_token'));
+                assert.isTrue(!!win.localStorage.getItem('id_token'));
+                assert.isTrue(!!win.localStorage.getItem('access_token'));
                 assert.isTrue(!!win.localStorage.getItem('refresh_token'));
             });
         });
