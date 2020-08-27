@@ -169,7 +169,9 @@ module private Handlers =
                     let token = hasher()
                     ctx.Response.Cookies.Append("sso", token, CookieOptions(HttpOnly = true, Secure = true))
                     let url = ctx.Request.HttpContext.GetRequestUrl()
-                    return! redirectTo false url next ctx
+                    ctx.Response.Redirect(url, true)
+                    ctx.SetStatusCode(307)
+                    return Some ctx
             | _ ->
                 return! logInHandler ssoCookie data.Redirect_Uri next ctx
         }
