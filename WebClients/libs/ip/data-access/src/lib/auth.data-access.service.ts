@@ -1,7 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, flatMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 export interface SignUpData {
     firstName: string;
@@ -39,7 +38,7 @@ export class AuthDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
     assignSSO() {
-        return this.http.post('auth/assign-sso', null, {
+        return this.http.get('http://localhost:4201/auth/assign-sso', {
             withCredentials: true,
         });
     }
