@@ -18,9 +18,9 @@ export interface Domain {
 }
 
 export type ProfileStatus =
-    | 'init'
-    | 'notAuthenticated'
+    | 'init'    
     | 'authenticating'
+    | 'notAuthenticated'
     | 'success'
     | 'error';
 

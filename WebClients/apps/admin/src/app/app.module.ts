@@ -1,5 +1,5 @@
 import { AdminDomainsModule } from '@admin/domains';
-import { AdminProfileModule, authenticate } from '@admin/profile';
+import { AdminProfileModule } from '@admin/profile';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
 import { IconDefinition } from '@ant-design/icons-angular';
 import * as AllIcons from '@ant-design/icons-angular/icons';
 import { EffectsModule } from '@ngrx/effects';
-import { StoreModule, Store } from '@ngrx/store';
+import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { HlcNzFormModule } from '@nz-holistic/nz-forms';
 import {
@@ -59,7 +59,5 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(
     bootstrap: [AppComponent],
 })
 export class AppModule {
-    constructor(store: Store) {
-        store.dispatch(authenticate());
-    }
+    constructor() {}
 }

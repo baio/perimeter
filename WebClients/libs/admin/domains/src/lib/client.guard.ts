@@ -1,4 +1,8 @@
-import { selectProfileDomainsList, selectStatus } from '@admin/profile';
+import {
+    selectProfileDomainsList,
+    selectStatus,
+    filterCompletedStatuses$,
+} from '@admin/profile';
 import { Injectable } from '@angular/core';
 import {
     ActivatedRouteSnapshot,
@@ -7,7 +11,7 @@ import {
 } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AuthService } from '@perimeter/ngx-auth';
-import { includes, isValid } from 'lodash/fp';
+import { includes } from 'lodash/fp';
 import { Observable } from 'rxjs';
 import { map, skipWhile, withLatestFrom } from 'rxjs/operators';
 
@@ -40,7 +44,7 @@ export class ClientGuard implements CanActivateChild {
             return false;
         }
         return this.store.select(selectStatus).pipe(
-            skipWhile((x) => x === 'init' || x === 'authenticating'),
+            filterCompletedStatuses$,
             withLatestFrom(this.store.select(selectProfileDomainsList)),
             map(([status, domains]) => {
                 if (status !== 'success') {
