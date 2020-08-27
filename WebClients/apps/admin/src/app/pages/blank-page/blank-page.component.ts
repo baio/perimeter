@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { authenticate } from '@admin/profile';
 import { Store } from '@ngrx/store';
 
 @Component({
@@ -8,7 +7,5 @@ import { Store } from '@ngrx/store';
     styleUrls: ['./blank-page.component.scss'],
 })
 export class BlankPageComponent {
-    constructor(store: Store) {
-        store.dispatch(authenticate());
-    }
+    constructor(store: Store) {}
 }

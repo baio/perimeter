@@ -10,13 +10,16 @@ open System.Text
 [<AutoOpen>]
 module private CreateAccessToken =
 
-    let createToken (secret: string) (expireInMinutes: int<minutes>) (claims: Claim seq)  =
+    let createToken (secret: string) (expireInMinutes: int<minutes>) (claims: Claim seq) =
         let subject = claims |> ClaimsIdentity
         let tokenHandler = JwtSecurityTokenHandler()
         let key = Encoding.ASCII.GetBytes secret
-        let expires = System.Nullable(DateTime.UtcNow.AddMinutes(float expireInMinutes))
+        let issuedAt = DateTime.UtcNow
+        let expires = issuedAt.AddMinutes(float expireInMinutes)
+        let notBefore = expires.AddMinutes(float -1)
         let signingCredentials = SigningCredentials(SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         SecurityTokenDescriptor
-            (Subject = subject, Expires = expires, SigningCredentials = signingCredentials)
+            (Subject = subject, IssuedAt = Nullable(issuedAt), Expires = Nullable(expires),
+             NotBefore = Nullable(notBefore), SigningCredentials = signingCredentials)
         |> tokenHandler.CreateToken
         |> tokenHandler.WriteToken

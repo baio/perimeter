@@ -37,7 +37,9 @@ export interface AuthOptions {
     redirectPath?: string;
 }
 
-interface JWTToken {
+export type HashMap = { [key: string]: string | number };
+
+interface JWTToken extends HashMap {
     iss: string;
     sub: string;
     aud: string;

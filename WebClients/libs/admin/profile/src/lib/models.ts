@@ -17,7 +17,15 @@ export interface Domain {
     roles: Item[];
 }
 
+export type ProfileStatus =
+    | 'init'
+    | 'notAuthenticated'
+    | 'authenticating'
+    | 'success'
+    | 'error';
+
 export interface ProfileState {
+    status: ProfileStatus;
     user: User;
     domains: { [key: number]: Domain };
 }

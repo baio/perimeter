@@ -14,12 +14,14 @@ import {
     authenticate,
     authenticationSuccess,
     authenticationFails,
-    profileLoaded,
+    profileLoadSuccess,
+    profileLoadFails,
 } from './actions';
 import { ProfileDataAccessService } from '@admin/data-access';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { selectProfileDomainsList } from './selectors';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable()
 export class ProfileEffects {
@@ -50,7 +52,10 @@ export class ProfileEffects {
                 if (idToken) {
                     // parse user
                     return authenticationSuccess({
-                        user: { name: 'test user' },
+                        user: {
+                            name:
+                                idToken.given_name + ' ' + idToken.family_name,
+                        },
                     });
                 } else {
                     return authenticationFails();
@@ -63,14 +68,17 @@ export class ProfileEffects {
         this.actions$.pipe(
             ofType(authenticationSuccess),
             switchMap(() => this.profileDataAccess.loadManagementDomains()),
-            map((domains) => profileLoaded({ domains }))
+            map((domains) => profileLoadSuccess({ domains })),
+            catchError((err: HttpErrorResponse) =>
+                of(profileLoadFails({ err }))
+            )
         )
     );
 
-    authenticationFails$ = createEffect(
+    initFails$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(authenticationFails),
+                ofType(authenticationFails, profileLoadFails),
                 tap(() => {
                     this.router.navigate(['/home']);
                 })
@@ -81,7 +89,7 @@ export class ProfileEffects {
     profileLoaded$ = createEffect(
         () =>
             this.actions$.pipe(
-                ofType(profileLoaded),
+                ofType(profileLoadSuccess),
                 tap(({ domains }) => {
                     const activeUrl = this.router.routerState.snapshot.url;
                     // when user login and profile loaded, decide here where to redirect

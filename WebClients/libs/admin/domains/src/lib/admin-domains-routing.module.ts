@@ -20,11 +20,13 @@ import { DomainPoolFormComponent } from './tenant/domains/form/form.component';
 import { CreateEnvFormComponent } from './tenant/domains/create-env-form/create-env-form.component';
 import { TenantAdminsListComponent } from './tenant/tenant-admins/list/list.component';
 import { TenantAdminFormComponent } from './tenant/tenant-admins/form/form.component';
+import { ClientGuard } from './client.guard';
 
 const routes: Routes = [
     {
         path: '',
         component: MainLayoutComponent,
+        canActivateChild: [ClientGuard],
         children: [
             {
                 path: 'domains/:id',
@@ -131,5 +133,6 @@ const routes: Routes = [
     declarations: [],
     imports: [MainLayoutModule, RouterModule.forChild(routes)],
     exports: [RouterModule],
+    providers: [ClientGuard],
 })
 export class AdminDomainsRoutingModule {}

@@ -20,7 +20,7 @@ module internal SignInUser =
             |> (createToken env.JwtConfig.AccessTokenSecret env.JwtConfig.AccessTokenExpiresIn)
 
         let idToken =
-            createIdTokenClaims tokenData rolesPermissions
+            createIdTokenClaims clientId tokenData rolesPermissions
             |> (createToken env.JwtConfig.IdTokenSecret env.JwtConfig.IdTokenExpiresIn)
 
         let refreshToken = env.HashProvider()

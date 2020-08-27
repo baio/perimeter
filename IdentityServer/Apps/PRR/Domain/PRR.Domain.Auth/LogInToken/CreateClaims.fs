@@ -28,7 +28,7 @@ module private CreateClaims =
         |> Seq.append roles
         |> Seq.append auds
 
-    let createIdTokenClaims tokenData (rolePermissions: RolePermissions seq) =
+    let createIdTokenClaims clientId tokenData (rolePermissions: RolePermissions seq) =
         let roles =
             rolePermissions
             |> Seq.map (fun x -> x.Role)
@@ -42,6 +42,8 @@ module private CreateClaims =
         [| Claim("sub", tokenData.Id.ToString())
            Claim(ClaimTypes.Email, tokenData.Email)
            // TODO : Separate claims for access and id
-           Claim(ClaimTypes.Name, sprintf "%s %s" tokenData.FirstName tokenData.LastName)
+           Claim(ClaimTypes.GivenName, tokenData.FirstName)
+           Claim(ClaimTypes.Surname, tokenData.LastName)
+           Claim(CLAIM_TYPE_CID, clientId)
            Claim("scope", sprintf "openid profile roles %s" permissions) |]
         |> Seq.append roles

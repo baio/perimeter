@@ -1,9 +1,16 @@
 import { createReducer, on } from '@ngrx/store';
-import { authenticate, authenticationSuccess, profileLoaded } from './actions';
+import {
+    authenticate,
+    authenticationSuccess,
+    profileLoadSuccess,
+    authenticationFails,
+    profileLoadFails,
+} from './actions';
 import { ProfileState } from './models';
 import { pipe, map, fromPairs } from 'lodash/fp';
 
 export const initialState: ProfileState = {
+    status: 'init',
     user: null,
     domains: {},
 };
@@ -17,10 +24,20 @@ const listToNKeyHash: <T extends { id: number }>(
 
 const _profileReducer = createReducer(
     initialState,
+    on(authenticate, (state) => ({ ...state, status: 'authenticating' })),
     on(authenticationSuccess, (state, { user }) => ({ ...state, user })),
-    on(profileLoaded, (state, { domains }) => ({
+    on(authenticationFails, (state) => ({
         ...state,
+        status: 'unAuthenticated',
+    })),
+    on(profileLoadSuccess, (state, { domains }) => ({
+        ...state,
+        status: 'success',
         domains: listToNKeyHash(domains),
+    })),
+    on(profileLoadFails, (state) => ({
+        ...state,
+        status: 'error',
     }))
 );
 
