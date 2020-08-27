@@ -25,6 +25,14 @@ describe('login', () => {
             it('must be redirected to domain', () => {
                 cy.url().should('match', /\/domains\/\d+\/apps/);
             });
+
+            describe('when navigate back to tenant', () => {
+                before(() => cy.visit('/'));
+
+                it('must be redirected to tenant', () => {
+                    cy.url().should('match', /\/tenants\/\d+\/domains/);
+                });
+            });
         });
     });
 });

@@ -9,11 +9,12 @@
     <ng-template hlcNzCustomCell="envs" let-items>
         <button
             data-cy="env-btn"
-            (click)="onEnvClicked($event, item)"
+            (click)="$event.stopPropagation()"
+            [routerLink]="['../../..', 'domains', item.id, 'apps']"
             *ngFor="let item of items; let last = last"
             nz-button
             nzSize="small"
-            nzType="outline"            
+            nzType="outline"
             style="margin-right: 5px;"
         >
             <i *ngIf="item.isMain" nz-icon nzType="crown" nzTheme="outline"></i>
