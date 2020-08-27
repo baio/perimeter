@@ -5,10 +5,8 @@ describe('domains', () => {
     const UPDATED_NAME = 'updated domain';
 
     before(() => cy.reinitDb());
-    before(() => clearLocalStorage());
-    before(() => {
-        cy.login();
-    });
+
+    before(() => cy.visit('/tenants/1/domains'));
 
     describe('edit', () => {
         it('load domain edit form data', () => {

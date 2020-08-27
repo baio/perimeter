@@ -2,11 +2,9 @@ import { clearLocalStorage } from "./_setup";
 
 // tslint:disable: no-unused-expression
 describe('roles', () => {
-    before(() => cy.reinitDb());
-    before(() => clearLocalStorage());
-    before(() => cy.login());
+    before(() => cy.reinitDb(true));
     before(() => {
-        cy.dataCy('env-btn').click();
+        cy.visit('/domains/2/apps');
         cy.dataCy('apis-menu-item').click();
         cy.rows(0, 1).click();
     });

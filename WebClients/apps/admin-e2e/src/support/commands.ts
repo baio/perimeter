@@ -107,16 +107,17 @@ Cypress.Commands.add('resetDb', () => {
     return cy.request('POST', url);
 });
 
-Cypress.Commands.add('reinitDb', () => {
+Cypress.Commands.add('reinitDb', (loginAsDomain) => {
     const baseUrl = Cypress.env('apiBaseUrl');
 
     const refreshDbUrl = Cypress.env('reinitDbUrl');
 
     const url = resolve(baseUrl, refreshDbUrl);
 
-    return cy.request('POST', url).then((resp) =>
+    return cy.request('POST', url, { loginAsDomain }).then((resp) =>
         cy.window().then((win) => {
             win.localStorage.setItem('access_token', resp.body.accessToken);
+            win.localStorage.setItem('id_token', resp.body.idToken);
         })
     );
 });

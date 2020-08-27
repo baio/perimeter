@@ -41,7 +41,7 @@ declare namespace Cypress {
 
         resetDb(): Chainable<Window>;
 
-        reinitDb(): Chainable<Window>;
+        reinitDb(loginAsDomain = false): Chainable<Window>;
 
         login(): Chainable<Window>;
 

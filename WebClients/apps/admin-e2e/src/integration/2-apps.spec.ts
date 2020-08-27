@@ -3,14 +3,9 @@ import { EMAIL, PASSWORD, clearLocalStorage } from './_setup';
 // tslint:disable: no-unused-expression
 describe('apps', () => {
     const UPDATED_NAME = 'updated name';
-    before(() => cy.reinitDb());
-    before(() => clearLocalStorage());
-    before(() => {
-        cy.login();
-    });
-    before(() => {
-        cy.dataCy('env-btn').click();
-    });
+    before(() => cy.reinitDb(true));
+    // TODO : Take domain from header ?
+    before(() => cy.visit('/domains/2/apps'));
 
     it('app should be open', () => {
         cy.url().should('include', 'apps');
@@ -107,5 +102,4 @@ describe('apps', () => {
             cy.rows().should('have.length', 0);
         });
     });
-
 });

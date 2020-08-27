@@ -38,7 +38,7 @@ export class ClientGuard implements CanActivateChild {
         next: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
     ): boolean | Observable<boolean> {
-        const jwt = this.authService.validateTokens(false);
+        const jwt = this.authService.validateTokens(true);
         if (!jwt) {
             // If no auth token found redirect to login page
             return false;

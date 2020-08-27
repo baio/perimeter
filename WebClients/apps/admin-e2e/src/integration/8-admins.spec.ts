@@ -1,12 +1,8 @@
-import { clearLocalStorage } from "./_setup";
-
 // tslint:disable: no-unused-expression
 describe('admins', () => {
-    before(() => cy.reinitDb());
-    before(() => clearLocalStorage());
-    before(() => cy.login());
+    before(() => cy.reinitDb(true));
     before(() => {
-        cy.dataCy('env-btn').click();
+        cy.visit('/domains/2/apps');
         cy.dataCy('admins-menu-item').click();
     });
 

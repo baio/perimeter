@@ -1,11 +1,7 @@
-import { clearLocalStorage } from "./_setup";
-
 // tslint:disable: no-unused-expression
 describe('tenant-admins', () => {
     before(() => cy.reinitDb());
-    before(() => clearLocalStorage());
-    before(() => cy.login());
-    before(() => cy.dataCy('admins-menu-item').click());
+    before(() => cy.visit('/tenants/1/admins'));
 
     it('roles should be open', () => {
         cy.url().should('match', /\/tenants\/\d+\/admins/);
