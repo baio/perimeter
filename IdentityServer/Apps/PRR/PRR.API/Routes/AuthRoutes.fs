@@ -164,7 +164,12 @@ module private Handlers =
                         // TODO : Appropriate errors !
                         return! errRedirect()
                 | None ->
-                    return! errRedirect()
+                    // sso cookie not found just redirect back to itself with sso cookie
+                    let hasher = getHash ctx
+                    let token = hasher()
+                    ctx.Response.Cookies.Append("sso", token, CookieOptions(HttpOnly = true, Secure = true))
+                    let url = ctx.Request.HttpContext.GetRequestUrl()
+                    return! redirectTo false url next ctx
             | _ ->
                 return! logInHandler ssoCookie data.Redirect_Uri next ctx
         }
@@ -172,7 +177,7 @@ module private Handlers =
     let assignSSOHandler next (ctx: HttpContext) =
         let hasher = getHash ctx
         let token = hasher()
-        ctx.Response.Cookies.Append("sso", token, CookieOptions(HttpOnly = true, Secure = false))
+        ctx.Response.Cookies.Append("sso", token, CookieOptions(HttpOnly = true, Secure = true))
         Successful.NO_CONTENT next ctx
 
     open PRR.Domain.Auth.LogOut
@@ -210,11 +215,9 @@ open Handlers
 let createRoutes() =
     subRoute "/auth"
         (choose
-            [
-              GET >=> route "/assign-sso" >=> assignSSOHandler
-              GET >=> route "/logout" >=> logoutHandler
+            [ GET >=> route "/logout" >=> logoutHandler
               POST >=> choose
-                           [ route "/login" >=> authorizeHandler                             
+                           [ route "/login" >=> authorizeHandler
                              route "/sign-up/confirm" >=> signUpConfirmHandler
                              route "/sign-up" >=> signUpHandler
                              route "/token" >=> logInTokenHandler

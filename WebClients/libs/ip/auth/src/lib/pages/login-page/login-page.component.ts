@@ -113,7 +113,7 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
     }
 
     async onSubmit(form: HTMLFormElement) {
-        await this.dataAccess.assignSSO().toPromise();
+        // await this.dataAccess.assignSSO().toPromise();
         form.submit();
     }
 }
