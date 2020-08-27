@@ -176,12 +176,6 @@ module private Handlers =
                 return! logInHandler ssoCookie data.Redirect_Uri next ctx
         }
 
-    let assignSSOHandler next (ctx: HttpContext) =
-        let hasher = getHash ctx
-        let token = hasher()
-        ctx.Response.Cookies.Append("sso", token, CookieOptions(HttpOnly = true, Secure = true))
-        Successful.NO_CONTENT next ctx
-
     open PRR.Domain.Auth.LogOut
 
     let logout data =

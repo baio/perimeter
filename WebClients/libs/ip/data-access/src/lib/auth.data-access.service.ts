@@ -37,12 +37,6 @@ export interface LoginPassword {
 export class AuthDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
-    assignSSO() {
-        return this.http.get('http://localhost:4201/auth/assign-sso', {
-            withCredentials: true,
-        });
-    }
-
     signUp(data: SignUpData, queryString: string): Observable<any> {
         const payload = {
             ...data,

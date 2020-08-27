@@ -1,6 +1,1 @@
-{
-    "/auth/assign-sso": {
-        "target": "https://localhost:5001",
-        "secure": false
-    }
-}
+{}
