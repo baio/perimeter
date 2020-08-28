@@ -30,6 +30,7 @@ module Models =
         { DataContext: DbDataContext
           CodeGenerator: HashProvider
           PasswordSalter: StringSalter
-          CodeExpiresIn: int<minutes> }
+          CodeExpiresIn: int<minutes>
+          SSOExpiresIn: int<minutes> }
 
     type LogIn = string option -> Env -> Data -> Task<Result * Events>

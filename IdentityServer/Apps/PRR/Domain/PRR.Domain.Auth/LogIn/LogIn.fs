@@ -41,12 +41,16 @@ module Authorize =
                                for app in dataContext.Applications do
                                    where (app.ClientId = clientId)
                                    select
-                                       (Tuple.Create(app.SSOEnabled, app.AllowedCallbackUrls, app.Domain.Pool.TenantId, app.Domain.TenantId))
+                                       (Tuple.Create
+                                           (app.SSOEnabled, app.AllowedCallbackUrls, app.Domain.Pool.TenantId,
+                                            app.Domain.TenantId))
                            }
                            |> toSingleExnAsync (unAuthorized ("client_id not found"))
                 let (ssoEnabled, callbackUrls, poolTenantId, domainTenantId) = app
                 // If app is tenant management app it doesn't have pool and ref to tenant has TenantField
-                let tenantId = if domainTenantId.HasValue then domainTenantId.Value else poolTenantId
+                let tenantId =
+                    if domainTenantId.HasValue then domainTenantId.Value
+                    else poolTenantId
                 if (callbackUrls <> "*" && (callbackUrls.Split(",")
                                             |> Seq.map (fun x -> x.Trim())
                                             |> Seq.contains data.Redirect_Uri
@@ -62,7 +66,7 @@ module Authorize =
                           State = data.State
                           Code = code }
 
-                    let expiresAt = DateTime.UtcNow.AddMinutes(float env.CodeExpiresIn)
+                    let codeExpiresAt = DateTime.UtcNow.AddMinutes(float env.CodeExpiresIn)
 
                     let loginItem: LogIn.Item =
                         { Code = code
@@ -70,8 +74,10 @@ module Authorize =
                           CodeChallenge = data.Code_Challenge
                           Scopes = (data.Scope.Split " ")
                           UserId = userId
-                          ExpiresAt = expiresAt
-                          RedirectUri = data.Redirect_Uri }                    
+                          ExpiresAt = codeExpiresAt
+                          RedirectUri = data.Redirect_Uri }
+
+                    let ssoExpiresAt = DateTime.UtcNow.AddMinutes(float env.SSOExpiresIn)
 
                     let ssoItem =
                         match ssoEnabled, sso with
@@ -80,7 +86,7 @@ module Authorize =
                                 ({ Code = sso
                                    UserId = userId
                                    TenantId = tenantId
-                                   ExpiresAt = expiresAt
+                                   ExpiresAt = ssoExpiresAt
                                    Email = data.Email }: SSO.Item)
                         // TODO : Handle case SSO enabled but sso token not found
                         | _ -> None

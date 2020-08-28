@@ -58,10 +58,12 @@ module private Handlers =
 
     let getLogInEnv =
         ofReader (fun ctx ->
+            let config = getConfig ctx
             { DataContext = getDataContext ctx
               PasswordSalter = getPasswordSalter ctx
               CodeGenerator = getHash ctx
-              CodeExpiresIn = (getConfig ctx).Jwt.CodeExpiresIn })
+              CodeExpiresIn = config.Jwt.CodeExpiresIn
+              SSOExpiresIn = config.SSOCookieExpiresIn })
 
     let private concatError referer err =
         sprintf "%s%serror=%s" referer
