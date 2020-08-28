@@ -4,6 +4,8 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { definition } from './create-env-form.definition';
+import { Store } from '@ngrx/store';
+import { loadManagementDomains } from '@admin/profile';
 
 @Component({
     selector: 'admin-create-env-domain-pool-form',
@@ -17,11 +19,15 @@ export class CreateEnvFormComponent {
     readonly storeValueDataAccess: AdminForm.Data.StoreValueDataAccess = (
         item: any
     ) =>
-        this.dataAccess
-            .createEnvItem(this.domainId, item)
-            .pipe(tap(() => this.listService.onRowUpdated(item)));
+        this.dataAccess.createEnvItem(this.domainId, item).pipe(
+            tap(() => {
+                this.store.dispatch(loadManagementDomains());
+                this.listService.onRowUpdated(item);
+            })
+        );
 
     constructor(
+        private readonly store: Store,
         private readonly activatedRoute: ActivatedRoute,
         private readonly router: Router,
         private readonly dataAccess: DomainsDataAccessService,

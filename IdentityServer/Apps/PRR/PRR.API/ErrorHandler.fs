@@ -42,6 +42,15 @@ module ErrorHandler =
     let matchException (ex: Exception) =
         printf "Error : %O" ex
         match ex with
+        | :? Unexpected as e ->
+            let msg =
+                match e.Data0 with
+                | Some x -> x
+                | None -> "Unexpected error"
+            RequestErrors.NOT_ACCEPTABLE
+                { Message = msg
+                  Field = null
+                  Code = null }
         | :? NotFound ->
             RequestErrors.NOT_FOUND
                 { Message = "Not Found"

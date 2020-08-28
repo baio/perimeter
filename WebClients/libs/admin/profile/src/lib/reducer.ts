@@ -5,6 +5,7 @@ import {
     profileLoadSuccess,
     authenticationFails,
     profileLoadFails,
+    loadManagementDomainsSuccess,
 } from './actions';
 import { ProfileState } from './models';
 import { pipe, map, fromPairs } from 'lodash/fp';
@@ -33,6 +34,10 @@ const _profileReducer = createReducer(
     on(profileLoadSuccess, (state, { domains }) => ({
         ...state,
         status: 'success',
+        domains: listToNKeyHash(domains),
+    })),
+    on(loadManagementDomainsSuccess, (state, { domains }) => ({
+        ...state,
         domains: listToNKeyHash(domains),
     })),
     on(profileLoadFails, (state) => ({

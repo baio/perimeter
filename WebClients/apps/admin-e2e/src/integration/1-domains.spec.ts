@@ -1,4 +1,4 @@
-import { clearLocalStorage } from "./_setup";
+import { clearLocalStorage } from './_setup';
 
 // tslint:disable: no-unused-expression
 describe('domains', () => {
@@ -6,7 +6,10 @@ describe('domains', () => {
 
     before(() => cy.reinitDb());
 
-    before(() => cy.visit('/tenants/1/domains'));
+    before(() => clearLocalStorage());
+
+    // login manually in order to use relogin sso
+    before(() => cy.login());
 
     describe('edit', () => {
         it('load domain edit form data', () => {
@@ -85,7 +88,10 @@ describe('domains', () => {
 
         it('create', () => {
             cy.formField('envName').type('stage').submitButton().click();
-            cy.url().should('not.match', /\/tenants\/\d+\/domains\/\d+\/new-env/);
+            cy.url().should(
+                'not.match',
+                /\/tenants\/\d+\/domains\/\d+\/new-env/
+            );
         });
 
         it('add env with the same name should give error', () => {
@@ -94,13 +100,19 @@ describe('domains', () => {
             cy.url().should('match', /\/tenants\/\d+\/domains\/\d+\/new-env/);
             cy.cancelButton().click();
         });
+
+        it('open new domain should succeed', () => {
+            cy.rows(0, 1).dataCy('env-btn').eq(1).click();
+            cy.url().should('match', /\/domains\/\d+\/apps/);
+            cy.visit('/tenants/1/domains');
+        });
     });
 
     describe('delete', () => {
         it('remove domain', () => {
             cy.rows(0).find('.table-actions a').eq(1).click();
             cy.confirmYesButton().click();
-            cy.rows().should('have.length', 0);
+            cy.rows().should('have.length', 1);
         });
 
         it('after reset filter there should be 1 rows', () => {

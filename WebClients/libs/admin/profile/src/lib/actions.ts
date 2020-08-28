@@ -22,3 +22,12 @@ export const profileLoadFails = createAction(
     '[Admin Profile] Profile Load Fails',
     props<{ err: HttpErrorResponse }>()
 );
+
+export const loadManagementDomains = createAction(
+    '[Admin Profile] Load Management Domains'
+);
+
+export const loadManagementDomainsSuccess = createAction(
+    '[Admin Profile] Load Management Domains Success',
+    props<{ domains: Domain[] }>()
+);

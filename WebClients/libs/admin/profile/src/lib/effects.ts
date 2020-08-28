@@ -16,6 +16,8 @@ import {
     authenticationFails,
     profileLoadSuccess,
     profileLoadFails,
+    loadManagementDomains,
+    loadManagementDomainsSuccess,
 } from './actions';
 import { ProfileDataAccessService } from '@admin/data-access';
 import { Router } from '@angular/router';
@@ -72,6 +74,14 @@ export class ProfileEffects {
             catchError((err: HttpErrorResponse) =>
                 of(profileLoadFails({ err }))
             )
+        )
+    );
+
+    loadManagementDomains$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(loadManagementDomains),
+            switchMap(() => this.profileDataAccess.loadManagementDomains()),
+            map((domains) => loadManagementDomainsSuccess({ domains }))
         )
     );
 
