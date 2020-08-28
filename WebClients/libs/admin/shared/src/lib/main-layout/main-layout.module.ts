@@ -7,6 +7,7 @@ import { MainLayoutComponent } from './main-layout.component';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
+import { NzDropDownModule, NzIconModule } from 'ng-zorro-antd';
 
 @NgModule({
     imports: [
@@ -17,6 +18,8 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
         NzLayoutModule,
         NzBreadCrumbModule,
         NzMenuModule,
+        NzDropDownModule,
+        NzIconModule,
     ],
     declarations: [MainLayoutComponent],
     exports: [],

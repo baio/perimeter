@@ -1,11 +1,64 @@
 <nz-layout>
     <nz-header>
-        <div class="logo"></div>
-        <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu">
-            <li nz-menu-item nzSelected>nav 1</li>
-            <li nz-menu-item>nav 2</li>
-            <li nz-menu-item>nav 3</li>
+        <div class="logo">Perimeter</div>
+        <ul
+            nz-menu
+            nzTheme="dark"
+            nzMode="horizontal"
+            class="header-menu"
+            *ngIf="view$ | async as view"
+        >
+            <li nz-menu-item nzSelected>
+                <a nz-dropdown [nzDropdownMenu]="menu">
+                    <ng-container
+                        *ngTemplateOutlet="
+                            menuActiveItem;
+                            context: { $implicit: view.activeDomain }
+                        "
+                    ></ng-container>
+                    <i nz-icon nzType="down"></i>
+                </a>
+                <nz-dropdown-menu #menu="nzDropdownMenu">
+                    <ul *ngFor="let domain of view.domains" nz-menu>
+                        <li nz-menu-item (click)="onSelectDomain(domain)">
+                            <ng-container
+                                *ngTemplateOutlet="
+                                    menuItem;
+                                    context: { $implicit: domain }
+                                "
+                            ></ng-container>
+                        </li>
+                    </ul>
+                </nz-dropdown-menu>
+            </li>
         </ul>
     </nz-header>
     <router-outlet></router-outlet>
 </nz-layout>
+
+<ng-template #menuActiveItem let-item>
+    <ng-container *ngIf="item.isTenantManagement">
+        <i nz-icon nzType="appstore" nzTheme="outline"></i>
+        {{ item.tenant.name }} <small>( Tenant )</small>
+    </ng-container>
+    <ng-container *ngIf="!item.isTenantManagement">
+        <i nz-icon nzType="build" nzTheme="outline"></i> {{ item.envName }} / {{ item.poolName }}
+        <small>( {{ item.tenant.name }} ) </small>
+    </ng-container>
+</ng-template>
+
+<ng-template #menuItem let-item>
+    <div *ngIf="item.isTenantManagement">
+        <i nz-icon nzType="appstore" nzTheme="outline"></i>
+        {{ item.tenant.name }}
+        <br />
+        <small>Tenant</small>
+    </div>
+    <div *ngIf="!item.isTenantManagement">
+        <i nz-icon nzType="build" nzTheme="outline"></i> {{ item.poolName }} ({{
+            item.envName
+        }})
+        <br />
+        <small>{{ item.tenant.name }}</small>
+    </div>
+</ng-template>

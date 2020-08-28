@@ -1,7 +1,8 @@
 import {
+    filterCompletedStatuses$,
     selectProfileDomainsList,
     selectStatus,
-    filterCompletedStatuses$,
+    selectActiveDomain,
 } from '@admin/profile';
 import { Injectable } from '@angular/core';
 import {
@@ -11,21 +12,8 @@ import {
 } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AuthService } from '@perimeter/ngx-auth';
-import { includes } from 'lodash/fp';
 import { Observable } from 'rxjs';
-import { map, skipWhile, withLatestFrom } from 'rxjs/operators';
-
-const getObjIdFromUrl = (url: string) => {
-    if (/^\/tenants\/(\d+)/.test(url)) {
-        const m = url.match(/^\/tenants\/(\d+)/);
-        return { tenant: +m[1] };
-    } else if (/^\/domains\/(\d+)/.test(url)) {
-        const m = url.match(/^\/domains\/(\d+)/);
-        return { domain: +m[1] };
-    } else {
-        return null;
-    }
-};
+import { map, withLatestFrom } from 'rxjs/operators';
 
 @Injectable()
 export class ClientGuard implements CanActivateChild {
@@ -45,25 +33,21 @@ export class ClientGuard implements CanActivateChild {
         }
         return this.store.select(selectStatus).pipe(
             filterCompletedStatuses$,
-            withLatestFrom(this.store.select(selectProfileDomainsList)),
-            map(([status, domains]) => {
+            withLatestFrom(this.store.select(selectActiveDomain(state.url))),
+            map(([status, domain]) => {
                 if (status !== 'success') {
                     // profile is not loaded correctly
                     return false;
                 }
-                const cid = jwt.cid as string;
-                const urlObj = getObjIdFromUrl(state.url);
                 // find appropriate domain for the current url
-                const domain = domains.find(
-                    (f) =>
-                        f.id === urlObj.domain ||
-                        (f.tenant && f.tenant.id) === urlObj.tenant
-                );
                 if (!domain) {
                     // domain not found
                     console.warn('Domain for current url is not found');
                     return false;
                 }
+
+                const cid = jwt.cid as string;
+
                 if (domain.managementClientId !== cid) {
                     console.warn(
                         'Current domain clientId is different from authenticated client, relogin under url client'
