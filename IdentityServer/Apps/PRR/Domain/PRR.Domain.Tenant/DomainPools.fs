@@ -61,7 +61,7 @@ module DomainPools =
             (Domain = domain, Name = "Domain Management Application", ClientId = guid(),
              ClientSecret = env.HashProvider(), IdTokenExpiresIn = (int env.AuthConfig.IdTokenExpiresIn),
              RefreshTokenExpiresIn = (int env.AuthConfig.RefreshTokenExpiresIn), AllowedCallbackUrls = "*",
-             Flow = FlowType.PKCE) |> add' env.DataContext
+             Flow = FlowType.PKCE, IsDomainManagement = true) |> add' env.DataContext
 
     let createDomainManagementApi (env: Env) domain =
         Api
@@ -86,7 +86,7 @@ module DomainPools =
         let dataContext = env.DataContext
 
         let domainPool = DomainPool(TenantId = tenantId, Name = data.Name) |> add' dataContext
-        let domain = Domain(Pool = domainPool, EnvName = "test", IsMain = true) |> add' dataContext
+        let domain = Domain(Pool = domainPool, EnvName = "dev", IsMain = true) |> add' dataContext
         let _ = createDomainManagementApp env domain
         let _ = createDomainManagementApi env domain
 

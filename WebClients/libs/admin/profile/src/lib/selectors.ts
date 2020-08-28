@@ -41,7 +41,7 @@ export const getObjIdFromUrl = (url: string) => {
 
 export const getActiveDomain = (url: string) => (domains: Domain[]) => {
     const urlObj = getObjIdFromUrl(url);
-    return domains.find(
+    return (domains || []).find(
         (f) =>
             f.id === urlObj.domain ||
             (f.tenant && f.tenant.id) === urlObj.tenant

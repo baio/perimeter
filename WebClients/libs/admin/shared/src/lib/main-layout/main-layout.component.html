@@ -1,6 +1,6 @@
 <nz-layout>
     <nz-header>
-        <div class="logo">Perimeter</div>
+        <div data-cy="logo" class="logo">Perimeter</div>
         <ul
             nz-menu
             nzTheme="dark"
@@ -9,7 +9,11 @@
             *ngIf="view$ | async as view"
         >
             <li nz-menu-item nzSelected>
-                <a nz-dropdown [nzDropdownMenu]="menu">
+                <a
+                    data-cy="active-domain-item"
+                    nz-dropdown
+                    [nzDropdownMenu]="menu"
+                >
                     <ng-container
                         *ngTemplateOutlet="
                             menuActiveItem;
@@ -19,7 +23,11 @@
                     <i nz-icon nzType="down"></i>
                 </a>
                 <nz-dropdown-menu #menu="nzDropdownMenu">
-                    <ul *ngFor="let domain of view.domains" nz-menu>
+                    <ul
+                        *ngFor="let domain of view.domains"
+                        nz-menu
+                        data-cy="domain-item"
+                    >
                         <li nz-menu-item (click)="onSelectDomain(domain)">
                             <ng-container
                                 *ngTemplateOutlet="
@@ -42,7 +50,8 @@
         {{ item.tenant.name }} <small>( Tenant )</small>
     </ng-container>
     <ng-container *ngIf="!item.isTenantManagement">
-        <i nz-icon nzType="build" nzTheme="outline"></i> {{ item.envName }} / {{ item.poolName }}
+        <i nz-icon nzType="build" nzTheme="outline"></i> {{ item.envName }} /
+        {{ item.poolName }}
         <small>( {{ item.tenant.name }} ) </small>
     </ng-container>
 </ng-template>

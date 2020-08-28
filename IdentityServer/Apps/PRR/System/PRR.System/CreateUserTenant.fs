@@ -30,7 +30,7 @@ module private CreateUserTenant =
         DomainPool(Tenant = tenant, Name = "New Domain") |> add' dataContext
 
     let createDomain (domainPool: DomainPool) (dataContext: DbDataContext) =
-        Domain(Pool = domainPool, EnvName = "test", IsMain = true) |> add' dataContext
+        Domain(Pool = domainPool, EnvName = "dev", IsMain = true) |> add' dataContext
 
     let createApp (hashProvider: HashProvider) (domain, dataContext, authConfig) =
         Application
