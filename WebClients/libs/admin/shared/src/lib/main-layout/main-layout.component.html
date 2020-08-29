@@ -1,13 +1,22 @@
 <nz-layout>
-    <nz-header>
+    <nz-header *ngIf="view$ | async as view">
         <div data-cy="logo" class="logo">Perimeter</div>
-        <ul
-            nz-menu
-            nzTheme="dark"
-            nzMode="horizontal"
-            class="header-menu"
-            *ngIf="view$ | async as view"
-        >
+        <div class="tool">
+            <a data-cy="tool" nz-dropdown [nzDropdownMenu]="tool">
+                <i nz-icon nzType="user" nzTheme="outline"></i>
+                {{ view.user.name }}
+                <i nz-icon nzType="down"></i>
+            </a>
+            <nz-dropdown-menu #tool="nzDropdownMenu">
+                <ul nz-menu>
+                    <li nz-menu-item (click)="onLogout()" data-cy="logout">
+                        <i nz-icon nzType="logout" nzTheme="outline"></i>
+                        Logout
+                    </li>
+                </ul>
+            </nz-dropdown-menu>
+        </div>
+        <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu">
             <li nz-menu-item nzSelected>
                 <a
                     data-cy="active-domain-item"

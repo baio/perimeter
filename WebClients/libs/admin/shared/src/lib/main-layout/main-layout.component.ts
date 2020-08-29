@@ -4,14 +4,19 @@ import {
     Domain,
     selectProfileDomainsList,
     selectActiveDomain,
+    ProfileState,
+    selectUser,
+    User,
 } from '@admin/profile';
 import { map } from 'rxjs/operators';
 import { Observable, merge, combineLatest } from 'rxjs';
 import { Router } from '@angular/router';
+import { AuthService } from '@perimeter/ngx-auth';
 
 export interface IView {
     activeDomain: Domain;
     domains: Domain[];
+    user: User;
 }
 
 @Component({
@@ -23,12 +28,18 @@ export interface IView {
 export class MainLayoutComponent implements OnInit {
     readonly view$: Observable<IView>;
 
-    constructor(store: Store, private router: Router) {
+    constructor(
+        store: Store,
+        private router: Router,
+        private readonly authService: AuthService
+    ) {
         const activeDomain$ = store.select(selectActiveDomain(router.url));
         const domains$ = store.select(selectProfileDomainsList);
-        this.view$ = combineLatest([activeDomain$, domains$]).pipe(
-            map(([activeDomain, domains]) => {
+        const user$ = store.select(selectUser);
+        this.view$ = combineLatest([activeDomain$, domains$, user$]).pipe(
+            map(([activeDomain, domains, user]) => {
                 return {
+                    user,
                     activeDomain: activeDomain,
                     domains: domains.filter((f) => f.id !== activeDomain.id),
                 };
@@ -44,5 +55,9 @@ export class MainLayoutComponent implements OnInit {
         } else {
             this.router.navigate(['/domains', domain.id, 'apps']);
         }
+    }
+
+    onLogout() {
+        this.authService.logout();
     }
 }

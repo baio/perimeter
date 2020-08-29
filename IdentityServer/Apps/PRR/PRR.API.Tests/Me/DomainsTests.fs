@@ -28,7 +28,6 @@ module Domains =
     let mutable domainId: int option = None
 
 
-
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
     type ``me-domains-api``(testFixture: TestFixture, output: ITestOutputHelper) =
         do setConsoleOutput output

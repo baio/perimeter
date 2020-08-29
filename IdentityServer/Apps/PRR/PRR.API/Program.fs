@@ -165,8 +165,6 @@ let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigu
           .AddEnvironmentVariables() |> ignore
 
 
-
-
 [<EntryPoint>]
 let main _ =
     WebHostBuilder()

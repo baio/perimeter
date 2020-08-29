@@ -13,14 +13,16 @@ module internal ValidateAccessToken =
 
     let validateToken (token: string) tokenValidationParameters =
         let tokenHandler = JwtSecurityTokenHandler()
-        try
+        try            
             let (principal, securityToken) = tokenHandler.ValidateToken(token, tokenValidationParameters)
             let jwtSecurityToken = securityToken :?> JwtSecurityToken
             if (jwtSecurityToken = null
                 || (jwtSecurityToken.Header.Alg.Equals
                         (SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase) |> not)) then None
             else Some principal
-        with :? System.ArgumentException -> None
+        with :? System.Exception as ex ->
+            printfn "Validate token fails %O" ex
+            None
 
     let private principalCalims (principal: ClaimsPrincipal) = principal.Claims
 

@@ -239,10 +239,11 @@ export class AuthService {
     }
 
     logout() {
-        const accessToken = sessionStorage.getItem(ACCESS_TOKEN);
+        const accessToken = this.accessToken;
         const url = `${this.config.logoutUrl}?return_uri=${encodeURI(
             this.config.returnLogoutUri
         )}&access_token=${accessToken}`;
+        this.resetTokens();
         document.location.href = url;
     }
 

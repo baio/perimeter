@@ -201,6 +201,7 @@ module private Handlers =
                 let! res = logout data ctx
                 let! (result, evt) = res
                 sendEvent evt ctx
+                ctx.Response.Cookies.Delete("sso")
                 return! redirectTo false result.ReturnUri next ctx
             with _ ->
                 let url = redirectUrl ctx "return_uri"

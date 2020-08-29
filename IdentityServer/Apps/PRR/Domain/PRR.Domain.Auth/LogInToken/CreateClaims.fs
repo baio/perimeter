@@ -23,7 +23,7 @@ module private CreateClaims =
 
         // TODO : RBA + Include permissions flag
         [| Claim("sub", tokenData.Id.ToString())
-           Claim("scope", sprintf "openid roles %s" permissions)
+           Claim("scope", sprintf "openid roles %s" permissions) 
            Claim(CLAIM_TYPE_CID, clientId) |]
         |> Seq.append roles
         |> Seq.append auds

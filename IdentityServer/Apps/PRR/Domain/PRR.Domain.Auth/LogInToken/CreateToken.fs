@@ -14,12 +14,11 @@ module private CreateAccessToken =
         let subject = claims |> ClaimsIdentity
         let tokenHandler = JwtSecurityTokenHandler()
         let key = Encoding.ASCII.GetBytes secret
-        let issuedAt = DateTime.UtcNow
+        let issuedAt = DateTime.Now
         let expires = issuedAt.AddMinutes(float expireInMinutes)
-        let notBefore = expires.AddMinutes(float -1)
         let signingCredentials = SigningCredentials(SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         SecurityTokenDescriptor
-            (Subject = subject, IssuedAt = Nullable(issuedAt), Expires = Nullable(expires),
-             NotBefore = Nullable(notBefore), SigningCredentials = signingCredentials)
+            (Subject = subject, Expires = Nullable(expires), SigningCredentials = signingCredentials,
+             IssuedAt = Nullable(issuedAt))
         |> tokenHandler.CreateToken
         |> tokenHandler.WriteToken
