@@ -2,7 +2,7 @@ import {
     ApisDataAccessService,
     UsersDataAccessService,
 } from '@admin/data-access';
-import { AdminForm } from '@admin/shared';
+import { AdminForm, isNew$ } from '@admin/shared';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getDefinition } from './form.definition';
@@ -30,6 +30,7 @@ export class UserFormComponent {
     ) {
         this.domainId = +activatedRoute.parent.parent.snapshot.params['id'];
         this.definition = getDefinition(
+            isNew$(activatedRoute),
             this.dataAccess.getAllRoles(this.domainId)
         );
     }

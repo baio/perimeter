@@ -38,11 +38,6 @@ module private EventsHandler =
             |> ofOne
         | UserTenantCreatedEvent _ ->
             Seq.empty
-        | UserSignInSuccessEvent data ->
-            data
-            |> RefreshToken.AddToken
-            |> RefreshTokenCommand
-            |> ofOne
         | RefreshTokenSuccessEvent data ->
             data
             |> RefreshToken.UpdateToken
@@ -53,16 +48,38 @@ module private EventsHandler =
             |> SignUpToken.AddToken
             |> SignUpTokenCommand
             |> ofOne
-        | UserLogInSuccessEvent item ->
-            item
-            |> LogIn.AddCode
-            |> LogInCommand
-            |> ofOne
-        | UserLogInTokenSuccessEvent item ->
-            item
-            |> LogIn.RemoveCode
-            |> LogInCommand
-            |> ofOne
+        | UserLogInSuccessEvent(loginItem, ssoItem) ->
+            seq {
+                loginItem
+                |> LogIn.AddCode
+                |> LogInCommand
+
+                match ssoItem with
+                | Some ssoItem ->
+                    ssoItem
+                    |> SSO.AddCode
+                    |> SSOCommand
+            }
+        | UserLogInTokenSuccessEvent(token, item) ->
+            seq {
+                token
+                |> LogIn.RemoveCode
+                |> LogInCommand
+
+                item
+                |> RefreshToken.AddToken
+                |> RefreshTokenCommand
+            }
+        | UserLogOutRequestedEvent(userId) ->
+            seq {
+                userId
+                |> SSO.RemoveCode
+                |> SSOCommand
+
+                userId
+                |> RefreshToken.RemoveToken
+                |> RefreshTokenCommand
+            }
         | CommandFailureEvent data ->
             printf "Command fails %O" data
             Seq.empty
@@ -77,7 +94,8 @@ module private EventsHandler =
         let rec loop() =
             actor {
                 let! evt = sys.Receive()
-                mapEventToCommand evt |> Seq.iter (fun cmd -> commandsRef.Value <! cmd)
+                let cmds = mapEventToCommand evt
+                cmds |> Seq.iter (fun cmd -> commandsRef.Value <! cmd)
                 env.EventHandledCallback evt
                 return loop()
             }

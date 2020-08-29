@@ -24,7 +24,7 @@ export class AuthInterceptor implements HttpInterceptor {
     ): Observable<HttpEvent<any>> {
         const url = request.url;
         // TODO
-        const accessToken = sessionStorage.getItem(ACCESS_TOKEN);
+        const accessToken = localStorage.getItem(ACCESS_TOKEN);
         const hasSchema = url.startsWith('http://') || url.startsWith('https://');
         const isTheSameBaseUrl = url.startsWith(this.appBaseUrl);
         if (accessToken && (!hasSchema || isTheSameBaseUrl)) {

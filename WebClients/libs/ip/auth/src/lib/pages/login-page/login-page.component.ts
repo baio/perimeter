@@ -4,6 +4,8 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Inject,
+    ViewChild,
+    AfterViewInit,
 } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -17,11 +19,13 @@ import { HttpErrorResponse } from '@angular/common/http';
     styleUrls: ['./login-page.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginPageComponent implements OnInit {
+export class LoginPageComponent implements OnInit, AfterViewInit {
     loginParams: LoginParams;
     errorMessage: string;
     queryEvent: string;
     public readonly form: FormGroup;
+
+    @ViewChild('submitForm') formElement: HTMLFormElement;
 
     get submitAction() {
         return `${this.baseUrl}/auth/login`;
@@ -92,13 +96,24 @@ export class LoginPageComponent implements OnInit {
             scope: [this.loginParams.scope],
             code_challenge: [this.loginParams.code_challenge],
             code_challenge_method: [this.loginParams.code_challenge_method],
+            prompt: [urlQueryParams['prompt']],
         });
-
     }
 
     ngOnInit(): void {}
 
-    onSubmit(form: HTMLFormElement) {
+    ngAfterViewInit(): void {
+        const urlQueryParams = this.activatedRoute.snapshot.queryParams;
+        const form = document.getElementById('login_form') as HTMLFormElement;
+        if (urlQueryParams['prompt'] === 'none') {
+            form.submit();
+        } else {
+            form.style.display = 'block';
+        }
+    }
+
+    async onSubmit(form: HTMLFormElement) {
+        // await this.dataAccess.assignSSO().toPromise();
         form.submit();
     }
 }

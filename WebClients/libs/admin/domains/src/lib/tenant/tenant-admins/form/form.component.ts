@@ -1,5 +1,5 @@
 import { AdminsDataAccessService, TenantAdminsDataAccessService } from '@admin/data-access';
-import { AdminForm } from '@admin/shared';
+import { AdminForm, isNew$ } from '@admin/shared';
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { getDefinition } from './form.definition';
@@ -26,6 +26,7 @@ export class TenantAdminFormComponent {
         private readonly dataAccess: TenantAdminsDataAccessService
     ) {
         this.definition = getDefinition(
+            isNew$(activatedRoute),
             this.dataAccess.getAllRoles()
         );
     }

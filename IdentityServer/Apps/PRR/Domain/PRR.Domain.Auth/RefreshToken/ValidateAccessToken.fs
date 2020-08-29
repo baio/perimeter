@@ -9,22 +9,33 @@ open System.Security.Claims
 open System.Text
 
 [<AutoOpen>]
-module private ValidateAccessToken =
+module internal ValidateAccessToken =
 
-    let private validateToken (token: string) tokenValidationParameters =
+    let validateToken (token: string) tokenValidationParameters =
         let tokenHandler = JwtSecurityTokenHandler()
-        try
+        try            
             let (principal, securityToken) = tokenHandler.ValidateToken(token, tokenValidationParameters)
             let jwtSecurityToken = securityToken :?> JwtSecurityToken
             if (jwtSecurityToken = null
                 || (jwtSecurityToken.Header.Alg.Equals
                         (SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase) |> not)) then None
             else Some principal
-        with :? System.ArgumentException -> None
+        with :? System.Exception as ex ->
+            printfn "Validate token fails %O" ex
+            None
 
     let private principalCalims (principal: ClaimsPrincipal) = principal.Claims
 
     open FSharpx.Option
+
+    let getClaim' f claimType (claims: Claim seq) =
+        claims
+        |> Seq.tryFind (fun x -> x.Type = claimType)
+        >>= fun claim -> claim.Value |> f
+
+    let getClaim x = x |> getClaim' Some
+
+    let getClaimInt x = x |> getClaim' tryParseInt
 
     let validateAccessToken (token: Token) (key: string) =
         let tokenValidationParameters =
@@ -32,6 +43,4 @@ module private ValidateAccessToken =
                 (ValidateAudience = false, ValidateIssuer = false, ValidateIssuerSigningKey = true,
                  IssuerSigningKey = SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)), ValidateLifetime = false)
 
-        (principalCalims <!> validateToken token tokenValidationParameters)
-        >>= Seq.tryFind (fun x -> x.Type = ClaimTypes.NameIdentifier)
-        >>= fun claim -> claim.Value |> tryParseInt
+        (principalCalims <!> validateToken token tokenValidationParameters) >>= getClaimInt ClaimTypes.NameIdentifier

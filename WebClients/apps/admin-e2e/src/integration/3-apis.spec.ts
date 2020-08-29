@@ -1,10 +1,12 @@
+import { clearLocalStorage } from "./_setup";
+
 // tslint:disable: no-unused-expression
 describe('apis', () => {
     const UPDATED_NAME = 'updated name';
-    before(() => cy.reinitDb());
+    before(() => cy.reinitDb(true));
+
     before(() => {
-        cy.visit('tenant/domains');
-        cy.dataCy('env-btn').click();
+        cy.visit('/domains/2/apps');
         cy.dataCy('apis-menu-item').click();
     });
 
@@ -14,7 +16,7 @@ describe('apis', () => {
 
     describe('edit', () => {
         it('load app edit form data', () => {
-            cy.rows(1).click();
+            cy.rows(0).click();
             cy.url().should('match', /\/domains\/\d+\/apis\/\d+/);
             cy.formField('name').should((input) => {
                 const val = input.val();
@@ -29,7 +31,7 @@ describe('apis', () => {
                 .submitButton()
                 .click();
             cy.url().should('not.match', /\/domains\/\d+\/apis\/\d+/);
-            cy.rows().should('have.length', 2);
+            cy.rows().should('have.length', 1);
         });
     });
 
@@ -66,7 +68,7 @@ describe('apis', () => {
 
     describe('list', () => {
         it('rows count : sample + created', () => {
-            cy.rows().should('have.length', 3);
+            cy.rows().should('have.length', 2);
         });
 
         it('latest item on top', () => {
@@ -74,24 +76,23 @@ describe('apis', () => {
         });
 
         it.skip('sort by created change rows positions', () => {
-            cy.get('table thead th').eq(2).click().click();
-            cy.rows(1, 0).should('contain.text', UPDATED_NAME);
-            cy.rows(2, 0).should('contain.text', 'new');
-        });
-
-    });
-
-    describe('delete', () => {
-        it('remove', () => {
-            cy.rows().find('.table-actions a').eq(1).click();
-            cy.confirmYesButton().click();
-            cy.rows().should('have.length', 2);
+            cy.get('table thead th').eq(1).click().click();
+            cy.rows(0, 0).should('contain.text', UPDATED_NAME);
+            cy.rows(1, 0).should('contain.text', 'new');
         });
     });
 
     describe('filter', () => {
         it('after reset filter there should be 1 rows', () => {
             cy.dataCy('text-search').type('new').type('{enter}');
+            cy.rows().should('have.length', 1);
+        });
+    });
+
+    describe.skip('delete', () => {
+        it('remove', () => {
+            cy.rows().find('.table-actions a').eq(1).click();
+            cy.confirmYesButton().click();
             cy.rows().should('have.length', 1);
         });
     });

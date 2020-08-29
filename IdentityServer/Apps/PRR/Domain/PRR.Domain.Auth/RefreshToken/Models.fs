@@ -3,7 +3,7 @@
 open Common.Domain.Models
 open PRR.Data.DataContext
 open PRR.Domain.Auth
-open PRR.Domain.Auth.SignIn
+open PRR.Domain.Auth.LogInToken
 open PRR.System.Models
 open System
 open System.Threading.Tasks
@@ -11,14 +11,9 @@ open System.Threading.Tasks
 [<AutoOpen>]
 module Models =
 
-    type Env =
-        { DataContext: DbDataContext
-          JwtConfig: JwtConfig
-          HashProvider: HashProvider }
-
     type Data =
         { RefreshToken: string }
 
     type AccessToken = Token
 
-    type RefreshToken = Env -> AccessToken -> RefreshToken.Item -> Task<SignInResult * Events>
+    type RefreshToken = Env -> AccessToken -> RefreshToken.Item -> Task<Result * Events>

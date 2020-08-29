@@ -9,6 +9,7 @@ module Models =
     type AppConfig =
         { SignUpTokenExpiresIn: int<minutes>
           ResetPasswordTokenExpiresIn: int<minutes>
+          SSOCookieExpiresIn: int<minutes>
           PasswordSecret: string
           Jwt: JwtConfig }
 

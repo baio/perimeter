@@ -8,6 +8,7 @@ open Microsoft.Extensions.DependencyInjection
 open NUnit.Framework.Internal
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth
+open PRR.Domain.Auth.LogOut
 open PRR.Domain.Auth.SignUp
 open PRR.System.Models
 open System
@@ -52,12 +53,12 @@ module RefreshToken =
             tenantWaitHandle.Set() |> ignore
         | CommandFailureEvent _ ->
             confirmTokenWaitHandle.Set() |> ignore
-            tenantWaitHandle.Set() |> ignore            
-        | QueryFailureEvent _ -> 
+            tenantWaitHandle.Set() |> ignore
+        | QueryFailureEvent _ ->
             confirmTokenWaitHandle.Set() |> ignore
             tenantWaitHandle.Set() |> ignore
-        | _ ->            
-            ()            
+        | _ ->
+            ()
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
     type ``refresh-token-api``(testFixture: TestFixture, output: ITestOutputHelper) =
@@ -66,38 +67,19 @@ module RefreshToken =
 
         [<Fact>]
         [<Priority(-1)>]
-        member __.BeforeAll() =
-            testFixture.OverrideServices(fun services ->
-                let sp = services.BuildServiceProvider()
-                let systemEnv = sp.GetService<SystemEnv>()
-                let systemEnv =
-                    { systemEnv with EventHandledCallback = systemEventHandled }                    
-                let sys = PRR.System.Setup.setUp systemEnv                    
-                services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore)                                                    
+        member __.``0 BeforeAll``() =
             task {
-                let! _ = testFixture.HttpPostAsync' "/auth/sign-up" ownerData
-                confirmTokenWaitHandle.WaitOne() |> ignore
-                let confirmData: SignUpConfirm.Models.Data =
-                    { Token = confirmToken }
-                let! _ = testFixture.HttpPostAsync' "/auth/sign-up/confirm" confirmData
-                tenantWaitHandle.WaitOne() |> ignore
 
-                let validUserData: SignIn.Models.SignInData =
-                    { Email = ownerData.Email
-                      Password = ownerData.Password
-                      ClientId = tenant.Value.SampleApplicationClientId }
-
-                let! result = testFixture.HttpPostAsync' "/auth/sign-in" validUserData
-                let! result = readAsJsonAsync<SignInResult> result
-                accessToken <- result.accessToken
-                refreshToken <- result.refreshToken
-
+                let testContext = createUserTestContext testFixture
+                let! result = createUser'' true testContext ownerData
+                accessToken <- result.AccessToken
+                refreshToken <- result.RefreshToken
                 return ()
             }
 
         [<Fact>]
         [<Priority(1)>]
-        member __.``Wrong refresh token must be fail``() =
+        member __.``A Wrong refresh token must be fail``() =
 
             task {
 
@@ -111,7 +93,7 @@ module RefreshToken =
 
         [<Fact>]
         [<Priority(1)>]
-        member __.``Correct refresh token with wrong access token must fail``() =
+        member __.``B Correct refresh token with wrong access token must fail``() =
 
             task {
 
@@ -121,11 +103,11 @@ module RefreshToken =
                 let! result = testFixture.HttpPostAsync "xxx" "/auth/refresh-token" data
 
                 ensureUnauthorized result
-            }        
+            }
 
         [<Fact>]
         [<Priority(1)>]
-        member __.``Refresh token must be success``() =
+        member __.``C Refresh token must be success``() =
 
             task {
 
@@ -151,10 +133,10 @@ module RefreshToken =
                 accessToken2 <- result.accessToken
                 refreshToken2 <- result.refreshToken
             }
-            
+
         [<Fact>]
         [<Priority(2)>]
-        member __.``Refresh same token second time must fail``() =
+        member __.``D Refresh same token second time must fail``() =
 
             task {
 
@@ -164,11 +146,11 @@ module RefreshToken =
                 let! result = testFixture.HttpPostAsync accessToken "/auth/refresh-token" data
 
                 ensureUnauthorized result
-            }            
+            }
 
         [<Fact>]
         [<Priority(2)>]
-        member __.``Refresh with new token must be success``() =
+        member __.``E Refresh with new token must be success``() =
 
             task {
 
@@ -193,4 +175,30 @@ module RefreshToken =
 
                 result.accessToken |> should not' (equal accessToken2)
                 result.refreshToken |> should not' (equal refreshToken2)
+
+                accessToken2 <- result.accessToken
+                refreshToken2 <- result.refreshToken
+            }
+
+
+        [<Fact>]
+        [<Priority(3)>]
+        member __.``F After logout user could not refresh token``() =
+
+            task {
+
+                let! logoutResult = testFixture.HttpGetAsync'
+                                        (sprintf "/auth/logout?return_uri=%s&access_token=%s" "http://localhost:4200"
+                                             accessToken2)
+
+                do! ensureRedirectSuccessAsync logoutResult
+
+                let data: RefreshToken.Models.Data =
+                    { RefreshToken = refreshToken2 }
+
+                do! System.Threading.Tasks.Task.Delay(100)
+
+                let! result = testFixture.HttpPostAsync accessToken2 "/auth/refresh-token" data
+
+                ensureUnauthorized result
             }

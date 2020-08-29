@@ -1,13 +1,23 @@
+<nz-alert
+    *ngIf="errorMessage"
+    nzType="error"
+    nzCloseable
+    [nzDescription]="errorMessage"
+>
+</nz-alert>
+
 <ng-content></ng-content>
 
 <hlc-nz-table
     [dataProvider]="dataProvider"
     [definition]="hlcDefinition"
-    [viewOptions]="viewOptions"    
+    [viewOptions]="viewOptions"
     (actionClick)="onActionClick($event)"
     (rowClick)="onRowClick($event)"
     (cellClick)="onCellClick($event)"
-    (rowDrop)="onRowDrop($event)">
+    (rowDrop)="onRowDrop($event)"
+    (dataProviderError)="onDataProviderError($event)"
+>
 </hlc-nz-table>
 
 <router-outlet></router-outlet>

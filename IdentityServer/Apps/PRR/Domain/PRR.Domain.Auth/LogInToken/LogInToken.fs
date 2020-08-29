@@ -50,12 +50,18 @@ module LogInToken =
             printfn "1 codeChallenge %s" codeChallenge
             printfn "2 codeChallenge %s" itemCodeChallenge
             printfn "****"
-            if codeChallenge <> itemCodeChallenge then raise (unAuthorized "code_verifier code_challenge mismatch")            
+            if codeChallenge <> itemCodeChallenge then raise (unAuthorized "code_verifier code_challenge mismatch")
             task {
                 match! getUserDataForToken dataContext item.UserId with
                 | Some tokenData ->
-                    let! result = signInUser env tokenData data.Client_Id
-                    let evt = item.Code |> UserLogInTokenSuccessEvent
+                    let! (result, clientId) = signInUser env tokenData data.Client_Id
+                    let refreshTokenItem: RefreshToken.Item =
+                        { Token = result.RefreshToken
+                          ClientId = clientId
+                          UserId = item.UserId
+                          ExpiresAt = DateTime.UtcNow.AddMinutes(float env.SSOCookieExpiresIn) }
+
+                    let evt = UserLogInTokenSuccessEvent(item.Code, refreshTokenItem)
                     return (result, evt)
                 | None ->
                     return! raiseTask (unAuthorized "user is not found")

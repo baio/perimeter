@@ -2,6 +2,7 @@
 
 open Common.Test.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open FSharpx
 open Microsoft.Azure.Documents
 open PRR.API.Infra
 open PRR.Domain.Auth
@@ -35,7 +36,7 @@ module CreateUser =
             let location = readResponseHader "Location" result
             let uri = Uri(location)
             return HttpUtility.ParseQueryString(uri.Query).Get("code")
-        }
+        }               
 
     let sha256 = SHA256.Create()
     let random = Random()
@@ -60,7 +61,41 @@ module CreateUser =
 
         (codeVerfier, (SHA256Provider.getSha256Base64Hash sha256 codeVerfier))
 
-    let createUser' signInUnderSampleDomain (env: UserTestContext) (userData: SignUp.Models.Data) =
+    let logInUser (fixture: TestFixture) (clientId: string) (email: string) (password: string) =
+        task {
+            let redirectUri = "http://localhost:4200"
+
+            let (codeVerifier, codeChallenge) = createCodeChallenge()
+            
+            let clientId = clientId
+
+            let logInData: PRR.Domain.Auth.LogIn.Models.Data =
+                { Client_Id = clientId
+                  Response_Type = "code"
+                  State = "state"
+                  Redirect_Uri = redirectUri
+                  Scope = "open_id profile email"
+                  Email = email
+                  Password = password
+                  Code_Challenge = codeChallenge
+                  Code_Challenge_Method = "S256" }
+
+            let! code = logIn fixture logInData
+
+            let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
+                { Grant_Type = "code"
+                  Code = code
+                  Redirect_Uri = logInData.Redirect_Uri
+                  Client_Id = clientId
+                  Code_Verifier = codeVerifier }
+
+            let! result = fixture.HttpPostAsync' "/auth/token" loginTokenData
+            let! result = result |> readAsJsonAsync<PRR.Domain.Auth.LogInToken.Models.Result>
+
+            return result
+        }                
+
+    let createUser'' signInUnderSampleDomain (env: UserTestContext) (userData: SignUp.Models.Data) =
         task {
             let! _ = env.TestFixture.HttpPostAsync' "/auth/sign-up" userData
             env.ConfirmTokenWaitHandle.WaitOne() |> ignore
@@ -73,38 +108,18 @@ module CreateUser =
 
             let tenant = env.GetTenant()
 
-            let redirectUri = "http://localhost:4200"
-
             let clientId =
                 if signInUnderSampleDomain then tenant.SampleApplicationClientId
                 else tenant.TenantManagementApplicationClientId
 
-            let (codeVerifier, codeChallenge) = createCodeChallenge()
-
-            let logInData: PRR.Domain.Auth.LogIn.Models.Data =
-                { Client_Id = clientId
-                  Response_Type = "code"
-                  State = "state"
-                  Redirect_Uri = redirectUri
-                  Scope = "open_id profile email"
-                  Email = userData.Email
-                  Password = userData.Password
-                  Code_Challenge = codeChallenge
-                  Code_Challenge_Method = "S256" }
-
-            let! code = logIn env.TestFixture logInData
-
-            let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
-                { Grant_Type = "code"
-                  Code = code
-                  Redirect_Uri = logInData.Redirect_Uri
-                  Client_Id = clientId
-                  Code_Verifier = codeVerifier }
-
-            let! result = env.TestFixture.HttpPostAsync' "/auth/token" loginTokenData
-            let! result = result |> readAsJsonAsync<PRR.Domain.Auth.SignIn.Models.SignInResult>
-
-            return result.AccessToken
+            let! result = logInUser env.TestFixture clientId userData.Email userData.Password
+            
+            return result
         }
+        
+    let createUser' a b c = task {
+        let! result = createUser'' a b c
+        return result.AccessToken
+    }         
 
     let createUser = createUser' true

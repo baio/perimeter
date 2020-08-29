@@ -46,7 +46,7 @@ module Roles =
         }
         |> toCountAsync
         |> map (fun cnt ->
-            if cnt > 0 then raise Forbidden)
+            if cnt > 0 then raise Forbidden')
 
     let create: Create<DomainId * PostLike, int, DbDataContext> =
         validateCreateCatch<Role, _, _, _> (function

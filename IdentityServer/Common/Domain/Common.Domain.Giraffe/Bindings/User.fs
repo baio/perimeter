@@ -31,22 +31,26 @@ module User =
 
     let tryBindUserClaimId x = x |> tryBindUserClaimInt ClaimTypes.NameIdentifier
 
+    let tryBindUserEmail x = x |> tryBindUserClaim ClaimTypes.Email
+
     let bindUserClaimId x =
         x
         |> tryBindUserClaimId
-        |> option2Task Forbidden
+        |> option2Task (forbidden "User sub is not found")
 
     let tryBindUserClaimDomainId x = x |> tryBindUserClaimInt CLAIM_TYPE_DOMAIN
+
+    let tryBindUserClaimClientId x = x |> tryBindUserClaim CLAIM_TYPE_CID
 
     let tryBindUserClaimDomainId' x =
         x
         |> tryBindUserClaimDomainId
-        |> option2Task Forbidden
+        |> option2Task Forbidden'
 
     let tryBindUserClaimId' x =
         x
         |> tryBindUserClaimId
-        |> option2Task Forbidden
+        |> option2Task Forbidden'
 
     let bindUserClaimsFilter<'a> fn =
         bindUserClaims

@@ -16,3 +16,7 @@
 /// <reference types="./index" />
 // Import commands.js using ES2015 syntax:
 import './commands';
+
+Cypress.Cookies.defaults({
+    whitelist: ['sso'],
+});

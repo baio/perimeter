@@ -1,11 +1,12 @@
+import { clearLocalStorage } from "./_setup";
+
 // tslint:disable: no-unused-expression
 describe('perms', () => {
-    before(() => cy.reinitDb());
+    before(() => cy.reinitDb(true));
     before(() => {
-        cy.visit('tenant/domains');
-        cy.dataCy('env-btn').click();
+        cy.visit('/domains/2/apps');
         cy.dataCy('apis-menu-item').click();
-        cy.rows(1, 1).click();
+        cy.rows(0, 1).click();
     });
 
     it('app should be open', () => {
@@ -29,7 +30,6 @@ describe('perms', () => {
 
     it('api should contain 1 permission', () => {
         cy.dataCy('apis-menu-item').click();
-        cy.rows(0, 1).should('not.contain.text', 'read:all');
-        cy.rows(1, 1).should('contain.text', 'read:all');
+        cy.rows(0, 1).should('contain.text', 'read:all');
     });
 });

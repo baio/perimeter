@@ -9,10 +9,12 @@ open PRR.System.Models
 open System
 
 [<AutoOpen>]
-module Authorize =    
+module Authorize =
 
     let validateData (data: Data): BadRequestError array =
-        let scope = if data.Scope = null then "" else data.Scope
+        let scope =
+            if data.Scope = null then ""
+            else data.Scope
         [| (validateNullOrEmpty "client_id" data.Client_Id)
            (validateNullOrEmpty "response_type" data.Response_Type)
            (validateContains [| "code" |] "response_type" data.Response_Type)
@@ -29,18 +31,26 @@ module Authorize =
         |> Array.choose id
 
     let logIn: LogIn =
-        fun env data ->
+        fun sso env data ->
             let dataContext = env.DataContext
             task {
 
                 let! clientId = getClientId env.DataContext data.Client_Id data.Email
 
-                let! callbackUrls = query {
-                                        for app in dataContext.Applications do
-                                            where (app.ClientId = clientId)
-                                            select app.AllowedCallbackUrls
-                                    }
-                                    |> toSingleExnAsync (unAuthorized ("client_id not found"))
+                let! app = query {
+                               for app in dataContext.Applications do
+                                   where (app.ClientId = clientId)
+                                   select
+                                       (Tuple.Create
+                                           (app.SSOEnabled, app.AllowedCallbackUrls, app.Domain.Pool.TenantId,
+                                            app.Domain.TenantId))
+                           }
+                           |> toSingleExnAsync (unAuthorized ("client_id not found"))
+                let (ssoEnabled, callbackUrls, poolTenantId, domainTenantId) = app
+                // If app is tenant management app it doesn't have pool and ref to tenant has TenantField
+                let tenantId =
+                    if domainTenantId.HasValue then domainTenantId.Value
+                    else poolTenantId
                 if (callbackUrls <> "*" && (callbackUrls.Split(",")
                                             |> Seq.map (fun x -> x.Trim())
                                             |> Seq.contains data.Redirect_Uri
@@ -56,19 +66,35 @@ module Authorize =
                           State = data.State
                           Code = code }
 
-                    let expiresAt = DateTime.UtcNow.AddMinutes(float env.CodeExpiresIn)
+                    let codeExpiresAt = DateTime.UtcNow.AddMinutes(float env.CodeExpiresIn)
 
-                    let evt =
-                        ({ Code = code
-                           ClientId = data.Client_Id
-                           CodeChallenge = data.Code_Challenge
-                           Scopes = (data.Scope.Split " ")
-                           UserId = userId
-                           ExpiresAt = expiresAt
-                           RedirectUri = data.Redirect_Uri }: LogIn.Item)
-                        |> UserLogInSuccessEvent
+                    let loginItem: LogIn.Item =
+                        { Code = code
+                          ClientId = data.Client_Id
+                          CodeChallenge = data.Code_Challenge
+                          Scopes = (data.Scope.Split " ")
+                          UserId = userId
+                          ExpiresAt = codeExpiresAt
+                          RedirectUri = data.Redirect_Uri }
+
+                    let ssoExpiresAt = DateTime.UtcNow.AddMinutes(float env.SSOExpiresIn)
+
+                    let ssoItem =
+                        match ssoEnabled, sso with
+                        | (true, Some sso) ->
+                            Some
+                                ({ Code = sso
+                                   UserId = userId
+                                   TenantId = tenantId
+                                   ExpiresAt = ssoExpiresAt
+                                   Email = data.Email }: SSO.Item)
+                        // TODO : Handle case SSO enabled but sso token not found
+                        | _ -> None
+
+                    let evt = UserLogInSuccessEvent(loginItem, ssoItem)
 
                     return (result, evt)
+
                 | None ->
                     return! raise (unAuthorized "Wrong email or password")
             }

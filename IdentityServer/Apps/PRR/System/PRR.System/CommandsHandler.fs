@@ -42,7 +42,9 @@ module private CommandsHandler =
                 | ResetPasswordCommand cmd ->
                     sharedActors.ResetPasswordActor <! (ResetPassword.Command cmd)
                 | LogInCommand cmd ->
-                    sharedActors.LogInActor <! (LogIn.Command cmd)                    
+                    sharedActors.LogInActor <! (LogIn.Command cmd)
+                | SSOCommand cmd ->
+                    sharedActors.SSOActor <! (SSO.Command cmd)                                        
                 return loop()
             }
         loop()

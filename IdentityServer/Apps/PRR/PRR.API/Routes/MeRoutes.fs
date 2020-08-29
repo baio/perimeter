@@ -1,11 +1,13 @@
 ﻿module PRR.API.Routes.Me
 
 open Common.Domain.Giraffe
+open Common.Domain.Models
 open Common.Utils
 open Common.Utils.ReaderTask
 open Giraffe
 open PRR.API.Routes
 open PRR.Domain.Auth.UpdatePassword
+open PRR.Domain.Tenant.UserDomains
 
 module private Handlers =
 
@@ -17,8 +19,12 @@ module private Handlers =
                                  |> ofReader)
              <*> (doublet <!> bindUserClaimId <*> bindValidateJsonAsync validateData))
 
+    let getDomainsHandler =
+        wrap (getClientDomains <!> getDataContext' <*> bindUserClaimId)
 
 open Handlers
 
 let createRoutes() =
-    route "/me/password" >=> PUT >=> updatePasswordHandler
+    subRoute "/me" requiresAuth >=> choose
+                                        [ route "/password" >=> PUT >=> updatePasswordHandler
+                                          route "/management/domains" >=> GET >=> getDomainsHandler ]

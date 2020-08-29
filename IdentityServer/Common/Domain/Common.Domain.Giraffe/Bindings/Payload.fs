@@ -1,8 +1,10 @@
 ﻿namespace Common.Domain.Giraffe
 
-open Common.Domain.Models.Exceptions
 open Common.Domain.Models
+open Common.Domain.Models.Exceptions
 open Common.Utils
+open System.Collections.Generic
+open System.ComponentModel.DataAnnotations
 open System.Globalization
 open System.IO
 
@@ -16,7 +18,7 @@ module Payload =
     type private PropertyBag = BoundModelValue of System.Type
 
     let bindJsonAsync<'a> (ctx: HttpContext) =
-        // As soon as model bound first time it erased from context, so we should persist one if we want to bind it many times        
+        // As soon as model bound first time it erased from context, so we should persist one if we want to bind it many times
         task {
             let t = typeof<'a>
             let (f, v) = ctx.Items.TryGetValue(BoundModelValue t)
@@ -37,6 +39,30 @@ module Payload =
                 return raise (BadRequest errors)
         }
 
+    let private validateDataAnnotations (object: obj) =
+        let ctx = ValidationContext object
+        let errors = List<ValidationResult>()
+        if Validator.TryValidateObject(object, ctx, errors, true) then None
+        else Some errors
+
+    let bindValidateAnnotatedJsonAsync<'a> (ctx: HttpContext) =
+        task {
+            let! model = bindJsonAsync<'a> ctx
+            let errs = validateDataAnnotations model
+            match errs with
+            | None -> return model
+            | Some errors ->
+                let err =
+                    errors
+                    |> Seq.map (fun x ->
+                        let field = x.MemberNames |> Seq.head
+                        BadRequestFieldError(field, CUSTOM x.ErrorMessage))
+                    |> Seq.toArray
+                    |> BadRequest
+
+                return raise err
+        }
+
     let bindValidateFormAsync<'a> validator (ctx: HttpContext) =
         task {
             try
@@ -45,8 +71,11 @@ module Payload =
                 | [||] -> return model
                 | errors ->
                     return raise (BadRequest errors)
-            with  
-            | ex ->
+            with ex ->
                 printfn "--- %O" ex
                 return raise (BadRequest [| (BadRequestCommonError ex.Message) |])
         }
+
+
+    let bindFormAsync<'a> (ctx: HttpContext) =
+        ctx.BindFormAsync<'a>()

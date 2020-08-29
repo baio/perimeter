@@ -6,11 +6,11 @@ open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx
 open FsUnit
+open PRR.API
 open PRR.API.Routes.Tenant
 open PRR.API.Tests.Utils
 open PRR.Data.Entities
 open PRR.Domain.Auth
-open PRR.Domain.Auth.SignIn
 open PRR.Domain.Auth.SignUp
 open PRR.Domain.Tenant.DomainUserRoles
 open PRR.System.Models
@@ -51,6 +51,9 @@ module MultiUsers =
                  RoleId = None |} ]
 
     let mutable testContext: UserTestContext option = None
+
+
+
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
     type ``domain-user-roles-multi-users-api``(testFixture: TestFixture, output: ITestOutputHelper) =
@@ -110,7 +113,8 @@ module MultiUsers =
                                     PermissionId = Some(permissionId)
                                     RoleId = Some(roleId) |}
             }
-            
+
+
         [<Fact>]
         [<Priority(1)>]
         member __.``A admin add role 1 to new email should success``() =
@@ -144,22 +148,15 @@ module MultiUsers =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let data: SignIn.Models.SignInData =
-                    { Email = u2.Data.Email
-                      Password = u2.Data.Password
-                      ClientId = u1.Tenant.Value.SampleApplicationClientId }
-                // re-signin 2nd tenant under 1st client
-                let! res = testFixture.HttpPostAsync' "/auth/sign-in" data
 
-                do! ensureSuccessAsync res
-
-                let! res = readAsJsonAsync<CreateUser.SignInResult> res
+                let! res = logInUser testFixture u1.Tenant.Value.SampleApplicationClientId u2.Data.Email
+                               u2.Data.Password
 
                 res |> should be (not' null)
 
-                res.accessToken |> should be (not' null)
+                res.AccessToken |> should be (not' null)
 
-                users.[1] <- {| u2 with Token = Some res.accessToken |}
+                users.[1] <- {| u2 with Token = Some res.AccessToken |}
             }
 
         [<Fact>]
@@ -190,31 +187,23 @@ module MultiUsers =
                                   (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do! ensureSuccessAsync result
             }
-            
+
         [<Fact>]
         [<Priority(5)>]
         member __.``F re-signin 2nd user under 1st tenant should be success``() =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let data: SignIn.Models.SignInData =
-                    { Email = u2.Data.Email
-                      Password = u2.Data.Password
-                      ClientId = u1.Tenant.Value.SampleApplicationClientId }
-                // re-signin 2nd tenant under 1st client
-                let! res = testFixture.HttpPostAsync' "/auth/sign-in" data
-
-                do! ensureSuccessAsync res
-
-                let! res = readAsJsonAsync<CreateUser.SignInResult> res
+                let! res = logInUser testFixture u1.Tenant.Value.SampleApplicationClientId u2.Data.Email
+                               u2.Data.Password
 
                 res |> should be (not' null)
 
-                res.accessToken |> should be (not' null)
+                res.AccessToken |> should be (not' null)
 
-                users.[1] <- {| u2 with Token = Some res.accessToken |}
+                users.[1] <- {| u2 with Token = Some res.AccessToken |}
             }
-            
+
 
         [<Fact>]
         [<Priority(6)>]
@@ -229,7 +218,7 @@ module MultiUsers =
                                   (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do! ensureSuccessAsync result
             }
-            
+
         [<Fact>]
         [<Priority(7)>]
         member __.``H user 2 forbidden to add new user with admin role to tenant 1``() =
@@ -243,7 +232,7 @@ module MultiUsers =
                                   (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do ensureForbidden result
             }
-            
+
         [<Fact>]
         [<Priority(8)>]
         member __.``I user 1 update user 2 with super-admin role for own tenant should success``() =
@@ -258,31 +247,25 @@ module MultiUsers =
                                   (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do! ensureSuccessAsync result
             }
-            
+
         [<Fact>]
         [<Priority(9)>]
         member __.``J re-signin 2nd user under 1st tenant should be success``() =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let data: SignIn.Models.SignInData =
-                    { Email = u2.Data.Email
-                      Password = u2.Data.Password
-                      ClientId = u1.Tenant.Value.SampleApplicationClientId }
+                let! res = logInUser testFixture u1.Tenant.Value.SampleApplicationClientId u2.Data.Email
+                               u2.Data.Password
+
                 // re-signin 2nd tenant under 1st client
-                let! res = testFixture.HttpPostAsync' "/auth/sign-in" data
-
-                do! ensureSuccessAsync res
-
-                let! res = readAsJsonAsync<CreateUser.SignInResult> res
 
                 res |> should be (not' null)
 
-                res.accessToken |> should be (not' null)
+                res.AccessToken |> should be (not' null)
 
-                users.[1] <- {| u2 with Token = Some res.accessToken |}
+                users.[1] <- {| u2 with Token = Some res.AccessToken |}
             }
-            
+
 
         [<Fact>]
         [<Priority(10)>]
@@ -296,4 +279,47 @@ module MultiUsers =
                 let! result = testFixture.HttpPostAsync u2.Token.Value
                                   (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do! ensureSuccessAsync result
+            }
+
+
+        [<Fact>]
+        [<Priority(11)>]
+        member __.``L remove domain owner should give error``() =
+            let u1 = users.[0]
+            task {
+                let! result = testFixture.HttpDeleteAsync u1.Token.Value
+                                  (sprintf "/tenant/domains/%i/users/%s" u1.Tenant.Value.DomainId u1.Data.Email)
+                do ensureForbidden result }
+
+        [<Fact>]
+        [<Priority(12)>]
+        member __.``M update domain owner should give error``() =
+            let u1 = users.[0]
+            task {
+                let data: PostLike =
+                    { UserEmail = u1.Data.Email
+                      RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
+                let! result = testFixture.HttpPostAsync u1.Token.Value
+                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+                do ensureForbidden result
+            }
+
+        [<Fact>]
+        [<Priority(13)>]
+        member __.``N trying to create user with wrong email should give bas request error``() =
+            let u1 = users.[0]
+            task {
+                let data: PostLike =
+                    { UserEmail = "test"
+                      RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
+                let! result = testFixture.HttpPostAsync u1.Token.Value
+                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+                do ensureBadRequest result
+                let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
+
+                let expected =
+                    [ ("userEmail", [| "CUSTOM:The UserEmail field is not a valid e-mail address." |]) ] |> Map
+                    
+                result'.Data |> should equal expected                                
+                
             }

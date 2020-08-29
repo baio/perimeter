@@ -42,6 +42,7 @@ let createDbContext (connectionString: string) =
     DbDataContext(optionsBuilder.Options)
 
 let configureCors (builder: CorsPolicyBuilder) =
+    // builder.WithOrigins([| "http://localhost:4200" |]).AllowAnyMethod().AllowAnyHeader().WithHeaders([|"Access-Control-Allow-Credentials"|]) |> ignore
     builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader() |> ignore
 
 let configureApp (app: IApplicationBuilder) =
@@ -66,6 +67,7 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
         |> SymmetricSecurityKey
     services.AddAuthorization() |> ignore
     services.AddAuthentication(fun options ->
+            // https://stackoverflow.com/questions/45763149/asp-net-core-jwt-in-uri-query-parameter/53295042#53295042
             options.DefaultAuthenticateScheme <- JwtBearerDefaults.AuthenticationScheme
             options.DefaultChallengeScheme <- JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(fun x ->
             x.RequireHttpsMetadata <- false
@@ -161,7 +163,6 @@ let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigu
     config.AddJsonFile("appsettings.json", false, true)
           .AddJsonFile(sprintf "appsettings.%s.json" context.HostingEnvironment.EnvironmentName, true)
           .AddEnvironmentVariables() |> ignore
-
 
 
 [<EntryPoint>]

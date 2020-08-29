@@ -14,6 +14,7 @@ import {
     ContentChildren,
     QueryList,
     forwardRef,
+    ChangeDetectorRef,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdminListService } from '../../common';
@@ -59,6 +60,8 @@ import { concat } from 'lodash/fp';
 })
 export class AdminListComponent
     implements HlcNzTableCustomCellsProvider, OnInit, OnDestroy, AfterViewInit {
+    errorMessage: string;
+
     @Input()
     canAdd = true;
 
@@ -70,6 +73,10 @@ export class AdminListComponent
 
     @Input()
     title: string;
+
+    @Input() beforeRowClick: AdminList.CheckRowFun;
+
+    @Input() canRemoveRow: AdminList.CheckRowFun;
 
     @Input()
     rowClickMode: 'navigate' | 'none' = 'navigate';
@@ -139,7 +146,8 @@ export class AdminListComponent
 
         if (this.removeItemDataAccess) {
             this.hlcDefinition = addDefinitionDeleteButtonAction(
-                this.hlcDefinition
+                this.hlcDefinition,
+                this.canRemoveRow
             );
         }
 
@@ -162,6 +170,9 @@ export class AdminListComponent
 
     onRowClick($event: RowClickEvent) {
         this.rowClick.emit($event);
+        if (this.beforeRowClick && !this.beforeRowClick($event.row)) {
+            return;
+        }
         if (this.rowClickMode === 'navigate') {
             this.router.navigate(['.', $event.row.id], {
                 relativeTo: this.activatedRoute,
@@ -205,5 +216,9 @@ export class AdminListComponent
                 this.containerCustomCellsProvider.customCells) ||
                 []
         );
+    }
+
+    onDataProviderError(err: Error | null) {
+        this.errorMessage = err && err.message;
     }
 }

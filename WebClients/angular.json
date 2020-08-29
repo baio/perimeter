@@ -32,6 +32,14 @@
             "preserveSymlinks": true
           },
           "configurations": {
+            "e2e": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/admin/src/environments/environment.ts",
+                  "with": "apps/admin/src/environments/environment.e2e.ts"
+                }
+              ]
+            },
             "production": {
               "fileReplacements": [
                 {
@@ -70,6 +78,9 @@
             "port": 4201
           },
           "configurations": {
+            "e2e": {
+              "browserTarget": "admin:build:e2e"
+            },
             "production": {
               "browserTarget": "admin:build:production"
             }
@@ -115,6 +126,9 @@
             "devServerTarget": "admin:serve"
           },
           "configurations": {
+            "e2e": {
+              "devServerTarget": "admin:serve:e2e"
+            },
             "production": {
               "devServerTarget": "admin:serve:production"
             }
@@ -557,6 +571,38 @@
             "tsConfig": "libs/admin/data-access/tsconfig.spec.json",
             "passWithNoTests": true,
             "setupFile": "libs/admin/data-access/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/angular:component": {
+          "style": "scss"
+        }
+      }
+    },
+    "admin-profile": {
+      "projectType": "library",
+      "root": "libs/admin/profile",
+      "sourceRoot": "libs/admin/profile/src",
+      "prefix": "admin",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/admin/profile/tsconfig.lib.json",
+              "libs/admin/profile/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/admin/profile/**/*"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/admin/profile/jest.config.js",
+            "tsConfig": "libs/admin/profile/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "libs/admin/profile/src/test-setup.ts"
           }
         }
       },

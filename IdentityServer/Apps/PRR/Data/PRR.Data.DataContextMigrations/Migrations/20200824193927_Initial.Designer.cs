@@ -10,7 +10,7 @@ using PRR.Data.DataContext;
 namespace PRR.Data.DataContextMigrations.Migrations
 {
     [DbContext(typeof(DbDataContext))]
-    [Migration("20200814134931_Initial")]
+    [Migration("20200824193927_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,7 +43,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsUserManagement")
+                    b.Property<bool>("IsDomainManagement")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
@@ -97,12 +97,22 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     b.Property<int>("IdTokenExpiresIn")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsDomainManagement")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("RefreshTokenExpiresIn")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("SSOEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.HasKey("Id");
 

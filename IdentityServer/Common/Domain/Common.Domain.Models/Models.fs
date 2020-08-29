@@ -25,6 +25,8 @@ module Models =
     type Token = string
     
     type Email = string
+    
+    type Sub = string
 
     type StringSalter = string -> string
 

@@ -25,7 +25,8 @@ module DomainPools =
     type DomainGetLike =
         { Id: int
           IsMain: Boolean
-          EnvName: string }
+          EnvName: string
+          DomainManagementClientId: ClientId }
 
     [<CLIMutable>]
     type GetLike =
@@ -40,7 +41,7 @@ module DomainPools =
                 where (dp.Id = domainPoolId && dp.Tenant.UserId = userId)
                 select dp.Id
         }
-        |> notFoundRaiseError Forbidden
+        |> notFoundRaiseError Forbidden'
 
     //
     let guid() = Guid.NewGuid().ToString()
@@ -60,13 +61,13 @@ module DomainPools =
             (Domain = domain, Name = "Domain Management Application", ClientId = guid(),
              ClientSecret = env.HashProvider(), IdTokenExpiresIn = (int env.AuthConfig.IdTokenExpiresIn),
              RefreshTokenExpiresIn = (int env.AuthConfig.RefreshTokenExpiresIn), AllowedCallbackUrls = "*",
-             Flow = FlowType.PKCE) |> add' env.DataContext
+             Flow = FlowType.PKCE, IsDomainManagement = true) |> add' env.DataContext
 
     let createDomainManagementApi (env: Env) domain =
         Api
             (Domain = domain, Name = "Domain Management API",
              Identifier = sprintf "https://%s.management-api-%s.com" domain.EnvName (Guid.NewGuid().ToString()),
-             IsUserManagement = true, AccessTokenExpiresIn = (int env.AuthConfig.AccessTokenExpiresIn))
+             IsDomainManagement = true, AccessTokenExpiresIn = (int env.AuthConfig.AccessTokenExpiresIn))
         |> add' env.DataContext
 
     let addUserRoles (userEmail: string) (domain: Domain) (roleIds: int seq) (dataContext: DbDataContext) =
@@ -85,7 +86,7 @@ module DomainPools =
         let dataContext = env.DataContext
 
         let domainPool = DomainPool(TenantId = tenantId, Name = data.Name) |> add' dataContext
-        let domain = Domain(Pool = domainPool, EnvName = "test", IsMain = true) |> add' dataContext
+        let domain = Domain(Pool = domainPool, EnvName = "dev", IsMain = true) |> add' dataContext
         let _ = createDomainManagementApp env domain
         let _ = createDomainManagementApi env domain
 
@@ -126,17 +127,21 @@ module DomainPools =
     let remove: Remove<int, DbDataContext> =
         remove (fun id -> DomainPool(Id = id))
 
+    let private selectGet =
+        <@ fun (p: DomainPool) ->
+            { Id = p.Id
+              Name = p.Name
+              DateCreated = p.DateCreated
+              Domains =
+                  p.Domains.Select(fun x ->
+                      { Id = x.Id
+                        IsMain = x.IsMain
+                        EnvName = x.EnvName
+                        DomainManagementClientId = x.Applications.First(fun f -> f.IsDomainManagement).ClientId }) } @>
+
+
     let getOne: GetOne<int, GetLike, DbDataContext> =
-        getOne<DomainPool, _, _, _> (<@ fun p id -> p.Id = id @>)
-            (<@ fun p ->
-                { Id = p.Id
-                  Name = p.Name
-                  DateCreated = p.DateCreated
-                  Domains =
-                      p.Domains.Select(fun x ->
-                          { Id = x.Id
-                            IsMain = x.IsMain
-                            EnvName = x.EnvName }) } @>)
+        getOne<DomainPool, _, _, _> (<@ fun p id -> p.Id = id @>) selectGet
 
     //
     type SortField =
@@ -173,14 +178,6 @@ module DomainPools =
             query {
                 for domainPool in domainPools do
                     where (domainPool.TenantId = tenantId)
-                    select
-                        { Id = domainPool.Id
-                          Name = domainPool.Name
-                          DateCreated = domainPool.DateCreated
-                          Domains =
-                              domainPool.Domains.Select(fun x ->
-                                  { Id = x.Id
-                                    IsMain = x.IsMain
-                                    EnvName = x.EnvName }) }
+                    select ((%selectGet) domainPool)
             }
             |> executeListQuery prms

@@ -30,7 +30,7 @@ module private CreateUserTenant =
         DomainPool(Tenant = tenant, Name = "New Domain") |> add' dataContext
 
     let createDomain (domainPool: DomainPool) (dataContext: DbDataContext) =
-        Domain(Pool = domainPool, EnvName = "test", IsMain = true) |> add' dataContext
+        Domain(Pool = domainPool, EnvName = "dev", IsMain = true) |> add' dataContext
 
     let createApp (hashProvider: HashProvider) (domain, dataContext, authConfig) =
         Application
@@ -50,13 +50,14 @@ module private CreateUserTenant =
             (Domain = domain, Name = "Domain Management Application", ClientId = guid(), ClientSecret = hashProvider(),
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
              RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn), AllowedCallbackUrls = "*",
-             Flow = FlowType.PKCE) |> add' dataContext
+             Flow = FlowType.PKCE, SSOEnabled = true, IsDomainManagement = true) |> add' dataContext
 
     let createDomainManagementApi (domain, dataContext, authConfig) =
         Api
             (Domain = domain, Name = "Domain Management API",
              Identifier = sprintf "https://%s.management-api-%s.com" domain.EnvName (Guid.NewGuid().ToString()),
-             IsUserManagement = true, AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn)) |> add' dataContext
+             IsDomainManagement = true, AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
+        |> add' dataContext
 
     let addUserRoles (userEmail: string) (domain: Domain) (roleIds: int seq) (dataContext: DbDataContext) =
         roleIds
@@ -71,13 +72,14 @@ module private CreateUserTenant =
         Application
             (Domain = domain, Name = "Tenant domains management app", ClientId = guid(), ClientSecret = hashProvider(),
              Flow = FlowType.PKCE, AllowedCallbackUrls = "*", IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
-             RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn)) |> add' dataContext
+             RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn), SSOEnabled = true,
+             IsDomainManagement = true) |> add' dataContext
 
     let createTenantManagementApi (domain, dataContext, authConfig) =
         Api
             (Domain = domain, Name = "Tenant domains management API",
              Identifier = sprintf "https://tenant-management-api-%s.com" (Guid.NewGuid().ToString()),
-             IsUserManagement = false, AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
+             IsDomainManagement = false, AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
         |> add' dataContext
 
 
@@ -99,6 +101,7 @@ module private CreateUserTenant =
 
             let tenant = createTenant data dataContext
 
+            let pool = createDomainPool tenant dataContext
             //
             let tenantManagementDomain = createTenantManagementDomain tenant dataContext
 
@@ -110,8 +113,7 @@ module private CreateUserTenant =
             addUserRoles data.Email tenantManagementDomain tenantManagementRoles dataContext
 
             //
-            let sampleDomain =
-                (createDomainPool tenant >>= createDomain) <| dataContext
+            let sampleDomain = createDomain pool dataContext
 
             let (usersManagementApp, usersManagementApi) =
                 (doublet <!> (createDomainManagementApp hashProvider) <*> createDomainManagementApi)

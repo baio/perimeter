@@ -1,9 +1,8 @@
 // tslint:disable: no-unused-expression
 describe('admins', () => {
-    before(() => cy.reinitDb());
+    before(() => cy.reinitDb(true));
     before(() => {
-        cy.visit('tenant/domains');
-        cy.dataCy('env-btn').click();
+        cy.visit('/domains/2/apps');
         cy.dataCy('admins-menu-item').click();
     });
 

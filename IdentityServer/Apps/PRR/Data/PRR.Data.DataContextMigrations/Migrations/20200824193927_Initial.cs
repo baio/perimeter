@@ -105,7 +105,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     Name = table.Column<string>(nullable: false),
                     DomainId = table.Column<int>(nullable: false),
                     Identifier = table.Column<string>(nullable: false),
-                    IsUserManagement = table.Column<bool>(nullable: false, defaultValue: false),
+                    IsDomainManagement = table.Column<bool>(nullable: false, defaultValue: false),
                     DateCreated = table.Column<DateTime>(nullable: false, defaultValueSql: "now()"),
                     AccessTokenExpiresIn = table.Column<int>(nullable: false)
                 },
@@ -134,7 +134,9 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     IdTokenExpiresIn = table.Column<int>(nullable: false),
                     RefreshTokenExpiresIn = table.Column<int>(nullable: false),
                     AllowedCallbackUrls = table.Column<string>(nullable: false),
-                    Flow = table.Column<string>(nullable: false)
+                    SSOEnabled = table.Column<bool>(nullable: false, defaultValue: false),
+                    Flow = table.Column<string>(nullable: false),
+                    IsDomainManagement = table.Column<bool>(nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {

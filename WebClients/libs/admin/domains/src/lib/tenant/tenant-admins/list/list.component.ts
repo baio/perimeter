@@ -2,6 +2,8 @@ import {
     ApisDataAccessService,
     AdminsDataAccessService,
     TenantAdminsDataAccessService,
+    UserRole,
+    USER_ROLE_TENANT_OWNER_ID,
 } from '@admin/data-access';
 import { AdminList } from '@admin/shared';
 import { Component, OnInit } from '@angular/core';
@@ -23,6 +25,12 @@ export class TenantAdminsListComponent implements OnInit {
     }) => {
         return this.dataAccess.removeItem(id);
     };
+
+    readonly canRemoveRow: AdminList.CheckRowFun<UserRole> = (row) =>
+        row.roles.some((x) => x.id !== USER_ROLE_TENANT_OWNER_ID);
+
+    readonly beforeRowClick: AdminList.CheckRowFun<UserRole> = (row) =>
+        row.roles.some((x) => x.id !== USER_ROLE_TENANT_OWNER_ID);
 
     constructor(
         activatedRoute: ActivatedRoute,

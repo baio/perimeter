@@ -21,12 +21,6 @@
         <Compile Include="validatePassword.fs" />
         <Compile Include="SignUp\Models.fs" />
         <Compile Include="SignUp\SignUp.fs" />
-        <Compile Include="SignIn\Models.fs" />
-        <Compile Include="SignIn\UserHelpers.fs" />
-        <Compile Include="SignIn\CreateClaims.fs" />
-        <Compile Include="SignIn\CreateToken.fs" />
-        <Compile Include="SignIn\SignInUser.fs" />
-        <Compile Include="SignIn\SignIn.fs" />
         <Compile Include="SignUpConfirm\Models.fs" />
         <Compile Include="SignUpConfirm\SignUpConfirm.fs" />
         <Compile Include="RefreshToken\Models.fs" />
@@ -41,6 +35,11 @@
         <Compile Include="ResetPassword\ResetPassword.fs" />
         <Compile Include="UpdatePassword\Models.fs" />
         <Compile Include="UpdatePassword\UpdatePassword.fs" />
+        <Compile Include="LogInSSO\Models.fs" />
+        <Compile Include="LogInSSO\UserHelpers.fs" />
+        <Compile Include="LogInSSO\LogInSSO.fs" />
+        <Compile Include="LogOut\Models.fs" />
+        <Compile Include="LogOut\LogOut.fs" />
     </ItemGroup>
 
     <ItemGroup>

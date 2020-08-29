@@ -25,7 +25,7 @@ namespace PRR.Data.Entities
         public string Identifier { get; set; }
         
         [Required]
-        public bool IsUserManagement { get; set; }
+        public bool IsDomainManagement { get; set; }
         
         [Required]
         public DateTime DateCreated { get; set; }

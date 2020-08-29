@@ -1,12 +1,13 @@
+import { clearLocalStorage } from "./_setup";
+
 // tslint:disable: no-unused-expression
 describe('perms', () => {
     const UPDATED_NAME = 'write:all';
-    before(() => cy.reinitDb());
+    before(() => cy.reinitDb(true));
     before(() => {
-        cy.visit('tenant/domains');
-        cy.dataCy('env-btn').click();
+        cy.visit('/domains/2/apps');
         cy.dataCy('apis-menu-item').click();
-        cy.rows(1, 1).click();
+        cy.rows(0, 1).click();
     });
 
     it('app should be open', () => {
@@ -14,7 +15,7 @@ describe('perms', () => {
     });
 
     describe('create', () => {
-        it.only('create read permission', () => {
+        it('create read permission', () => {
             cy.dataCy('create-item').click();
             cy.url().should(
                 'match',

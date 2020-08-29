@@ -1,11 +1,12 @@
+import { clearLocalStorage } from "./_setup";
+
 // tslint:disable: no-unused-expression
 describe('user', () => {
-    before(() => cy.reinitDb());
+    before(() => cy.reinitDb(true));
     before(() => {
-        cy.visit('tenant/domains');
-        cy.dataCy('env-btn').click();
+        cy.visit('/domains/2/apps');
         cy.dataCy('apis-menu-item').click();
-        cy.rows(1, 1).click();
+        cy.rows(0, 1).click();
         cy.dataCy('create-item').click();
         cy.formField('name')
             .type('read:all')

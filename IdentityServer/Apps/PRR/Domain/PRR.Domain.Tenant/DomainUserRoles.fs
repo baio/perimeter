@@ -10,6 +10,7 @@ open Microsoft.EntityFrameworkCore
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
+open System.ComponentModel.DataAnnotations
 open System.Linq
 open System.Threading.Tasks
 
@@ -17,7 +18,11 @@ module DomainUserRoles =
 
     [<CLIMutable>]
     type PostLike =
-        { UserEmail: string
+        {
+          [<EmailAddress>]
+          [<Required>]
+          UserEmail: string
+          [<Required>]
           RolesIds: int seq }
 
     [<CLIMutable>]
@@ -30,6 +35,16 @@ module DomainUserRoles =
         { UserEmail: string
           Roles: RolesGetLike seq }
 
+    let private checkUserNotDomainOwner (domainId: DomainId) (email: string) (dbContext: DbDataContext) =
+        query {
+            for dur in dbContext.DomainUserRole do
+                where (dur.DomainId = domainId && dur.UserEmail = email && dur.RoleId = Seed.Roles.DomainOwner.Id)
+                select dur.UserEmail
+        }
+        |> countAsync
+        |> map (fun cnt ->
+            if cnt = 1 then raise (forbidden "Domain owner could not be deleted or edited"))
+
     let private validateRoles (domainId: DomainId, rolesIds: int seq) (dataContext: DbDataContext) =
         query {
             for p in dataContext.Roles do
@@ -38,18 +53,19 @@ module DomainUserRoles =
         }
         |> toCountAsync
         |> map (fun cnt ->
-            if cnt > 0 then raise Forbidden)
+            if cnt > 0 then raise Forbidden')
 
     let private checkForbidenRoles (forbidenRolesRoles: int seq) (dto: PostLike) =
         dto.RolesIds
         |> Seq.filter (forbidenRolesRoles.Contains)
         |> Seq.length
         |> fun cnt ->
-            if cnt > 0 then raise Forbidden
+            if cnt > 0 then raise Forbidden'
 
     let updateRoles validateRolesFn forbidenRoles ((domainId, dto): DomainId * PostLike) (dbContext: DbDataContext) =
         task {
             checkForbidenRoles forbidenRoles dto
+            do! checkUserNotDomainOwner domainId dto.UserEmail dbContext
             do! validateRolesFn (domainId, dto.RolesIds) dbContext
             let incomingDur =
                 dto.RolesIds
@@ -88,9 +104,11 @@ module DomainUserRoles =
              | None -> raise NotFound)
 
     let remove (domainId: DomainId) (email: string) (dbContext: DbDataContext) =
-        removeRawAsync dbContext.DomainUserRole
-            {| UserEmail = email
-               DomainId = domainId |}
+        task {
+            let! _ = checkUserNotDomainOwner domainId email dbContext
+            return! removeRawAsync dbContext.DomainUserRole
+                        {| UserEmail = email
+                           DomainId = domainId |} }
 
     //
 

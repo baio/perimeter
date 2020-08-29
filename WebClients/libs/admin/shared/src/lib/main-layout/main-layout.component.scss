@@ -1,9 +1,17 @@
 .logo {
     width: 120px;
     height: 31px;
-    background: rgba(255, 255, 255, 0.2);
-    margin: 16px 30px 16px 0;
     float: left;
+    color: white;
+    font-size: large;
+}
+
+.tool {
+    width: 120px;
+    height: 31px;
+    float: right;
+    color: white;
+    font-size: large;
 }
 
 .header-menu {

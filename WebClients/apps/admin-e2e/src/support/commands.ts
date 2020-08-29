@@ -107,53 +107,29 @@ Cypress.Commands.add('resetDb', () => {
     return cy.request('POST', url);
 });
 
-Cypress.Commands.add('reinitDb', () => {
+Cypress.Commands.add('reinitDb', (loginAsDomain) => {
     const baseUrl = Cypress.env('apiBaseUrl');
 
     const refreshDbUrl = Cypress.env('reinitDbUrl');
 
     const url = resolve(baseUrl, refreshDbUrl);
 
-    return cy.request('POST', url).then((resp) =>
+    return cy.request('POST', url, { loginAsDomain }).then((resp) =>
         cy.window().then((win) => {
-            // TODO
-            win.sessionStorage.setItem('access_token', resp.body.accessToken);
+            win.localStorage.setItem('access_token', resp.body.accessToken);
+            win.localStorage.setItem('id_token', resp.body.idToken);
         })
     );
 });
 
-/*
-Cypress.Commands.add('signUp', () => {
-    const baseUrl = Cypress.env('apiBaseUrl');
-    const signUpData = {
-        email: EMAIL,
-        password: PASSWORD,
-        firsName: 'test',
-        lastName: 'user',
-    };
-    const signUpUrl = resolve(baseUrl, 'auth/sign-up');
-
-    const signUpConfirmData = {
-        token: Cypress.env('confirmSignupToken'),
-    };
-    const signUpConfirmUrl = resolve(baseUrl, 'auth/sign-up/confirm');
-
-    cy.request('POST', signUpUrl, signUpData).request(
-        'POST',
-        signUpConfirmUrl,
-        signUpConfirmData
-    );
-});
-
-Cypress.Commands.add('reset', () => {
-    cy.refreshDb();
-});
-*/
-
-Cypress.Commands.add('stickyVariable', (value) => {
-    if (value) {
-        return cy.writeFile('stickyVariable.txt', value);
-    } else {
-        return cy.readFile('stickyVariable.txt');
-    }
+Cypress.Commands.add('login', () => {
+    cy.visit('/home');
+    cy.dataCy('login-button')
+        .click()
+        .dataCy('email')
+        .type(EMAIL)
+        .dataCy('password')
+        .type(PASSWORD)
+        .dataCy('submit')
+        .click();
 });

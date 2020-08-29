@@ -3,7 +3,7 @@
 open Common.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.Entities
-open PRR.Domain.Auth.SignIn
+open PRR.Domain.Auth.LogInToken
 open PRR.System.Models
 
 [<AutoOpen>]
@@ -19,14 +19,10 @@ module RefreshToken =
                 | Success ->
                     match! getUserDataForToken env.DataContext item.UserId with
                     | Some tokenData ->
-                        let env' =
-                            { DataContext = env.DataContext
-                              JwtConfig = env.JwtConfig
-                              HashProvider = env.HashProvider }
-                        let! res = signInUser env' tokenData item.ClientId
+                        let! (res, clientId) = signInUser env tokenData item.ClientId
                         return (res,
                                 RefreshTokenSuccessEvent
-                                    { ClientId = item.ClientId
+                                    { ClientId = clientId
                                       UserId = tokenData.Id
                                       RefreshToken = res.RefreshToken
                                       OldRefreshToken = item.Token })

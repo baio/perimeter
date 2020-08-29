@@ -1,18 +1,16 @@
 // tslint:disable: no-unused-expression
 describe('tenant-admins', () => {
     before(() => cy.reinitDb());
-    before(() => {
-        cy.visit('tenant/admins');
-    });
+    before(() => cy.visit('/tenants/1/admins'));
 
     it('roles should be open', () => {
-        cy.url().should('include', 'tenant/admins');
+        cy.url().should('match', /\/tenants\/\d+\/admins/);
         cy.rows().should('have.length', 1);
     });
 
     it('create', () => {
         cy.dataCy('create-item').click();
-        cy.url().should('match', /\/tenant\/admins\/new/);
+        cy.url().should('match', /\/tenants\/\d+\/admins\/new/);
 
         cy.formField('userEmail')
             .type('adm@test.dev')
@@ -21,7 +19,7 @@ describe('tenant-admins', () => {
             .click();
 
         cy.rows().should('have.length', 2);
-        cy.rows(0, 1).should('contain.text', 'TenantSuperAdmin');
+        cy.rows(0, 1).should('contain.text', 'TenantAdmin');
     });
 
     it.skip('remove', () => {

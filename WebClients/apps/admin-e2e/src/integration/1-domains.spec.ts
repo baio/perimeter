@@ -1,16 +1,20 @@
+import { clearLocalStorage } from './_setup';
+
 // tslint:disable: no-unused-expression
 describe('domains', () => {
     const UPDATED_NAME = 'updated domain';
 
     before(() => cy.reinitDb());
-    before(() => {
-        cy.visit('tenant/domains');
-    });
+
+    before(() => clearLocalStorage());
+
+    // login manually in order to use relogin sso
+    before(() => cy.login());
 
     describe('edit', () => {
         it('load domain edit form data', () => {
             cy.rows().first().click();
-            cy.url().should('match', /\/tenant\/domains\/\d+/);
+            cy.url().should('match', /\/tenants\/\d+\/domains\/\d+/);
             cy.formField('name').should((input) => {
                 const val = input.val();
                 expect(val).be.not.empty;
@@ -23,7 +27,7 @@ describe('domains', () => {
                 .type(UPDATED_NAME)
                 .submitButton()
                 .click();
-            cy.url().should('not.match', /\/tenant\/domains\/\d+/);
+            cy.url().should('not.match', /\/tenants\d+\/domains\/\d+/);
             cy.rows().should('have.length', 1);
         });
     });
@@ -31,16 +35,16 @@ describe('domains', () => {
     describe('create', () => {
         it('create domain', () => {
             cy.dataCy('create-item').click();
-            cy.url().should('include', '/tenant/domains/new');
+            cy.url().should('match', /\/tenants\/\d+\/domains\/new/);
             cy.formField('name').type('new').submitButton().click();
-            cy.url().should('not.include', '/tenant/domains/new');
+            cy.url().should('match', /\/tenants\/\d+\/domains/);
         });
 
         it('create domain with same name should fail', () => {
             cy.dataCy('create-item').click();
-            cy.url().should('include', '/tenant/domains/new');
+            cy.url().should('match', /\/tenants\/\d+\/domains\/new/);
             cy.formField('name').type('new').submitButton().click();
-            cy.url().should('include', '/tenant/domains/new');
+            cy.url().should('match', /\/tenants\/\d+\/domains\/new/);
             cy.cancelButton().click();
         });
     });
@@ -79,19 +83,28 @@ describe('domains', () => {
     describe('add env', () => {
         it('add env', () => {
             cy.rows(0).find('.table-actions a').eq(0).click();
-            cy.url().should('match', /\/tenant\/domains\/\d+\/new-env/);
+            cy.url().should('match', /\/tenants\/\d+\/domains\/\d+\/new-env/);
         });
 
         it('create', () => {
             cy.formField('envName').type('stage').submitButton().click();
-            cy.url().should('not.match', /\/tenant\/domains\/\d+\/new-env/);
+            cy.url().should(
+                'not.match',
+                /\/tenants\/\d+\/domains\/\d+\/new-env/
+            );
         });
 
         it('add env with the same name should give error', () => {
             cy.rows(0).find('.table-actions a').eq(0).click();
             cy.formField('envName').type('stage').submitButton().click();
-            cy.url().should('match', /\/tenant\/domains\/\d+\/new-env/);
+            cy.url().should('match', /\/tenants\/\d+\/domains\/\d+\/new-env/);
             cy.cancelButton().click();
+        });
+
+        it('open new domain should succeed', () => {
+            cy.rows(0, 1).dataCy('env-btn').eq(1).click();
+            cy.url().should('match', /\/domains\/\d+\/apps/);
+            cy.visit('/tenants/1/domains');
         });
     });
 
@@ -99,7 +112,7 @@ describe('domains', () => {
         it('remove domain', () => {
             cy.rows(0).find('.table-actions a').eq(1).click();
             cy.confirmYesButton().click();
-            cy.rows().should('have.length', 0);
+            cy.rows().should('have.length', 1);
         });
 
         it('after reset filter there should be 1 rows', () => {

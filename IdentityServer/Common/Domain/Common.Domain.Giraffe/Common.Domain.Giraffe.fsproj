@@ -9,6 +9,8 @@
     <ItemGroup>
       <Compile Include="Bindings\BindListQuery.fs" />
       <Compile Include="Bindings\Headers.fs" />
+      <Compile Include="Bindings\Cookies.fs" />
+      <Compile Include="Bindings\Queries.fs" />
       <Compile Include="Bindings\Payload.fs" />
       <Compile Include="Bindings\User.fs" />
       <Compile Include="Auth\Auth.fs" />

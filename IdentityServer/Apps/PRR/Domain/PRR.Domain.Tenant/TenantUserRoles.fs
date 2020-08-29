@@ -6,11 +6,20 @@ open Common.Utils.TaskUtils
 open DomainUserRoles
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
-open PRR.Data.Entities
 open System
 open System.Threading.Tasks
 
 module TenantUserRoles =
+
+    let private checkUserNotTenantOwner (domainId: DomainId) (email: string) (dbContext: DbDataContext) =
+        query {
+            for dur in dbContext.DomainUserRole do
+                where (dur.DomainId = domainId && dur.UserEmail = email && dur.RoleId = Seed.Roles.TenantOwner.Id)
+                select dur.UserEmail
+        }
+        |> countAsync
+        |> map (fun cnt ->
+            if cnt = 1 then raise (forbidden "Tenant owner could not be deleted or edited"))
 
     let private validateRoles (_, rolesIds: int seq) (dataContext: DbDataContext) =
         query {
@@ -20,7 +29,7 @@ module TenantUserRoles =
         }
         |> toCountAsync
         |> map (fun cnt ->
-            if cnt > 0 then raise Forbidden)
+            if cnt > 0 then raise Forbidden')
 
     let updateTenantRoles forbidenRoles ((tenantId, dto): TenantId * PostLike) (dbContext: DbDataContext) =
         task {
@@ -31,6 +40,7 @@ module TenantUserRoles =
                             }
                             |> toSingleAsync
 
+            do! checkUserNotTenantOwner domainId dto.UserEmail dbContext
             return updateRoles validateRoles forbidenRoles (domainId, dto) dbContext
         }
 
@@ -58,4 +68,6 @@ module TenantUserRoles =
     let remove userEmail userId (dataContext: DbDataContext) =
         task {
             let! domainId = getUsersTenantManagementDomain userId dataContext
-            return! remove domainId userEmail dataContext }
+            do! checkUserNotTenantOwner domainId userEmail dataContext
+            return! remove domainId userEmail dataContext
+        }

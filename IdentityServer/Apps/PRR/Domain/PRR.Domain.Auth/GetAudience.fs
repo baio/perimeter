@@ -13,7 +13,7 @@ module GetAudience =
         getOne<Api> (<@ fun x id -> x.Id = id @>) (<@ fun p -> p.Identifier @>)
 
     let fromDomainId: CRUD.GetOne<int, string, DbDataContext> =
-        getOne<Api> (<@ fun x id -> x.DomainId = id && x.IsUserManagement = true @>) (<@ fun p -> p.Identifier @>)
+        getOne<Api> (<@ fun x id -> x.DomainId = id && x.IsDomainManagement = true @>) (<@ fun p -> p.Identifier @>)
 
     let fromDomainPoolId: CRUD.GetOne<int, string, DbDataContext> =
         getOne<Api> (<@ fun x id -> x.Domain.Tenant.DomainPools.Any(fun dp -> dp.Id = id) @>)

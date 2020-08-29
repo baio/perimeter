@@ -11,6 +11,7 @@ module private QueriesHandler =
         let rec loop() =
             actor {
                 let! q = ctx.Receive()
+                printfn "#### %O" q
                 match q with
                 | RefreshToken q ->
                     sharedActors.RefreshTokenActor <! RefreshToken.Query(q)
@@ -20,6 +21,8 @@ module private QueriesHandler =
                     sharedActors.ResetPasswordActor <! ResetPassword.Query(q)
                 | LogIn q ->
                     sharedActors.LogInActor <! LogIn.Query(q)
+                | SSO q ->
+                    sharedActors.SSOActor <! SSO.Query(q)                    
                 return loop()
             }
         loop()

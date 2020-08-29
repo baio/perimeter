@@ -1,13 +1,23 @@
 ﻿namespace PRR.API.Routes
 
 open Akkling
+open Common.Domain.Giraffe
+open Common.Domain.Models
+open Common.Domain.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Giraffe
 open Microsoft.EntityFrameworkCore
 open PRR.Domain.Auth.SignUpConfirm
 open PRR.System.Models
+open PRR.System.Utils
 open System
+open System.Linq
 open System.Threading
+open System.Threading.Tasks
+
+[<CLIMutable>]
+type ReinitData =
+    { LoginAsDomain: bool }
 
 module E2E =
 
@@ -33,8 +43,8 @@ module E2E =
                   let signupItem: SignUpToken.Item =
                       { FirstName = "test"
                         LastName = "user"
-                        Email = "test@user.dev"
-                        Password = "123"
+                        Email = "hahijo5833@acceptmail.net"
+                        Password = (getPasswordSalter ctx) "#6VvR&^"
                         Token = ""
                         ExpiredAt = DateTime.UtcNow.AddDays(1.)
                         QueryString = None }
@@ -43,6 +53,7 @@ module E2E =
                       { DataContext = getDataContext ctx
                         HashProvider = getHash ctx
                         Sha256Provider = getSHA256 ctx
+                        SSOCookieExpiresIn = (getConfig ctx).SSOCookieExpiresIn
                         JwtConfig = (getConfig ctx).Jwt }
 
                   task {
@@ -50,8 +61,31 @@ module E2E =
                       sys.EventsRef <! evt
                       //
                       Thread.Sleep(10)
-                      let! res = PRR.Domain.Auth.LogInEmail.logInEmail loginEnv "__DEFAULT_CLIENT_ID__"
-                                     signupItem.Email signupItem.Password
-                      // login
-                      return! Successful.OK res next ctx
+
+                      let! data = ctx |> bindJsonAsync<ReinitData>
+
+                      let! clientId = match data.LoginAsDomain with
+                                      | true ->
+                                          query {
+                                              for dur in dataContext.DomainUserRole do
+                                                  where
+                                                      (dur.RoleId = PRR.Data.DataContext.Seed.Roles.DomainOwner.Id
+                                                       && dur.UserEmail = signupItem.Email)
+                                                  select
+                                                      (dur.Domain.Applications.Single(fun p -> p.IsDomainManagement).ClientId)
+                                          }
+                                          |> LinqHelpers.toSingleAsync
+                                      | _ -> Task.FromResult "__DEFAULT_CLIENT_ID__"
+                                                                                                                   
+
+                      printfn "!!! %s" clientId
+                      let! res = PRR.Domain.Auth.LogInEmail.logInEmail loginEnv clientId signupItem.Email
+                                     signupItem.Password
+
+                      let (result, _) = res
+
+
+                      ctx.Response.Cookies.Delete("sso")
+
+                      return! Successful.OK result next ctx
                   } ]

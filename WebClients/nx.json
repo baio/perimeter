@@ -59,6 +59,9 @@
     },
     "admin-data-access": {
       "tags": []
+    },
+    "admin-profile": {
+      "tags": []
     }
   }
 }

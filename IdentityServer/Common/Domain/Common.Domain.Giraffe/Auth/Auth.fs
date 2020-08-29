@@ -2,6 +2,7 @@
 
 open Common.Domain.Models
 open Giraffe
+open Microsoft.AspNetCore.Http
 
 [<AutoOpen>]
 module Auth =
@@ -16,12 +17,13 @@ module Auth =
             | false ->
                 f next ctx
 
-    let auth' = auth'' (fun _ _ -> raise Forbidden)
+    let auth' = auth'' (fun _ _ -> raise Forbidden')
 
     let authOpt x = auth'' (fun _ _ ->
         System.Threading.Tasks.Task.FromResult(None)) x
 
-    let notLoggedIn: HttpHandler = fun _ _ -> raise (UnAuthorized None)
+    let notLoggedIn: HttpHandler = fun _ _->
+        raise (UnAuthorized None)
 
     let requiresAuth = requiresAuthentication notLoggedIn
 

@@ -11,3 +11,5 @@ export * from './lib/roles/roles.data-access.service';
 export * from './lib/users/users.data-access.service';
 export * from './lib/admins/admins.data-access.service';
 export * from './lib/tenant-admins/tenant-admins.data-access.service';
+export * from './lib/profile/profile.data-access.service';
+export * from './lib/profile/models';

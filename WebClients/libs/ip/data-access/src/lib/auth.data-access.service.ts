@@ -1,7 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 export interface SignUpData {
     firstName: string;
@@ -37,23 +36,6 @@ export interface LoginPassword {
 @Injectable()
 export class AuthDataAccessService {
     constructor(private readonly http: HttpClient) {}
-
-    login(prms: LoginParams, data: LoginPassword) {
-        const payload = {
-            ...prms,
-            ...data,
-        };
-        return this.http.post('auth/login', payload).pipe(
-            catchError((err: HttpErrorResponse) => {        
-                if (err.status === 404 && err.url) {
-                    // redirect
-                    window.location.href = err.url;
-                } else {
-                    return throwError(err);
-                }
-            })
-        );
-    }
 
     signUp(data: SignUpData, queryString: string): Observable<any> {
         const payload = {

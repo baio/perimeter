@@ -6,6 +6,7 @@ open Common.Utils
 open Common.Utils.ReaderTask
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Giraffe
+open Microsoft.AspNetCore.Http
 open PRR.API.Routes
 open PRR.Domain.Auth.GetAudience
 open PRR.Domain.Tenant.Domains
@@ -15,8 +16,19 @@ module private DomainHandlers =
 
     let private dataContext = getDataContext |> ofReader
 
+    let getEnv (ctx: HttpContext) =
+        let config = getConfig ctx
+        let hashProvider = getHash ctx
+        { AuthConfig =
+              { IdTokenExpiresIn = config.Jwt.IdTokenExpiresIn
+                AccessTokenExpiresIn = config.Jwt.AccessTokenExpiresIn
+                RefreshTokenExpiresIn = config.Jwt.RefreshTokenExpiresIn }
+          HashProvider = hashProvider }
+
     let createHandler domainPoolId =
-        wrap (create <!> ((doublet domainPoolId) <!> bindJsonAsync<PostLike>) <*> dataContext)
+        wrap
+            (create <!> ofReader (getEnv) <*> ((triplet domainPoolId) <!> bindJsonAsync<PostLike> <*> bindUserClaimId)
+             <*> dataContext)
 
     let updateHandler id =
         wrap (update <!> ((doublet id) <!> bindJsonAsync<PostLike>) <*> dataContext)

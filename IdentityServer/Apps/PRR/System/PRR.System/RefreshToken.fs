@@ -26,13 +26,15 @@ module private RefreshToken =
                         | Restart ->
                             raise (exn "Test Restart")
                             return! loop state
-                        | AddToken(x) ->
-                            let item =
-                                { ClientId = x.ClientId
-                                  UserId = x.UserId
-                                  Token = x.RefreshToken
-                                  ExpiresAt = DateTime.UtcNow.AddMinutes(float (int tokenExpiresIs)) }
+                        | AddToken(item) ->
                             return Persist(Event(TokenAdded item))
+                        | RemoveToken(userId) ->
+                            let token = state |> Seq.tryFind(fun f -> f.Value.UserId = userId)
+                            match token with
+                            | Some x ->
+                                return Persist(Event(TokenRemoved x.Key))
+                            | None ->
+                                return! loop state
                         | UpdateToken(x) ->
                             let item =
                                 { ClientId = x.ClientId
@@ -52,6 +54,9 @@ module private RefreshToken =
                         | TokenUpdated(item, oldToken) ->
                             let state = state.Remove(oldToken).Add(item.Token, item)
                             return! loop state
+                        | TokenRemoved(token) -> 
+                            let state = state.Remove(token)
+                            return! loop state                            
                     | Query q ->
                         match q with
                         | RefreshToken.GetToken(token, sendTo) ->

@@ -25,7 +25,8 @@ module private TenantUserRolesHandlers =
         bindListQuery
             ((function
              | "email" ->
-                 Some SortField.UserEmail),
+                 Some SortField.UserEmail
+             | _ -> None),
              (function
              | "email" ->
                  Some FilterField.UserEmail
@@ -33,26 +34,25 @@ module private TenantUserRolesHandlers =
         |> ofReader
 
     let getTenantAdminsList =
-        wrap
-            (getList <!> getDataContext' <*> (doublet <!> bindUserClaimId <*> bindListQuery))
+        wrap (getList <!> getDataContext' <*> (doublet <!> bindUserClaimId <*> bindListQuery))
 
     let getOne email =
         wrap (getOne email <!> bindUserClaimId <*> getDataContext')
 
     let remove email =
         wrap (remove email <!> bindUserClaimId <*> getDataContext')
-
 module TenantUserRole =
-
     let createRoutes() =
         choose
             [ DELETE >=> routef "/tenant/admins/%s" remove
               GET >=> routef "/tenant/admins/%s" getOne
               GET >=> route "/tenant/admins" >=> getTenantAdminsList
-              POST >=> route "/tenant/admins"
-              >=> choose
-                      [ permissionOptGuard MANAGE_TENANT_ADMINS >=> updateRolesHandler [ Seed.Roles.TenantOwner.Id ]
-                        permissionOptGuard MANAGE_TENANT_DOMAINS
-                        >=> updateRolesHandler
-                                [ Seed.Roles.TenantOwner.Id; Seed.Roles.TenantSuperAdmin.Id; Seed.Roles.TenantAdmin.Id ]
-                        RequestErrors.FORBIDDEN "User can't manage provided roles" ] ]
+              POST >=> route "/tenant/admins" >=> choose
+                                                      [ permissionOptGuard MANAGE_TENANT_ADMINS
+                                                        >=> updateRolesHandler [ Seed.Roles.TenantOwner.Id ]
+                                                        permissionOptGuard MANAGE_TENANT_DOMAINS
+                                                        >=> updateRolesHandler
+                                                                [ Seed.Roles.TenantOwner.Id
+                                                                  Seed.Roles.TenantSuperAdmin.Id
+                                                                  Seed.Roles.TenantAdmin.Id ]
+                                                        RequestErrors.FORBIDDEN "User can't manage provided roles" ] ]

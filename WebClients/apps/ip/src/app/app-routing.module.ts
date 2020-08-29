@@ -11,7 +11,7 @@ import {
     ForgotPasswordResetPageComponent,
 } from '@ip/auth';
 
-const routes: Routes = [
+export const routes: Routes = [
     {
         path: 'auth',
         children: [

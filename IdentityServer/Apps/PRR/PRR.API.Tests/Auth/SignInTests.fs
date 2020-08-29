@@ -84,47 +84,16 @@ module SignIn =
 
         [<Fact>]
         [<Priority(1)>]
-        member __.``A Sign In must be success``() =
+        member __.``A LogIn must be success``() =
 
             tenant.IsSome |> should be True
 
             task {
 
-                let data: SignIn.Models.SignInData =
-                    { Email = ownerData.Email
-                      Password = ownerData.Password
-                      ClientId = tenant.Value.SampleApplicationClientId }
+                let! result = logInUser testFixture tenant.Value.SampleApplicationClientId ownerData.Email
+                                  ownerData.Password
 
-                let! result = testFixture.HttpPostAsync' "/auth/sign-in" data
-
-                do! ensureSuccessAsync result
-
-                let! result = readAsJsonAsync<SignInResult> result
-
-                result.accessToken |> should be (not' Null)
-                result.idToken |> should be (not' Null)
-                result.refreshToken |> should be (not' Null)
-            }
-
-        [<Fact>]
-        [<Priority(1)>]
-        member __.``B Log In must be success``() =
-
-            tenant.IsSome |> should be True
-
-            task {
-
-                let data: SignIn.Models.LogInData =
-                    { Email = ownerData.Email
-                      Password = ownerData.Password }
-
-                let! result = testFixture.HttpPostAsync' "/auth/log-in" data
-
-                do! ensureSuccessAsync result
-
-                let! result = readAsJsonAsync<SignInResult> result
-
-                result.accessToken |> should be (not' Null)
-                result.idToken |> should be (not' Null)
-                result.refreshToken |> should be (not' Null)
+                result.AccessToken |> should be (not' Null)
+                result.IdToken |> should be (not' Null)
+                result.RefreshToken |> should be (not' Null)
             }
