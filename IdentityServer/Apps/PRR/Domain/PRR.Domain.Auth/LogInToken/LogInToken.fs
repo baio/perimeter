@@ -18,11 +18,11 @@ module LogInToken =
     let private replace (pat: string) (rep: string) (str: string) =
         Regex.Replace(str, pat, rep)
 
-    // TODO !!!
-    let private cleanup =
+    // cleanup sample  https://auth0.com/docs/flows/call-your-api-using-the-authorization-code-flow-with-pkce#javascript-sample
+    let cleanupCodeChallenge =
         replace "\+" "-"
         >> replace "\/" "_"
-        >> replace "=+$" ""
+        >> replace "=" ""
 
     let validateData (data: Data): BadRequestError array =
         [| (validateNullOrEmpty "client_id" data.Client_Id)
@@ -41,10 +41,8 @@ module LogInToken =
             if data.Client_Id <> item.ClientId then raise (unAuthorized "client_id mismatch")
             if data.Redirect_Uri <> item.RedirectUri then raise (unAuthorized "redirect_uri mismatch")
             let codeChallenge =
-                env.Sha256Provider(data.Code_Verifier)
-            // TODO : Tests !
-            let itemCodeChallenge =
-                item.CodeChallenge |> replace " " "+"
+                env.Sha256Provider(data.Code_Verifier) |> cleanupCodeChallenge
+            let itemCodeChallenge = item.CodeChallenge 
             printfn "****"
             printfn "Code_Verifier %s" data.Code_Verifier
             printfn "1 codeChallenge %s" codeChallenge

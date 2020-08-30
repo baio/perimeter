@@ -36,10 +36,11 @@ module CreateUser =
             let location = readResponseHader "Location" result
             let uri = Uri(location)
             return HttpUtility.ParseQueryString(uri.Query).Get("code")
-        }               
+        }
 
     let sha256 = SHA256.Create()
     let random = Random()
+
 
 
     [<CLIMutable>]
@@ -59,14 +60,15 @@ module CreateUser =
 
         let codeVerfier = randomString 128
 
-        (codeVerfier, (SHA256Provider.getSha256Base64Hash sha256 codeVerfier))
+        (codeVerfier,
+         (SHA256Provider.getSha256Base64Hash sha256 codeVerfier) |> LogInToken.LogInToken.cleanupCodeChallenge)
 
     let logInUser (fixture: TestFixture) (clientId: string) (email: string) (password: string) =
         task {
             let redirectUri = "http://localhost:4200"
 
             let (codeVerifier, codeChallenge) = createCodeChallenge()
-            
+
             let clientId = clientId
 
             let logInData: PRR.Domain.Auth.LogIn.Models.Data =
@@ -93,7 +95,7 @@ module CreateUser =
             let! result = result |> readAsJsonAsync<PRR.Domain.Auth.LogInToken.Models.Result>
 
             return result
-        }                
+        }
 
     let createUser'' signInUnderSampleDomain (env: UserTestContext) (userData: SignUp.Models.Data) =
         task {
@@ -113,13 +115,13 @@ module CreateUser =
                 else tenant.TenantManagementApplicationClientId
 
             let! result = logInUser env.TestFixture clientId userData.Email userData.Password
-            
+
             return result
         }
-        
-    let createUser' a b c = task {
-        let! result = createUser'' a b c
-        return result.AccessToken
-    }         
+
+    let createUser' a b c =
+        task {
+            let! result = createUser'' a b c
+            return result.AccessToken }
 
     let createUser = createUser' true

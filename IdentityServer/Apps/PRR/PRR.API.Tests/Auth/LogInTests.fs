@@ -7,6 +7,7 @@ open Microsoft.VisualBasic
 open PRR.API.ErrorHandler
 open PRR.API.Infra
 open PRR.API.Tests.Utils
+open PRR.Domain.Auth.LogInToken
 open PRR.Domain.Auth.SignUp
 open System
 open System.Security.Cryptography
@@ -38,13 +39,14 @@ module LogIn =
     let codeVerfier = randomString 128
 
     let sha256 = SHA256.Create()
-    let codeChellenge = SHA256Provider.getSha256Base64Hash sha256 codeVerfier
+    let codeChellenge = SHA256Provider.getSha256Base64Hash sha256 codeVerfier |> LogInToken.cleanupCodeChallenge
 
     let mutable testContext: UserTestContext option = None
 
     let mutable permissionId: int option = None
 
     let redirectUri = "http://localhost:4200"
+
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
     type ``login-api``(testFixture: TestFixture, output: ITestOutputHelper) =

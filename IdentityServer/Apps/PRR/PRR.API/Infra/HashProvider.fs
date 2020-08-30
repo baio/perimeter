@@ -24,7 +24,7 @@ module HashProvider =
         // and create a string.
         let sBuilder = StringBuilder()
 
-        // Loop through each byte of the hashed data
+        // Loop through each byte of the hashed datar
         // and format each one as a hexadecimal string.
         for i = 1 to data.Length - 1 do
             data.[i].ToString("x2")

@@ -19,11 +19,11 @@ export const getSHA256 = (plain: string) => {
 };
 
 export const base64arrayEncode = (arr: ArrayBuffer) =>
-    // TODO !
-    btoa(String.fromCharCode.apply(null, new Uint8Array(arr)))/*
+    // https://auth0.com/docs/flows/call-your-api-using-the-authorization-code-flow-with-pkce#javascript-sample
+    btoa(String.fromCharCode.apply(null, new Uint8Array(arr)))
         .replace(/\+/g, '-')
         .replace(/\//g, '_')
-        .replace(/=+$/, '');*/
+        .replace(/=/g, '');
 
 export const pkceChallengeFormVerifier = async (str: string) => {
     const hashed = await getSHA256(str);
