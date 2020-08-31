@@ -18,36 +18,40 @@ module private DomainHandlers =
 
     let getEnv (ctx: HttpContext) =
         let config = getConfig ctx
-        let hashProvider = getHash ctx
+        let authStringsProvider = getAuthStringsProvider ctx
         { AuthConfig =
               { IdTokenExpiresIn = config.Jwt.IdTokenExpiresIn
                 AccessTokenExpiresIn = config.Jwt.AccessTokenExpiresIn
                 RefreshTokenExpiresIn = config.Jwt.RefreshTokenExpiresIn }
-          HashProvider = hashProvider }
+          AuthStringsProvider = authStringsProvider }
 
     let createHandler domainPoolId =
         wrap
-            (create <!> ofReader (getEnv) <*> ((triplet domainPoolId) <!> bindJsonAsync<PostLike> <*> bindUserClaimId)
+            (create
+             <!> ofReader (getEnv)
+             <*> ((triplet domainPoolId)
+                  <!> bindJsonAsync<PostLike>
+                  <*> bindUserClaimId)
              <*> dataContext)
 
     let updateHandler id =
-        wrap (update <!> ((doublet id) <!> bindJsonAsync<PostLike>) <*> dataContext)
+        wrap
+            (update
+             <!> ((doublet id) <!> bindJsonAsync<PostLike>)
+             <*> dataContext)
 
-    let removeHandler (id: DomainId) =
-        wrap (remove id <!> dataContext)
+    let removeHandler (id: DomainId) = wrap (remove id <!> dataContext)
 
-    let getOne (id: DomainId) =
-        wrap (getOne id <!> dataContext)
+    let getOne (id: DomainId) = wrap (getOne id <!> dataContext)
 
 module Domain =
 
-    let createRoutes() =
-        subRoutef "/tenant/domain-pools/%i/domains" (fun domianPoolId ->
-            permissionGuard MANAGE_TENANT_DOMAINS >=> wrapAudienceGuard fromDomainPoolId domianPoolId
-            >=> (choose
-                     [ POST >=> createHandler domianPoolId
-                       routef "/%i" (fun domainId ->
-                           choose
-                               [ PUT >=> updateHandler domainId
-                                 DELETE >=> removeHandler domainId
-                                 GET >=> getOne domainId ]) ]))
+    let createRoutes () =
+        subRoutef "/tenant/domain-pools/%i/domains" (fun domainPoolId ->
+            permissionGuard MANAGE_TENANT_DOMAINS
+            >=> wrapAudienceGuard fromDomainPoolId domainPoolId
+            >=> (choose [ POST >=> createHandler domainPoolId
+                          routef "/%i" (fun domainId ->
+                              choose [ PUT >=> updateHandler domainId
+                                       DELETE >=> removeHandler domainId
+                                       GET >=> getOne domainId ]) ]))

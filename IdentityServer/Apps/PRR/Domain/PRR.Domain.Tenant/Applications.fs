@@ -11,8 +11,7 @@ open System.Threading.Tasks
 module Applications =
 
     [<CLIMutable>]
-    type PostLike =
-        { Name: string }
+    type PostLike = { Name: string }
 
     [<CLIMutable>]
     type GetLike =
@@ -25,42 +24,44 @@ module Applications =
           RefreshTokenExpiresIn: int }
 
     type CreateEnv =
-        { HashProvider: HashProvider
+        { AuthStringsProvider: AuthStringsProvider
           IdTokenExpiresIn: int<minutes>
           RefreshTokenExpiresIn: int<minutes> }
 
     let catch =
         function
-        | UniqueConstraintException "IX_Applications_DomainId_Name" (ConflictErrorField("name", UNIQUE)) ex ->
-            raise ex
-        | ex ->
-            raise ex
+        | UniqueConstraintException "IX_Applications_DomainId_Name" (ConflictErrorField ("name", UNIQUE)) ex -> raise ex
+        | ex -> raise ex
 
     let create (env: CreateEnv): Create<DomainId * PostLike, int, DbDataContext> =
         createCatch<Application, _, _, _> catch (fun (domainId, dto) ->
             Application
-                (Name = dto.Name, ClientId = Guid.NewGuid().ToString(), DomainId = domainId,
-                 ClientSecret = env.HashProvider(), IdTokenExpiresIn = int env.IdTokenExpiresIn,
-                 RefreshTokenExpiresIn = int env.RefreshTokenExpiresIn, Flow = FlowType.PKCE, AllowedCallbackUrls = "*"))
-            (fun x -> x.Id)
+                (Name = dto.Name,
+                 ClientId = env.AuthStringsProvider.ClientId(),
+                 DomainId = domainId,
+                 ClientSecret = env.AuthStringsProvider.ClientSecret(),
+                 IdTokenExpiresIn = int env.IdTokenExpiresIn,
+                 RefreshTokenExpiresIn = int env.RefreshTokenExpiresIn,
+                 Flow = FlowType.PKCE,
+                 AllowedCallbackUrls = "*")) (fun x -> x.Id)
 
     let update: Update<int, DomainId * PostLike, DbDataContext> =
-        updateCatch<Application, _, _, _> catch (fun id -> Application(Id = id))
-            (fun (_, dto) entity -> entity.Name <- dto.Name)
+        updateCatch<Application, _, _, _> catch (fun id -> Application(Id = id)) (fun (_, dto) entity ->
+            entity.Name <- dto.Name)
 
-    let remove: Remove<int, DbDataContext> =
-        remove (fun id -> Application(Id = id))
+    let remove: Remove<int, DbDataContext> = remove (fun id -> Application(Id = id))
 
     let getOne: GetOne<int, GetLike, DbDataContext> =
-        getOne<Application, _, _, _> (<@ fun p id -> p.Id = id @>)
+        getOne<Application, _, _, _>
+            (<@ fun p id -> p.Id = id @>)
             (<@ fun p ->
-                { Id = p.Id
-                  Name = p.Name
-                  ClientId = p.ClientId
-                  ClientSecret = p.ClientSecret
-                  DateCreated = p.DateCreated
-                  IdTokenExpiresIn = p.IdTokenExpiresIn
-                  RefreshTokenExpiresIn = p.RefreshTokenExpiresIn } @>)
+                    { Id = p.Id
+                      Name = p.Name
+                      ClientId = p.ClientId
+                      ClientSecret = p.ClientSecret
+                      DateCreated = p.DateCreated
+                      IdTokenExpiresIn = p.IdTokenExpiresIn
+                      RefreshTokenExpiresIn = p.RefreshTokenExpiresIn } @>)
 
     //
     type SortField =
@@ -96,7 +97,9 @@ module Applications =
 
             query {
                 for p in apps do
-                    where (p.DomainId = domainId && p.IsDomainManagement = false)
+                    where
+                        (p.DomainId = domainId
+                         && p.IsDomainManagement = false)
                     select
                         { Id = p.Id
                           Name = p.Name

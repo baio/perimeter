@@ -24,3 +24,6 @@ module Models =
 
     type ISHA256Provider =
         abstract GetSHA256: (string -> string) with get
+
+    type IAuthStringsProvider =
+        abstract AuthStringsProvider: AuthStringsProvider

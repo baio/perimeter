@@ -13,13 +13,10 @@ open System.Linq
 module Domains =
 
     [<CLIMutable>]
-    type PostLike =
-        { EnvName: string }
+    type PostLike = { EnvName: string }
 
     [<CLIMutable>]
-    type ItemGetLike =
-        { Id: int
-          Name: string }
+    type ItemGetLike = { Id: int; Name: string }
 
     [<CLIMutable>]
     type GetLike =
@@ -30,21 +27,25 @@ module Domains =
           Apis: ItemGetLike seq
           Roles: ItemGetLike seq }
 
-    let checkUserForbidden (userId: UserId) (domainPoolId: DomainPoolId) (domainId: DomainId)
-        (dataContext: DbDataContext) =
+    let checkUserForbidden (userId: UserId)
+                           (domainPoolId: DomainPoolId)
+                           (domainId: DomainId)
+                           (dataContext: DbDataContext)
+                           =
         query {
             for dp in dataContext.Domains do
-                where (dp.Id = domainId && dp.PoolId = Nullable(domainPoolId) && dp.Pool.Tenant.UserId = userId)
+                where
+                    (dp.Id = domainId
+                     && dp.PoolId = Nullable(domainPoolId)
+                     && dp.Pool.Tenant.UserId = userId)
                 select dp.Id
         }
         |> notFoundRaiseError Forbidden'
 
     let catch =
         function
-        | UniqueConstraintException "IX_Domains_PoolId_EnvName" (ConflictErrorField("envName", UNIQUE)) ex ->
-            raise ex
-        | ex ->
-            raise ex
+        | UniqueConstraintException "IX_Domains_PoolId_EnvName" (ConflictErrorField ("envName", UNIQUE)) ex -> raise ex
+        | ex -> raise ex
 
     type AuthConfig =
         { IdTokenExpiresIn: int<minutes>
@@ -53,22 +54,32 @@ module Domains =
 
     type Env =
         { AuthConfig: AuthConfig
-          HashProvider: HashProvider }
+          AuthStringsProvider: AuthStringsProvider }
 
-    let private guid() = Guid.NewGuid().ToString()
+    let private guid () = Guid.NewGuid().ToString()
 
-    let private createDomainManagementApp (hashProvider: HashProvider) (domain, dataContext, authConfig: AuthConfig) =
+    let private createDomainManagementApp (authStringsProvider: AuthStringsProvider)
+                                          (domain, dataContext, authConfig: AuthConfig)
+                                          =
         Application
-            (Domain = domain, Name = "Domain Management Application", ClientId = guid(), ClientSecret = hashProvider(),
+            (Domain = domain,
+             Name = "Domain Management Application",
+             ClientId = authStringsProvider.ClientId(),
+             ClientSecret = authStringsProvider.ClientSecret(),
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
-             RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn), AllowedCallbackUrls = "*",
-             Flow = FlowType.PKCE, SSOEnabled = true, IsDomainManagement = true)
+             RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
+             AllowedCallbackUrls = "*",
+             Flow = FlowType.PKCE,
+             SSOEnabled = true,
+             IsDomainManagement = true)
 
     let private createDomainManagementApi (domain, dataContext, authConfig: AuthConfig) =
         Api
-            (Domain = domain, Name = "Domain Management API",
+            (Domain = domain,
+             Name = "Domain Management API",
              Identifier = sprintf "https://%s.management-api-%s.com" domain.EnvName (Guid.NewGuid().ToString()),
-             IsDomainManagement = true, AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
+             IsDomainManagement = true,
+             AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
 
     let private createUserDomainOwnerRole (userEmail: string) (domain: Domain) =
         DomainUserRole(UserEmail = userEmail, Domain = domain, RoleId = PRR.Data.DataContext.Seed.Roles.DomainOwner.Id)
@@ -77,50 +88,44 @@ module Domains =
         fun (domainPoolId, dto, userId) dataContext ->
             task {
                 let domain =
-                    Domain(PoolId = Nullable(domainPoolId), EnvName = dto.EnvName, IsMain = false) |> add' dataContext
+                    Domain(PoolId = Nullable(domainPoolId), EnvName = dto.EnvName, IsMain = false)
+                    |> add' dataContext
 
-                createDomainManagementApp env.HashProvider (domain, dataContext, env.AuthConfig) |> add dataContext
+                createDomainManagementApp env.AuthStringsProvider (domain, dataContext, env.AuthConfig)
+                |> add dataContext
 
-                createDomainManagementApi (domain, dataContext, env.AuthConfig) |> add dataContext
+                createDomainManagementApi (domain, dataContext, env.AuthConfig)
+                |> add dataContext
 
-                let! userEmail = query {
-                                     for user in dataContext.Users do
-                                         where (user.Id = userId)
-                                         select (user.Email)
-                                 }
-                                 |> toSingleExnAsync (unexpected "User email is not found")
+                let! userEmail =
+                    query {
+                        for user in dataContext.Users do
+                            where (user.Id = userId)
+                            select (user.Email)
+                    }
+                    |> toSingleExnAsync (unexpected "User email is not found")
 
-                createUserDomainOwnerRole userEmail domain |> add dataContext
+                createUserDomainOwnerRole userEmail domain
+                |> add dataContext
 
                 try
                     do! saveChangesAsync dataContext
                     return domain.Id
-                with ex ->
-                    return catch ex
+                with ex -> return catch ex
             }
 
     let update: Update<int, PostLike, DbDataContext> =
-        updateCatch<Domain, _, _, _> catch (fun id -> Domain(Id = id))
-            (fun dto entity -> entity.EnvName <- dto.EnvName)
+        updateCatch<Domain, _, _, _> catch (fun id -> Domain(Id = id)) (fun dto entity -> entity.EnvName <- dto.EnvName)
 
-    let remove: Remove<int, DbDataContext> =
-        remove (fun id -> Role(Id = id))
+    let remove: Remove<int, DbDataContext> = remove (fun id -> Role(Id = id))
 
     let getOne: GetOne<int, GetLike, DbDataContext> =
-        getOne<Domain, _, _, _> (<@ fun p id -> p.Id = id @>)
+        getOne<Domain, _, _, _>
+            (<@ fun p id -> p.Id = id @>)
             (<@ fun p ->
-                { Id = p.Id
-                  EnvName = p.EnvName
-                  DateCreated = p.DateCreated
-                  Applications =
-                      p.Applications.Select(fun x ->
-                          { Id = x.Id
-                            Name = x.Name })
-                  Apis =
-                      p.Apis.Select(fun x ->
-                          { Id = x.Id
-                            Name = x.Name })
-                  Roles =
-                      p.Roles.Select(fun x ->
-                          { Id = x.Id
-                            Name = x.Name }) } @>)
+                    { Id = p.Id
+                      EnvName = p.EnvName
+                      DateCreated = p.DateCreated
+                      Applications = p.Applications.Select(fun x -> { Id = x.Id; Name = x.Name })
+                      Apis = p.Apis.Select(fun x -> { Id = x.Id; Name = x.Name })
+                      Roles = p.Roles.Select(fun x -> { Id = x.Id; Name = x.Name }) } @>)

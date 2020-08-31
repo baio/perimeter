@@ -18,8 +18,7 @@ open System.Threading.Tasks
 module DomainPools =
 
     [<CLIMutable>]
-    type PostLike =
-        { Name: string }
+    type PostLike = { Name: string }
 
     [<CLIMutable>]
     type DomainGetLike =
@@ -44,7 +43,7 @@ module DomainPools =
         |> notFoundRaiseError Forbidden'
 
     //
-    let guid() = Guid.NewGuid().ToString()
+    let guid () = Guid.NewGuid().ToString()
 
     type AuthConfig =
         { IdTokenExpiresIn: int<minutes>
@@ -53,21 +52,29 @@ module DomainPools =
 
     type Env =
         { DataContext: DbDataContext
-          HashProvider: HashProvider
+          AuthStringsProvider: AuthStringsProvider
           AuthConfig: AuthConfig }
 
     let createDomainManagementApp (env: Env) domain =
         Application
-            (Domain = domain, Name = "Domain Management Application", ClientId = guid(),
-             ClientSecret = env.HashProvider(), IdTokenExpiresIn = (int env.AuthConfig.IdTokenExpiresIn),
-             RefreshTokenExpiresIn = (int env.AuthConfig.RefreshTokenExpiresIn), AllowedCallbackUrls = "*",
-             Flow = FlowType.PKCE, IsDomainManagement = true) |> add' env.DataContext
+            (Domain = domain,
+             Name = "Domain Management Application",
+             ClientId = env.AuthStringsProvider.ClientId(),
+             ClientSecret = env.AuthStringsProvider.ClientSecret(),
+             IdTokenExpiresIn = (int env.AuthConfig.IdTokenExpiresIn),
+             RefreshTokenExpiresIn = (int env.AuthConfig.RefreshTokenExpiresIn),
+             AllowedCallbackUrls = "*",
+             Flow = FlowType.PKCE,
+             IsDomainManagement = true)
+        |> add' env.DataContext
 
     let createDomainManagementApi (env: Env) domain =
         Api
-            (Domain = domain, Name = "Domain Management API",
+            (Domain = domain,
+             Name = "Domain Management API",
              Identifier = sprintf "https://%s.management-api-%s.com" domain.EnvName (Guid.NewGuid().ToString()),
-             IsDomainManagement = true, AccessTokenExpiresIn = (int env.AuthConfig.AccessTokenExpiresIn))
+             IsDomainManagement = true,
+             AccessTokenExpiresIn = (int env.AuthConfig.AccessTokenExpiresIn))
         |> add' env.DataContext
 
     let addUserRoles (userEmail: string) (domain: Domain) (roleIds: int seq) (dataContext: DbDataContext) =
@@ -77,36 +84,43 @@ module DomainPools =
 
     let catch =
         function
-        | UniqueConstraintException "IX_DomainPools_TenantId_Name" (ConflictErrorField("name", UNIQUE)) ex ->
-            raise ex
-        | ex ->
-            raise ex
+        | UniqueConstraintException "IX_DomainPools_TenantId_Name" (ConflictErrorField ("name", UNIQUE)) ex -> raise ex
+        | ex -> raise ex
 
     let create ((userId, tenantId, data): UserId * TenantId * PostLike) (env: Env) =
         let dataContext = env.DataContext
 
-        let domainPool = DomainPool(TenantId = tenantId, Name = data.Name) |> add' dataContext
-        let domain = Domain(Pool = domainPool, EnvName = "dev", IsMain = true) |> add' dataContext
+        let domainPool =
+            DomainPool(TenantId = tenantId, Name = data.Name)
+            |> add' dataContext
+
+        let domain =
+            Domain(Pool = domainPool, EnvName = "dev", IsMain = true)
+            |> add' dataContext
+
         let _ = createDomainManagementApp env domain
         let _ = createDomainManagementApi env domain
 
         task {
-            let! (ownerId, ownerEmail) = query {
-                                             for tenant in dataContext.Tenants do
-                                                 where (tenant.Id = tenantId)
-                                                 select (System.Tuple<_, _>(tenant.UserId, tenant.User.Email))
-                                         }
-                                         |> toSingleAsync
+            let! (ownerId, ownerEmail) =
+                query {
+                    for tenant in dataContext.Tenants do
+                        where (tenant.Id = tenantId)
+                        select (System.Tuple<_, _>(tenant.UserId, tenant.User.Email))
+                }
+                |> toSingleAsync
 
             // Tenant owner -> Domain owner
             // User -> Domain super admin
             if ownerId <> userId then
-                let! userEmail = query {
-                                     for user in dataContext.Users do
-                                         where (user.Id = userId)
-                                         select user.Email
-                                 }
-                                 |> toSingleAsync
+                let! userEmail =
+                    query {
+                        for user in dataContext.Users do
+                            where (user.Id = userId)
+                            select user.Email
+                    }
+                    |> toSingleAsync
+
                 addUserRoles ownerEmail domain [ Seed.Roles.DomainOwner.Id ] dataContext
                 addUserRoles userEmail domain [ Seed.Roles.DomainSuperAdmin.Id ] dataContext
             else
@@ -121,11 +135,10 @@ module DomainPools =
 
     //
     let update: Update<int, PostLike, DbDataContext> =
-        updateCatch<DomainPool, _, _, _> catch (fun id -> DomainPool(Id = id))
-            (fun dto entity -> entity.Name <- dto.Name)
+        updateCatch<DomainPool, _, _, _> catch (fun id -> DomainPool(Id = id)) (fun dto entity ->
+            entity.Name <- dto.Name)
 
-    let remove: Remove<int, DbDataContext> =
-        remove (fun id -> DomainPool(Id = id))
+    let remove: Remove<int, DbDataContext> = remove (fun id -> DomainPool(Id = id))
 
     let private selectGet =
         <@ fun (p: DomainPool) ->

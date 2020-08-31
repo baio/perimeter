@@ -16,5 +16,5 @@ module DIHelpers =
     let getSHA256 (ctx: HttpContext) = ctx.GetService<ISHA256Provider>().GetSHA256
     let getPasswordSalter (ctx: HttpContext) = ctx.GetService<IPasswordSaltProvider>().SaltPassword
     let getConfig (ctx: HttpContext) = ctx.GetService<IConfig>().GetConfig()
-
+    let getAuthStringsProvider (ctx: HttpContext) = ctx.GetService<IAuthStringsProvider>().AuthStringsProvider
 

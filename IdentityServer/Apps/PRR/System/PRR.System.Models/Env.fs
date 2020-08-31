@@ -20,12 +20,13 @@ module Env =
           RefreshTokenExpiresIn: int<minutes>
           SignUpTokenExpiresIn: int<minutes>
           ResetPasswordTokenExpiresIn: int<minutes> }
-
+        
     type GetDataContextProvider = unit -> IDataContextProvider
 
     type SystemEnv =
-        { HashProvider: HashProvider        
+        { HashProvider: HashProvider
           PasswordSalter: StringSalter
+          AuthStringsProvider: AuthStringsProvider
           SendMail: SendMail
           GetDataContextProvider: GetDataContextProvider
           AuthConfig: AuthConfig

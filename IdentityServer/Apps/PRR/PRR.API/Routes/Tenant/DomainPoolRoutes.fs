@@ -17,16 +17,20 @@ module private DomainPoolHandlers =
     let tenantId =
         bindUserClaimId
         >>= (fun id ctx ->
-        ctx
-        |> getDataContext
-        |> Helpers.getTenantIdFromUserId id)
+            ctx
+            |> getDataContext
+            |> Helpers.getTenantIdFromUserId id)
 
     let createHandler =
         wrap
-            (create <!> (triplet <!> bindUserClaimId <*> tenantId <*> bindJsonAsync<PostLike>)
+            (create
+             <!> (triplet
+                  <!> bindUserClaimId
+                  <*> tenantId
+                  <*> bindJsonAsync<PostLike>)
              <*> ofReader (fun ctx ->
                      let config = getConfig ctx
-                     { HashProvider = getHash ctx
+                     { AuthStringsProvider = getAuthStringsProvider ctx
                        DataContext = getDataContext ctx
                        AuthConfig =
                            { AccessTokenExpiresIn = config.Jwt.AccessTokenExpiresIn
@@ -34,40 +38,41 @@ module private DomainPoolHandlers =
                              RefreshTokenExpiresIn = config.Jwt.RefreshTokenExpiresIn } }: Env))
 
     let updateHandler id =
-        wrap (update <!> ((doublet id) <!> bindJsonAsync<PostLike>) <*> dataContext)
+        wrap
+            (update
+             <!> ((doublet id) <!> bindJsonAsync<PostLike>)
+             <*> dataContext)
 
-    let removeHandler (id: int) =
-        wrap (remove id <!> dataContext)
+    let removeHandler (id: int) = wrap (remove id <!> dataContext)
 
-    let getOne (id: int) =
-        wrap (getOne id <!> dataContext)
+    let getOne (id: int) = wrap (getOne id <!> dataContext)
 
     let bindListQuery =
         bindListQuery
             ((function
-             | "name" ->
-                 Some SortField.Name
-             | "dateCreated" ->
-                 Some SortField.DateCreated
+             | "name" -> Some SortField.Name
+             | "dateCreated" -> Some SortField.DateCreated
              | _ -> None),
              (function
-             | "name" ->
-                 Some FilterField.Name
+             | "name" -> Some FilterField.Name
              | _ -> None))
         |> ofReader
 
     let getList =
-        wrap (getList <!> getDataContext' <*> (doublet <!> tenantId <*> bindListQuery))
+        wrap
+            (getList
+             <!> getDataContext'
+             <*> (doublet <!> tenantId <*> bindListQuery))
 
 module DomainPool =
 
-    let createRoutes() =
-        subRoute "/tenant/domain-pools" requiresAuth >=> permissionGuard MANAGE_TENANT_DOMAINS
-        >=> (choose
-                 [ POST >=> createHandler
-                   routef "/%i" (fun domainPoolId ->
-                       wrapAudienceGuard fromDomainPoolId domainPoolId >=> choose
-                                                                               [ PUT >=> updateHandler domainPoolId
-                                                                                 DELETE >=> removeHandler domainPoolId
-                                                                                 GET >=> getOne domainPoolId ])
-                   GET >=> getList ])
+    let createRoutes () =
+        subRoute "/tenant/domain-pools" requiresAuth
+        >=> permissionGuard MANAGE_TENANT_DOMAINS
+        >=> (choose [ POST >=> createHandler
+                      routef "/%i" (fun domainPoolId ->
+                          wrapAudienceGuard fromDomainPoolId domainPoolId
+                          >=> choose [ PUT >=> updateHandler domainPoolId
+                                       DELETE >=> removeHandler domainPoolId
+                                       GET >=> getOne domainPoolId ])
+                      GET >=> getList ])

@@ -26,55 +26,60 @@ open System
 open System.Security.Cryptography
 
 let webApp =
-    choose
-        [ Auth.createRoutes()
-          Me.createRoutes()
-          Tenant.createRoutes()
+    choose [ Auth.createRoutes ()
+             Me.createRoutes ()
+             Tenant.createRoutes ()
 #if E2E
-          E2E.createRoutes()
+             E2E.createRoutes ()
 #endif
-          setStatusCode 404 >=> text "Not Found" ]
+             setStatusCode 404 >=> text "Not Found" ]
 
 let createDbContext (connectionString: string) =
     let optionsBuilder = DbContextOptionsBuilder<DbDataContext>()
     optionsBuilder.UseNpgsql
-        (connectionString, (fun b -> b.MigrationsAssembly("PRR.Data.DataContextMigrations") |> ignore))
+        (connectionString,
+         (fun b ->
+             b.MigrationsAssembly("PRR.Data.DataContextMigrations")
+             |> ignore))
     DbDataContext(optionsBuilder.Options)
 
 let configureCors (builder: CorsPolicyBuilder) =
     // builder.WithOrigins([| "http://localhost:4200" |]).AllowAnyMethod().AllowAnyHeader().WithHeaders([|"Access-Control-Allow-Credentials"|]) |> ignore
-    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader() |> ignore
+    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+    |> ignore
 
 let configureApp (app: IApplicationBuilder) =
-    let env = app.ApplicationServices.GetService<IHostingEnvironment>()
+    let env =
+        app.ApplicationServices.GetService<IHostingEnvironment>()
 
     (match env.IsDevelopment() with
      | true -> app.UseDeveloperExceptionPage()
-     | false -> app.UseGiraffeErrorHandler errorHandler)
-        .UseHttpsRedirection()
-        .UseAuthentication()
-        .UseAuthorization()
-        .UseCors(configureCors)
-        .UseGiraffe(webApp)
+     | false -> app.UseGiraffeErrorHandler errorHandler).UseHttpsRedirection().UseAuthentication().UseAuthorization()
+        .UseCors(configureCors).UseGiraffe(webApp)
 
 
 let configureServices (context: WebHostBuilderContext) (services: IServiceCollection) =
-    let config = Infra.Config.getConfig context.Configuration ()
+    let config =
+        Infra.Config.getConfig context.Configuration ()
     // Authentication
     let issuerSigningKey =
         config.Jwt.AccessTokenSecret
         |> System.Text.Encoding.ASCII.GetBytes
         |> SymmetricSecurityKey
+
     services.AddAuthorization() |> ignore
     services.AddAuthentication(fun options ->
             // https://stackoverflow.com/questions/45763149/asp-net-core-jwt-in-uri-query-parameter/53295042#53295042
             options.DefaultAuthenticateScheme <- JwtBearerDefaults.AuthenticationScheme
-            options.DefaultChallengeScheme <- JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(fun x ->
+            options.DefaultChallengeScheme <- JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(fun x ->
             x.RequireHttpsMetadata <- false
             x.SaveToken <- true
             x.TokenValidationParameters <-
                 TokenValidationParameters
-                    (ValidateIssuerSigningKey = true, IssuerSigningKey = issuerSigningKey, ValidateIssuer = false,
+                    (ValidateIssuerSigningKey = true,
+                     IssuerSigningKey = issuerSigningKey,
+                     ValidateIssuer = false,
                      ValidateAudience = false,
 #if E2E
                      ValidateLifetime = false
@@ -93,20 +98,36 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     let sha256Provider = SHA256Provider sha256
 
     services.AddSingleton<IConfig, Config>() |> ignore
-    services.AddSingleton<IPermissionsFromRoles, PermissionsFromRoles>() |> ignore
-    services.AddSingleton<IHashProvider>(hashProvider) |> ignore
-    services.AddSingleton<ISHA256Provider>(sha256Provider) |> ignore
-    services.AddSingleton<IPasswordSaltProvider, PasswordSaltProvider>() |> ignore
+    services.AddSingleton<IPermissionsFromRoles, PermissionsFromRoles>()
+    |> ignore
+    services.AddSingleton<IHashProvider>(hashProvider)
+    |> ignore
+    services.AddSingleton<ISHA256Provider>(sha256Provider)
+    |> ignore
+    services.AddSingleton<IPasswordSaltProvider, PasswordSaltProvider>()
+    |> ignore
+    services.AddSingleton<IAuthStringsProvider, AuthStringsProvider>()
+    |> ignore
 
     // Configure DataContext
-    let loggerFactory = LoggerFactory.Create(fun builder -> builder.AddConsole() |> ignore)
-    let connectionString = context.Configuration.GetConnectionString "PostgreSQL"
+    let loggerFactory =
+        LoggerFactory.Create(fun builder -> builder.AddConsole() |> ignore)
+
+    let connectionString =
+        context.Configuration.GetConnectionString "PostgreSQL"
+
     services.AddDbContext<DbDataContext>
         ((fun o ->
-        let o' = o.UseLoggerFactory(loggerFactory).EnableSensitiveDataLogging true
-        NpgsqlDbContextOptionsExtensions.UseNpgsql
-            (o', connectionString, (fun b -> b.MigrationsAssembly("PRR.Data.DataContextMigrations") |> ignore))
-        |> ignore))
+            let o' =
+                o.UseLoggerFactory(loggerFactory).EnableSensitiveDataLogging true
+
+            NpgsqlDbContextOptionsExtensions.UseNpgsql
+                (o',
+                 connectionString,
+                 (fun b ->
+                     b.MigrationsAssembly("PRR.Data.DataContextMigrations")
+                     |> ignore))
+            |> ignore))
     |> ignore
 
 
@@ -124,15 +145,20 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
                 ConfirmSignUpUrl = context.Configuration.GetValue("MailSender:Project:ConfirmSignUpUrl")
                 ResetPasswordUrl = context.Configuration.GetValue("MailSender:Project:ResetPasswordUrl") } }
 
-    let sendGridApiKey = context.Configuration.GetValue("SendGridApiKey")
-    let mailSender = PRR.API.Infra.Mail.SendGridMail.createSendMail sendGridApiKey
+    let sendGridApiKey =
+        context.Configuration.GetValue("SendGridApiKey")
+
+    let mailSender =
+        PRR.API.Infra.Mail.SendGridMail.createSendMail sendGridApiKey
 
     let systemEnv: SystemEnv =
+        let serviceProvider = services.BuildServiceProvider()
         { SendMail = createSendMail mailEnv mailSender
           GetDataContextProvider =
-              fun () -> new DataContextProvider(services.BuildServiceProvider().CreateScope()) :> IDataContextProvider
+              fun () -> new DataContextProvider(serviceProvider.CreateScope()) :> IDataContextProvider
           HashProvider = (hashProvider :> IHashProvider).GetHash
-          PasswordSalter = services.BuildServiceProvider().GetService<IPasswordSaltProvider>().SaltPassword
+          PasswordSalter = serviceProvider.GetService<IPasswordSaltProvider>().SaltPassword
+          AuthStringsProvider = serviceProvider.GetService<IAuthStringsProvider>().AuthStringsProvider
           AuthConfig =
               { IdTokenExpiresIn = config.Jwt.IdTokenExpiresIn
                 AccessTokenExpiresIn = config.Jwt.AccessTokenExpiresIn
@@ -144,7 +170,8 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
 #if TEST
     // Tests must initialize sys by themselves
     //For tests
-    services.AddSingleton<SystemEnv>(fun _ -> systemEnv) |> ignore
+    services.AddSingleton<SystemEnv>(fun _ -> systemEnv)
+    |> ignore
 #else
     let akkaConfFile = "akka.e2e.hocon"
 #if E2E
@@ -153,28 +180,27 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     let akkaConfFile = "akka.hocon"
 #endif
     let sys = setUp' systemEnv akkaConfFile
-    services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore
+    services.AddSingleton<ICQRSSystem>(fun _ -> sys)
+    |> ignore
 #endif
 
 let configureLogging (builder: ILoggingBuilder) =
-    builder.AddFilter(fun l -> l.Equals LogLevel.Error).AddConsole().AddDebug() |> ignore
+    builder.AddFilter(fun l -> l.Equals LogLevel.Error).AddConsole().AddDebug()
+    |> ignore
 
 let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigurationBuilder) =
     config.AddJsonFile("appsettings.json", false, true)
           .AddJsonFile(sprintf "appsettings.%s.json" context.HostingEnvironment.EnvironmentName, true)
-          .AddEnvironmentVariables() |> ignore
+          .AddEnvironmentVariables()
+    |> ignore
+
 
 
 [<EntryPoint>]
 let main _ =
-    WebHostBuilder()
-        .UseKestrel()
+    WebHostBuilder().UseKestrel()
         // .UseWebRoot(Directory.GetCurrentDirectory())
-        .UseIISIntegration()
-        .ConfigureAppConfiguration(configureAppConfiguration)
-        .Configure(Action<IApplicationBuilder> configureApp)
-        .ConfigureServices(configureServices)
-        .ConfigureLogging(configureLogging)
-        .Build()
-        .Run()
+        .UseIISIntegration().ConfigureAppConfiguration(configureAppConfiguration)
+        .Configure(Action<IApplicationBuilder> configureApp).ConfigureServices(configureServices)
+        .ConfigureLogging(configureLogging).Build().Run()
     0

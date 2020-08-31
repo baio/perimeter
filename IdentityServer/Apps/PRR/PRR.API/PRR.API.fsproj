@@ -35,6 +35,7 @@
         <Compile Include="Infra\HashProvider.fs" />
         <Compile Include="Infra\SHA256Provider.fs" />
         <Compile Include="Infra\Config.fs" />
+        <Compile Include="Infra\AuthStringsProvider.fs" />
         <Compile Include="ErrorHandler.fs" />
         <Content Include="appsettings.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>

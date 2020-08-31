@@ -16,49 +16,52 @@ module private ApplicationHandlers =
 
     let createHandler domainId =
         wrap
-            (create <!> ((fun ctx ->
-                         let config = getConfig ctx
-                         { RefreshTokenExpiresIn = config.Jwt.RefreshTokenExpiresIn
-                           IdTokenExpiresIn = config.Jwt.IdTokenExpiresIn
-                           HashProvider = ctx |> getHash })
-                         |> ofReader) <*> ((doublet domainId) <!> bindJsonAsync<PostLike>) <*> dataContext)
+            (create
+             <!> ((fun ctx ->
+                      let config = getConfig ctx
+                      { RefreshTokenExpiresIn = config.Jwt.RefreshTokenExpiresIn
+                        IdTokenExpiresIn = config.Jwt.IdTokenExpiresIn
+                        AuthStringsProvider = getAuthStringsProvider ctx })
+                  |> ofReader)
+             <*> ((doublet domainId) <!> bindJsonAsync<PostLike>)
+             <*> dataContext)
 
     let updateHandler domainId id =
-        wrap (update <!> ((doublet id) <!> (doublet domainId <!> bindJsonAsync<PostLike>)) <*> dataContext)
+        wrap
+            (update
+             <!> ((doublet id)
+                  <!> (doublet domainId <!> bindJsonAsync<PostLike>))
+             <*> dataContext)
 
-    let removeHandler (id: int) =
-        wrap (remove id <!> dataContext)
+    let removeHandler (id: int) = wrap (remove id <!> dataContext)
 
-    let getOne (id: int) =
-        wrap (getOne id <!> dataContext)
+    let getOne (id: int) = wrap (getOne id <!> dataContext)
 
     let bindListQuery =
         bindListQuery
             ((function
-             | "name" ->
-                 Some SortField.Name
-             | "dateCreated" ->
-                 Some SortField.DateCreated
+             | "name" -> Some SortField.Name
+             | "dateCreated" -> Some SortField.DateCreated
              | _ -> None),
              (function
-             | "name" ->
-                 Some FilterField.Name
+             | "name" -> Some FilterField.Name
              | _ -> None))
         |> ofReader
 
     let getList domainId =
-        wrap (getList <!> getDataContext' <*> ((doublet domainId) <!> bindListQuery))
+        wrap
+            (getList
+             <!> getDataContext'
+             <*> ((doublet domainId) <!> bindListQuery))
 
 module Application =
 
-    let createRoutes() =
+    let createRoutes () =
         subRoutef "/tenant/domains/%i/applications" (fun domainId ->
             wrapAudienceGuard fromDomainId domainId
-            >=> permissionGuard MAMANGE_DOMAIN >=>
-            (choose
-                [ POST >=> createHandler domainId                  
-                  PUT >=> routef "/%i" (updateHandler domainId)
-                  DELETE >=> routef "/%i" removeHandler
-                  GET >=> routef "/%i" getOne
-                  GET >=> getList domainId
-                  ]))
+            >=> permissionGuard MAMANGE_DOMAIN
+            >=> (choose [ POST >=> createHandler domainId
+                          PUT >=> routef "/%i" (updateHandler domainId)
+                          DELETE >=> routef "/%i" removeHandler
+                          GET >=> routef "/%i" getOne
+                          GET >=> getList domainId ]))
