@@ -154,9 +154,9 @@ module MultiUsers =
 
                 res |> should be (not' null)
 
-                res.AccessToken |> should be (not' null)
+                res.access_token |> should be (not' null)
 
-                users.[1] <- {| u2 with Token = Some res.AccessToken |}
+                users.[1] <- {| u2 with Token = Some res.access_token |}
             }
 
         [<Fact>]
@@ -199,9 +199,9 @@ module MultiUsers =
 
                 res |> should be (not' null)
 
-                res.AccessToken |> should be (not' null)
+                res.access_token |> should be (not' null)
 
-                users.[1] <- {| u2 with Token = Some res.AccessToken |}
+                users.[1] <- {| u2 with Token = Some res.access_token |}
             }
 
 
@@ -261,9 +261,9 @@ module MultiUsers =
 
                 res |> should be (not' null)
 
-                res.AccessToken |> should be (not' null)
+                res.access_token |> should be (not' null)
 
-                users.[1] <- {| u2 with Token = Some res.AccessToken |}
+                users.[1] <- {| u2 with Token = Some res.access_token |}
             }
 
 

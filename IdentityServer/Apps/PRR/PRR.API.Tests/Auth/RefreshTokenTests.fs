@@ -21,9 +21,9 @@ module RefreshToken =
 
     [<CLIMutable>]
     type SignInResult =
-        { idToken: string
-          accessToken: string
-          refreshToken: string }
+        { id_token: string
+          access_token: string
+          refresh_token: string }
 
     let mutable accessToken: string = null
     let mutable refreshToken: string = null
@@ -72,8 +72,8 @@ module RefreshToken =
 
                 let testContext = createUserTestContext testFixture
                 let! result = createUser'' true testContext ownerData
-                accessToken <- result.AccessToken
-                refreshToken <- result.RefreshToken
+                accessToken <- result.access_token
+                refreshToken <- result.refresh_token
                 return ()
             }
 
@@ -123,15 +123,15 @@ module RefreshToken =
 
                 let! result = readAsJsonAsync<SignInResult> result
 
-                result.accessToken |> should be (not' Null)
-                result.idToken |> should be (not' Null)
-                result.refreshToken |> should be (not' Null)
+                result.access_token |> should be (not' Null)
+                result.id_token |> should be (not' Null)
+                result.refresh_token |> should be (not' Null)
 
-                result.accessToken |> should not' (equal accessToken)
-                result.refreshToken |> should not' (equal refreshToken)
+                result.access_token |> should not' (equal accessToken)
+                result.refresh_token |> should not' (equal refreshToken)
 
-                accessToken2 <- result.accessToken
-                refreshToken2 <- result.refreshToken
+                accessToken2 <- result.access_token
+                refreshToken2 <- result.refresh_token
             }
 
         [<Fact>]
@@ -166,18 +166,18 @@ module RefreshToken =
 
                 let! result = readAsJsonAsync<SignInResult> result
 
-                result.accessToken |> should be (not' Null)
-                result.idToken |> should be (not' Null)
-                result.refreshToken |> should be (not' Null)
+                result.access_token |> should be (not' Null)
+                result.id_token |> should be (not' Null)
+                result.refresh_token |> should be (not' Null)
 
-                result.accessToken |> should not' (equal accessToken)
-                result.refreshToken |> should not' (equal refreshToken)
+                result.access_token |> should not' (equal accessToken)
+                result.refresh_token |> should not' (equal refreshToken)
 
-                result.accessToken |> should not' (equal accessToken2)
-                result.refreshToken |> should not' (equal refreshToken2)
+                result.access_token |> should not' (equal accessToken2)
+                result.refresh_token |> should not' (equal refreshToken2)
 
-                accessToken2 <- result.accessToken
-                refreshToken2 <- result.refreshToken
+                accessToken2 <- result.access_token
+                refreshToken2 <- result.refresh_token
             }
 
 

@@ -17,9 +17,9 @@ module Models =
           Code_Verifier: string }
 
     type Result =
-        { IdToken: string
-          AccessToken: string
-          RefreshToken: string }
+        { id_token: string
+          access_token: string
+          refresh_token: string }
 
     type Env =
         { DataContext: DbDataContext

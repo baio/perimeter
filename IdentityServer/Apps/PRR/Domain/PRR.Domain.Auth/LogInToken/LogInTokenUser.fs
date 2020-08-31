@@ -25,17 +25,17 @@ module internal SignInUser =
 
         let refreshToken = env.HashProvider()
 
-        { IdToken = idToken
-          AccessToken = accessToken
-          RefreshToken = refreshToken }
+        { id_token = idToken
+          access_token = accessToken
+          refresh_token = refreshToken }
 
     let signInUser env (tokenData: TokenData) clientId =
         task {
             let! clientId = PRR.Domain.Auth.LogIn.UserHelpers.getClientId env.DataContext clientId tokenData.Email
             match! getClientDomainAudiences env.DataContext clientId with
             | Some { DomainId = domainId; Audiences = audiences } ->
-                let! userRolePemissions = getUserDomainRolesPermissions env.DataContext (domainId, tokenData.Email)
-                let result = signInUser' env clientId audiences tokenData userRolePemissions
+                let! userRolePermissions = getUserDomainRolesPermissions env.DataContext (domainId, tokenData.Email)
+                let result = signInUser' env clientId audiences tokenData userRolePermissions
                 return (result, clientId)
             | None ->
                 return raise (unAuthorized "Client is not found")

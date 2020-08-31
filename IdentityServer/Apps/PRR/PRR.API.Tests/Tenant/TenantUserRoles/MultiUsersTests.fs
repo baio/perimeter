@@ -89,7 +89,7 @@ module MultiUsers =
                 let! res = logInUser testFixture u1.Tenant.Value.SampleApplicationClientId u2.Data.Email u2.Data.Password
 
                 users.[1] <- {| u2 with
-                        Token = Some(res.AccessToken)
+                        Token = Some(res.access_token)
                         Tenant = Some(tenant) |}
             }
 
@@ -114,7 +114,7 @@ module MultiUsers =
             task {
                 let! res = logInUser testFixture u1.Tenant.Value.TenantManagementApplicationClientId u1.Data.Email u1.Data.Password
                 
-                users.[0] <- {| u1 with Token = Some(res.AccessToken) |}
+                users.[0] <- {| u1 with Token = Some(res.access_token) |}
 
                 // add user 2 manage_domains role under tenant 1
                 let data: PostLike =
@@ -142,7 +142,7 @@ module MultiUsers =
                 
                 let! res = logInUser testFixture u1.Tenant.Value.TenantManagementApplicationClientId u2.Data.Email u2.Data.Password
            
-                users.[1] <- {| u2 with Token = Some(res.AccessToken) |}
+                users.[1] <- {| u2 with Token = Some(res.access_token) |}
                 let u2 = users.[1]
                 //
                 let data: DomainPools.PostLike =

@@ -93,7 +93,7 @@ module SignIn =
                 let! result = logInUser testFixture tenant.Value.SampleApplicationClientId ownerData.Email
                                   ownerData.Password
 
-                result.AccessToken |> should be (not' Null)
-                result.IdToken |> should be (not' Null)
-                result.RefreshToken |> should be (not' Null)
+                result.access_token |> should be (not' Null)
+                result.id_token |> should be (not' Null)
+                result.refresh_token |> should be (not' Null)
             }

@@ -116,8 +116,8 @@ Cypress.Commands.add('reinitDb', (loginAsDomain) => {
 
     return cy.request('POST', url, { loginAsDomain }).then((resp) =>
         cy.window().then((win) => {
-            win.localStorage.setItem('access_token', resp.body.accessToken);
-            win.localStorage.setItem('id_token', resp.body.idToken);
+            win.localStorage.setItem('access_token', resp.body.access_token);
+            win.localStorage.setItem('id_token', resp.body.id_token);
         })
     );
 });

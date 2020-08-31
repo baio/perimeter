@@ -162,9 +162,9 @@ export class AuthService {
             const result = await this.http
                 .post<TokensResult>(`${this.config.tokenUrl}`, payload)
                 .toPromise();
-            localStorage.setItem(ID_TOKEN, result.idToken);
-            localStorage.setItem(ACCESS_TOKEN, result.accessToken);
-            localStorage.setItem(REFRESH_TOKEN, result.refreshToken);
+            localStorage.setItem(ID_TOKEN, result.id_token);
+            localStorage.setItem(ACCESS_TOKEN, result.access_token);
+            localStorage.setItem(REFRESH_TOKEN, result.refresh_token);
             return parsedState.redirectPath;
         } finally {
             localStorage.removeItem(AUTH_CODE_VERIFIER);
@@ -258,9 +258,9 @@ export class AuthService {
                     refreshToken,
                 })
                 .toPromise();
-            localStorage.setItem(ID_TOKEN, result.idToken);
-            localStorage.setItem(ACCESS_TOKEN, result.accessToken);
-            localStorage.setItem(REFRESH_TOKEN, result.refreshToken);
+            localStorage.setItem(ID_TOKEN, result.id_token);
+            localStorage.setItem(ACCESS_TOKEN, result.access_token);
+            localStorage.setItem(REFRESH_TOKEN, result.refresh_token);
             return true;
         } catch {
             return false;

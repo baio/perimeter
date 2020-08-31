@@ -122,6 +122,6 @@ module CreateUser =
     let createUser' a b c =
         task {
             let! result = createUser'' a b c
-            return result.AccessToken }
+            return result.access_token }
 
     let createUser = createUser' true

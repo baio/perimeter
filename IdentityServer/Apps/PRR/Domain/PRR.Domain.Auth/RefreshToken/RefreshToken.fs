@@ -24,7 +24,7 @@ module RefreshToken =
                                 RefreshTokenSuccessEvent
                                     { ClientId = clientId
                                       UserId = tokenData.Id
-                                      RefreshToken = res.RefreshToken
+                                      RefreshToken = res.refresh_token
                                       OldRefreshToken = item.Token })
                     | None ->
                         return! raise (UnAuthorized None)
