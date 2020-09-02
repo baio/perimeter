@@ -24,6 +24,7 @@
       <Compile Include="DomainUserRoles.fs" />
       <Compile Include="TenantUserRoles.fs" />
       <Compile Include="UserDomains.fs" />
+      <Compile Include="Tenants.fs" />
     </ItemGroup>
 
 </Project>

@@ -37,7 +37,11 @@ namespace PRR.Data.DataContext
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Tenant>(entity => { entity.Property(x => x.DateCreated).HasDefaultValueSql("now()"); });
+            modelBuilder.Entity<Tenant>(entity =>
+            {
+                entity.HasIndex(x => new {x.Name}).IsUnique();
+                entity.Property(x => x.DateCreated).HasDefaultValueSql("now()");
+            });
 
             modelBuilder.Entity<DomainPool>(entity =>
             {

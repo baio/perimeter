@@ -49,6 +49,7 @@
         <Compile Include="Tenant\Apis\CRUDTests.fs" />
         <Compile Include="Tenant\Applications\CRUDTests.fs" />
         <Compile Include="Tenant\TenantUserRoles\MultiUsersTests.fs" />
+        <Compile Include="Tenant\Tenants\CRUDTests.fs" />
         <Compile Include="Auth\SignUpTests.fs" />
         <Compile Include="Auth\LogInTests.fs" />
         <Compile Include="Auth\LogInValidationTests.fs" />
