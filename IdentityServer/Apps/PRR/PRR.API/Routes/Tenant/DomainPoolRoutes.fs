@@ -8,6 +8,7 @@ open PRR.API.Routes
 open PRR.Domain.Auth
 open PRR.Domain.Auth.GetAudience
 open PRR.Domain.Tenant.DomainPools
+open PRR.Domain.Tenant.Models
 
 [<AutoOpen>]
 module private DomainPoolHandlers =
@@ -35,7 +36,7 @@ module private DomainPoolHandlers =
                        AuthConfig =
                            { AccessTokenExpiresIn = config.Jwt.AccessTokenExpiresIn
                              IdTokenExpiresIn = config.Jwt.IdTokenExpiresIn
-                             RefreshTokenExpiresIn = config.Jwt.RefreshTokenExpiresIn } }: Env))
+                             RefreshTokenExpiresIn = config.Jwt.RefreshTokenExpiresIn } }))
 
     let updateHandler id =
         wrap

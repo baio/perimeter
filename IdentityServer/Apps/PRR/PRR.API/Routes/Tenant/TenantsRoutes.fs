@@ -7,7 +7,6 @@ open Giraffe
 open PRR.API.Routes
 open PRR.Domain.Auth
 open PRR.Domain.Tenant
-open PRR.Domain.Tenant.Helpers
 open PRR.Domain.Tenant.Tenants
 
 

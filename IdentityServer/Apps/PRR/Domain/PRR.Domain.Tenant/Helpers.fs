@@ -1,25 +1,16 @@
 ﻿namespace PRR.Domain.Tenant
 
 open Common.Domain.Models
-open PRR.Data.DataContext
 open PRR.Data.Entities
 
 [<AutoOpen>]
-module Helpers =
-
-    type AuthConfig =
-        { IdTokenExpiresIn: int<minutes>
-          AccessTokenExpiresIn: int<minutes>
-          RefreshTokenExpiresIn: int<minutes> }
-
-    type Env =
-        { DataContext: DbDataContext
-          AuthStringsProvider: AuthStringsProvider
-          AuthConfig: AuthConfig }
+module internal Helpers =
 
     let createTenant name userId = Tenant(Name = name, UserId = userId)
 
     let createDomainPool tenant name = DomainPool(Tenant = tenant, Name = name)
+    
+    let createDomainPool' tenantId name = DomainPool(TenantId = tenantId)
 
     let createTenantManagementDomain (tenant: Tenant) =
         Domain(Tenant = tenant, EnvName = "management", IsMain = true)
@@ -68,3 +59,7 @@ module Helpers =
              Identifier = sprintf "https://domain-management-api.%s.%scom" domain.EnvName domain.Pool.Tenant.Name,
              IsDomainManagement = true,
              AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
+
+    let addUserRoles (userEmail: string) (domain: Domain) (roleIds: int seq) =
+        roleIds
+        |> Seq.map (fun roleId -> DomainUserRole(UserEmail = userEmail, Domain = domain, RoleId = roleId))

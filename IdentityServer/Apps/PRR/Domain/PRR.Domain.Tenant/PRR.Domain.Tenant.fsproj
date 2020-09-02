@@ -15,6 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Include="Models.fs" />
       <Compile Include="Helpers.fs" />
       <Compile Include="DomainPools.fs" />
       <Compile Include="Domains.fs" />

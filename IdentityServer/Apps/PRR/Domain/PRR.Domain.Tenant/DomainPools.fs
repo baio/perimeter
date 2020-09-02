@@ -14,6 +14,7 @@ open System
 open System.Linq
 open System.Linq.Expressions
 open System.Threading.Tasks
+open Helpers
 
 module DomainPools =
 
@@ -31,7 +32,7 @@ module DomainPools =
     type GetLike =
         { Id: int
           Name: string
-          DateCreated: System.DateTime
+          DateCreated: DateTime
           Domains: DomainGetLike seq }
 
     let checkUserForbidden (userId: UserId) (domainPoolId: DomainPoolId) (dataContext: DbDataContext) =
@@ -43,44 +44,6 @@ module DomainPools =
         |> notFoundRaiseError Forbidden'
 
     //
-    let guid () = Guid.NewGuid().ToString()
-
-    type AuthConfig =
-        { IdTokenExpiresIn: int<minutes>
-          AccessTokenExpiresIn: int<minutes>
-          RefreshTokenExpiresIn: int<minutes> }
-
-    type Env =
-        { DataContext: DbDataContext
-          AuthStringsProvider: AuthStringsProvider
-          AuthConfig: AuthConfig }
-
-    let createDomainManagementApp (env: Env) domain =
-        Application
-            (Domain = domain,
-             Name = "Domain Management Application",
-             ClientId = env.AuthStringsProvider.ClientId(),
-             ClientSecret = env.AuthStringsProvider.ClientSecret(),
-             IdTokenExpiresIn = (int env.AuthConfig.IdTokenExpiresIn),
-             RefreshTokenExpiresIn = (int env.AuthConfig.RefreshTokenExpiresIn),
-             AllowedCallbackUrls = "*",
-             Flow = FlowType.PKCE,
-             IsDomainManagement = true)
-        |> add' env.DataContext
-
-    let createDomainManagementApi (env: Env) domain =
-        Api
-            (Domain = domain,
-             Name = "Domain Management API",
-             Identifier = sprintf "https://%s.management-api-%s.com" domain.EnvName (Guid.NewGuid().ToString()),
-             IsDomainManagement = true,
-             AccessTokenExpiresIn = (int env.AuthConfig.AccessTokenExpiresIn))
-        |> add' env.DataContext
-
-    let addUserRoles (userEmail: string) (domain: Domain) (roleIds: int seq) (dataContext: DbDataContext) =
-        roleIds
-        |> Seq.map (fun roleId -> DomainUserRole(UserEmail = userEmail, Domain = domain, RoleId = roleId))
-        |> addRange dataContext
 
     let catch =
         function
@@ -90,18 +53,33 @@ module DomainPools =
     let create ((userId, tenantId, data): UserId * TenantId * PostLike) (env: Env) =
         let dataContext = env.DataContext
 
-        let domainPool =
-            DomainPool(TenantId = tenantId, Name = data.Name)
-            |> add' dataContext
+        let add x = x |> add dataContext
 
-        let domain =
-            Domain(Pool = domainPool, EnvName = "dev", IsMain = true)
-            |> add' dataContext
+        let add' x = x |> add' dataContext
 
-        let _ = createDomainManagementApp env domain
-        let _ = createDomainManagementApi env domain
+        let addRange x = x |> addRange dataContext
 
         task {
+
+            let! tenant =
+                query {
+                    for tenant in dataContext.Tenants do
+                        where (tenant.Id = tenantId)
+                        select (Tenant(Id = tenant.Id, Name = tenant.Name))
+                }
+                |> toSingleUnchangedAsync dataContext
+
+            let domainPool =
+                createDomainPool tenant data.Name |> add'
+
+            let domain = createMainDomain domainPool |> add'
+
+            createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
+            |> add
+
+            createDomainManagementApi env.AuthConfig domain
+            |> add
+
             let! (ownerId, ownerEmail) =
                 query {
                     for tenant in dataContext.Tenants do
@@ -121,10 +99,14 @@ module DomainPools =
                     }
                     |> toSingleAsync
 
-                addUserRoles ownerEmail domain [ Seed.Roles.DomainOwner.Id ] dataContext
-                addUserRoles userEmail domain [ Seed.Roles.DomainSuperAdmin.Id ] dataContext
+                addUserRoles ownerEmail domain [ Seed.Roles.DomainOwner.Id ]
+                |> addRange
+
+                addUserRoles userEmail domain [ Seed.Roles.DomainSuperAdmin.Id ]
+                |> addRange
             else
-                addUserRoles ownerEmail domain [ Seed.Roles.DomainOwner.Id ] dataContext
+                addUserRoles ownerEmail domain [ Seed.Roles.DomainOwner.Id ]
+                |> addRange
 
             try
                 do! saveChangesAsync dataContext
