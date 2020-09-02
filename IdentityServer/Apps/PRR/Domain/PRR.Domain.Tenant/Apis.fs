@@ -69,7 +69,6 @@ module Apis =
                       p.Permissions.Select(fun x ->
                           { Id = x.Id
                             Name = x.Name }) } @>)
-
     //
     type SortField =
         | Name

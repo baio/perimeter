@@ -9,7 +9,7 @@ module internal Helpers =
     let createTenant name userId = Tenant(Name = name, UserId = userId)
 
     let createDomainPool tenant name = DomainPool(Tenant = tenant, Name = name)
-    
+
     let createDomainPool' tenantId name = DomainPool(TenantId = tenantId)
 
     let createTenantManagementDomain (tenant: Tenant) =
@@ -39,7 +39,7 @@ module internal Helpers =
     //
     let createMainDomain (domainPool: DomainPool) =
         Domain(Pool = domainPool, EnvName = "dev", IsMain = true)
-
+    
     let createDomainManagementApp (authStringProvider: AuthStringsProvider) (authConfig: AuthConfig) domain =
         Application
             (Domain = domain,
@@ -60,6 +60,9 @@ module internal Helpers =
              IsDomainManagement = true,
              AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
 
-    let addUserRoles (userEmail: string) (domain: Domain) (roleIds: int seq) =
+    let createDomainUserRoles (userEmail: string) (domain: Domain) (roleIds: int seq) =
         roleIds
         |> Seq.map (fun roleId -> DomainUserRole(UserEmail = userEmail, Domain = domain, RoleId = roleId))
+
+    let createDomainUserRole (userEmail: string) (domain: Domain) (roleId: int) =
+        DomainUserRole(UserEmail = userEmail, Domain = domain, RoleId = roleId)

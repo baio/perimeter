@@ -47,72 +47,55 @@ module Domains =
         | UniqueConstraintException "IX_Domains_PoolId_EnvName" (ConflictErrorField ("envName", UNIQUE)) ex -> raise ex
         | ex -> raise ex
 
-    type AuthConfig =
-        { IdTokenExpiresIn: int<minutes>
-          AccessTokenExpiresIn: int<minutes>
-          RefreshTokenExpiresIn: int<minutes> }
 
-    type Env =
-        { AuthConfig: AuthConfig
-          AuthStringsProvider: AuthStringsProvider }
+    let create (env: Env) (domainPoolId, dto: PostLike, userId) =
 
-    let private guid () = Guid.NewGuid().ToString()
+        let dataContext = env.DataContext
 
-    let private createDomainManagementApp (authStringsProvider: AuthStringsProvider)
-                                          (domain, dataContext, authConfig: AuthConfig)
-                                          =
-        Application
-            (Domain = domain,
-             Name = "Domain Management Application",
-             ClientId = authStringsProvider.ClientId(),
-             ClientSecret = authStringsProvider.ClientSecret(),
-             IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
-             RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
-             AllowedCallbackUrls = "*",
-             Flow = FlowType.PKCE,
-             SSOEnabled = true,
-             IsDomainManagement = true)
+        let add x = x |> add dataContext
 
-    let private createDomainManagementApi (domain, dataContext, authConfig: AuthConfig) =
-        Api
-            (Domain = domain,
-             Name = "Domain Management API",
-             Identifier = sprintf "https://%s.management-api-%s.com" domain.EnvName (Guid.NewGuid().ToString()),
-             IsDomainManagement = true,
-             AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
+        let add' x = x |> add' dataContext
 
-    let private createUserDomainOwnerRole (userEmail: string) (domain: Domain) =
-        DomainUserRole(UserEmail = userEmail, Domain = domain, RoleId = PRR.Data.DataContext.Seed.Roles.DomainOwner.Id)
+        task {
 
-    let create (env: Env): Create<DomainPoolId * PostLike * UserId, int, DbDataContext> =
-        fun (domainPoolId, dto, userId) dataContext ->
-            task {
-                let domain =
-                    Domain(PoolId = Nullable(domainPoolId), EnvName = dto.EnvName, IsMain = false)
-                    |> add' dataContext
+            let! tenant =
+                query {
+                    for dp in dataContext.DomainPools do
+                        where (dp.Id = domainPoolId)
+                        select (Tenant(Id = dp.TenantId, Name = dp.Name))
+                }
+                |> toSingleUnchangedAsync dataContext
 
-                createDomainManagementApp env.AuthStringsProvider (domain, dataContext, env.AuthConfig)
-                |> add dataContext
+            let pool =
+                DomainPool(Id = domainPoolId, Tenant = tenant)
+                |> setUnchanged dataContext
 
-                createDomainManagementApi (domain, dataContext, env.AuthConfig)
-                |> add dataContext
+            let domain =
+                Domain(Pool = pool, EnvName = dto.EnvName, IsMain = false)
+                |> add'
 
-                let! userEmail =
-                    query {
-                        for user in dataContext.Users do
-                            where (user.Id = userId)
-                            select (user.Email)
-                    }
-                    |> toSingleExnAsync (unexpected "User email is not found")
+            createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
+            |> add
 
-                createUserDomainOwnerRole userEmail domain
-                |> add dataContext
+            createDomainManagementApi env.AuthConfig domain
+            |> add
 
-                try
-                    do! saveChangesAsync dataContext
-                    return domain.Id
-                with ex -> return catch ex
-            }
+            let! userEmail =
+                query {
+                    for user in dataContext.Users do
+                        where (user.Id = userId)
+                        select (user.Email)
+                }
+                |> toSingleExnAsync (unexpected "User email is not found")
+
+            createDomainUserRole userEmail domain Seed.Roles.DomainOwner.Id
+            |> add
+
+            try
+                do! saveChangesAsync dataContext
+                return domain.Id
+            with ex -> return catch ex
+        }
 
     let update: Update<int, PostLike, DbDataContext> =
         updateCatch<Domain, _, _, _> catch (fun id -> Domain(Id = id)) (fun dto entity -> entity.EnvName <- dto.EnvName)

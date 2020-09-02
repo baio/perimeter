@@ -9,6 +9,7 @@ open Giraffe
 open Microsoft.AspNetCore.Http
 open PRR.API.Routes
 open PRR.Domain.Auth.GetAudience
+open PRR.Domain.Tenant.Models
 open PRR.Domain.Tenant.Domains
 
 [<AutoOpen>]
@@ -19,7 +20,9 @@ module private DomainHandlers =
     let getEnv (ctx: HttpContext) =
         let config = getConfig ctx
         let authStringsProvider = getAuthStringsProvider ctx
-        { AuthConfig =
+        let dataContext = getDataContext ctx
+        { DataContext = dataContext
+          AuthConfig =
               { IdTokenExpiresIn = config.Jwt.IdTokenExpiresIn
                 AccessTokenExpiresIn = config.Jwt.AccessTokenExpiresIn
                 RefreshTokenExpiresIn = config.Jwt.RefreshTokenExpiresIn }
@@ -31,8 +34,7 @@ module private DomainHandlers =
              <!> ofReader (getEnv)
              <*> ((triplet domainPoolId)
                   <!> bindJsonAsync<PostLike>
-                  <*> bindUserClaimId)
-             <*> dataContext)
+                  <*> bindUserClaimId))
 
     let updateHandler id =
         wrap

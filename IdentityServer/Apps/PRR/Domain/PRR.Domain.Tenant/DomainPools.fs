@@ -57,8 +57,6 @@ module DomainPools =
 
         let add' x = x |> add' dataContext
 
-        let addRange x = x |> addRange dataContext
-
         task {
 
             let! tenant =
@@ -99,14 +97,14 @@ module DomainPools =
                     }
                     |> toSingleAsync
 
-                addUserRoles ownerEmail domain [ Seed.Roles.DomainOwner.Id ]
-                |> addRange
+                createDomainUserRole ownerEmail domain Seed.Roles.DomainOwner.Id
+                |> add
 
-                addUserRoles userEmail domain [ Seed.Roles.DomainSuperAdmin.Id ]
-                |> addRange
+                createDomainUserRole userEmail domain Seed.Roles.DomainSuperAdmin.Id
+                |> add
             else
-                addUserRoles ownerEmail domain [ Seed.Roles.DomainOwner.Id ]
-                |> addRange
+                createDomainUserRole ownerEmail domain Seed.Roles.DomainOwner.Id
+                |> add
 
             try
                 do! saveChangesAsync dataContext
