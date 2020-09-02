@@ -1,45 +1,25 @@
 ﻿namespace PRR.Domain.Tenant
 
-open DomainPools
 open Common.Domain.Utils
 open Common.Domain.Models
 open Common.Domain.Utils.CRUD
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open Helpers
 
 module Tenants =
 
     let catch =
         function
+        | UniqueConstraintException "IX_DomainPools_TenantId_Name"
+                                    (ConflictErrorCommon (sprintf "Domain pool with same name already exists"))
+                                    ex -> raise ex
         | UniqueConstraintException "IX_Tenants_Name" (ConflictErrorField ("name", UNIQUE)) ex -> raise ex
         | ex -> raise ex
 
     type PostLike = { Name: string }
 
-    let private createTenantManagementDomain (tenant: Tenant) =
-        Domain(Tenant = tenant, EnvName = "management", IsMain = true)
-
-    let private createTenantManagementApp (authStringProvider: AuthStringsProvider) authConfig domain =
-        Application
-            (Domain = domain,
-             Name = "Tenant domains management app",
-             ClientId = authStringProvider.ClientId(),
-             ClientSecret = authStringProvider.ClientSecret(),
-             Flow = FlowType.PKCE,
-             AllowedCallbackUrls = "*",
-             IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
-             RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
-             SSOEnabled = true,
-             IsDomainManagement = true)
-
-    let private createTenantManagementApi (domain: Domain) authConfig =
-        Api
-            (Domain = domain,
-             Name = "Tenant domains management API",
-             Identifier = sprintf "https://tenant-management-api.%s.%s.com" domain.EnvName domain.Tenant.Name,
-             IsDomainManagement = false,
-             AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
 
     let create (env: Env) ((userId, data): UserId * PostLike) =
         task {
@@ -48,12 +28,7 @@ module Tenants =
             let add x = x |> add dataContext
             let add' x = x |> add' dataContext
 
-            let tenant =
-                Tenant(Name = data.Name, UserId = userId) |> add'
-
-            let domainPool =
-                DomainPool(Tenant = tenant, Name = data.Name)
-                |> add'
+            let tenant = createTenant data.Name userId |> add'
 
             // tenant management
             let tenantManagementDomain =
@@ -66,12 +41,16 @@ module Tenants =
             |> add
 
             // domain management
-            let domain =
-                Domain(Pool = domainPool, EnvName = "dev", IsMain = true)
-                |> add'
+            let domainPool =
+                createDomainPool tenant data.Name |> add'
 
-            let _ = createDomainManagementApp env domain
-            let _ = createDomainManagementApi env domain
+            let domain = createMainDomain domainPool |> add'
+
+            createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
+            |> add
+
+            createDomainManagementApi env.AuthConfig domain
+            |> add
 
             try
                 do! saveChangesAsync dataContext

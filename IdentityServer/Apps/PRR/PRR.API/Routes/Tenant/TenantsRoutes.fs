@@ -7,7 +7,9 @@ open Giraffe
 open PRR.API.Routes
 open PRR.Domain.Auth
 open PRR.Domain.Tenant
+open PRR.Domain.Tenant.Helpers
 open PRR.Domain.Tenant.Tenants
+
 
 [<AutoOpen>]
 module private TenantHandlers =
@@ -19,8 +21,7 @@ module private TenantHandlers =
           AuthConfig =
               { AccessTokenExpiresIn = config.Jwt.AccessTokenExpiresIn
                 IdTokenExpiresIn = config.Jwt.IdTokenExpiresIn
-                RefreshTokenExpiresIn = config.Jwt.RefreshTokenExpiresIn } }: DomainPools.Env
-
+                RefreshTokenExpiresIn = config.Jwt.RefreshTokenExpiresIn } }
 
     let createHandler =
         wrap
@@ -29,7 +30,7 @@ module private TenantHandlers =
              <*> (doublet <!> bindUserClaimId <*> bindJsonAsync))
 
 module Tenants =
-    
+
     let createRoutes () =
         route "/tenants"
         >=> requiresAuth
