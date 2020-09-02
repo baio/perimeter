@@ -9,6 +9,7 @@ open PRR.Data.Entities
 open System
 open System.Linq
 open System.Threading.Tasks
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 module Apis =
 
@@ -19,9 +20,7 @@ module Apis =
           AccessTokenExpiresIn: int }
 
     [<CLIMutable>]
-    type PermissionGetLike =
-        { Id: int
-          Name: string }
+    type PermissionGetLike = { Id: int; Name: string }
 
     [<CLIMutable>]
     type GetLike =
@@ -32,43 +31,66 @@ module Apis =
           AccessTokenExpiresIn: int
           Permissions: PermissionGetLike seq }
 
-    type CreateEnv =
-        { AccessTokenExpiresIn: int<minutes> }
+    let validateData (data: PostLike) =
+        [| (validateNullOrEmpty "name" data.Name)
+           (validateDomainName "identifier" data.Identifier) |]
+        |> Array.choose id
+
+
+    type CreateEnv = { AccessTokenExpiresIn: int<minutes> }
 
     let catch =
         function
-        | UniqueConstraintException "IX_Apis_DomainId_Name" (ConflictErrorField("name", UNIQUE)) ex ->
-            raise ex
-        | ex ->
-            raise ex
+        | UniqueConstraintException "IX_Apis_DomainId_Name" (ConflictErrorField ("name", UNIQUE)) ex -> raise ex
+        | ex -> raise ex
 
-    let create (env: CreateEnv): Create<DomainId * PostLike, int, DbDataContext> =
-        createCatch<Api, _, _, _> catch 
-            (fun (domainId, dto) ->
-            Api
-                (Name = dto.Name, Identifier = dto.Identifier, DomainId = domainId, IsDomainManagement = false,
-                 AccessTokenExpiresIn = int env.AccessTokenExpiresIn, Permissions = [||])) (fun x -> x.Id)
+    let create (env: CreateEnv) (domainId, dto: PostLike) (dataContext: DbDataContext) =
+
+        task {
+            let! data =
+                query {
+                    for domain in dataContext.Domains do
+                        where (domain.Id = domainId)
+                        select (domain.EnvName, domain.Pool.Name, domain.Pool.Tenant.Name)
+                }
+                |> toSingleAsync
+
+
+            let (envName, poolName, tenantName) = data
+
+            let api =
+                Api
+                    (Name = dto.Name,
+                     Identifier = (sprintf "https://%s.%s.%s.%s.com" dto.Identifier envName poolName tenantName),
+                     DomainId = domainId,
+                     IsDomainManagement = false,
+                     AccessTokenExpiresIn = int env.AccessTokenExpiresIn,
+                     Permissions = [||])
+                |> add' dataContext
+
+            try
+                do! saveChangesAsync dataContext
+                return api.Id
+            with ex -> return catch ex
+        }
+
+
 
     let update: Update<int, DomainId * PostLike, DbDataContext> =
-        updateCatch<Api, _, _, _> catch (fun id -> Api(Id = id)) (fun (_, dto) entity ->
-            entity.Name <- dto.Name
-            entity.Identifier <- dto.Identifier)
+        updateCatch<Api, _, _, _> catch (fun id -> Api(Id = id)) (fun (_, dto) entity -> entity.Name <- dto.Name)
 
-    let remove: Remove<int, DbDataContext> =
-        remove (fun id -> Api(Id = id))
+    let remove: Remove<int, DbDataContext> = remove (fun id -> Api(Id = id))
 
     let getOne: GetOne<int, GetLike, DbDataContext> =
-        getOne<Api, _, _, _> (<@ fun p id -> p.Id = id @>)
+        getOne<Api, _, _, _>
+            (<@ fun p id -> p.Id = id @>)
             (<@ fun p ->
-                { Id = p.Id
-                  Name = p.Name
-                  Identifier = p.Identifier
-                  DateCreated = p.DateCreated
-                  AccessTokenExpiresIn = p.AccessTokenExpiresIn
-                  Permissions =
-                      p.Permissions.Select(fun x ->
-                          { Id = x.Id
-                            Name = x.Name }) } @>)
+                    { Id = p.Id
+                      Name = p.Name
+                      Identifier = p.Identifier
+                      DateCreated = p.DateCreated
+                      AccessTokenExpiresIn = p.AccessTokenExpiresIn
+                      Permissions = p.Permissions.Select(fun x -> { Id = x.Id; Name = x.Name }) } @>)
     //
     type SortField =
         | Name
@@ -103,16 +125,15 @@ module Apis =
 
             query {
                 for p in apps do
-                    where (p.DomainId = domainId && p.IsDomainManagement = false)
+                    where
+                        (p.DomainId = domainId
+                         && p.IsDomainManagement = false)
                     select
                         { Id = p.Id
                           Name = p.Name
                           Identifier = p.Identifier
                           DateCreated = p.DateCreated
                           AccessTokenExpiresIn = p.AccessTokenExpiresIn
-                          Permissions =
-                              p.Permissions.Select(fun x ->
-                                  { Id = x.Id
-                                    Name = x.Name }) }
+                          Permissions = p.Permissions.Select(fun x -> { Id = x.Id; Name = x.Name }) }
             }
             |> executeListQuery prms

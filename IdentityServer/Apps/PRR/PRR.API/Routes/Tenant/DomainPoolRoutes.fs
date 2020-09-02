@@ -28,7 +28,7 @@ module private DomainPoolHandlers =
              <!> (triplet
                   <!> bindUserClaimId
                   <*> tenantId
-                  <*> bindJsonAsync<PostLike>)
+                  <*> bindValidateJsonAsync validateData)
              <*> ofReader (fun ctx ->
                      let config = getConfig ctx
                      { AuthStringsProvider = getAuthStringsProvider ctx

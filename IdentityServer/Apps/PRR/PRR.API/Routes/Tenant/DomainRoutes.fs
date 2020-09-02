@@ -33,7 +33,7 @@ module private DomainHandlers =
             (create
              <!> ofReader (getEnv)
              <*> ((triplet domainPoolId)
-                  <!> bindJsonAsync<PostLike>
+                  <!> bindValidateJsonAsync validateData
                   <*> bindUserClaimId))
 
     let updateHandler id =

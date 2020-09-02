@@ -39,7 +39,7 @@ module internal Helpers =
     //
     let createMainDomain (domainPool: DomainPool) =
         Domain(Pool = domainPool, EnvName = "dev", IsMain = true)
-    
+
     let createDomainManagementApp (authStringProvider: AuthStringsProvider) (authConfig: AuthConfig) domain =
         Application
             (Domain = domain,
@@ -56,7 +56,12 @@ module internal Helpers =
         Api
             (Domain = domain,
              Name = "Domain management API",
-             Identifier = sprintf "https://domain-management-api.%s.%scom" domain.EnvName domain.Pool.Tenant.Name,
+             Identifier =
+                 sprintf
+                     "https://domain-management-api.%s.%s.%s.com"
+                     domain.EnvName
+                     domain.Pool.Name
+                     domain.Pool.Tenant.Name,
              IsDomainManagement = true,
              AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
 

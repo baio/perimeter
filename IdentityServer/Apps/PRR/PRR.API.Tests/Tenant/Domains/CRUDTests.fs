@@ -64,7 +64,7 @@ module CRUD =
             let domainPoolId = testContext.Value.GetTenant().DomainPoolId
             task {
                 let data: PostLike =
-                    { EnvName = "Stage" }
+                    { EnvName = "stage" }
                 let! result = testFixture.HttpPostAsync userToken
                                   (sprintf "/tenant/domain-pools/%i/domains" domainPoolId) data
                 do! ensureSuccessAsync result
@@ -78,7 +78,7 @@ module CRUD =
             let domainPoolId = testContext.Value.GetTenant().DomainPoolId
             task {
                 let data: PostLike =
-                    { EnvName = "Dev" }
+                    { EnvName = "stage" }
                 let! result = testFixture.HttpPutAsync userToken
                                   (sprintf "/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value) data
                 do! ensureSuccessAsync result
@@ -90,7 +90,7 @@ module CRUD =
             let domainPoolId = testContext.Value.GetTenant().DomainPoolId
             task {
                 let expected: PostLike =
-                    { EnvName = "Dev" }
+                    { EnvName = "stage" }
                 let! result = testFixture.HttpGetAsync userToken
                                   (sprintf "/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
                 do! ensureSuccessAsync result

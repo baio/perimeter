@@ -47,6 +47,9 @@ module Domains =
         | UniqueConstraintException "IX_Domains_PoolId_EnvName" (ConflictErrorField ("envName", UNIQUE)) ex -> raise ex
         | ex -> raise ex
 
+    let validateData (data: PostLike) =
+        [| (validateDomainName "envName" data.EnvName) |]
+        |> Array.choose id
 
     let create (env: Env) (domainPoolId, dto: PostLike, userId) =
 

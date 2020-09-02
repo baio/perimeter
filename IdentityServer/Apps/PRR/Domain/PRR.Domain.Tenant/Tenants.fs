@@ -2,9 +2,6 @@
 
 open Common.Domain.Utils
 open Common.Domain.Models
-open Common.Domain.Utils.CRUD
-open PRR.Data.DataContext
-open PRR.Data.Entities
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Helpers
 
@@ -20,6 +17,10 @@ module Tenants =
 
     type PostLike = { Name: string }
 
+
+    let validateData (data: PostLike) =
+        [| (validateDomainName "name" data.Name) |] 
+        |> Array.choose id
 
     let create (env: Env) ((userId, data): UserId * PostLike) =
         task {

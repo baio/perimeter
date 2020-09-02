@@ -26,7 +26,9 @@ module private TenantHandlers =
         wrap
             (create
              <!> (ofReader getEnv)
-             <*> (doublet <!> bindUserClaimId <*> bindJsonAsync))
+             <*> (doublet
+                  <!> bindUserClaimId
+                  <*> bindValidateJsonAsync validateData))
 
 module Tenants =
 

@@ -62,7 +62,7 @@ module CRUD =
         member __.``A Create domain pool must be success``() =
             task {
                 let data: PostLike =
-                    { Name = "Domain 1" }
+                    { Name = "domain-1" }
                 let! result = testFixture.HttpPostAsync userToken "/tenant/domain-pools" data
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<int> result
@@ -74,7 +74,7 @@ module CRUD =
         member __.``B Update domain pool must be success``() =
             task {
                 let data: PostLike =
-                    { Name = "Domain 1 Updated" }
+                    { Name = "domain-1-updated" }
                 let! result = testFixture.HttpPutAsync userToken (sprintf "/tenant/domain-pools/%i" domainPoolId.Value) data
                 do! ensureSuccessAsync result
             }
@@ -84,7 +84,7 @@ module CRUD =
         member __.``C.1 Get domain must be success``() =
             task {
                 let expected: PostLike =
-                    { Name = "Domain 1 Updated" }
+                    { Name = "domain-1-updated" }
                 let! result = testFixture.HttpGetAsync userToken
                                   (sprintf "/tenant/domain-pools/%i" domainPoolId.Value)
                 do! ensureSuccessAsync result

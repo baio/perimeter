@@ -21,11 +21,11 @@ module private CreateUserTenant =
           AuthStringsProvider: AuthStringsProvider }
 
     let createTenant (data: SignUpConfirmSuccess) (dataContext: DbDataContext) =
-        Tenant(UserId = data.UserId, Name = data.Email)
+        Tenant(UserId = data.UserId, Name = "sample-tenant")
         |> add' dataContext
 
     let createDomainPool tenant (dataContext: DbDataContext) =
-        DomainPool(Tenant = tenant, Name = "New Domain")
+        DomainPool(Tenant = tenant, Name = "sample-domain")
         |> add' dataContext
 
     let createDomain (domainPool: DomainPool) (dataContext: DbDataContext) =

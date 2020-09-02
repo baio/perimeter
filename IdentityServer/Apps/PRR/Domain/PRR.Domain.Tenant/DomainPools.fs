@@ -49,7 +49,11 @@ module DomainPools =
         function
         | UniqueConstraintException "IX_DomainPools_TenantId_Name" (ConflictErrorField ("name", UNIQUE)) ex -> raise ex
         | ex -> raise ex
-
+        
+    let validateData (data: PostLike) =
+        [| (validateDomainName "name" data.Name) |] 
+        |> Array.choose id
+        
     let create ((userId, tenantId, data): UserId * TenantId * PostLike) (env: Env) =
         let dataContext = env.DataContext
 

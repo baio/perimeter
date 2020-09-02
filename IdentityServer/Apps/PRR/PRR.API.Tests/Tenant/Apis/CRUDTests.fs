@@ -101,7 +101,7 @@ module CRUD =
             task {
                 let expected: GetLikeDto =
                     { name = "Api 1"
-                      identifier = "xxx"
+                      identifier = "https://xxx.dev.sample-domain.sample-tenant.com"
                       accessTokenExpiresIn = 15
                       permissions = [||]
                       id = -1
@@ -141,7 +141,7 @@ module CRUD =
             task {
                 let expected: GetLikeDto =
                     { name = "Api 1 Updated"
-                      identifier = "yyy"
+                      identifier = "https://xxx.dev.sample-domain.sample-tenant.com"
                       permissions =
                           [| |]
                       id = -1
