@@ -16,7 +16,9 @@ module LinqHelpers =
 
     let toListAsyncTraceException q =
         try
-            let result = EntityFrameworkQueryableExtensions.ToListAsync(q)
+            let result =
+                EntityFrameworkQueryableExtensions.ToListAsync(q)
+
             result
         with ex ->
             printf "%O" ex
@@ -25,17 +27,14 @@ module LinqHelpers =
     let toListAsync =
         EntityFrameworkQueryableExtensions.ToListAsync
 
-    let toCountAsync = EntityFrameworkQueryableExtensions.CountAsync
+    let toCountAsync =
+        EntityFrameworkQueryableExtensions.CountAsync
 
     let notFoundRaiseError ex =
         EntityFrameworkQueryableExtensions.CountAsync
-        >> map (fun cnt ->
-            if cnt = 0 then raise ex)
+        >> map (fun cnt -> if cnt = 0 then raise ex)
 
-    let toListAsync' x =
-        x
-        |> toListAsync
-        |> map (List.ofSeq)
+    let toListAsync' x = x |> toListAsync |> map (List.ofSeq)
 
     let toSeqAsync x =
         x
@@ -65,7 +64,16 @@ module LinqHelpers =
 
     let toSingleAsync x = x |> toSingleExnAsync NotFound
 
-    let countAsync = EntityFrameworkQueryableExtensions.CountAsync
+    let setUnchanged (dataContext: DbContext) x =
+        dataContext.Entry(x).State <- EntityState.Unchanged
+        x
+
+    let toSingleUnchangedAsync dataContext x =
+        (setUnchanged dataContext) <!> toSingleAsync x
+
+
+    let countAsync =
+        EntityFrameworkQueryableExtensions.CountAsync
 
     let select x (q: IQueryable<'a>) =
         query {
@@ -73,7 +81,8 @@ module LinqHelpers =
                 select ((%x) i)
         }
 
-    let add' (dbContext: DbContext) = dbContext.Set<'a>().Add >> (fun x -> x.Entity)
+    let add' (dbContext: DbContext) =
+        dbContext.Set<'a>().Add >> (fun x -> x.Entity)
 
     let add (dbContext: DbContext) = add' dbContext >> ignore
 
@@ -81,28 +90,21 @@ module LinqHelpers =
         let e = dbContext.Set<'a>().Attach x
         fn e.Entity
 
-    let update (dbContext: DbContext) fn (x: 'a) =
-        update' dbContext fn x |> ignore
+    let update (dbContext: DbContext) fn (x: 'a) = update' dbContext fn x |> ignore
 
-    let updateRange (dbContext: DbContext) fn (x: 'a seq) =
-        x |> Seq.iter (update dbContext fn)
+    let updateRange (dbContext: DbContext) fn (x: 'a seq) = x |> Seq.iter (update dbContext fn)
 
     let addRange (dbContext: DbContext) (x: 'a seq) =
-        x
-        |> dbContext.Set<'a>().AddRange
-        |> ignore
+        x |> dbContext.Set<'a>().AddRange |> ignore
 
     let remove (dbContext: DbContext) (x: 'a) =
-        x
-        |> dbContext.Set<'a>().Remove
-        |> ignore
+        x |> dbContext.Set<'a>().Remove |> ignore
 
     let removeRange (dbContext: DbContext) (x: 'a seq) =
-        x
-        |> dbContext.Set<'a>().RemoveRange
-        |> ignore
+        x |> dbContext.Set<'a>().RemoveRange |> ignore
 
-    let saveChangesAsync (dbContext: DbContext) = dbContext.SaveChangesAsync() |> ignoreTask
+    let saveChangesAsync (dbContext: DbContext) =
+        dbContext.SaveChangesAsync() |> ignoreTask
 
     let addRemoveRange (dbContext: DbContext) (a: 'a seq, (r: 'a seq)) =
         a |> addRange dbContext
@@ -114,26 +116,28 @@ module LinqHelpers =
         1st incoming without current
         2nd current without incoming
     *)
+
     let splitAddRemove incoming current =
         (Seq.except current incoming), (Seq.except incoming current)
 
     let splitAddRemoveRange dbContext incoming =
-        splitAddRemove incoming >> addRemoveRange dbContext
+        splitAddRemove incoming
+        >> addRemoveRange dbContext
 
-    let querySplitAddRemoveRange dbContext incoming = toListAsync >> map (splitAddRemoveRange dbContext incoming)
+    let querySplitAddRemoveRange dbContext incoming =
+        toListAsync
+        >> map (splitAddRemoveRange dbContext incoming)
 
     (**
         Returns tuple with sequences
         1st incoming without current
         2nd current and incoming
     *)
+
     let splitAddUpdate incoming current =
         (Seq.except current incoming), (incoming.Intersect current)
 
-    let groupByAsync''' (fn: System.Tuple<_, _> -> _) x =
-        x
-        |> toListAsync
-        |> map (Seq.groupBy fn)
+    let groupByAsync''' (fn: System.Tuple<_, _> -> _) x = x |> toListAsync |> map (Seq.groupBy fn)
 
     let groupByAsync'' x = x |> groupByAsync''' fst
 
@@ -155,7 +159,9 @@ module LinqHelpers =
         getTableName' context entityType
 
     let getDbSetTableName (dbSet: DbSet<'t>) =
-        let context = dbSet.GetService<ICurrentDbContext>().Context
+        let context =
+            dbSet.GetService<ICurrentDbContext>().Context
+
         let tableName = getTableName<'t> (context)
         (context, tableName)
 
@@ -176,9 +182,15 @@ module LinqHelpers =
         let (whereKeys, whereValues) = unzipProps where
         let (setKeys, setValues) = unzipProps set
         let setCommand = stringCommand 0 "," setKeys
-        let whereCommand = stringCommand setKeys.Length " AND " whereKeys
+
+        let whereCommand =
+            stringCommand setKeys.Length " AND " whereKeys
+
         let (context, tableName) = getDbSetTableName dbSet
-        let command = sprintf "UPDATE \"%s\" SET %s WHERE %s" tableName setCommand whereCommand
+
+        let command =
+            sprintf "UPDATE \"%s\" SET %s WHERE %s" tableName setCommand whereCommand
+
         let prms = setValues.Concat whereValues
         (context, command, prms)
 
@@ -198,7 +210,10 @@ module LinqHelpers =
         let (whereKeys, whereValues) = unzipProps where
         let whereCommand = stringCommand 0 " AND " whereKeys
         let (context, tableName) = getDbSetTableName dbSet
-        let command = sprintf "DELETE FROM \"%s\" WHERE %s" tableName whereCommand
+
+        let command =
+            sprintf "DELETE FROM \"%s\" WHERE %s" tableName whereCommand
+
         let prms = whereValues
         (context, command, prms)
 
@@ -220,6 +235,7 @@ module LinqHelpers =
             setKeys
             |> Seq.map (sprintf "\"%s\"")
             |> String.concat ","
+
         let keyValues =
             setValues
             |> Seq.indexed
@@ -234,24 +250,37 @@ module LinqHelpers =
             |> String.concat ","
 
         let command =
-            sprintf "INSERT INTO \"%s\" (%s) VALUES (%s) ON CONFLICT (%s) DO UPDATE SET %s" tableName keys keyValues
-                conflictKeys setKeys
+            sprintf
+                "INSERT INTO \"%s\" (%s) VALUES (%s) ON CONFLICT (%s) DO UPDATE SET %s"
+                tableName
+                keys
+                keyValues
+                conflictKeys
+                setKeys
+
         context.Database.ExecuteSqlRawAsync(command, setValues)
 
-    
-    let queryRawAsync <'a>(context: DbContext) (mp: obj -> 'a) q =       
-        use  command = context.Database.GetDbConnection().CreateCommand()
+
+    let queryRawAsync<'a> (context: DbContext) (mp: obj -> 'a) q =
+        use command =
+            context.Database.GetDbConnection().CreateCommand()
+
         command.CommandText <- q
         task {
             use! result = command.ExecuteReaderAsync()
             let mutable f = true
-            let list = System.Collections.Generic.List<obj[]>()
-            while f do 
+
+            let list =
+                System.Collections.Generic.List<obj []>()
+
+            while f do
                 let! f' = result.ReadAsync()
                 f <- f'
+
                 if f then
                     let arr = Array.create result.FieldCount null
                     result.GetValues arr |> ignore
                     list.Add arr
-            return list |> Seq.map mp                                    
+
+            return list |> Seq.map mp
         }
