@@ -14,7 +14,7 @@ describe('apis', () => {
         cy.url().should('include', 'apis');
     });
 
-    describe('edit', () => {
+    describe.skip('edit', () => {
         it('load app edit form data', () => {
             cy.rows(0).click();
             cy.url().should('match', /\/domains\/\d+\/apis\/\d+/);
