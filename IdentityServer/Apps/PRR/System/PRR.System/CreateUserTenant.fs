@@ -12,6 +12,7 @@ open PRR.Data.Entities
 open PRR.System.Models
 open System
 open System.Threading.Tasks
+open PRR.Domain.Tenant.Helpers
 
 [<AutoOpen>]
 module private CreateUserTenant =
@@ -19,94 +20,6 @@ module private CreateUserTenant =
         { GetDataContextProvider: GetDataContextProvider
           AuthConfig: AuthConfig
           AuthStringsProvider: AuthStringsProvider }
-
-    let createTenant (data: SignUpConfirmSuccess) (dataContext: DbDataContext) =
-        Tenant(UserId = data.UserId, Name = "sample-tenant")
-        |> add' dataContext
-
-    let createDomainPool tenant (dataContext: DbDataContext) =
-        DomainPool(Tenant = tenant, Name = "sample-domain")
-        |> add' dataContext
-
-    let createDomain (domainPool: DomainPool) (dataContext: DbDataContext) =
-        Domain(Pool = domainPool, EnvName = "dev", IsMain = true)
-        |> add' dataContext
-
-    let createApp (authStringsProvider: AuthStringsProvider) (domain, dataContext, authConfig) =
-        Application
-            (Domain = domain,
-             Name = "New Application",
-             ClientId = authStringsProvider.ClientId(),
-             ClientSecret = authStringsProvider.ClientSecret(),
-             IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
-             RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
-             AllowedCallbackUrls = "*",
-             Flow = FlowType.PKCE)
-        |> add' dataContext
-
-    let createApi (domain, dataContext, authConfig) =
-        Api
-            (Domain = domain,
-             Name = "New API",
-             Identifier = sprintf "https://%s.new-domain-%s.com" domain.EnvName (Guid.NewGuid().ToString()),
-             AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
-        |> add' dataContext
-
-    let createDomainManagementApp (authStringsProvider: AuthStringsProvider) (domain, dataContext, authConfig) =
-        Application
-            (Domain = domain,
-             Name = "Domain Management Application",
-             ClientId = authStringsProvider.ClientId(),
-             ClientSecret = authStringsProvider.ClientSecret(),
-             IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
-             RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
-             AllowedCallbackUrls = "*",
-             Flow = FlowType.PKCE,
-             SSOEnabled = true,
-             IsDomainManagement = true)
-        |> add' dataContext
-
-    let createDomainManagementApi (domain, dataContext, authConfig) =
-        Api
-            (Domain = domain,
-             Name = "Domain Management API",
-             Identifier = sprintf "https://%s.management-api-%s.com" domain.EnvName (Guid.NewGuid().ToString()),
-             IsDomainManagement = true,
-             AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
-        |> add' dataContext
-
-    let addUserRoles (userEmail: string) (domain: Domain) (roleIds: int seq) (dataContext: DbDataContext) =
-        roleIds
-        |> Seq.map (fun roleId -> DomainUserRole(UserEmail = userEmail, Domain = domain, RoleId = roleId))
-        |> addRange dataContext
-
-    //
-    let createTenantManagementDomain (tenant: Tenant) (dataContext: DbDataContext) =
-        Domain(Tenant = tenant, EnvName = "management", IsMain = true)
-        |> add' dataContext
-
-    let createTenantManagementApp (authStringProvider: AuthStringsProvider) (domain, dataContext, authConfig) =
-        Application
-            (Domain = domain,
-             Name = "Tenant domains management app",
-             ClientId = authStringProvider.ClientId(),
-             ClientSecret = authStringProvider.ClientSecret(),
-             Flow = FlowType.PKCE,
-             AllowedCallbackUrls = "*",
-             IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
-             RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
-             SSOEnabled = true,
-             IsDomainManagement = true)
-        |> add' dataContext
-
-    let createTenantManagementApi (domain, dataContext, authConfig) =
-        Api
-            (Domain = domain,
-             Name = "Tenant domains management API",
-             Identifier = sprintf "https://tenant-management-api-%s.com" (Guid.NewGuid().ToString()),
-             IsDomainManagement = false,
-             AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
-        |> add' dataContext
 
 
     /// Creates tenant, domain pool, domain, new app, new api and new users management api
@@ -116,48 +29,67 @@ module private CreateUserTenant =
     /// api -
     /// users management api -
     let createUserTenant (env: Env) data =
-                       
-        let authConfig = env.AuthConfig
+
+        let authConfig' = env.AuthConfig
+
+        let authConfig: PRR.Domain.Tenant.Models.AuthConfig =
+            { IdTokenExpiresIn = authConfig'.IdTokenExpiresIn
+              AccessTokenExpiresIn = authConfig'.AccessTokenExpiresIn
+              RefreshTokenExpiresIn = authConfig'.ResetPasswordTokenExpiresIn }
 
         task {
 
             use dpr = env.GetDataContextProvider()
+
             let dataContext = dpr.DataContext
 
-            let tenant = createTenant data dataContext
+            let add' x = x |> add' dataContext
 
-            let pool = createDomainPool tenant dataContext
+            let tenant =
+                createTenant (sprintf "sample-tenant-%s" (env.AuthStringsProvider.ClientId())) data.UserId
+                |> add'
+
             //
             let tenantManagementDomain =
-                createTenantManagementDomain tenant dataContext
+                createTenantManagementDomain tenant |> add'
 
-            let (tenantManagementApp, tenantManagementApi) =
-                (doublet
-                 <!> (createTenantManagementApp env.AuthStringsProvider)
-                 <*> createTenantManagementApi)
-                <| (tenantManagementDomain, dataContext, authConfig)
+            let tenantManagementApp =
+                createTenantManagementApp env.AuthStringsProvider authConfig tenantManagementDomain
+                |> add'
 
-            let tenantManagementRoles = [ Seed.Roles.TenantOwner.Id ]
-            addUserRoles data.Email tenantManagementDomain tenantManagementRoles dataContext
+            let tenantManagementApi =
+                createTenantManagementApi authConfig tenantManagementDomain
+                |> add'
 
-            //
-            let sampleDomain = createDomain pool dataContext
-
-            let (usersManagementApp, usersManagementApi) =
-                (doublet
-                 <!> (createDomainManagementApp env.AuthStringsProvider)
-                 <*> createDomainManagementApi)
-                <| (sampleDomain, dataContext, authConfig)
-
-            let domainManagementRoles = [ Seed.Roles.DomainOwner.Id ]
-            addUserRoles data.Email sampleDomain domainManagementRoles dataContext
+            createDomainUserRole data.Email tenantManagementDomain Seed.Roles.TenantOwner.Id
+            |> add'
 
             //
-            let (sampleApp, sampleApi) =
-                (doublet
-                 <!> (createApp env.AuthStringsProvider)
-                 <*> createApi)
-                <| (sampleDomain, dataContext, authConfig)
+            let pool =
+                createDomainPool tenant "sample-domain" |> add'
+
+            let sampleDomain = createMainDomain pool |> add'
+
+            let domainManagementApp =
+                createDomainManagementApp env.AuthStringsProvider authConfig sampleDomain
+                |> add'
+
+            let domainManagementApi =
+                createDomainManagementApi authConfig sampleDomain
+                |> add'
+
+            createDomainUserRole data.Email sampleDomain Seed.Roles.DomainOwner.Id
+            |> add'
+
+            //
+
+            let sampleApp =
+                createDomainApp env.AuthStringsProvider authConfig sampleDomain "sample-app"
+                |> add'
+
+            let sampleApi =
+                createDomainApi authConfig sampleDomain "sample-api" "sample-api"
+                |> add'
 
             do! saveChangesAsync dataContext
 
@@ -169,10 +101,10 @@ module private CreateUserTenant =
                      TenantManagementApplicationId = tenantManagementApp.Id
                      TenantManagementApplicationClientId = tenantManagementApp.ClientId
                      DomainId = sampleDomain.Id
-                     DomainManagementApiIdentifier = usersManagementApi.Identifier
-                     DomainManagementApiId = usersManagementApi.Id
-                     DomainManagementApplicationId = usersManagementApp.Id
-                     DomainManagementApplicationClientId = usersManagementApp.ClientId
+                     DomainManagementApiIdentifier = domainManagementApi.Identifier
+                     DomainManagementApiId = domainManagementApi.Id
+                     DomainManagementApplicationId = domainManagementApp.Id
+                     DomainManagementApplicationClientId = domainManagementApp.ClientId
                      SampleApiIdentifier = sampleApi.Identifier
                      SampleApiId = sampleApi.Id
                      SampleApplicationId = sampleApp.Id

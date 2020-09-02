@@ -4,13 +4,11 @@ open Common.Domain.Models
 open PRR.Data.Entities
 
 [<AutoOpen>]
-module internal Helpers =
+module Helpers =
 
     let createTenant name userId = Tenant(Name = name, UserId = userId)
 
     let createDomainPool tenant name = DomainPool(Tenant = tenant, Name = name)
-
-    let createDomainPool' tenantId name = DomainPool(TenantId = tenantId)
 
     let createTenantManagementDomain (tenant: Tenant) =
         Domain(Tenant = tenant, EnvName = "management", IsMain = true)
@@ -28,7 +26,7 @@ module internal Helpers =
              SSOEnabled = true,
              IsDomainManagement = true)
 
-    let createTenantManagementApi (domain: Domain) authConfig =
+    let createTenantManagementApi authConfig (domain: Domain)  =
         Api
             (Domain = domain,
              Name = "Tenant domains management API",
@@ -39,6 +37,18 @@ module internal Helpers =
     //
     let createMainDomain (domainPool: DomainPool) =
         Domain(Pool = domainPool, EnvName = "dev", IsMain = true)
+
+    let createDomainApp (authStringProvider: AuthStringsProvider) (authConfig: AuthConfig) domain name =
+        Application
+            (Domain = domain,
+             Name = name,
+             ClientId = authStringProvider.ClientId(),
+             ClientSecret = authStringProvider.ClientSecret(),
+             IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
+             RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
+             AllowedCallbackUrls = "*",
+             Flow = FlowType.PKCE,
+             IsDomainManagement = false)
 
     let createDomainManagementApp (authStringProvider: AuthStringsProvider) (authConfig: AuthConfig) domain =
         Application
@@ -51,6 +61,15 @@ module internal Helpers =
              AllowedCallbackUrls = "*",
              Flow = FlowType.PKCE,
              IsDomainManagement = true)
+
+    let createDomainApi (authConfig: AuthConfig) (domain: Domain) name identifier =
+        Api
+            (Domain = domain,
+             Name = name,
+             Identifier =
+                 sprintf "https://%s.%s.%s.%s.com" identifier domain.EnvName domain.Pool.Name domain.Pool.Tenant.Name,
+             IsDomainManagement = false,
+             AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
 
     let createDomainManagementApi (authConfig: AuthConfig) (domain: Domain) =
         Api

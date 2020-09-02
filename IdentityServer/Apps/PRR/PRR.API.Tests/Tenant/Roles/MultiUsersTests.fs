@@ -74,7 +74,7 @@ module MultiUsers =
 
                 // create user 2 + tenant + permission
                 let u = users.[1]
-                let! userToken = createUser testContext.Value u.Data
+                let! userToken = createUser testContext.Value u.Data  
                 let tenant = testContext.Value.GetTenant()
                 let! permissionId = testFixture.HttpPostAsync userToken
                                         (sprintf "/tenant/apis/%i/permissions" tenant.SampleApiId)

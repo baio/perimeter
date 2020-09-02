@@ -98,20 +98,11 @@ module MultiUsers =
                 let u = users.[1]
                 let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
-                let! permissionId = (testFixture.HttpPostAsync userToken
-                                         (sprintf "/tenant/apis/%i/permissions" tenant.SampleApiId)
-                                         { testPermission with Name = "test:permission:2" }) >>= (readAsJsonAsync<int>)
-                let! roleId = testFixture.HttpPostAsync userToken
-                                  (sprintf "/tenant/domains/%i/roles" tenant.DomainId)
-                                  { testRole with
-                                        Name = "test:role:2"
-                                        PermissionIds = [ permissionId ] }
-                              >>= (readAsJsonAsync<int>)
                 users.[1] <- {| u with
                                     Token = Some(userToken)
                                     Tenant = Some(tenant)
                                     PermissionId = Some(permissionId)
-                                    RoleId = Some(roleId) |}
+                                    RoleId = Some(roleId) |}                                    
             }
 
 

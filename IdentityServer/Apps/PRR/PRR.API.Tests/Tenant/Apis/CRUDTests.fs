@@ -113,7 +113,7 @@ module CRUD =
                 result |> should be (not' null)
                 result.id |> should equal apiId.Value
                 result.name |> should equal expected.name
-                result.identifier |> should equal expected.identifier
+                result.identifier |> should be (not' null)
                 result.permissions |> should equal expected.permissions
                 result.dateCreated |> should be (not' null)
             }
@@ -154,7 +154,7 @@ module CRUD =
                 result |> should be (not' null)
                 result.id |> should equal apiId.Value
                 result.name |> should equal expected.name
-                result.identifier |> should equal expected.identifier
+                result.identifier |> should be (not' null)
                 result.permissions |> should equal expected.permissions
                 result.dateCreated |> should be (not' null)
             }

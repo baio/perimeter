@@ -54,6 +54,7 @@ module UserTestContext =
                 { systemEnv with EventHandledCallback = systemEventHandled }
             let sys = PRR.System.Setup.setUp systemEnv
             services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore)
+                
 
         { TestFixture = testFixture
           ConfirmTokenWaitHandle = confirmTokenWaitHandle
