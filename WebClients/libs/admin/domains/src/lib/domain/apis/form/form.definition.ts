@@ -1,7 +1,10 @@
 import { Validators } from '@angular/forms';
-import { AdminForm } from '@admin/shared';
+import { AdminForm, not$ } from '@admin/shared';
+import { Observable } from 'rxjs';
 
-export const definition: AdminForm.FormDefinition = {
+export const getDefinition = (
+    isNew$: Observable<boolean>
+): AdminForm.FormDefinition => ({
     kind: 'fields',
     fields: [
         {
@@ -13,7 +16,10 @@ export const definition: AdminForm.FormDefinition = {
         {
             id: 'identifier',
             kind: 'Text',
-            label: 'Identifier',
+            props: {
+                readonly: isNew$.pipe(not$),
+                label: 'Identifier',
+            },
             validators: [Validators.required],
         },
         {
@@ -22,6 +28,5 @@ export const definition: AdminForm.FormDefinition = {
             label: 'Access Token Expires in Minutes',
             validators: [Validators.required],
         },
-
     ],
-};
+});
