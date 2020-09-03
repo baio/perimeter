@@ -80,6 +80,8 @@ describe('signup flow', () => {
                 assert.isTrue(!!win.localStorage.getItem('access_token'));
                 assert.isTrue(!!win.localStorage.getItem('refresh_token'));
             });
+
+            cy.url().should('include', '/profile/home');
         });
     });
 });

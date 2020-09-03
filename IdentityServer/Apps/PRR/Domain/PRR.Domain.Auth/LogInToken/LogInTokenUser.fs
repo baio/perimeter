@@ -32,11 +32,25 @@ module internal SignInUser =
     let signInUser env (tokenData: TokenData) clientId =
         task {
             let! clientId = PRR.Domain.Auth.LogIn.UserHelpers.getClientId env.DataContext clientId tokenData.Email
-            match! getClientDomainAudiences env.DataContext clientId with
-            | Some { DomainId = domainId; Audiences = audiences } ->
-                let! userRolePermissions = getUserDomainRolesPermissions env.DataContext (domainId, tokenData.Email)
-                let result = signInUser' env clientId audiences tokenData userRolePermissions
+
+            if clientId = PRR.Domain.Auth.Constants.PERIMETER_CLIENT_ID then
+                let userRolePermissions = [||]
+
+                let audiences =
+                    [| PRR.Domain.Auth.Constants.PERIMETER_USERS_AUDIENCE |]
+
+                let result =
+                    signInUser' env clientId audiences tokenData userRolePermissions
+
                 return (result, clientId)
-            | None ->
-                return raise (unAuthorized "Client is not found")
+            else
+                match! getClientDomainAudiences env.DataContext clientId with
+                | Some { DomainId = domainId; Audiences = audiences } ->
+                    let! userRolePermissions = getUserDomainRolesPermissions env.DataContext (domainId, tokenData.Email)
+
+                    let result =
+                        signInUser' env clientId audiences tokenData userRolePermissions
+
+                    return (result, clientId)
+                | None -> return raise (unAuthorized "Client is not found")
         }

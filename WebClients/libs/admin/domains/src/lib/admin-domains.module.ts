@@ -35,6 +35,8 @@ import { UserFormComponent } from './domain/users/form/form.component';
 import { CreateEnvFormComponent } from './tenant/domains/create-env-form/create-env-form.component';
 import { TenantAdminsListComponent } from './tenant/tenant-admins/list/list.component';
 import { TenantAdminFormComponent } from './tenant/tenant-admins/form/form.component';
+import { ProfileLayoutComponent } from './profile/profile-layout/profile-layout.component';
+import { ProfileHomeComponent } from './profile/profile-home/profile-home.component';
 @NgModule({
     imports: [
         CommonModule,
@@ -71,6 +73,8 @@ import { TenantAdminFormComponent } from './tenant/tenant-admins/form/form.compo
         CreateEnvFormComponent,
         TenantAdminsListComponent,
         TenantAdminFormComponent,
+        ProfileLayoutComponent,
+        ProfileHomeComponent,
     ],
 })
 export class AdminDomainsModule {}

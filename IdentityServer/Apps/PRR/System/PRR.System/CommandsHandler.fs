@@ -38,12 +38,7 @@ module private CommandsHandler =
                 | SendResetPasswordEmailCommand data -> sendResetPasswordEmailActor <! data
                 | CreateUserTenantCommand data ->
                     // create default tenant for any signup user only for tests
-#if E2E || TEST
                     createUserTenantActor <! data
-#else
-                    ()
-
-#endif
                 | RefreshTokenCommand cmd ->
                     sharedActors.RefreshTokenActor
                     <! (RefreshToken.Command cmd)

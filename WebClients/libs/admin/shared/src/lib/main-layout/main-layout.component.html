@@ -16,7 +16,13 @@
                 </ul>
             </nz-dropdown-menu>
         </div>
-        <ul nz-menu nzTheme="dark" nzMode="horizontal" class="header-menu">
+        <ul
+            nz-menu
+            nzTheme="dark"
+            nzMode="horizontal"
+            class="header-menu"
+            *ngIf="view.activeDomain"
+        >
             <li nz-menu-item nzSelected>
                 <a
                     data-cy="active-domain-item"

@@ -115,13 +115,14 @@ export class ProfileEffects {
                                 tenantManagementDomain.id,
                                 'domains',
                             ]);
-                        } else {
-                            // TODO : If no domains
+                        } else if (domains.length > 0) {
                             this.router.navigate([
                                 'domains',
                                 domains[0].id,
                                 'apps',
                             ]);
+                        } else {
+                            this.router.navigate(['profile', 'home']);
                         }
                     }
                 })
