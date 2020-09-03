@@ -6,7 +6,6 @@ open System.Security.Claims
 [<AutoOpen>]
 module private CreateClaims =
 
-
     let createAccessTokenClaims clientId tokenData (rolePermissions: RolePermissions seq) (audiences: string seq) =
         let roles =
             rolePermissions
