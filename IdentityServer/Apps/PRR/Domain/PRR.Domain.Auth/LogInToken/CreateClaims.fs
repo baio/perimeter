@@ -5,6 +5,8 @@ open System.Security.Claims
 
 [<AutoOpen>]
 module private CreateClaims =
+    
+    let strJoin (s: string seq) = System.String.Join(" ", s) 
 
     let createAccessTokenClaims clientId tokenData (rolePermissions: RolePermissions seq) (audiences: string seq) =
         let roles =
@@ -18,7 +20,7 @@ module private CreateClaims =
         let permissions =
             rolePermissions
             |> Seq.collect (fun x -> x.Permissions)
-            |> String.concat " "
+            |> strJoin
 
         // TODO : RBA + Include permissions flag
         [| Claim("sub", tokenData.Id.ToString())
@@ -36,7 +38,7 @@ module private CreateClaims =
         let permissions =
             rolePermissions
             |> Seq.collect (fun x -> x.Permissions)
-            |> String.concat " "
+            |> strJoin
         // TODO : RBA + Include permissions flag
         [| Claim("sub", tokenData.Id.ToString())
            Claim(ClaimTypes.Email, tokenData.Email)
@@ -44,5 +46,5 @@ module private CreateClaims =
            Claim(ClaimTypes.GivenName, tokenData.FirstName)
            Claim(ClaimTypes.Surname, tokenData.LastName)
            Claim(CLAIM_TYPE_CID, clientId)
-           Claim("scope", sprintf "openid profile roles %s" permissions) |]
+           Claim("scope", sprintf "openid roles %s" permissions) |]
         |> Seq.append roles
