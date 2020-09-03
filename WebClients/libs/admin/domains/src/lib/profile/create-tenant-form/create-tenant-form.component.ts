@@ -4,6 +4,7 @@ import { Component } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { definition } from './create-tenant-form.definition';
 import { AuthService } from '@perimeter/ngx-auth';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'admin-create-tenant-form',
@@ -25,6 +26,12 @@ export class CreateTenantFormComponent {
 
     constructor(
         private readonly dataAccess: TenantsDataAccessService,
-        private readonly authService: AuthService
+        private readonly authService: AuthService,
+        private readonly activatedRoute: ActivatedRoute,
+        private readonly router: Router
     ) {}
+
+    onClose() {
+        this.router.navigate(['..'], { relativeTo: this.activatedRoute });
+    }
 }

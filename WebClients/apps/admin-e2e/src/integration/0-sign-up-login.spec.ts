@@ -85,6 +85,11 @@ describe('signup flow', () => {
         });
     });
 
+    it('create tenant could be closed', () => {
+        cy.dataCy('create-tenant').click().get('.ant-drawer-close').click();
+        cy.url().should('not.include', 'create-tenant');
+    });
+
     it('create tenant', () => {
         cy.dataCy('create-tenant')
             .click()
