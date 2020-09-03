@@ -84,4 +84,30 @@ describe('signup flow', () => {
             cy.url().should('include', '/profile/home');
         });
     });
+
+    it('create tenant', () => {
+        cy.dataCy('create-tenant')
+            .click()
+            .formField('name')
+            .type('test')
+            .submitButton()
+            .click();
+
+        cy.url().should('include', 'auth/login');
+    });
+
+    it('login', () => {
+        cy.dataCy('email')
+            .type(EMAIL)
+            .dataCy('password')
+            .type(PASSWORD)
+            .dataCy('submit')
+            .click();
+
+        cy.url().should('match', /\/tenants\/\d+\/domains/);
+
+        cy.rows(0, 1).dataCy('env-btn').eq(0).click();
+
+        cy.url().should('match', /\/domains\/\d+\/apps/);
+    });
 });

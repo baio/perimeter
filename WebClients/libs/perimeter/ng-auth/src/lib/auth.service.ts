@@ -199,7 +199,7 @@ export class AuthService {
      * Will redirect to the IDP login page
      * @param opts
      */
-    async authorize(opts: AuthOptions) {
+    async authorize(opts: AuthOptions = {}) {
         const loginUrl = await this.createLoginUrl(opts);
         document.location.href = loginUrl;
     }

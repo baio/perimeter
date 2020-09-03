@@ -23,11 +23,12 @@ import { TenantAdminFormComponent } from './tenant/tenant-admins/form/form.compo
 import { ClientGuard } from './client.guard';
 import { ProfileLayoutComponent } from './profile/profile-layout/profile-layout.component';
 import { ProfileHomeComponent } from './profile/profile-home/profile-home.component';
+import { CreateTenantFormComponent } from './profile/create-tenant-form/create-tenant-form.component';
 
 const routes: Routes = [
     {
         path: '',
-        component: MainLayoutComponent,        
+        component: MainLayoutComponent,
         children: [
             {
                 path: 'profile',
@@ -36,6 +37,12 @@ const routes: Routes = [
                     {
                         path: 'home',
                         component: ProfileHomeComponent,
+                        children: [
+                            {
+                                path: 'create-tenant',
+                                component: CreateTenantFormComponent,
+                            },
+                        ],
                     },
                 ],
             },

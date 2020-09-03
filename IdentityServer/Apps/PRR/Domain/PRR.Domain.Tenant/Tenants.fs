@@ -4,6 +4,7 @@ open Common.Domain.Utils
 open Common.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Helpers
+open PRR.Data.DataContext.Seed
 
 module Tenants =
 
@@ -19,15 +20,24 @@ module Tenants =
 
 
     let validateData (data: PostLike) =
-        [| (validateDomainName "name" data.Name) |] 
+        [| (validateDomainName "name" data.Name) |]
         |> Array.choose id
 
     let create (env: Env) ((userId, data): UserId * PostLike) =
         task {
+
             let dataContext = env.DataContext
 
             let add x = x |> add dataContext
             let add' x = x |> add' dataContext
+
+            let! userEmail =
+                query {
+                    for user in dataContext.Users do
+                        where (user.Id = userId)
+                        select user.Email
+                }
+                |> toSingleAsync
 
             let tenant = createTenant data.Name userId |> add'
 
@@ -41,6 +51,9 @@ module Tenants =
             createTenantManagementApi env.AuthConfig tenantManagementDomain
             |> add
 
+            createDomainUserRole userEmail tenantManagementDomain Roles.TenantOwner.Id
+            |> add
+
             // domain management
             let domainPool =
                 createDomainPool tenant data.Name |> add'
@@ -51,6 +64,9 @@ module Tenants =
             |> add
 
             createDomainManagementApi env.AuthConfig domain
+            |> add
+
+            createDomainUserRole userEmail domain Roles.DomainOwner.Id
             |> add
 
             try
