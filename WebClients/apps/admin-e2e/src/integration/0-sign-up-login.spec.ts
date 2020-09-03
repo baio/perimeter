@@ -22,7 +22,7 @@ describe('signup flow', () => {
         return cy.resetDb();
     });
 
-    it('signup / login', () => {
+    it.only('signup / login', () => {
         cy.visit('/home');
         cy.url().should('include', '/home');
         cy.dataCy('signup-button').click();

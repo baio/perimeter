@@ -9,6 +9,7 @@ import {
     MISS_LOWER_CASE_LETTER,
     MISS_SPECIAL_CHAR,
     MISS_UPPER_CASE_LETTER,
+    NOT_DOMAIN_NAME,
 } from './validation-errors';
 
 const mapServerError = (err: string) => {
@@ -30,6 +31,8 @@ const mapServerError = (err: string) => {
             return MISS_DIGIT;
         case 'MISS_SPECIAL_CHAR':
             return MISS_SPECIAL_CHAR;
+        case 'NOT_DOMAIN_NAME':
+            return NOT_DOMAIN_NAME;
         default:
             console.warn('Unmapped server bad request error content !', err);
             return null;
@@ -41,7 +44,7 @@ export const mapBadRequestResponseToFormValidationErrors = (
     responseBody: any
 ) => {
     Object.keys(form.value).forEach((key) => {
-        const errs: string[] = responseBody[key];
+        const errs: string[] = responseBody.data && responseBody.data[key];
         if (errs && errs.length) {
             const verrors = errs.map(mapServerError).filter((f) => !!f);
             const mverrors = mergeAll(verrors);
