@@ -1,6 +1,7 @@
 import { Validators } from '@angular/forms';
 import { AdminForm, not$ } from '@admin/shared';
 import { Observable } from 'rxjs';
+import { FormValidators } from '@perimeter/common';
 
 export const getDefinition = (
     isNew$: Observable<boolean>
@@ -20,7 +21,7 @@ export const getDefinition = (
                 readonly: isNew$.pipe(not$),
                 label: 'Identifier',
             },
-            validators: [Validators.required],
+            validators: [Validators.required, FormValidators.notDomainName],
         },
         {
             id: 'accessTokenExpiresIn',

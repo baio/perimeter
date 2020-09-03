@@ -1,5 +1,6 @@
 import { Validators } from '@angular/forms';
 import { AdminForm } from '@admin/shared';
+import { FormValidators } from '@perimeter/common';
 
 export const definition: AdminForm.FormDefinition = {
     kind: 'fields',
@@ -8,7 +9,7 @@ export const definition: AdminForm.FormDefinition = {
             id: 'name',
             kind: 'Text',
             label: 'Name',
-            validators: [Validators.required],
+            validators: [Validators.required, FormValidators.notDomainName],
         },
     ],
 };
