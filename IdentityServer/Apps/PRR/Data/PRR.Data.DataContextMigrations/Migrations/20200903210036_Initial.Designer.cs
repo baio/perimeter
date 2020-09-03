@@ -10,7 +10,7 @@ using PRR.Data.DataContext;
 namespace PRR.Data.DataContextMigrations.Migrations
 {
     [DbContext(typeof(DbDataContext))]
-    [Migration("20200903201906_Initial")]
+    [Migration("20200903210036_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -174,6 +174,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<string>("Identifier")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -182,6 +186,9 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Identifier")
+                        .IsUnique();
 
                     b.HasIndex("TenantId", "Name")
                         .IsUnique();

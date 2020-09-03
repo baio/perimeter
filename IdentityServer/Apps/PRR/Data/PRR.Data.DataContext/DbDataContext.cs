@@ -46,6 +46,7 @@ namespace PRR.Data.DataContext
             modelBuilder.Entity<DomainPool>(entity =>
             {
                 entity.HasIndex(x => new {x.TenantId, x.Name}).IsUnique();
+                entity.HasIndex(x => new {x.TenantId, x.Identifier}).IsUnique();
                 entity.Property(x => x.DateCreated).HasDefaultValueSql("now()");
                 entity.HasOne(x => x.Tenant).WithMany(x => x.DomainPools).OnDelete(DeleteBehavior.Cascade);
             });

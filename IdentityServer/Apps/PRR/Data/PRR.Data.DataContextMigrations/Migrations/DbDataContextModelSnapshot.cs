@@ -172,6 +172,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<string>("Identifier")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -180,6 +184,9 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Identifier")
+                        .IsUnique();
 
                     b.HasIndex("TenantId", "Name")
                         .IsUnique();

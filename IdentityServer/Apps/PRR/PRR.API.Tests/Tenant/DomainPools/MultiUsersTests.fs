@@ -78,7 +78,7 @@ module MultiUsers =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let data: PostLike =
+                let data: PutLike =
                     { Name = "Domain pool update" }
                 let! result = testFixture.HttpPutAsync u2.Token.Value
                                   (sprintf "/tenant/domain-pools/%i" u1.Tenant.Value.DomainPoolId) data

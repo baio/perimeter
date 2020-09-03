@@ -8,7 +8,7 @@ module Helpers =
 
     let createTenant name userId = Tenant(Name = name, UserId = userId)
 
-    let createDomainPool tenant name = DomainPool(Tenant = tenant, Name = name)
+    let createDomainPool tenant name identifier = DomainPool(Tenant = tenant, Name = name, Identifier = identifier)
 
     let createTenantManagementDomain (tenant: Tenant) =
         Domain(Tenant = tenant, EnvName = "management", IsMain = true)
@@ -67,7 +67,7 @@ module Helpers =
             (Domain = domain,
              Name = name,
              Identifier =
-                 sprintf "https://%s.%s.%s.%s.com" identifier domain.EnvName domain.Pool.Name domain.Pool.Tenant.Name,
+                 sprintf "https://%s.%s.%s.%s.com" identifier domain.EnvName domain.Pool.Identifier domain.Pool.Tenant.Name,
              IsDomainManagement = false,
              AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
 
@@ -79,7 +79,7 @@ module Helpers =
                  sprintf
                      "https://domain-management-api.%s.%s.%s.com"
                      domain.EnvName
-                     domain.Pool.Name
+                     domain.Pool.Identifier
                      domain.Pool.Tenant.Name,
              IsDomainManagement = true,
              AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))

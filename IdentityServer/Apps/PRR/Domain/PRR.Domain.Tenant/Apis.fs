@@ -51,17 +51,17 @@ module Apis =
                 query {
                     for domain in dataContext.Domains do
                         where (domain.Id = domainId)
-                        select (domain.EnvName, domain.Pool.Name, domain.Pool.Tenant.Name)
+                        select (domain.EnvName, domain.Pool.Identifier, domain.Pool.Tenant.Name)
                 }
                 |> toSingleAsync
 
 
-            let (envName, poolName, tenantName) = data
+            let (envName, poolIdentifier, tenantName) = data
 
             let api =
                 Api
                     (Name = dto.Name,
-                     Identifier = (sprintf "https://%s.%s.%s.%s.com" dto.Identifier envName poolName tenantName),
+                     Identifier = (sprintf "https://%s.%s.%s.%s.com" dto.Identifier envName poolIdentifier tenantName),
                      DomainId = domainId,
                      IsDomainManagement = false,
                      AccessTokenExpiresIn = int env.AccessTokenExpiresIn,

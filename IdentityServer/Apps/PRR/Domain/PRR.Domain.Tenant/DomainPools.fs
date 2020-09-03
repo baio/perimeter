@@ -19,7 +19,10 @@ open Helpers
 module DomainPools =
 
     [<CLIMutable>]
-    type PostLike = { Name: string }
+    type PostLike = { Name: string; Identifier: string }
+
+    [<CLIMutable>]
+    type PutLike = { Name: string }
 
     [<CLIMutable>]
     type DomainGetLike =
@@ -49,11 +52,17 @@ module DomainPools =
         function
         | UniqueConstraintException "IX_DomainPools_TenantId_Name" (ConflictErrorField ("name", UNIQUE)) ex -> raise ex
         | ex -> raise ex
-        
-    let validateData (data: PostLike) =
-        [| (validateDomainName "name" data.Name) |] 
+
+    let validatePostData (data: PostLike) =
+        [| (validateNullOrEmpty "name" data.Name)
+           (validateNullOrEmpty "identifier" data.Identifier)
+           (validateDomainName "identifier" data.Identifier) |]
         |> Array.choose id
-        
+
+    let validatePutData (data: PutLike) =
+        [| (validateNullOrEmpty "name" data.Name) |]
+        |> Array.choose id
+
     let create ((userId, tenantId, data): UserId * TenantId * PostLike) (env: Env) =
         let dataContext = env.DataContext
 
@@ -72,7 +81,8 @@ module DomainPools =
                 |> toSingleUnchangedAsync dataContext
 
             let domainPool =
-                createDomainPool tenant data.Name |> add'
+                createDomainPool tenant data.Name data.Identifier
+                |> add'
 
             let domain = createMainDomain domainPool |> add'
 
@@ -118,7 +128,7 @@ module DomainPools =
         }
 
     //
-    let update: Update<int, PostLike, DbDataContext> =
+    let update: Update<int, PutLike, DbDataContext> =
         updateCatch<DomainPool, _, _, _> catch (fun id -> DomainPool(Id = id)) (fun dto entity ->
             entity.Name <- dto.Name)
 

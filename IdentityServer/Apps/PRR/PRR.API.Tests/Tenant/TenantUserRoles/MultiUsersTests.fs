@@ -98,7 +98,7 @@ module MultiUsers =
         member __.``A Same tenant user but with no MANAGE_TENANT_DOMAINS permission forbidden create domain pool``() =
             let u2 = users.[1]
             task {
-                let data: DomainPools.PostLike =
+                let data: DomainPools.PutLike =
                     { Name = "Domain pool 2" }
                 let! result = testFixture.HttpPutAsync u2.Token.Value
                                   (sprintf "/tenant/domain-pools/%i" u2.Tenant.Value.DomainPoolId) data
@@ -145,7 +145,7 @@ module MultiUsers =
                 users.[1] <- {| u2 with Token = Some(res.access_token) |}
                 let u2 = users.[1]
                 //
-                let data: DomainPools.PostLike =
+                let data: DomainPools.PutLike =
                     { Name = "Domain pool 2" }
                 let! result = testFixture.HttpPutAsync u2.Token.Value
                                   (sprintf "/tenant/domain-pools/%i" u1.Tenant.Value.DomainPoolId) data

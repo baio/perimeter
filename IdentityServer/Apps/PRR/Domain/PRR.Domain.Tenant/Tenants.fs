@@ -56,7 +56,8 @@ module Tenants =
 
             // domain management
             let domainPool =
-                createDomainPool tenant data.Name |> add'
+                createDomainPool tenant "Default" "default"
+                |> add'
 
             let domain = createMainDomain domainPool |> add'
 
