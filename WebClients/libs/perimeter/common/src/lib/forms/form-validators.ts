@@ -37,7 +37,7 @@ export class FormValidators {
         MISS_SPECIAL_CHAR
     );
 
-    public static notDomainName = FormValidators.regex(
+    public static domainName = FormValidators.regex(
         /^[a-z-0-9]+$/,
         NOT_DOMAIN_NAME
     );

@@ -9,11 +9,16 @@ describe('domains', () => {
     before(() => clearLocalStorage());
 
     // login manually in order to use relogin sso
-    before(() => cy.login());
+
+    before(() => {
+        cy.login();
+    });
 
     describe('edit', () => {
         it('load domain edit form data', () => {
-            cy.rows().first().click();
+            cy.url().should('match', /\/tenants\/\d+\/domains/);
+            cy.rows().should('have.length', 1);
+            cy.rows(0, 0).click();
             cy.url().should('match', /\/tenants\/\d+\/domains\/\d+/);
             cy.formField('name').should((input) => {
                 const val = input.val();
@@ -36,14 +41,24 @@ describe('domains', () => {
         it('create domain', () => {
             cy.dataCy('create-item').click();
             cy.url().should('match', /\/tenants\/\d+\/domains\/new/);
-            cy.formField('name').type('new').submitButton().click();
+            cy.formField('name')
+                .type('new')
+                .formField('identifier')
+                .type('new')
+                .submitButton()
+                .click();
             cy.url().should('match', /\/tenants\/\d+\/domains/);
         });
 
         it('create domain with same name should fail', () => {
             cy.dataCy('create-item').click();
             cy.url().should('match', /\/tenants\/\d+\/domains\/new/);
-            cy.formField('name').type('new').submitButton().click();
+            cy.formField('name')
+                .type('new')
+                .formField('identifier')
+                .type('new')
+                .submitButton()
+                .click();
             cy.url().should('match', /\/tenants\/\d+\/domains\/new/);
             cy.cancelButton().click();
         });
@@ -59,7 +74,7 @@ describe('domains', () => {
         });
 
         it('sort by created change rows positions', () => {
-            cy.get('table thead th').eq(2).click().click();
+            cy.get('table thead th').eq(3).click().click();
             cy.rows(0, 0).should('contain.text', UPDATED_NAME);
             cy.rows(1, 0).should('contain.text', 'new');
         });

@@ -21,7 +21,7 @@ export const getDefinition = (
                 readonly: isNew$.pipe(not$),
                 label: 'Identifier',
             },
-            validators: [Validators.required, FormValidators.notDomainName],
+            validators: [Validators.required, FormValidators.domainName],
         },
         {
             id: 'accessTokenExpiresIn',

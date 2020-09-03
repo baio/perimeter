@@ -41,6 +41,8 @@ describe('apis', () => {
             cy.url().should('match', /\/domains\/\d+\/apis\/new/);
             cy.formField('name')
                 .type('new')
+                .formField('identifier')
+                .type('new')                
                 .formField('accessTokenExpiresIn')
                 .type('15')
                 .formField('identifier')
@@ -55,6 +57,8 @@ describe('apis', () => {
             cy.url().should('match', /\/domains\/\d+\/apis\/new/);
             cy.formField('name')
                 .type('new')
+                .formField('identifier')
+                .type('new')                
                 .formField('accessTokenExpiresIn')
                 .type('15')
                 .formField('identifier')

@@ -35,6 +35,7 @@ module DomainPools =
     type GetLike =
         { Id: int
           Name: string
+          Identifier: string
           DateCreated: DateTime
           Domains: DomainGetLike seq }
 
@@ -138,6 +139,7 @@ module DomainPools =
         <@ fun (p: DomainPool) ->
             { Id = p.Id
               Name = p.Name
+              Identifier = p.Identifier
               DateCreated = p.DateCreated
               Domains =
                   p.Domains.Select(fun x ->

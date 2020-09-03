@@ -22,7 +22,7 @@ describe('signup flow', () => {
         return cy.resetDb();
     });
 
-    it.only('signup / login', () => {
+    it('signup / login', () => {
         cy.visit('/home');
         cy.url().should('include', '/home');
         cy.dataCy('signup-button').click();
@@ -111,7 +111,7 @@ describe('signup flow', () => {
 
         cy.url().should('match', /\/tenants\/\d+\/domains/);
 
-        cy.rows(0, 1).dataCy('env-btn').eq(0).click();
+        cy.rows(0, 2).dataCy('env-btn').eq(0).click();
 
         cy.url().should('match', /\/domains\/\d+\/apps/);
     });
