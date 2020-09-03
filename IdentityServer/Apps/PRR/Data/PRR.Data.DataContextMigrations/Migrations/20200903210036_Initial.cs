@@ -53,6 +53,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(nullable: false),
+                    Identifier = table.Column<string>(nullable: false),
                     TenantId = table.Column<int>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false, defaultValueSql: "now()")
                 },
@@ -374,6 +375,12 @@ namespace PRR.Data.DataContextMigrations.Migrations
                 name: "IX_Applications_DomainId_Name",
                 table: "Applications",
                 columns: new[] { "DomainId", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DomainPools_TenantId_Identifier",
+                table: "DomainPools",
+                columns: new[] { "TenantId", "Identifier" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
