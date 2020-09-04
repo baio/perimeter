@@ -48,7 +48,7 @@ export const getDefinition = (
             hidden: isNew$,
         },
         {
-            id: 'useSSO',
+            id: 'ssoEnabled',
             kind: 'Toggle',
             label: 'Use SSO',
             hidden: isNew$,
