@@ -7,7 +7,7 @@ open PRR.Data.DataContext
 open PRR.Data.Entities
 open PRR.Domain.Auth.LogInToken
 
-let private getUserDataForToken (dataContext: DbDataContext)  email password =
+let private getUserDataForToken (dataContext: DbDataContext) email password =
     getUserDataForToken' dataContext <@ fun (user: User) -> user.Email = email && user.Password = password @>
 
 
@@ -18,6 +18,5 @@ let logInEmail (env: Env) clientId email password =
         | Some tokenData ->
             let! result = signInUser env tokenData clientId
             return result
-        | None ->
-            return! raiseTask (unAuthorized "user is not found")
+        | None -> return! raiseTask (unAuthorized "user is not found")
     }

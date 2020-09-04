@@ -10,14 +10,15 @@ module RefreshToken =
     // Queries
     type Item =
         { Token: Token
-          ClientId: ClientId          
+          ClientId: ClientId
           UserId: UserId
-          ExpiresAt: DateTime }
+          ExpiresAt: DateTime
+          Scopes: string seq }
 
     type GetRefreshTokenQueryResult = ValueResult<Item>
 
     type Queries = GetToken of Token * IActorRef<GetRefreshTokenQueryResult>
-    
+
     // Commands
     type Commands =
         | Restart
@@ -31,10 +32,9 @@ module RefreshToken =
         | TokenAdded of Item
         | TokenRemoved of Token
         | TokenUpdated of Item * Token
-        
-    // Messages    
+
+    // Messages
     type Message =
         | Command of Commands
         | Query of Queries
         | Event of Events
-        

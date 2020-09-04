@@ -20,14 +20,14 @@ module RefreshToken =
                     match! getUserDataForToken env.DataContext item.UserId with
                     | Some tokenData ->
                         let! (res, clientId) = signInUser env tokenData item.ClientId
+
                         return (res,
                                 RefreshTokenSuccessEvent
                                     { ClientId = clientId
                                       UserId = tokenData.Id
                                       RefreshToken = res.refresh_token
-                                      OldRefreshToken = item.Token })
-                    | None ->
-                        return! raise (UnAuthorized None)
-                | _ ->
-                    return! raise (UnAuthorized None)
+                                      OldRefreshToken = item.Token
+                                      Scopes = item.Scopes })
+                    | None -> return! raise (UnAuthorized None)
+                | _ -> return! raise (UnAuthorized None)
             }
