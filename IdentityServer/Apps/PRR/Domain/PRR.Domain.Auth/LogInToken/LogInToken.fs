@@ -64,7 +64,7 @@ module LogInToken =
                           ClientId = clientId
                           UserId = item.UserId
                           ExpiresAt = DateTime.UtcNow.AddMinutes(float env.SSOCookieExpiresIn)
-                          Scopes = item.Scopes }
+                          Scopes = item.RequestedScopes }
 
                     let evt =
                         UserLogInTokenSuccessEvent(item.Code, refreshTokenItem)

@@ -11,6 +11,7 @@
         <Compile Include="JwtConfig.fs" />
         <Compile Include="LogIn\Models.fs" />
         <Compile Include="LogIn\UserHelpers.fs" />
+        <Compile Include="LogIn\ValidateScopes.fs" />
         <Compile Include="LogIn\LogIn.fs" />
         <Compile Include="LogInToken\Models.fs" />
         <Compile Include="LogInToken\UserHelpers.fs" />

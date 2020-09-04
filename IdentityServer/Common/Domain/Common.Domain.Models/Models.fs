@@ -54,3 +54,7 @@ module Models =
         { ClientId: unit -> string
           ClientSecret: unit -> string
           AuthorizationCode: unit -> string }
+
+    type AudienceScopes =
+        { Audience: string
+          Scopes: string seq }

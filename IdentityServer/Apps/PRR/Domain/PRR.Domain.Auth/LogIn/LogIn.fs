@@ -93,11 +93,16 @@ module Authorize =
                     let codeExpiresAt =
                         DateTime.UtcNow.AddMinutes(float env.CodeExpiresIn)
 
+                    let scopes = data.Scope.Split " "
+
+                    let! validatedScopes = ValidateScopes.validateScopes dataContext data.Email clientId scopes                   
+
                     let loginItem: LogIn.Item =
                         { Code = code
                           ClientId = data.Client_Id
                           CodeChallenge = data.Code_Challenge
-                          Scopes = (data.Scope.Split " ")
+                          RequestedScopes = scopes
+                          ValidatedScopes = validatedScopes
                           UserId = userId
                           ExpiresAt = codeExpiresAt
                           RedirectUri = data.Redirect_Uri }

@@ -111,7 +111,7 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
 
     // Configure DataContext
     let loggerFactory =
-        LoggerFactory.Create(fun builder -> builder.AddConsole() |> ignore)
+        LoggerFactory.Create(fun builder -> (*builder.AddConsole() |> ignore *) ())
 
     let connectionString =
         context.Configuration.GetConnectionString "PostgreSQL"

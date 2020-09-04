@@ -9,7 +9,8 @@ module LogIn =
     type Item =
         { Code: Token
           UserId: UserId
-          Scopes: Scope seq
+          RequestedScopes: string seq
+          ValidatedScopes: AudienceScopes seq
           RedirectUri: string
           ClientId: ClientId
           CodeChallenge: Token
@@ -19,7 +20,7 @@ module LogIn =
     type GetLogInCodeQueryResult = ValueResult<Item>
 
     type Queries = GetCode of Token * IActorRef<GetLogInCodeQueryResult>
-    
+
     // Commands
     type Commands =
         | Restart
@@ -31,10 +32,9 @@ module LogIn =
     type Events =
         | CodeAdded of Item
         | CodeRemoved of Token
-        
-    // Messages    
+
+    // Messages
     type Message =
         | Command of Commands
         | Query of Queries
         | Event of Events
-
