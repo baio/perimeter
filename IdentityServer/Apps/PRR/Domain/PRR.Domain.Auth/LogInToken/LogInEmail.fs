@@ -16,7 +16,7 @@ let logInEmail (env: Env) clientId email password =
     task {
         match! getUserDataForToken env.DataContext email password with
         | Some tokenData ->
-            let! result = signInUser env tokenData clientId
+            let! result = signInUser env tokenData clientId [||]
             return result
         | None -> return! raiseTask (unAuthorized "user is not found")
     }

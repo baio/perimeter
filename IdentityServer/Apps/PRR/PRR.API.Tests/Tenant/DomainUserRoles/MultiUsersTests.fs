@@ -185,7 +185,7 @@ module MultiUsers =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let! res = logInUser testFixture u1.Tenant.Value.SampleApplicationClientId u2.Data.Email
+                let! res = logInUser testFixture u1.Tenant.Value.DomainManagementApplicationClientId u2.Data.Email
                                u2.Data.Password
 
                 res |> should be (not' null)
@@ -204,7 +204,7 @@ module MultiUsers =
             task {
                 let data: PostLike =
                     { UserEmail = "other@mail.com"
-                      RolesIds = [ u1.RoleId.Value ] }
+                      RolesIds = [ u1.RoleId.Value ] }                    
                 let! result = testFixture.HttpPostAsync u2.Token.Value
                                   (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do! ensureSuccessAsync result
@@ -245,7 +245,7 @@ module MultiUsers =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let! res = logInUser testFixture u1.Tenant.Value.SampleApplicationClientId u2.Data.Email
+                let! res = logInUser testFixture u1.Tenant.Value.DomainManagementApplicationClientId u2.Data.Email
                                u2.Data.Password
 
                 // re-signin 2nd tenant under 1st client

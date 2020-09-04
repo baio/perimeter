@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.LogIn
+﻿namespace PRR.Domain.Auth
 
 open System
 open System
@@ -9,6 +9,7 @@ open Common.Domain.Models
 open FSharp.Control.Tasks.V2
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
+[<AutoOpen>]
 module ValidateScopes =
 
     let private getTenantManagementAudiencePermissions (dataContext: DbDataContext) domainId =
@@ -67,7 +68,8 @@ module ValidateScopes =
                      && (%in' scopes) rp.Permission.Name)
                 select (Tuple.Create(rp.Permission.Api.Identifier, rp.Permission.Name))
         }
-        |> groupByAsync (fun (aud, perms) -> { Audience = aud; Scopes = perms })
+        |> groupByAsync (fun (aud, perms) -> { Audience = aud; Scopes = perms })                               
+
 
     let validateScopes (dataContext: DbDataContext) userEmail clientId scopes =
         task {

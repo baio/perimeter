@@ -7,6 +7,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
 open PRR.System.Models
 open System
+open PRR.Domain.Auth.ValidateScopes
 
 [<AutoOpen>]
 module Authorize =
@@ -95,7 +96,7 @@ module Authorize =
 
                     let scopes = data.Scope.Split " "
 
-                    let! validatedScopes = ValidateScopes.validateScopes dataContext data.Email clientId scopes                   
+                    let! validatedScopes = validateScopes dataContext data.Email clientId scopes
 
                     let loginItem: LogIn.Item =
                         { Code = code

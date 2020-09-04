@@ -14,7 +14,11 @@ module internal SignInUser =
     // https://jasonwatmore.com/post/2019/10/11/aspnet-core-3-jwt-authentication-tutorial-with-example-api
     // https://jasonwatmore.com/post/2020/05/25/aspnet-core-3-api-jwt-authentication-with-refresh-tokens
 
-    let signInUser' env clientId audiences tokenData rolesPermissions =
+    let signInUser' env clientId tokenData (validatedScopes: AudienceScopes seq) =
+        
+        let audiences = validatedScopes |> Seq.map(fun x -> x.Audience)
+        
+        let rolesPermissions = validatedScopes |> Seq.collect(fun x -> x.Scopes)
 
         let accessToken =
             createAccessTokenClaims clientId tokenData rolesPermissions audiences
@@ -63,16 +67,13 @@ module internal SignInUser =
                        (Seq.append rolesPermissions perimeterUserRolePermissions)
         }
 
-    let signInUser env (tokenData: TokenData) clientId =
+    let signInUser env (tokenData: TokenData) clientId (validatedScopes: AudienceScopes seq) =
         task {
             let! clientId = PRR.Domain.Auth.LogIn.UserHelpers.getClientId env.DataContext clientId tokenData.Email
 
-            let! aur = getClientAudiencesRolePermissions env.DataContext clientId tokenData.Email
-
-            let (audiences, userRolePermissions) = aur
 
             let result =
-                signInUser' env clientId audiences tokenData userRolePermissions
+                signInUser' env clientId tokenData validatedScopes
 
             return (result, clientId)
         }

@@ -57,7 +57,7 @@ module LogInToken =
             task {
                 match! getUserDataForToken dataContext item.UserId with
                 | Some tokenData ->
-                    let! (result, clientId) = signInUser env tokenData data.Client_Id
+                    let! (result, clientId) = signInUser env tokenData data.Client_Id item.ValidatedScopes
 
                     let refreshTokenItem: RefreshToken.Item =
                         { Token = result.refresh_token

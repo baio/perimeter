@@ -5,6 +5,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.Entities
 open PRR.Domain.Auth.LogInToken
 open PRR.System.Models
+open PRR.Domain.Auth.ValidateScopes
 
 [<AutoOpen>]
 module RefreshToken =
@@ -24,14 +25,9 @@ module RefreshToken =
                         // Now just silently change scopes
                         let scopes = item.Scopes
 
-                        let! validatedScopes =
-                            PRR.Domain.Auth.LogIn.ValidateScopes.validateScopes
-                                env.DataContext
-                                tokenData.Email
-                                item.ClientId
-                                scopes
+                        let! validatedScopes = validateScopes env.DataContext tokenData.Email item.ClientId scopes
 
-                        let! (res, clientId) = signInUser env tokenData item.ClientId
+                        let! (res, clientId) = signInUser env tokenData item.ClientId validatedScopes
 
                         return (res,
                                 RefreshTokenSuccessEvent

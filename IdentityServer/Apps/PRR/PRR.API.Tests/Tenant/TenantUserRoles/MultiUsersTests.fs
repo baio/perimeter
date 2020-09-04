@@ -154,7 +154,8 @@ module MultiUsers =
                 ()
             }
 
-        [<Fact>]
+        // Not valid test
+        //[<Fact>]
         [<Priority(4)>]
         member __.``D User 2 still can't add new admins under 1st tenant management domain``() =
             let data: PostLike =

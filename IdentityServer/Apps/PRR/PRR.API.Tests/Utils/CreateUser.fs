@@ -76,7 +76,7 @@ module CreateUser =
                   Response_Type = "code"
                   State = "state"
                   Redirect_Uri = redirectUri
-                  Scope = "openid profile email archive:tenant"
+                  Scope = "openid profile email"
                   Email = email
                   Password = password
                   Code_Challenge = codeChallenge
@@ -111,7 +111,7 @@ module CreateUser =
             let tenant = env.GetTenant()
 
             let clientId =
-                if signInUnderSampleDomain then tenant.SampleApplicationClientId
+                if signInUnderSampleDomain then tenant.DomainManagementApplicationClientId
                 else tenant.TenantManagementApplicationClientId
 
             let! result = logInUser env.TestFixture clientId userData.Email userData.Password
