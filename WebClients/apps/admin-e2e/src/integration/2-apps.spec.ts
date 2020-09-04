@@ -25,6 +25,18 @@ describe('apps', () => {
             cy.formField('name')
                 .clear()
                 .type(UPDATED_NAME)
+                .formField('idTokenExpiresIn')
+                .clear()
+                .type('100')
+                .formField('refreshTokenExpiresIn')
+                .clear()
+                .type('100')
+                .formField('allowedCallbackUrls')
+                .clear()
+                .type('http://test')
+                .formField('allowedLogoutCallbackUrls')
+                .clear()
+                .type('http://test')
                 .submitButton()
                 .click();
             cy.url().should('not.match', /\/domains\/\d+\/apps\/\d+/);
@@ -38,10 +50,6 @@ describe('apps', () => {
             cy.url().should('match', /\/domains\/\d+\/apps\/new/);
             cy.formField('name')
                 .type('new')
-                .formField('idTokenExpiresIn')
-                .type('15')
-                .formField('refreshTokenExpiresIn')
-                .type('500')
                 .submitButton()
                 .click();
             cy.url().should('not.match', /\/domains\/\d+\/apps\/new/);
@@ -52,10 +60,6 @@ describe('apps', () => {
             cy.url().should('match', /\/domains\/\d+\/apps\/new/);
             cy.formField('name')
                 .type('new')
-                .formField('idTokenExpiresIn')
-                .type('15')
-                .formField('refreshTokenExpiresIn')
-                .type('500')
                 .submitButton()
                 .click();
             cy.url().should('match', /\/domains\/\d+\/apps\/new/);
