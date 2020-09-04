@@ -16,7 +16,9 @@ let logInEmail (env: Env) clientId email password =
     task {
         match! getUserDataForToken env.DataContext email password with
         | Some tokenData ->
-            let! result = signInUser env tokenData clientId [||]
+            let! clientId = PRR.Domain.Auth.LogIn.UserHelpers.getClientId env.DataContext clientId email
+            let! validatedScopes = validateScopes env.DataContext email clientId [||]
+            let! result = signInUser env tokenData clientId validatedScopes
             return result
         | None -> return! raiseTask (unAuthorized "user is not found")
     }

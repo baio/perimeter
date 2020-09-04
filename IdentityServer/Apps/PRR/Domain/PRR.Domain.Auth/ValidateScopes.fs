@@ -58,7 +58,7 @@ module ValidateScopes =
             return seq { { Audience = aud; Scopes = perms } }
         }
 
-    let getDefaultScopes (dataContext: DbDataContext) clientId domainId isTenantManagement isDomainManagement =
+    let getDefaultScopes (dataContext: DbDataContext) domainId isTenantManagement isDomainManagement =
         task {
             if isTenantManagement
             then return! getTenantManagementAudiencePermissions dataContext domainId
@@ -89,8 +89,9 @@ module ValidateScopes =
         | Some x -> x.Audience
         | None -> raise (unexpected "Audience not found by scope")
 
-    let validateScopes (dataContext: DbDataContext) userEmail clientId scopes =
+    let private validateScopes' (dataContext: DbDataContext) userEmail clientId scopes =
         task {
+
             let! (domainId, isDomainManagement, isTenantManagement) =
                 query {
                     for app in dataContext.Applications do
@@ -99,8 +100,7 @@ module ValidateScopes =
                 }
                 |> toSingleAsync
 
-            let! defaultAudienceScopes =
-                getDefaultScopes dataContext clientId domainId isTenantManagement isDomainManagement
+            let! defaultAudienceScopes = getDefaultScopes dataContext domainId isTenantManagement isDomainManagement
 
             let defaultScopes =
                 defaultAudienceScopes
@@ -126,4 +126,15 @@ module ValidateScopes =
                       Scopes = y |> Seq.map snd })
 
             return Seq.append audScopesWithAudiences audScopesNoAudiences
+        }
+
+    let validateScopes (dataContext: DbDataContext) userEmail clientId scopes =
+        task {
+            if clientId = PERIMETER_CLIENT_ID then
+                return seq {
+                           { Audience = PERIMETER_USERS_AUDIENCE
+                             Scopes = [] }
+                       }
+            else
+                return! validateScopes' dataContext userEmail clientId scopes
         }
