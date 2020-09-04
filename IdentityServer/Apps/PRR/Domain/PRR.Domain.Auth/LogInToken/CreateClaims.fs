@@ -16,10 +16,7 @@ module private CreateClaims =
         let permissions = scopes |> strJoin
         // TODO : RBA + Include permissions flag
         [| Claim("sub", tokenData.Id.ToString())
-           Claim
-               ("scope",
-                strJoin [ "openid roles %s"
-                          permissions ])
+           Claim("scope", strJoin [ "openid %s"; permissions ])
            Claim(CLAIM_TYPE_CID, clientId) |]
         |> Seq.append auds
 
@@ -33,7 +30,4 @@ module private CreateClaims =
            Claim(ClaimTypes.GivenName, tokenData.FirstName)
            Claim(ClaimTypes.Surname, tokenData.LastName)
            Claim(CLAIM_TYPE_CID, clientId)
-           Claim
-               ("scope",
-                strJoin [ "openid roles %s"
-                          permissions ]) |]
+           Claim("scope", strJoin [ "openid %s"; permissions ]) |]
