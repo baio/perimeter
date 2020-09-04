@@ -135,6 +135,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     IdTokenExpiresIn = table.Column<int>(nullable: false),
                     RefreshTokenExpiresIn = table.Column<int>(nullable: false),
                     AllowedCallbackUrls = table.Column<string>(nullable: false),
+                    AllowedLogoutCallbackUrls = table.Column<string>(nullable: false),
                     SSOEnabled = table.Column<bool>(nullable: false, defaultValue: false),
                     Flow = table.Column<string>(nullable: false),
                     IsDomainManagement = table.Column<bool>(nullable: false, defaultValue: false)
