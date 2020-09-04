@@ -13,6 +13,14 @@ module Applications =
     [<CLIMutable>]
     type PostLike = { Name: string }
 
+    type PutLike =
+        { Name: string
+          IdTokenExpiresIn: int
+          RefreshTokenExpiresIn: int
+          AllowedCallbackUrls: string
+          AllowedLogoutCallbackUrls: string
+          SSOEnabled: bool }
+
     [<CLIMutable>]
     type GetLike =
         { Id: int
@@ -21,12 +29,28 @@ module Applications =
           ClientSecret: string
           DateCreated: DateTime
           IdTokenExpiresIn: int
-          RefreshTokenExpiresIn: int }
+          RefreshTokenExpiresIn: int
+          AllowedCallbackUrls: string
+          AllowedLogoutCallbackUrls: string
+          SSOEnabled: bool
+          Flow: FlowType }
 
     type CreateEnv =
         { AuthStringsProvider: AuthStringsProvider
           IdTokenExpiresIn: int<minutes>
           RefreshTokenExpiresIn: int<minutes> }
+
+    let validatePost (data: PostLike) =
+        [| (validateNullOrEmpty "name" data.Name) |]
+        |> Array.choose id
+
+    let validatePut (data: PutLike) =
+        [| (validateNullOrEmpty "name" data.Name)
+           (validateIntRange (1, 9999999) "idTokenExpiresIn" data.IdTokenExpiresIn)
+           (validateIntRange (1, 9999999) "refreshTokenExpiresIn" data.RefreshTokenExpiresIn)
+           (validateUrlsList true "allowedCallbackUrls" data.AllowedCallbackUrls)
+           (validateUrlsList true "allowedLogoutCallbackUrls" data.AllowedLogoutCallbackUrls) |]
+        |> Array.choose id
 
     let catch =
         function
@@ -43,25 +67,36 @@ module Applications =
                  IdTokenExpiresIn = int env.IdTokenExpiresIn,
                  RefreshTokenExpiresIn = int env.RefreshTokenExpiresIn,
                  Flow = FlowType.PKCE,
+                 AllowedLogoutCallbackUrls = "*",
                  AllowedCallbackUrls = "*")) (fun x -> x.Id)
 
-    let update: Update<int, DomainId * PostLike, DbDataContext> =
+    let update: Update<int, DomainId * PutLike, DbDataContext> =
         updateCatch<Application, _, _, _> catch (fun id -> Application(Id = id)) (fun (_, dto) entity ->
-            entity.Name <- dto.Name)
+            entity.Name <- dto.Name
+            entity.IdTokenExpiresIn <- dto.IdTokenExpiresIn
+            entity.RefreshTokenExpiresIn <- dto.RefreshTokenExpiresIn
+            entity.AllowedCallbackUrls <- dto.AllowedCallbackUrls
+            entity.AllowedLogoutCallbackUrls <- dto.AllowedLogoutCallbackUrls
+            entity.SSOEnabled <- dto.SSOEnabled)
 
     let remove: Remove<int, DbDataContext> = remove (fun id -> Application(Id = id))
 
+    let selectApp =
+        <@ fun (p: Application) ->
+            { Id = p.Id
+              Name = p.Name
+              ClientId = p.ClientId
+              ClientSecret = p.ClientSecret
+              DateCreated = p.DateCreated
+              IdTokenExpiresIn = p.IdTokenExpiresIn
+              RefreshTokenExpiresIn = p.RefreshTokenExpiresIn
+              AllowedCallbackUrls = p.AllowedCallbackUrls
+              AllowedLogoutCallbackUrls = p.AllowedLogoutCallbackUrls
+              SSOEnabled = p.SSOEnabled
+              Flow = p.Flow } @>
+
     let getOne: GetOne<int, GetLike, DbDataContext> =
-        getOne<Application, _, _, _>
-            (<@ fun p id -> p.Id = id @>)
-            (<@ fun p ->
-                    { Id = p.Id
-                      Name = p.Name
-                      ClientId = p.ClientId
-                      ClientSecret = p.ClientSecret
-                      DateCreated = p.DateCreated
-                      IdTokenExpiresIn = p.IdTokenExpiresIn
-                      RefreshTokenExpiresIn = p.RefreshTokenExpiresIn } @>)
+        getOne<Application, _, _, _> (<@ fun p id -> p.Id = id @>) (selectApp)
 
     //
     type SortField =
@@ -100,13 +135,6 @@ module Applications =
                     where
                         (p.DomainId = domainId
                          && p.IsDomainManagement = false)
-                    select
-                        { Id = p.Id
-                          Name = p.Name
-                          ClientId = p.ClientId
-                          ClientSecret = p.ClientSecret
-                          DateCreated = p.DateCreated
-                          IdTokenExpiresIn = p.IdTokenExpiresIn
-                          RefreshTokenExpiresIn = p.RefreshTokenExpiresIn }
+                    select ((%selectApp) p)
             }
             |> executeListQuery prms

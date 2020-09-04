@@ -19,6 +19,9 @@ module BadRequestValidators =
 
     let noneIfNullOrEmpty = noneIf isEmpty
 
+    let private validateUrlString =
+        Regex("^http(s)?://([\w-]+.)+[\w-]+(/[\w- ./?%&=])?$").IsMatch
+
     let private seqJoin = String.concat ","
 
     let validateDomainName name =
@@ -36,6 +39,23 @@ module BadRequestValidators =
         if x = null
         then Some(BadRequestFieldError(name, EMPTY_VALUE))
         else None
+
+    let validateIntRange (min, max) name x =
+        if x >= min && x <= max
+        then None
+        else Some(BadRequestFieldError(name, NOT_IN_RANGE(min, max)))
+
+    let validateUrlsList includeAll name (x: string) =
+        let urls =
+            x.Split(" ", StringSplitOptions.RemoveEmptyEntries)
+
+        let notUrls =
+            urls
+            |> Seq.where (fun str -> not ((includeAll && str = "*") || validateUrlString str))
+
+        match notUrls |> Seq.length with
+        | 0 -> None
+        | _ -> Some(BadRequestFieldError(name, NOT_URLS_LIST notUrls))
 
     let validateRegex name err (regex: string) =
         (Regex(regex).IsMatch)
@@ -68,7 +88,7 @@ module BadRequestValidators =
         >> Option.map BadRequestFieldError
 
     let validateUrl' name =
-        (Regex("^http(s)?://([\w-]+.)+[\w-]+(/[\w- ./?%&=])?$").IsMatch)
+        validateUrlString
         >> not
         >> ofBool (name, NOT_URL_STRING)
         >> Option.map BadRequestFieldError

@@ -23,14 +23,16 @@ module private ApplicationHandlers =
                         IdTokenExpiresIn = config.Jwt.IdTokenExpiresIn
                         AuthStringsProvider = getAuthStringsProvider ctx })
                   |> ofReader)
-             <*> ((doublet domainId) <!> bindJsonAsync<PostLike>)
+             <*> ((doublet domainId)
+                  <!> bindValidateJsonAsync validatePost)
              <*> dataContext)
 
     let updateHandler domainId id =
         wrap
             (update
              <!> ((doublet id)
-                  <!> (doublet domainId <!> bindJsonAsync<PostLike>))
+                  <!> (doublet domainId
+                       <!> bindValidateJsonAsync validatePut))
              <*> dataContext)
 
     let removeHandler (id: int) = wrap (remove id <!> dataContext)

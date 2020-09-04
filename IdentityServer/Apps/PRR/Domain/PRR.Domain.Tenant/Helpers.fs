@@ -21,6 +21,7 @@ module Helpers =
              ClientSecret = authStringProvider.ClientSecret(),
              Flow = FlowType.PKCE,
              AllowedCallbackUrls = "*",
+             AllowedLogoutCallbackUrls = "*",
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
              RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
              SSOEnabled = true,
@@ -47,6 +48,7 @@ module Helpers =
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
              RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
              AllowedCallbackUrls = "*",
+             AllowedLogoutCallbackUrls = "*",
              Flow = FlowType.PKCE,
              IsDomainManagement = false)
 
@@ -59,6 +61,7 @@ module Helpers =
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
              RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
              AllowedCallbackUrls = "*",
+             AllowedLogoutCallbackUrls = "*",
              Flow = FlowType.PKCE,
              IsDomainManagement = true)
 

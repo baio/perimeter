@@ -10,7 +10,7 @@ using PRR.Data.DataContext;
 namespace PRR.Data.DataContextMigrations.Migrations
 {
     [DbContext(typeof(DbDataContext))]
-    [Migration("20200903210036_Initial")]
+    [Migration("20200904100907_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -71,6 +71,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("AllowedCallbackUrls")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("AllowedLogoutCallbackUrls")
                         .IsRequired()
                         .HasColumnType("text");
 

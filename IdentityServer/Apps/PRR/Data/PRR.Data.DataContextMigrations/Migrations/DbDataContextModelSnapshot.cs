@@ -72,6 +72,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("AllowedLogoutCallbackUrls")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("ClientId")
                         .IsRequired()
                         .HasColumnType("text");

@@ -34,7 +34,6 @@ module ErrorHandler =
         |> Array.map (fun (key, vals) -> (key, (vals |> Seq.map snd)))
         |> Map.ofArray
 
-
     let rec findLeafInnerException (ex: Exception) =
         if (ex.InnerException = null) then ex
         else findLeafInnerException ex.InnerException

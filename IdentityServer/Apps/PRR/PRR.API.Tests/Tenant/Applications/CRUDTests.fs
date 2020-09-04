@@ -34,9 +34,7 @@ module CRUD =
     let mutable applicationId: int option = None
 
     [<CLIMutable>]
-    type PermissionGetLikeDto =
-        { id: int
-          name: string }
+    type PermissionGetLikeDto = { id: int; name: string }
 
     [<CLIMutable>]
     type GetLikeDto =
@@ -67,9 +65,11 @@ module CRUD =
         member __.``A Create application must be success``() =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
-                let data: PostLike =
-                    { Name = "App 1" }
-                let! result = testFixture.HttpPostAsync userToken (sprintf "/tenant/domains/%i/applications" domainId) data
+                let data: PostLike = { Name = "App 1" }
+
+                let! result =
+                    testFixture.HttpPostAsync userToken (sprintf "/tenant/domains/%i/applications" domainId) data
+
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<int> result
                 applicationId <- Some(result)
@@ -80,19 +80,25 @@ module CRUD =
         member __.``B Get app must be success``() =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
-                let! result = testFixture.HttpGetAsync userToken
-                                  (sprintf "/tenant/domains/%i/applications/%i" domainId applicationId.Value)
+                let! result =
+                    testFixture.HttpGetAsync
+                        userToken
+                        (sprintf "/tenant/domains/%i/applications/%i" domainId applicationId.Value)
+
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
                 result.id |> should equal applicationId.Value
-                
+
                 result.name |> should equal "App 1"
+
                 result.clientId |> should be (not' null)
                 result.clientSecret |> should be (not' null)
                 result.dateCreated |> should be (not' null)
                 result.idTokenExpiresIn |> should be (not' null)
-                result.refreshTokenExpiresIn |> should be (not' null)
+
+                result.refreshTokenExpiresIn
+                |> should be (not' null)
             }
 
         [<Fact>]
@@ -100,10 +106,20 @@ module CRUD =
         member __.``C Update app must be success``() =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
-                let data: PostLike =
-                    { Name = "App 1 Updated" }
-                let! result = testFixture.HttpPutAsync userToken
-                                  (sprintf "/tenant/domains/%i/applications/%i" domainId applicationId.Value) data
+                let data: PutLike =
+                    { Name = "App 1 Updated"
+                      IdTokenExpiresIn = 100
+                      RefreshTokenExpiresIn = 100
+                      AllowedCallbackUrls = "https://some.com https://some1.com"
+                      AllowedLogoutCallbackUrls = "https://some.com"
+                      SSOEnabled = true }
+
+                let! result =
+                    testFixture.HttpPutAsync
+                        userToken
+                        (sprintf "/tenant/domains/%i/applications/%i" domainId applicationId.Value)
+                        data
+
                 do! ensureSuccessAsync result
             }
 
@@ -112,8 +128,11 @@ module CRUD =
         member __.``D Get app after update must be success``() =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
-                let! result = testFixture.HttpGetAsync userToken
-                                  (sprintf "/tenant/domains/%i/applications/%i" domainId applicationId.Value)
+                let! result =
+                    testFixture.HttpGetAsync
+                        userToken
+                        (sprintf "/tenant/domains/%i/applications/%i" domainId applicationId.Value)
+
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
@@ -123,7 +142,9 @@ module CRUD =
                 result.clientSecret |> should be (not' null)
                 result.dateCreated |> should be (not' null)
                 result.idTokenExpiresIn |> should be (not' null)
-                result.refreshTokenExpiresIn |> should be (not' null)
+
+                result.refreshTokenExpiresIn
+                |> should be (not' null)
             }
 
         [<Fact>]
@@ -131,6 +152,10 @@ module CRUD =
         member __.``E Delete role must be success``() =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
-                let! result = testFixture.HttpDeleteAsync userToken
-                                  (sprintf "/tenant/domains/%i/applications/%i" domainId applicationId.Value)
-                do! ensureSuccessAsync result }
+                let! result =
+                    testFixture.HttpDeleteAsync
+                        userToken
+                        (sprintf "/tenant/domains/%i/applications/%i" domainId applicationId.Value)
+
+                do! ensureSuccessAsync result
+            }
