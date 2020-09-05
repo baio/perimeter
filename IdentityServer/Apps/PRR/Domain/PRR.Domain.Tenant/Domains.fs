@@ -73,7 +73,16 @@ module Domains =
                 |> toSingleUnchangedAsync dataContext
 
             let domain =
-                Domain(Pool = pool, EnvName = dto.EnvName, IsMain = false)
+                Domain
+                    (Pool = pool,
+                     EnvName = dto.EnvName,
+                     IsMain = false,
+                     Issuer =
+                         sprintf
+                             "https://%s.%s.%s.perimeter.com/domain/issuer"
+                             dto.EnvName
+                             pool.Identifier
+                             pool.Tenant.Name)
                 |> add'
 
             createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
@@ -99,6 +108,7 @@ module Domains =
             with ex -> return catch ex
         }
 
+    // TODO : EnvName could not be updated !
     let update: Update<int, PostLike, DbDataContext> =
         updateCatch<Domain, _, _, _> catch (fun id -> Domain(Id = id)) (fun dto entity -> entity.EnvName <- dto.EnvName)
 

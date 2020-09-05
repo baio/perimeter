@@ -36,8 +36,10 @@ namespace PRR.Data.Entities
 
         [Required] public DateTime DateCreated { get; set; }
 
+        [Required] public string Issuer { get; set; }
+
         public virtual ICollection<DomainUserRole> DomainUsersRoles { get; set; }
-        
+
         public virtual ICollection<Role> Roles { get; set; }
     }
 }
