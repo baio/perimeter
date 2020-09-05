@@ -43,4 +43,4 @@ module internal ValidateAccessToken =
                 (ValidateAudience = false, ValidateIssuer = false, ValidateIssuerSigningKey = true,
                  IssuerSigningKey = SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)), ValidateLifetime = false)
 
-        (principalCalims <!> validateToken token tokenValidationParameters) >>= getClaimInt ClaimTypes.NameIdentifier
+        (principalCalims <!> validateToken token tokenValidationParameters) >>= getClaimInt CLAIM_TYPE_UID

@@ -29,7 +29,7 @@ module User =
     let tryBindUserClaimInt name = tryBindUserClaim name >=> tryParseInt
 
 
-    let tryBindUserClaimId x = x |> tryBindUserClaimInt ClaimTypes.NameIdentifier
+    let tryBindUserClaimId x = x |> tryBindUserClaimInt CLAIM_TYPE_UID
 
     let tryBindUserEmail x = x |> tryBindUserClaim ClaimTypes.Email
 

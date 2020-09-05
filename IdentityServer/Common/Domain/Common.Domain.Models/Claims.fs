@@ -13,3 +13,5 @@ module Claims =
     let CLAIM_TYPE_SUB = "sub"
     
     let CLAIM_TYPE_AUDIENCE = "aud"
+    
+    let CLAIM_TYPE_UID = "uid"

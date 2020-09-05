@@ -27,7 +27,7 @@ module LogOut =
                 // TODO : Check allowed return url
                 let sub =
                     token.Claims
-                    |> getClaimInt ClaimTypes.NameIdentifier
+                    |> getClaimInt CLAIM_TYPE_UID
                     |> Options.noneFails (unAuthorized "sub is not found")
 
                 let result = { ReturnUri = data.ReturnUri }

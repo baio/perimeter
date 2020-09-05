@@ -16,7 +16,8 @@ module private CreateClaims =
 
         let permissions = scopes |> strJoin
         // TODO : RBA + Include permissions flag
-        [| Claim(CLAIM_TYPE_SUB, tokenData.Id.ToString())
+        [| Claim(CLAIM_TYPE_SUB, (sprintf "prr|%s" tokenData.Email))
+           Claim(CLAIM_TYPE_UID, tokenData.Id.ToString())
            Claim(CLAIM_TYPE_SCOPE, strJoin [ "openid"; permissions ])
            Claim(CLAIM_TYPE_ISSUER, issuer)
            Claim(CLAIM_TYPE_CID, clientId) |]
@@ -26,7 +27,9 @@ module private CreateClaims =
 
         let permissions = scopes |> strJoin
         // TODO : RBA + Include permissions flag
-        [| Claim(CLAIM_TYPE_SUB, tokenData.Id.ToString())
+        [|
+           Claim(CLAIM_TYPE_SUB, (sprintf "prr|%s" tokenData.Email))
+           Claim(CLAIM_TYPE_SUB, tokenData.Id.ToString())
            Claim(ClaimTypes.Email, tokenData.Email)
            // TODO : Separate claims for access and id
            Claim(ClaimTypes.GivenName, tokenData.FirstName)
