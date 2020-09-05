@@ -9,6 +9,7 @@ open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
 open System.Linq
+open Microsoft.EntityFrameworkCore
 
 module Domains =
 
@@ -61,20 +62,27 @@ module Domains =
 
         task {
 
-            let! tenant =
+            // TODO : Select only required fields
+            let! pool =
                 query {
                     for dp in dataContext.DomainPools do
                         where (dp.Id = domainPoolId)
-                        select (Tenant(Id = dp.TenantId, Name = dp.Name))
+                        select dp
                 }
+                |> fun q -> q.Include("Tenant")
                 |> toSingleUnchangedAsync dataContext
 
-            let pool =
-                DomainPool(Id = domainPoolId, Tenant = tenant)
-                |> setUnchanged dataContext
-
             let domain =
-                Domain(Pool = pool, EnvName = dto.EnvName, IsMain = false)
+                Domain
+                    (Pool = pool,
+                     EnvName = dto.EnvName,
+                     IsMain = false,
+                     Issuer =
+                         sprintf
+                             "https://%s.%s.%s.perimeter.com/domain/issuer"
+                             dto.EnvName
+                             pool.Identifier
+                             pool.Tenant.Name)
                 |> add'
 
             createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
@@ -100,6 +108,7 @@ module Domains =
             with ex -> return catch ex
         }
 
+    // TODO : EnvName could not be updated !
     let update: Update<int, PostLike, DbDataContext> =
         updateCatch<Domain, _, _, _> catch (fun id -> Domain(Id = id)) (fun dto entity -> entity.EnvName <- dto.EnvName)
 

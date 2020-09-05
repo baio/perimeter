@@ -9,7 +9,7 @@ module Events =
     
     type Events =
         | UserSignedUpEvent of SignUpSuccess
-        | UserSignUpConfirmedEvent of SignUpConfirmSuccess
+        | UserSignUpConfirmedEvent of SignUpConfirmSuccess * bool
         | UserTenantCreatedEvent of CreatedTenantInfo
         | RefreshTokenSuccessEvent of RefreshTokenSuccess
         | SignUpTokenEvent of SignUpToken.Events

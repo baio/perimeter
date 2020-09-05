@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { definition } from './form.definition';
-import { AdminForm } from '@admin/shared';
+import { getDefinition } from './form.definition';
+import { AdminForm, isNew$ } from '@admin/shared';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomainsDataAccessService } from '@admin/data-access';
 import { of } from 'rxjs';
@@ -14,7 +14,7 @@ import { loadManagementDomains } from '@admin/profile';
     styleUrls: ['./form.component.scss'],
 })
 export class DomainPoolFormComponent {
-    readonly definition = definition;
+    readonly definition = getDefinition(isNew$(this.activatedRoute));
 
     readonly storeValueDataAccess: AdminForm.Data.StoreValueDataAccess = (
         item: any

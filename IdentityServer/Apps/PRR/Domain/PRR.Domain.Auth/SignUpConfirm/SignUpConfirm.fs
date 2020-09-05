@@ -13,7 +13,7 @@ open System
 module SignUpConfirm =
 
     let signUpConfirm: SignUpConfirm =
-        fun env item ->
+        fun createTenant env item ->
 
             if item.ExpiredAt < DateTime.UtcNow then raise (UnAuthorized None)
 
@@ -22,10 +22,14 @@ module SignUpConfirm =
             task {
                 let user =
                     User
-                        (FirstName = item.FirstName, LastName = item.LastName, Email = item.Email,
-                         Password = item.Password) |> add' dataContext
+                        (FirstName = item.FirstName,
+                         LastName = item.LastName,
+                         Email = item.Email,
+                         Password = item.Password)
+                    |> add' dataContext
+
                 do! saveChangesAsync dataContext
-                return { UserId = user.Id
-                         Email = user.Email }
+
+                return ({ UserId = user.Id; Email = user.Email }, createTenant)
                        |> UserSignUpConfirmedEvent
             }

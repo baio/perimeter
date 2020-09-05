@@ -80,6 +80,39 @@ describe('signup flow', () => {
                 assert.isTrue(!!win.localStorage.getItem('access_token'));
                 assert.isTrue(!!win.localStorage.getItem('refresh_token'));
             });
+
+            cy.url().should('include', '/profile/home');
         });
+    });
+
+    it('create tenant could be closed', () => {
+        cy.dataCy('create-tenant').click().get('.ant-drawer-close').click();
+        cy.url().should('not.include', 'create-tenant');
+    });
+
+    it('create tenant', () => {
+        cy.dataCy('create-tenant')
+            .click()
+            .formField('name')
+            .type('test')
+            .submitButton()
+            .click();
+
+        cy.url().should('include', 'auth/login');
+    });
+
+    it('login', () => {
+        cy.dataCy('email')
+            .type(EMAIL)
+            .dataCy('password')
+            .type(PASSWORD)
+            .dataCy('submit')
+            .click();
+
+        cy.url().should('match', /\/tenants\/\d+\/domains/);
+
+        cy.rows(0, 2).dataCy('env-btn').eq(0).click();
+
+        cy.url().should('match', /\/domains\/\d+\/apps/);
     });
 });

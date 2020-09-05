@@ -19,9 +19,10 @@ module private EventsHandler =
             data
             |> SendResetPasswordEmailCommand
             |> ofOne
-        | UserSignUpConfirmedEvent data ->
+        | UserSignUpConfirmedEvent (data, createUserTenant) ->
             seq {
-                data |> CreateUserTenantCommand
+                if createUserTenant then
+                    data |> CreateUserTenantCommand
                 data.Email
                 |> SignUpToken.RemoveTokensWithEmail
                 |> SignUpTokenCommand

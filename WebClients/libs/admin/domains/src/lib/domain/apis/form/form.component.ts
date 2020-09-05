@@ -1,8 +1,8 @@
 import { ApisDataAccessService } from '@admin/data-access';
-import { AdminForm } from '@admin/shared';
+import { AdminForm, isNew$ } from '@admin/shared';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { definition } from './form.definition';
+import { getDefinition } from './form.definition';
 
 @Component({
     selector: 'admin-api-form',
@@ -11,7 +11,7 @@ import { definition } from './form.definition';
 })
 export class ApiFormComponent {
     private readonly domainId: number;
-    readonly definition = definition;
+    readonly definition = getDefinition(isNew$(this.activatedRoute));
     readonly loadValueDataAccess: AdminForm.Data.LoadValueDataAccess = (
         id: number
     ) => this.dataAccess.loadItem(this.domainId, id);

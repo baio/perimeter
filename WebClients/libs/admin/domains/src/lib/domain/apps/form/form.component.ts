@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { definition } from './form.definition';
-import { AdminForm } from '@admin/shared';
+import { getDefinition } from './form.definition';
+import { AdminForm, isNew$ } from '@admin/shared';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppsDataAccessService } from '@admin/data-access';
 
@@ -11,7 +11,7 @@ import { AppsDataAccessService } from '@admin/data-access';
 })
 export class AppFormComponent {
     private readonly domainId: number;
-    readonly definition = definition;
+    readonly definition = getDefinition(isNew$(this.activatedRoute));
     readonly loadValueDataAccess: AdminForm.Data.LoadValueDataAccess = (
         id: number
     ) => this.dataAccess.loadItem(this.domainId, id);

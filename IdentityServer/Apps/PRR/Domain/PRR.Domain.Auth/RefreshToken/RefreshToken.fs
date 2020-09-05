@@ -5,6 +5,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.Entities
 open PRR.Domain.Auth.LogInToken
 open PRR.System.Models
+open PRR.Domain.Auth.ValidateScopes
 
 [<AutoOpen>]
 module RefreshToken =
@@ -19,15 +20,22 @@ module RefreshToken =
                 | Success ->
                     match! getUserDataForToken env.DataContext item.UserId with
                     | Some tokenData ->
-                        let! (res, clientId) = signInUser env tokenData item.ClientId
+
+                        // TODO : When available scopes changed while refreshing tokens what to do ?
+                        // Now just silently change scopes
+                        let scopes = item.Scopes
+
+                        let! validatedScopes = validateScopes env.DataContext tokenData.Email item.ClientId scopes
+
+                        let! (res, clientId) = signInUser env tokenData item.ClientId validatedScopes
+
                         return (res,
                                 RefreshTokenSuccessEvent
                                     { ClientId = clientId
                                       UserId = tokenData.Id
                                       RefreshToken = res.refresh_token
-                                      OldRefreshToken = item.Token })
-                    | None ->
-                        return! raise (UnAuthorized None)
-                | _ ->
-                    return! raise (UnAuthorized None)
+                                      OldRefreshToken = item.Token
+                                      Scopes = item.Scopes })
+                    | None -> return! raise (UnAuthorized None)
+                | _ -> return! raise (UnAuthorized None)
             }

@@ -8,10 +8,15 @@ module Helpers =
 
     let createTenant name userId = Tenant(Name = name, UserId = userId)
 
-    let createDomainPool tenant name = DomainPool(Tenant = tenant, Name = name)
+    let createDomainPool tenant name identifier =
+        DomainPool(Tenant = tenant, Name = name, Identifier = identifier)
 
     let createTenantManagementDomain (tenant: Tenant) =
-        Domain(Tenant = tenant, EnvName = "management", IsMain = true)
+        Domain
+            (Tenant = tenant,
+             EnvName = "management",
+             IsMain = true,
+             Issuer = sprintf "https://management.%s.perimeter.com/tenant/issuer" tenant.Name)
 
     let createTenantManagementApp (authStringProvider: AuthStringsProvider) (authConfig: AuthConfig) domain =
         Application
@@ -21,12 +26,13 @@ module Helpers =
              ClientSecret = authStringProvider.ClientSecret(),
              Flow = FlowType.PKCE,
              AllowedCallbackUrls = "*",
+             AllowedLogoutCallbackUrls = "*",
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
              RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
              SSOEnabled = true,
              IsDomainManagement = true)
 
-    let createTenantManagementApi authConfig (domain: Domain)  =
+    let createTenantManagementApi authConfig (domain: Domain) =
         Api
             (Domain = domain,
              Name = "Tenant domains management API",
@@ -36,7 +42,11 @@ module Helpers =
 
     //
     let createMainDomain (domainPool: DomainPool) =
-        Domain(Pool = domainPool, EnvName = "dev", IsMain = true)
+        Domain
+            (Pool = domainPool,
+             EnvName = "dev",
+             IsMain = true,
+             Issuer = sprintf "https://dev.%s.%s.perimeter.com/domain/issuer" domainPool.Identifier domainPool.Tenant.Name)
 
     let createDomainApp (authStringProvider: AuthStringsProvider) (authConfig: AuthConfig) domain name =
         Application
@@ -47,6 +57,7 @@ module Helpers =
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
              RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
              AllowedCallbackUrls = "*",
+             AllowedLogoutCallbackUrls = "*",
              Flow = FlowType.PKCE,
              IsDomainManagement = false)
 
@@ -59,6 +70,7 @@ module Helpers =
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
              RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
              AllowedCallbackUrls = "*",
+             AllowedLogoutCallbackUrls = "*",
              Flow = FlowType.PKCE,
              IsDomainManagement = true)
 
@@ -67,7 +79,12 @@ module Helpers =
             (Domain = domain,
              Name = name,
              Identifier =
-                 sprintf "https://%s.%s.%s.%s.com" identifier domain.EnvName domain.Pool.Name domain.Pool.Tenant.Name,
+                 sprintf
+                     "https://%s.%s.%s.%s.com"
+                     identifier
+                     domain.EnvName
+                     domain.Pool.Identifier
+                     domain.Pool.Tenant.Name,
              IsDomainManagement = false,
              AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
 
@@ -79,7 +96,7 @@ module Helpers =
                  sprintf
                      "https://domain-management-api.%s.%s.%s.com"
                      domain.EnvName
-                     domain.Pool.Name
+                     domain.Pool.Identifier
                      domain.Pool.Tenant.Name,
              IsDomainManagement = true,
              AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))

@@ -66,7 +66,7 @@ module private CreateUserTenant =
 
             //
             let pool =
-                createDomainPool tenant "sample-domain" |> add'
+                createDomainPool tenant "sample-domain" "default-domain" |> add'
 
             let sampleDomain = createMainDomain pool |> add'
 

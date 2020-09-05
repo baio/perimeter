@@ -4,6 +4,7 @@ import {
     MISS_LOWER_CASE_LETTER,
     MISS_DIGIT,
     MISS_SPECIAL_CHAR,
+    NOT_DOMAIN_NAME,
 } from './validation-errors';
 
 export class FormValidators {
@@ -34,5 +35,10 @@ export class FormValidators {
     public static missSpecialChar = FormValidators.regex(
         /[!@#$%^&*()_+=\[{\]};:<>|./?,-]/,
         MISS_SPECIAL_CHAR
+    );
+
+    public static domainName = FormValidators.regex(
+        /^[a-z-0-9]+$/,
+        NOT_DOMAIN_NAME
     );
 }

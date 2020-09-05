@@ -28,7 +28,7 @@ module private DomainPoolHandlers =
              <!> (triplet
                   <!> bindUserClaimId
                   <*> tenantId
-                  <*> bindValidateJsonAsync validateData)
+                  <*> bindValidateJsonAsync validatePostData)
              <*> ofReader (fun ctx ->
                      let config = getConfig ctx
                      { AuthStringsProvider = getAuthStringsProvider ctx
@@ -41,7 +41,8 @@ module private DomainPoolHandlers =
     let updateHandler id =
         wrap
             (update
-             <!> ((doublet id) <!> bindJsonAsync<PostLike>)
+             <!> ((doublet id)
+                  <!> bindValidateJsonAsync validatePutData)
              <*> dataContext)
 
     let removeHandler (id: int) = wrap (remove id <!> dataContext)

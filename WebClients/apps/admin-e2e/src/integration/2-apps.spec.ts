@@ -4,13 +4,9 @@ import { EMAIL, PASSWORD, clearLocalStorage } from './_setup';
 describe('apps', () => {
     const UPDATED_NAME = 'updated name';
     before(() => cy.reinitDb(true));
-    // TODO : Take domain from header ?
-    before(() => cy.visit('/domains/2/apps'));
-
-    it('app should be open', () => {
-        cy.url().should('include', 'apps');
+    before(() => {
+        cy.visit('/domains/2/apps');
     });
-
     describe('edit', () => {
         it('load app edit form data', () => {
             cy.rows(0).click();
@@ -25,6 +21,18 @@ describe('apps', () => {
             cy.formField('name')
                 .clear()
                 .type(UPDATED_NAME)
+                .formField('idTokenExpiresIn')
+                .clear()
+                .type('100')
+                .formField('refreshTokenExpiresIn')
+                .clear()
+                .type('100')
+                .formField('allowedCallbackUrls')
+                .clear()
+                .type('http://test')
+                .formField('allowedLogoutCallbackUrls')
+                .clear()
+                .type('http://test')
                 .submitButton()
                 .click();
             cy.url().should('not.match', /\/domains\/\d+\/apps\/\d+/);
@@ -36,28 +44,14 @@ describe('apps', () => {
         it('create domain', () => {
             cy.dataCy('create-item').click();
             cy.url().should('match', /\/domains\/\d+\/apps\/new/);
-            cy.formField('name')
-                .type('new')
-                .formField('idTokenExpiresIn')
-                .type('15')
-                .formField('refreshTokenExpiresIn')
-                .type('500')
-                .submitButton()
-                .click();
+            cy.formField('name').type('new').submitButton().click();
             cy.url().should('not.match', /\/domains\/\d+\/apps\/new/);
         });
 
         it('create app with same name should fail', () => {
             cy.dataCy('create-item').click();
             cy.url().should('match', /\/domains\/\d+\/apps\/new/);
-            cy.formField('name')
-                .type('new')
-                .formField('idTokenExpiresIn')
-                .type('15')
-                .formField('refreshTokenExpiresIn')
-                .type('500')
-                .submitButton()
-                .click();
+            cy.formField('name').type('new').submitButton().click();
             cy.url().should('match', /\/domains\/\d+\/apps\/new/);
             cy.cancelButton().click();
         });
@@ -73,7 +67,7 @@ describe('apps', () => {
         });
 
         it('sort by created change rows positions', () => {
-            cy.get('table thead th').eq(2).click().click();
+            cy.get('table thead th').eq(4).click().click();
             cy.rows(0, 0).should('contain.text', UPDATED_NAME);
             cy.rows(1, 0).should('contain.text', 'new');
         });

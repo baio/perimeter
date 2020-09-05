@@ -20,11 +20,11 @@ describe('switch-domains', () => {
     it('create domain', () => {
         cy.dataCy('create-item').click();
         cy.url().should('match', /\/tenants\/\d+\/domains\/new/);
-        cy.formField('name').type('new').submitButton().click();
+        cy.formField('name').type('new').formField('identifier').type('new').submitButton().click();
         cy.url().should('match', /\/tenants\/\d+\/domains/);
         cy.dataCy('create-item').click();
         cy.url().should('match', /\/tenants\/\d+\/domains\/new/);
-        cy.formField('name').type('new').submitButton().click();
+        cy.formField('name').type('new').formField('identifier').type('new').submitButton().click();
         cy.url().should('match', /\/tenants\/\d+\/domains\/new/);
         cy.cancelButton().click();
     });

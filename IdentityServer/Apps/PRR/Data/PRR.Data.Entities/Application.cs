@@ -31,6 +31,8 @@ namespace PRR.Data.Entities
         [Required] public int RefreshTokenExpiresIn { get; set; }
 
         [Required] public string AllowedCallbackUrls { get; set; }
+        
+        [Required] public string AllowedLogoutCallbackUrls { get; set; }
 
         [Required] public bool SSOEnabled { get; set; }
 

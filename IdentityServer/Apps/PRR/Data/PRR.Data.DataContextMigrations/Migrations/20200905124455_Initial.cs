@@ -53,6 +53,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(nullable: false),
+                    Identifier = table.Column<string>(nullable: false),
                     TenantId = table.Column<int>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false, defaultValueSql: "now()")
                 },
@@ -77,7 +78,8 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     PoolId = table.Column<int>(nullable: true),
                     TenantId = table.Column<int>(nullable: true),
                     IsMain = table.Column<bool>(nullable: false, defaultValue: false),
-                    DateCreated = table.Column<DateTime>(nullable: false, defaultValueSql: "now()")
+                    DateCreated = table.Column<DateTime>(nullable: false, defaultValueSql: "now()"),
+                    Issuer = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -134,6 +136,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     IdTokenExpiresIn = table.Column<int>(nullable: false),
                     RefreshTokenExpiresIn = table.Column<int>(nullable: false),
                     AllowedCallbackUrls = table.Column<string>(nullable: false),
+                    AllowedLogoutCallbackUrls = table.Column<string>(nullable: false),
                     SSOEnabled = table.Column<bool>(nullable: false, defaultValue: false),
                     Flow = table.Column<string>(nullable: false),
                     IsDomainManagement = table.Column<bool>(nullable: false, defaultValue: false)
@@ -377,6 +380,12 @@ namespace PRR.Data.DataContextMigrations.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_DomainPools_TenantId_Identifier",
+                table: "DomainPools",
+                columns: new[] { "TenantId", "Identifier" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_DomainPools_TenantId_Name",
                 table: "DomainPools",
                 columns: new[] { "TenantId", "Name" },
@@ -429,6 +438,12 @@ namespace PRR.Data.DataContextMigrations.Migrations
                 name: "IX_RolesPermissions_PermissionId",
                 table: "RolesPermissions",
                 column: "PermissionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tenants_Name",
+                table: "Tenants",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tenants_UserId",

@@ -9,6 +9,7 @@ import { map } from 'rxjs/operators';
 const mapItem = (item) => ({
     id: item.id,
     name: item.name,
+    identifier: item.identifier, 
     dateCreated: item.dateCreated,
     envs: item.domains.map((m) => ({
         id: m.id,

@@ -18,6 +18,7 @@ module private RefreshToken =
             let rec loop (state: State) =
                 actor {
                     let! msg = ctx.Receive()
+
                     match msg with
                     | Command cmd ->
                         match cmd with
@@ -26,21 +27,23 @@ module private RefreshToken =
                         | Restart ->
                             raise (exn "Test Restart")
                             return! loop state
-                        | AddToken(item) ->
-                            return Persist(Event(TokenAdded item))
-                        | RemoveToken(userId) ->
-                            let token = state |> Seq.tryFind(fun f -> f.Value.UserId = userId)
+                        | AddToken (item) -> return Persist(Event(TokenAdded item))
+                        | RemoveToken (userId) ->
+                            let token =
+                                state
+                                |> Seq.tryFind (fun f -> f.Value.UserId = userId)
+
                             match token with
-                            | Some x ->
-                                return Persist(Event(TokenRemoved x.Key))
-                            | None ->
-                                return! loop state
-                        | UpdateToken(x) ->
+                            | Some x -> return Persist(Event(TokenRemoved x.Key))
+                            | None -> return! loop state
+                        | UpdateToken (x) ->
                             let item =
                                 { ClientId = x.ClientId
                                   UserId = x.UserId
                                   Token = x.RefreshToken
-                                  ExpiresAt = DateTime.UtcNow.AddMinutes(float (int tokenExpiresIs)) }
+                                  ExpiresAt = DateTime.UtcNow.AddMinutes(float (int tokenExpiresIs))
+                                  Scopes = x.Scopes }
+
                             return Persist(Event(TokenUpdated(item, x.OldRefreshToken)))
                         | MakeSnapshot ->
                             typed ctx.SnapshotStore
@@ -48,25 +51,28 @@ module private RefreshToken =
                             return! loop state
                     | Event evt ->
                         match evt with
-                        | TokenAdded(item) ->
+                        | TokenAdded (item) ->
                             let state = state.Add(item.Token, item)
                             return! loop state
-                        | TokenUpdated(item, oldToken) ->
-                            let state = state.Remove(oldToken).Add(item.Token, item)
+                        | TokenUpdated (item, oldToken) ->
+                            let state =
+                                state.Remove(oldToken).Add(item.Token, item)
+
                             return! loop state
-                        | TokenRemoved(token) -> 
+                        | TokenRemoved (token) ->
                             let state = state.Remove(token)
-                            return! loop state                            
+                            return! loop state
                     | Query q ->
                         match q with
-                        | RefreshToken.GetToken(token, sendTo) ->
+                        | RefreshToken.GetToken (token, sendTo) ->
                             let result =
                                 state
                                 |> Map.tryFind token
                                 |> valueResultFromOption
+
                             sendTo <! result
                             return! loop state
-                    | SnapshotOffer snapshot ->
-                        return! loop snapshot
+                    | SnapshotOffer snapshot -> return! loop snapshot
                 }
+
             loop Map.empty)

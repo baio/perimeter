@@ -14,6 +14,8 @@ namespace PRR.Data.Entities
         public int Id { get; set; }
 
         [Required] public string Name { get; set; }
+        
+        [Required] public string Identifier { get; set; }
 
         public int TenantId { get; set; }
 

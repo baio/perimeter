@@ -9,6 +9,7 @@
     <ItemGroup>
         <Compile Include="Constants.fs" />
         <Compile Include="JwtConfig.fs" />
+        <Compile Include="ValidateScopes.fs" />
         <Compile Include="LogIn\Models.fs" />
         <Compile Include="LogIn\UserHelpers.fs" />
         <Compile Include="LogIn\LogIn.fs" />

@@ -21,16 +21,35 @@ import { CreateEnvFormComponent } from './tenant/domains/create-env-form/create-
 import { TenantAdminsListComponent } from './tenant/tenant-admins/list/list.component';
 import { TenantAdminFormComponent } from './tenant/tenant-admins/form/form.component';
 import { ClientGuard } from './client.guard';
+import { ProfileLayoutComponent } from './profile/profile-layout/profile-layout.component';
+import { ProfileHomeComponent } from './profile/profile-home/profile-home.component';
+import { CreateTenantFormComponent } from './profile/create-tenant-form/create-tenant-form.component';
 
 const routes: Routes = [
     {
         path: '',
         component: MainLayoutComponent,
-        canActivateChild: [ClientGuard],
         children: [
+            {
+                path: 'profile',
+                component: ProfileLayoutComponent,
+                children: [
+                    {
+                        path: 'home',
+                        component: ProfileHomeComponent,
+                        children: [
+                            {
+                                path: 'create-tenant',
+                                component: CreateTenantFormComponent,
+                            },
+                        ],
+                    },
+                ],
+            },
             {
                 path: 'domains/:id',
                 component: DomainLayoutComponent,
+                canActivateChild: [ClientGuard],
                 children: [
                     {
                         path: 'apps',
@@ -97,6 +116,7 @@ const routes: Routes = [
             {
                 path: 'tenants/:id',
                 component: TenantLayoutComponent,
+                canActivateChild: [ClientGuard],
                 children: [
                     {
                         path: 'domains',

@@ -15,4 +15,4 @@ module Models =
         Token: string
     }
 
-    type SignUpConfirm = Env -> SignUpToken.Item -> Task<Events>
+    type SignUpConfirm = bool -> Env -> SignUpToken.Item -> Task<Events>

@@ -7,6 +7,8 @@ module BadRequestErrors =
         | EMPTY_STRING
         | NOT_CONTAINS_STRING of string
         | NOT_CONTAINS_ALL_STRING of string
+        | NOT_IN_RANGE of (int * int)
+        | NOT_URLS_LIST of string seq
         | NOT_URL_STRING
         | NOT_DOMAIN_NAME
         | NOT_EMAIL_STRING

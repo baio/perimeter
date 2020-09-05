@@ -7,14 +7,15 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
 open PRR.System.Models
 open System
+open PRR.Domain.Auth.ValidateScopes
 
 [<AutoOpen>]
 module Authorize =
 
     let validateData (data: Data): BadRequestError array =
         let scope =
-            if data.Scope = null then ""
-            else data.Scope
+            if data.Scope = null then "" else data.Scope
+
         [| (validateNullOrEmpty "client_id" data.Client_Id)
            (validateNullOrEmpty "response_type" data.Response_Type)
            (validateContains [| "code" |] "response_type" data.Response_Type)
@@ -29,34 +30,39 @@ module Authorize =
 
     let logInSSO: LogInSSO =
         fun env data sso ->
-            
-            if sso.ExpiresAt < DateTime.UtcNow then
-                raise (unAuthorized "sso expired")
-                
+
+            if sso.ExpiresAt < DateTime.UtcNow then raise (unAuthorized "sso expired")
+
             let dataContext = env.DataContext
             task {
 
                 let! clientId = PRR.Domain.Auth.LogIn.UserHelpers.getClientId dataContext data.Client_Id sso.Email
-                                                    
-                let! app = query {
-                                        for app in dataContext.Applications do
-                                            where (app.ClientId = clientId)
-                                            select (Tuple.Create(app.Domain.Pool.TenantId, app.Domain.TenantId, app.AllowedCallbackUrls))
-                                    }
-                                    |> toSingleExnAsync (unAuthorized ("client_id not found"))
-                                                                                                                                                                        
+
+                let! app =
+                    query {
+                        for app in dataContext.Applications do
+                            where (app.ClientId = clientId)
+                            select
+                                (Tuple.Create(app.Domain.Pool.TenantId, app.Domain.TenantId, app.AllowedCallbackUrls))
+                    }
+                    |> toSingleExnAsync (unAuthorized ("client_id not found"))
+
                 let (poolTenantId, managementDomainTenantId, callbackUrls) = app
-                
-                let tenantId = if managementDomainTenantId.HasValue then managementDomainTenantId.Value else poolTenantId
-                
-                if tenantId <> sso.TenantId then
-                    return raise (unAuthorized "sso wrong tenant")
-                                        
-                if (callbackUrls <> "*" && (callbackUrls.Split(",")
-                                            |> Seq.map (fun x -> x.Trim())
-                                            |> Seq.contains data.Redirect_Uri
-                                            |> not))
-                then return! raise (unAuthorized "return_uri mismatch")
+
+                let tenantId =
+                    if managementDomainTenantId.HasValue then managementDomainTenantId.Value else poolTenantId
+
+                if tenantId <> sso.TenantId
+                then return raise (unAuthorized "sso wrong tenant")
+
+                if (callbackUrls
+                    <> "*"
+                    && (callbackUrls.Split(",")
+                        |> Seq.map (fun x -> x.Trim())
+                        |> Seq.contains data.Redirect_Uri
+                        |> not)) then
+                    return! raise (unAuthorized "return_uri mismatch")
+
                 match! getUserId dataContext sso.Email with
                 | Some userId ->
                     let code = env.CodeGenerator()
@@ -66,13 +72,19 @@ module Authorize =
                           State = data.State
                           Code = code }
 
-                    let expiresAt = DateTime.UtcNow.AddMinutes(float env.CodeExpiresIn)
+                    let expiresAt =
+                        DateTime.UtcNow.AddMinutes(float env.CodeExpiresIn)
+
+                    let scopes = data.Scope.Split " "
+
+                    let! validatedScopes = validateScopes dataContext sso.Email clientId scopes
 
                     let loginItem: LogIn.Item =
                         { Code = code
                           ClientId = data.Client_Id
                           CodeChallenge = data.Code_Challenge
-                          Scopes = (data.Scope.Split " ")
+                          RequestedScopes = scopes
+                          ValidatedScopes = validatedScopes
                           UserId = userId
                           ExpiresAt = expiresAt
                           RedirectUri = data.Redirect_Uri }
@@ -81,6 +93,5 @@ module Authorize =
 
                     return (result, evt)
 
-                | None ->
-                    return! raise (unAuthorized "Wrong email or password")
+                | None -> return! raise (unAuthorized "Wrong email or password")
             }

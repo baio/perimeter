@@ -59,5 +59,5 @@ module Permission =
                       PUT >=> permissionGuard MANAGE_PERMISSIONS >=> routef "/%i" updateHandler
                       DELETE >=> permissionGuard MANAGE_PERMISSIONS >=> routef "/%i" removeHandler
                       GET >=> permissionGuard READ_PERMISSIONS >=> routef "/%i" getOne                      
-                      GET >=> getList apiId ])
+                      GET >=> permissionGuard READ_PERMISSIONS >=> getList apiId ])
         ]

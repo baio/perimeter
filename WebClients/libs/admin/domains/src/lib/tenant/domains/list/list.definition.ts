@@ -10,6 +10,12 @@ export const listDefinition: AdminList.TableDefinition = {
             sort: true,
         },
         {
+            id: 'identifier',
+            title: 'Identifier',
+            decorator: 'ellipsis',
+            sort: true,
+        },
+        {
             id: 'envs',
             title: 'Environments',
             customCell: true,

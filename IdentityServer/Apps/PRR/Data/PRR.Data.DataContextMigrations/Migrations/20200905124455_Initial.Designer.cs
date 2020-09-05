@@ -10,7 +10,7 @@ using PRR.Data.DataContext;
 namespace PRR.Data.DataContextMigrations.Migrations
 {
     [DbContext(typeof(DbDataContext))]
-    [Migration("20200824193927_Initial")]
+    [Migration("20200905124455_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -71,6 +71,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("AllowedCallbackUrls")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("AllowedLogoutCallbackUrls")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -146,6 +150,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
+                    b.Property<string>("Issuer")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int?>("PoolId")
                         .HasColumnType("integer");
 
@@ -174,6 +182,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<string>("Identifier")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -182,6 +194,9 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Identifier")
+                        .IsUnique();
 
                     b.HasIndex("TenantId", "Name")
                         .IsUnique();
@@ -694,6 +709,9 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
 

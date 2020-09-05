@@ -1,7 +1,11 @@
 import { Validators } from '@angular/forms';
-import { AdminForm } from '@admin/shared';
+import { AdminForm, not$ } from '@admin/shared';
+import { Observable } from 'rxjs';
+import { FormValidators } from '@perimeter/common';
 
-export const definition: AdminForm.FormDefinition = {
+export const getDefinition = (
+    isNew$: Observable<boolean>
+): AdminForm.FormDefinition => ({
     kind: 'fields',
     fields: [
         {
@@ -13,8 +17,11 @@ export const definition: AdminForm.FormDefinition = {
         {
             id: 'identifier',
             kind: 'Text',
-            label: 'Identifier',
-            validators: [Validators.required],
+            props: {
+                readonly: isNew$.pipe(not$),
+                label: 'Identifier',
+            },
+            validators: [Validators.required, FormValidators.domainName],
         },
         {
             id: 'accessTokenExpiresIn',
@@ -22,6 +29,5 @@ export const definition: AdminForm.FormDefinition = {
             label: 'Access Token Expires in Minutes',
             validators: [Validators.required],
         },
-
     ],
-};
+});

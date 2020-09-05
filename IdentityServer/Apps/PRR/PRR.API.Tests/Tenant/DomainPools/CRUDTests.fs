@@ -62,7 +62,9 @@ module CRUD =
         member __.``A Create domain pool must be success``() =
             task {
                 let data: PostLike =
-                    { Name = "domain-1" }
+                    { Name = "domain 1"
+                      Identifier = "domain-1" }
+
                 let! result = testFixture.HttpPostAsync userToken "/tenant/domain-pools" data
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<int> result
@@ -74,8 +76,12 @@ module CRUD =
         member __.``B Update domain pool must be success``() =
             task {
                 let data: PostLike =
-                    { Name = "domain-1-updated" }
-                let! result = testFixture.HttpPutAsync userToken (sprintf "/tenant/domain-pools/%i" domainPoolId.Value) data
+                    { Name = "domain 1 updated"
+                      Identifier = "domain-1-updated" }
+
+                let! result =
+                    testFixture.HttpPutAsync userToken (sprintf "/tenant/domain-pools/%i" domainPoolId.Value) data
+
                 do! ensureSuccessAsync result
             }
 
@@ -84,9 +90,10 @@ module CRUD =
         member __.``C.1 Get domain must be success``() =
             task {
                 let expected: PostLike =
-                    { Name = "domain-1-updated" }
-                let! result = testFixture.HttpGetAsync userToken
-                                  (sprintf "/tenant/domain-pools/%i" domainPoolId.Value)
+                    { Name = "domain 1 updated"
+                      Identifier = "domain-1-updated" }
+
+                let! result = testFixture.HttpGetAsync userToken (sprintf "/tenant/domain-pools/%i" domainPoolId.Value)
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
@@ -94,7 +101,7 @@ module CRUD =
                 result.name |> should equal expected.Name
                 result.dateCreated |> should be (not' null)
             }
-            
+
         [<Fact>]
         [<Priority(3)>]
         member __.``C.2 Get domains list be success``() =
@@ -106,15 +113,17 @@ module CRUD =
                 result.Pager |> should be (not' null)
                 result.Items |> should be (not' null)
             }
-            
-            
+
+
         // TODO : Created domain pool must contains domain manager api / app and sample api / app
-        // Tenant Owner must be the owner of the domain. Domain Pool Creator must be in Super-Admin role              
+        // Tenant Owner must be the owner of the domain. Domain Pool Creator must be in Super-Admin role
 
         [<Fact>]
         [<Priority(4)>]
         member __.``D Delete domain must be success``() =
             task {
-                let! result = testFixture.HttpDeleteAsync userToken
-                                  (sprintf "/tenant/domain-pools/%i" domainPoolId.Value)
-                do! ensureSuccessAsync result }
+                let! result =
+                    testFixture.HttpDeleteAsync userToken (sprintf "/tenant/domain-pools/%i" domainPoolId.Value)
+
+                do! ensureSuccessAsync result
+            }

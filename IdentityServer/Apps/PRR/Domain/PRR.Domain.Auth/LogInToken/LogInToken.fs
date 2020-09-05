@@ -15,8 +15,7 @@ open System.Text.RegularExpressions
 [<AutoOpen>]
 module LogInToken =
 
-    let private replace (pat: string) (rep: string) (str: string) =
-        Regex.Replace(str, pat, rep)
+    let private replace (pat: string) (rep: string) (str: string) = Regex.Replace(str, pat, rep)
 
     // cleanup sample  https://auth0.com/docs/flows/call-your-api-using-the-authorization-code-flow-with-pkce#javascript-sample
     let cleanupCodeChallenge =
@@ -38,29 +37,38 @@ module LogInToken =
         fun env item data ->
             let dataContext = env.DataContext
             if (item.ExpiresAt < DateTime.UtcNow) then raise (unAuthorized "code expires")
-            if data.Client_Id <> item.ClientId then raise (unAuthorized "client_id mismatch")
-            if data.Redirect_Uri <> item.RedirectUri then raise (unAuthorized "redirect_uri mismatch")
+            if data.Client_Id <> item.ClientId
+            then raise (unAuthorized "client_id mismatch")
+            if data.Redirect_Uri <> item.RedirectUri
+            then raise (unAuthorized "redirect_uri mismatch")
+
             let codeChallenge =
-                env.Sha256Provider(data.Code_Verifier) |> cleanupCodeChallenge
-            let itemCodeChallenge = item.CodeChallenge 
+                env.Sha256Provider(data.Code_Verifier)
+                |> cleanupCodeChallenge
+
+            let itemCodeChallenge = item.CodeChallenge
             printfn "****"
             printfn "Code_Verifier %s" data.Code_Verifier
             printfn "1 codeChallenge %s" codeChallenge
             printfn "2 codeChallenge %s" itemCodeChallenge
             printfn "****"
-            if codeChallenge <> itemCodeChallenge then raise (unAuthorized "code_verifier code_challenge mismatch")
+            if codeChallenge <> itemCodeChallenge
+            then raise (unAuthorized "code_verifier code_challenge mismatch")
             task {
                 match! getUserDataForToken dataContext item.UserId with
                 | Some tokenData ->
-                    let! (result, clientId) = signInUser env tokenData data.Client_Id
+                    let! (result, clientId) = signInUser env tokenData data.Client_Id item.ValidatedScopes
+
                     let refreshTokenItem: RefreshToken.Item =
                         { Token = result.refresh_token
                           ClientId = clientId
                           UserId = item.UserId
-                          ExpiresAt = DateTime.UtcNow.AddMinutes(float env.SSOCookieExpiresIn) }
+                          ExpiresAt = DateTime.UtcNow.AddMinutes(float env.SSOCookieExpiresIn)
+                          Scopes = item.RequestedScopes }
 
-                    let evt = UserLogInTokenSuccessEvent(item.Code, refreshTokenItem)
+                    let evt =
+                        UserLogInTokenSuccessEvent(item.Code, refreshTokenItem)
+
                     return (result, evt)
-                | None ->
-                    return! raiseTask (unAuthorized "user is not found")
+                | None -> return! raiseTask (unAuthorized "user is not found")
             }

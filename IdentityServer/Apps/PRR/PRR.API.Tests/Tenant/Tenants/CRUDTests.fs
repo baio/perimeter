@@ -7,6 +7,7 @@ open FsUnit
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.SignUp
 open PRR.Domain.Tenant.DomainPools
+open PRR.Domain.Tenant.Tenants
 open PRR.System.Models
 open Xunit
 open Xunit.Abstractions

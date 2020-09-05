@@ -72,6 +72,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("AllowedLogoutCallbackUrls")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("ClientId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -144,6 +148,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
+                    b.Property<string>("Issuer")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int?>("PoolId")
                         .HasColumnType("integer");
 
@@ -172,6 +180,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasDefaultValueSql("now()");
 
+                    b.Property<string>("Identifier")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -180,6 +192,9 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Identifier")
+                        .IsUnique();
 
                     b.HasIndex("TenantId", "Name")
                         .IsUnique();
@@ -692,6 +707,9 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
 
