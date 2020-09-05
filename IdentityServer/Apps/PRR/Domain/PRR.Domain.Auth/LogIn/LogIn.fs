@@ -56,7 +56,7 @@ module Authorize =
             let dataContext = env.DataContext
             task {
 
-                let! clientId = getClientId env.DataContext data.Client_Id data.Email
+                let! (clientId, issuer) = getClientIdAndIssuer env.DataContext data.Client_Id data.Email
 
                 let! app = getClientAppData dataContext clientId
 
@@ -101,6 +101,7 @@ module Authorize =
                     let loginItem: LogIn.Item =
                         { Code = code
                           ClientId = data.Client_Id
+                          Issuer = issuer
                           CodeChallenge = data.Code_Challenge
                           RequestedScopes = scopes
                           ValidatedScopes = validatedScopes

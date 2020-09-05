@@ -13,6 +13,7 @@ module LogIn =
           ValidatedScopes: AudienceScopes seq
           RedirectUri: string
           ClientId: ClientId
+          Issuer: string
           CodeChallenge: Token
           ExpiresAt: DateTime }
 

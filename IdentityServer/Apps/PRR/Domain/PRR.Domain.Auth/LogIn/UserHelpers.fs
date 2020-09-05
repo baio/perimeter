@@ -20,20 +20,27 @@ module internal UserHelpers =
         |> toSingleOptionAsync
 
 
-    let getClientId (dataContext: DbDataContext) clientId email =
+    let getClientIdAndIssuer (dataContext: DbDataContext) clientId email =
         task {
             if clientId = DEFAULT_CLIENT_ID then
-                let! clientId =
+                let! res =
                     query {
                         for app in dataContext.Applications do
                             where (app.Domain.Tenant.User.Email = email)
-                            select app.ClientId
+                            select (app.ClientId, app.Domain.Issuer)
                     }
                     |> LinqHelpers.toSingleOptionAsync
 
-                return match clientId with
-                       | Some clientId -> clientId
-                       | None -> PERIMETER_CLIENT_ID
+                return match res with
+                       | Some res -> res
+                       | None -> (PERIMETER_CLIENT_ID, PERIMETER_ISSUER)
             else
-                return clientId
+                let! issuer =
+                    query {
+                        for app in dataContext.Applications do
+                            where (app.ClientId = clientId)
+                            select app.Domain.Issuer
+                    }
+                    |> LinqHelpers.toSingleExnAsync (unexpected (sprintf "ClientId %s is not found" clientId))                
+                return (clientId, issuer)
         }

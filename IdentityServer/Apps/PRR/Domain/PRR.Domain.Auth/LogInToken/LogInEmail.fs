@@ -16,7 +16,7 @@ let logInEmail (env: Env) clientId email password =
     task {
         match! getUserDataForToken env.DataContext email password with
         | Some tokenData ->
-            let! clientId = PRR.Domain.Auth.LogIn.UserHelpers.getClientId env.DataContext clientId email
+            let! (clientId, _) = PRR.Domain.Auth.LogIn.UserHelpers.getClientIdAndIssuer env.DataContext clientId email
             let! validatedScopes = validateScopes env.DataContext email clientId [||]
             let! result = signInUser env tokenData clientId validatedScopes
             return result

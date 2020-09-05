@@ -36,7 +36,7 @@ module Authorize =
             let dataContext = env.DataContext
             task {
 
-                let! clientId = PRR.Domain.Auth.LogIn.UserHelpers.getClientId dataContext data.Client_Id sso.Email
+                let! (clientId, issuer) = PRR.Domain.Auth.LogIn.UserHelpers.getClientIdAndIssuer dataContext data.Client_Id sso.Email
 
                 let! app =
                     query {
@@ -82,6 +82,7 @@ module Authorize =
                     let loginItem: LogIn.Item =
                         { Code = code
                           ClientId = data.Client_Id
+                          Issuer = issuer
                           CodeChallenge = data.Code_Challenge
                           RequestedScopes = scopes
                           ValidatedScopes = validatedScopes

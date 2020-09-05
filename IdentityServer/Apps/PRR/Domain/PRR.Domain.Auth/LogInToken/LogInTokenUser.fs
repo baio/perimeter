@@ -14,18 +14,20 @@ module internal SignInUser =
     // https://jasonwatmore.com/post/2019/10/11/aspnet-core-3-jwt-authentication-tutorial-with-example-api
     // https://jasonwatmore.com/post/2020/05/25/aspnet-core-3-api-jwt-authentication-with-refresh-tokens
 
-    let signInUser' env clientId tokenData (validatedScopes: AudienceScopes seq) =
-        
-        let audiences = validatedScopes |> Seq.map(fun x -> x.Audience)
-        
-        let rolesPermissions = validatedScopes |> Seq.collect(fun x -> x.Scopes)
+    let signInUser' env clientId issuer tokenData (validatedScopes: AudienceScopes seq) =
+
+        let audiences =
+            validatedScopes |> Seq.map (fun x -> x.Audience)
+
+        let rolesPermissions =
+            validatedScopes |> Seq.collect (fun x -> x.Scopes)
 
         let accessToken =
-            createAccessTokenClaims clientId tokenData rolesPermissions audiences
+            createAccessTokenClaims clientId issuer tokenData rolesPermissions audiences
             |> (createToken env.JwtConfig.AccessTokenSecret env.JwtConfig.AccessTokenExpiresIn)
 
         let idToken =
-            createIdTokenClaims clientId tokenData rolesPermissions
+            createIdTokenClaims clientId issuer tokenData rolesPermissions
             |> (createToken env.JwtConfig.IdTokenSecret env.JwtConfig.IdTokenExpiresIn)
 
         let refreshToken = env.HashProvider()
@@ -69,11 +71,11 @@ module internal SignInUser =
 
     let signInUser env (tokenData: TokenData) clientId (validatedScopes: AudienceScopes seq) =
         task {
-            let! clientId = PRR.Domain.Auth.LogIn.UserHelpers.getClientId env.DataContext clientId tokenData.Email
-
+            let! (clientId, issuer) =
+                PRR.Domain.Auth.LogIn.UserHelpers.getClientIdAndIssuer env.DataContext clientId tokenData.Email
 
             let result =
-                signInUser' env clientId tokenData validatedScopes
+                signInUser' env clientId issuer tokenData validatedScopes
 
             return (result, clientId)
         }

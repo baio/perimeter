@@ -8,7 +8,7 @@ module private CreateClaims =
 
     let strJoin (s: string seq) = System.String.Join(" ", s).Trim()
 
-    let createAccessTokenClaims clientId tokenData (scopes: string seq) (audiences: string seq) =
+    let createAccessTokenClaims clientId issuer tokenData (scopes: string seq) (audiences: string seq) =
 
         let auds =
             audiences
@@ -18,10 +18,11 @@ module private CreateClaims =
         // TODO : RBA + Include permissions flag
         [| Claim(CLAIM_TYPE_SUB, tokenData.Id.ToString())
            Claim(CLAIM_TYPE_SCOPE, strJoin [ "openid"; permissions ])
+           Claim(CLAIM_TYPE_ISSUER, issuer)
            Claim(CLAIM_TYPE_CID, clientId) |]
         |> Seq.append auds
 
-    let createIdTokenClaims clientId tokenData (scopes: string seq) =
+    let createIdTokenClaims issuer clientId tokenData (scopes: string seq) =
 
         let permissions = scopes |> strJoin
         // TODO : RBA + Include permissions flag
@@ -31,4 +32,5 @@ module private CreateClaims =
            Claim(ClaimTypes.GivenName, tokenData.FirstName)
            Claim(ClaimTypes.Surname, tokenData.LastName)
            Claim(CLAIM_TYPE_CID, clientId)
-           Claim(CLAIM_TYPE_SCOPE, strJoin [ "openid"; permissions ]) |]
+           Claim(CLAIM_TYPE_SCOPE, strJoin [ "openid"; permissions ])
+           Claim(CLAIM_TYPE_ISSUER, issuer) |]
