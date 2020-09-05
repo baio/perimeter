@@ -47,6 +47,26 @@ interface JWTToken extends HashMap {
     exp: number;
 }
 
+const parseQueryString = (qs: string) => {
+    if (!qs) {
+      return {};
+    }
+    try {
+      return JSON.parse(
+        '{"' +
+          decodeURI(qs)
+            .replace(/^\?/g, '')
+            .replace(/"/g, '\\"')
+            .replace(/&/g, '","')
+            .replace(/=/g, '":"') +
+          '"}'
+      );
+    } catch {
+      return {};
+    }
+  };
+  
+
 const parseJwt = (token: string): JWTToken => {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -173,7 +193,13 @@ export class AuthService {
         }
     }
 
-    parseLoginRedirect(prms: { [key: string]: string }): LoginResult {
+    parseLoginRedirect(prms?: { [key: string]: string } | string): LoginResult {
+        if (!prms) {
+            prms = document.location.search;
+        }
+        if (typeof prms === 'string') {
+            prms = parseQueryString(prms);
+        }
         if (prms['error']) {
             return {
                 kind: 'error',
