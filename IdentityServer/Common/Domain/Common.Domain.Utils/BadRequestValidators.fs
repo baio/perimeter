@@ -84,6 +84,7 @@ module BadRequestValidators =
     let validateContainsAll' (list: string seq) name =
         Seq.except list
         >> Seq.isEmpty
+        >> not
         >> ofBool (name, list |> seqJoin |> NOT_CONTAINS_ALL_STRING)
         >> Option.map BadRequestFieldError
 

@@ -13,7 +13,7 @@ module SendGridMail =
             let fromEmail = EmailAddress(mail.FromEmail, mail.FromName)
             let toEmail = EmailAddress(mail.ToEmail, mail.ToName)
             let msg = MailHelper.CreateSingleEmail(fromEmail, toEmail, mail.Subject, null, mail.Html)
-#if TEST 
+#if TEST || E2E
             Task.FromResult(())
 #else
             client.SendEmailAsync msg

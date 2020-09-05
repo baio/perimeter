@@ -23,13 +23,12 @@ module private CreateClaims =
            Claim(CLAIM_TYPE_CID, clientId) |]
         |> Seq.append auds
 
-    let createIdTokenClaims issuer clientId tokenData (scopes: string seq) =
+    let createIdTokenClaims clientId  issuer tokenData (scopes: string seq) =
 
         let permissions = scopes |> strJoin
         // TODO : RBA + Include permissions flag
         [|
            Claim(CLAIM_TYPE_SUB, (sprintf "prr|%s" tokenData.Email))
-           Claim(CLAIM_TYPE_SUB, tokenData.Id.ToString())
            Claim(ClaimTypes.Email, tokenData.Email)
            // TODO : Separate claims for access and id
            Claim(ClaimTypes.GivenName, tokenData.FirstName)
