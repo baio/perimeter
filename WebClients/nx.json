@@ -62,6 +62,9 @@
     },
     "admin-profile": {
       "tags": []
+    },
+    "perimeter-nestjs-auth": {
+      "tags": []
     }
   }
 }

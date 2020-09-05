@@ -28,7 +28,8 @@
       "@admin/domains": ["libs/admin/domains/src/index.ts"],
       "@admin/shared": ["libs/admin/shared/src/index.ts"],
       "@admin/data-access": ["libs/admin/data-access/src/index.ts"],
-      "@admin/profile": ["libs/admin/profile/src/index.ts"]
+      "@admin/profile": ["libs/admin/profile/src/index.ts"],
+      "@perimeter/nestjs-auth": ["libs/perimeter/nestjs-auth/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp", "nz-holistic-libs"]
