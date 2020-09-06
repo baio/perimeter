@@ -81,9 +81,11 @@ module BadRequestValidators =
         >> ofBool (name, list |> seqJoin |> NOT_CONTAINS_STRING)
         >> Option.map BadRequestFieldError
 
+    let validateContainsAll'' (expect: string seq) (input: string seq) =
+        Seq.forall (fun x -> Seq.contains x input) expect
+
     let validateContainsAll' (list: string seq) name =
-        Seq.except list
-        >> Seq.isEmpty
+        validateContainsAll'' list
         >> not
         >> ofBool (name, list |> seqJoin |> NOT_CONTAINS_ALL_STRING)
         >> Option.map BadRequestFieldError
