@@ -58,7 +58,7 @@ module private CreateUserTenant =
                 |> add'
 
             let tenantManagementApi =
-                createTenantManagementApi authConfig tenantManagementDomain
+                createTenantManagementApi env.AuthStringsProvider authConfig tenantManagementDomain
                 |> add'
 
             createDomainUserRole data.Email tenantManagementDomain Seed.Roles.TenantOwner.Id

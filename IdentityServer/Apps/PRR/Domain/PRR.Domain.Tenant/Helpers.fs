@@ -32,13 +32,15 @@ module Helpers =
              SSOEnabled = true,
              IsDomainManagement = true)
 
-    let createTenantManagementApi authConfig (domain: Domain) =
+    let createTenantManagementApi (authStringProvider: AuthStringsProvider) authConfig (domain: Domain) =
         Api
             (Domain = domain,
              Name = "Tenant domains management API",
              Identifier = sprintf "https://tenant-management-api.%s.%s.com" domain.EnvName domain.Tenant.Name,
              IsDomainManagement = false,
-             AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
+             AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn),
+             SigningAlgorithm = SigningAlgorithmType.HS256,
+             HS256SigningSecret = authStringProvider.HS256SigningSecret())
 
     //
     let createMainDomain (domainPool: DomainPool) =
@@ -46,7 +48,8 @@ module Helpers =
             (Pool = domainPool,
              EnvName = "dev",
              IsMain = true,
-             Issuer = sprintf "https://dev.%s.%s.perimeter.com/domain/issuer" domainPool.Identifier domainPool.Tenant.Name)
+             Issuer =
+                 sprintf "https://dev.%s.%s.perimeter.com/domain/issuer" domainPool.Identifier domainPool.Tenant.Name)
 
     let createDomainApp (authStringProvider: AuthStringsProvider) (authConfig: AuthConfig) domain name =
         Application

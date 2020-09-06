@@ -37,6 +37,9 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     b.Property<int>("DomainId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("HS256SigningSecret")
+                        .HasColumnType("text");
+
                     b.Property<string>("Identifier")
                         .IsRequired()
                         .HasColumnType("text");
@@ -47,6 +50,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasDefaultValue(false);
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SigningAlgorithm")
                         .IsRequired()
                         .HasColumnType("text");
 

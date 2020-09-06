@@ -10,6 +10,7 @@ module RandomStringProvider =
     let private getRandomString length =
         let chars =
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+
         [ 0 .. length ]
         |> Seq.map (fun x -> chars.[random.Next(chars.Length)])
         |> System.String.Concat
@@ -19,7 +20,8 @@ module RandomStringProvider =
         { ClientId = fun () -> getRandomString 33
           ClientSecret = fun () -> getRandomString 50
           // TODO : Read ???
-          AuthorizationCode = fun () -> getRandomString 35 }
+          AuthorizationCode = fun () -> getRandomString 35
+          HS256SigningSecret = fun () -> getRandomString 35 }
 
     type AuthStringsProvider() =
         interface IAuthStringsProvider with

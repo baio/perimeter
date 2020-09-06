@@ -29,7 +29,9 @@ module Apis =
           Identifier: string
           DateCreated: System.DateTime
           AccessTokenExpiresIn: int
-          Permissions: PermissionGetLike seq }
+          Permissions: PermissionGetLike seq
+          SigningAlgorithm: SigningAlgorithmType
+          HS256SigningSecret: string }
 
     let validateData (data: PostLike) =
         [| (validateNullOrEmpty "name" data.Name)
@@ -37,7 +39,9 @@ module Apis =
         |> Array.choose id
 
 
-    type CreateEnv = { AccessTokenExpiresIn: int<minutes> }
+    type CreateEnv =
+        { AccessTokenExpiresIn: int<minutes>
+          HS256SigningSecret: unit -> string }
 
     let catch =
         function
@@ -65,6 +69,8 @@ module Apis =
                      DomainId = domainId,
                      IsDomainManagement = false,
                      AccessTokenExpiresIn = int env.AccessTokenExpiresIn,
+                     SigningAlgorithm = SigningAlgorithmType.HS256,
+                     HS256SigningSecret = env.HS256SigningSecret(),
                      Permissions = [||])
                 |> add' dataContext
 
@@ -81,16 +87,20 @@ module Apis =
 
     let remove: Remove<int, DbDataContext> = remove (fun id -> Api(Id = id))
 
+    let private select' =
+        <@ fun (p: Api) ->
+            { Id = p.Id
+              Name = p.Name
+              Identifier = p.Identifier
+              DateCreated = p.DateCreated
+              AccessTokenExpiresIn = p.AccessTokenExpiresIn
+              Permissions = p.Permissions.Select(fun x -> { Id = x.Id; Name = x.Name })
+              SigningAlgorithm = p.SigningAlgorithm
+              HS256SigningSecret = p.HS256SigningSecret } @>
+
+
     let getOne: GetOne<int, GetLike, DbDataContext> =
-        getOne<Api, _, _, _>
-            (<@ fun p id -> p.Id = id @>)
-            (<@ fun p ->
-                    { Id = p.Id
-                      Name = p.Name
-                      Identifier = p.Identifier
-                      DateCreated = p.DateCreated
-                      AccessTokenExpiresIn = p.AccessTokenExpiresIn
-                      Permissions = p.Permissions.Select(fun x -> { Id = x.Id; Name = x.Name }) } @>)
+        getOne<Api, _, _, _> (<@ fun p id -> p.Id = id @>) select'
     //
     type SortField =
         | Name
@@ -128,12 +138,6 @@ module Apis =
                     where
                         (p.DomainId = domainId
                          && p.IsDomainManagement = false)
-                    select
-                        { Id = p.Id
-                          Name = p.Name
-                          Identifier = p.Identifier
-                          DateCreated = p.DateCreated
-                          AccessTokenExpiresIn = p.AccessTokenExpiresIn
-                          Permissions = p.Permissions.Select(fun x -> { Id = x.Id; Name = x.Name }) }
+                    select ((%select') p)
             }
             |> executeListQuery prms

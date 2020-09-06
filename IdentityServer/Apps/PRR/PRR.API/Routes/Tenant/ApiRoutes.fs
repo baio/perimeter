@@ -12,11 +12,17 @@ module private ApiHandlers =
 
     let private dataContext = getDataContext |> ofReader
 
+    let getEnv ctx =
+        let config = getConfig ctx
+        let authStringsProvider = getAuthStringsProvider ctx
+        { AccessTokenExpiresIn = config.Jwt.AccessTokenExpiresIn
+          HS256SigningSecret = authStringsProvider.HS256SigningSecret }
+
     let createHandler domainId =
+
         wrap
             (create
-             <!> ((fun ctx -> { AccessTokenExpiresIn = (getConfig ctx).Jwt.AccessTokenExpiresIn })
-                  |> ofReader)
+             <!> (ofReader getEnv)
              <*> ((doublet domainId)
                   <!> bindValidateJsonAsync validateData)
              <*> dataContext)

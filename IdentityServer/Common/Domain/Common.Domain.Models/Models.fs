@@ -53,7 +53,8 @@ module Models =
     type AuthStringsProvider =
         { ClientId: unit -> string
           ClientSecret: unit -> string
-          AuthorizationCode: unit -> string }
+          AuthorizationCode: unit -> string
+          HS256SigningSecret: unit -> string  }
 
     type AudienceScopes =
         { Audience: string
