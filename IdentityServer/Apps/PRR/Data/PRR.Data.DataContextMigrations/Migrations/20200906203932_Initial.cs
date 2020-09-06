@@ -109,6 +109,8 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     Identifier = table.Column<string>(nullable: false),
                     IsDomainManagement = table.Column<bool>(nullable: false, defaultValue: false),
                     DateCreated = table.Column<DateTime>(nullable: false, defaultValueSql: "now()"),
+                    SigningAlgorithm = table.Column<string>(nullable: false),
+                    HS256SigningSecret = table.Column<string>(nullable: true),
                     AccessTokenExpiresIn = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
