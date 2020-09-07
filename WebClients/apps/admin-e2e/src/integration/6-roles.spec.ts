@@ -54,7 +54,7 @@ describe('roles', () => {
                     .type('developer')
                     .formField('description')
                     .type('developer')
-                    .formSelectChoose('permissionIds', 0)
+                    .formSelectChoose('permissionIds', 1)
                     .submitButton()
                     .click();
                 cy.url().should('not.match', /\/domains\/\d+\/roles\/new/);
@@ -75,7 +75,7 @@ describe('roles', () => {
 
             it('edit form data', () => {
                 cy.formField('name')
-                    .formSelectChoose('permissionIds', 1)
+                    .formSelectChoose('permissionIds', 0)
                     .submitButton()
                     .click();
                 cy.url().should('not.match', /\/domains\/\d+\/roles\/\d+/);
