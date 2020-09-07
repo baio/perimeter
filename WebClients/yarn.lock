@@ -1750,6 +1750,26 @@
     consola "^2.3.0"
     node-fetch "^2.3.0"
 
+"@nz-holistic/forms@^10.0.1":
+  version "10.0.1"
+  resolved "https://registry.yarnpkg.com/@nz-holistic/forms/-/forms-10.0.1.tgz#46558ad13ba6e4fd18cdeb426b24609e00112f3b"
+  integrity sha512-mtiRV5O9G88USQ+aev1ofzMTiCKbotsqMe74oackdy4HtbMBO/ZHZcwqrgzLBfAhYLOoI2V6q2zmnwE7EnacGw==
+
+"@nz-holistic/nz-controls@^10.0.1":
+  version "10.0.1"
+  resolved "https://registry.yarnpkg.com/@nz-holistic/nz-controls/-/nz-controls-10.0.1.tgz#07ff2de37ae040bdc74022cf12a74c6ae1875585"
+  integrity sha512-dVvuPXslVjs0z2RpuVwraVUlEDuAulLxnDpNEc0YBIwQX1MyTRveB7XrvkyUcjrVEAJDB2opHQ0zDue0ZAsXlg==
+
+"@nz-holistic/nz-forms@^10.0.1":
+  version "10.0.1"
+  resolved "https://registry.yarnpkg.com/@nz-holistic/nz-forms/-/nz-forms-10.0.1.tgz#6448719c80ce51366eb7893adae12362c72ca159"
+  integrity sha512-Hv2jpwmwrU8azavP61/HP3P50985hvCx6yc2wAlp268igaOcsWoM6gIWWJAmX0+jDbZeql6wTZuYAH1RPOkc3Q==
+
+"@nz-holistic/nz-list@^10.0.1":
+  version "10.0.1"
+  resolved "https://registry.yarnpkg.com/@nz-holistic/nz-list/-/nz-list-10.0.1.tgz#92e619d1bc8baa450adad5f34428a1b976036b6a"
+  integrity sha512-LTPEEAqsikb0rxEiukUAE/UH6gPy9fGSBPGMat4bIoGRO4fUFg2RPUTWXezksV1wA0j9vUsigyvnVyhrpZ7qYg==
+
 "@rollup/plugin-commonjs@^14.0.0":
   version "14.0.0"
   resolved "https://registry.yarnpkg.com/@rollup/plugin-commonjs/-/plugin-commonjs-14.0.0.tgz#4285f9ec2db686a31129e5a2b415c94aa1f836f0"
