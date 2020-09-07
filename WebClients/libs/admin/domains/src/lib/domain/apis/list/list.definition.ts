@@ -14,12 +14,20 @@ export const listDefinition: AdminList.TableDefinition = {
             kind: 'Permissions',
             // TODO !
             props: {
-                hasEditButton: true
-            } as any
+                hasEditButton: true,
+            } as any,
         },
         {
             id: 'identifier',
             title: 'Identifier',
+        },
+        {
+            id: 'signingAlgorithm',
+            title: 'Signing Algorithm',
+        },
+        {
+            id: 'signingSecret',
+            title: 'Signing Secret',
         },
         {
             id: 'dateCreated',

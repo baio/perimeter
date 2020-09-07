@@ -15,6 +15,18 @@ export const getDefinition = (
             validators: [Validators.required],
         },
         {
+            id: 'signingAlgorithm',
+            kind: 'Display',
+            label: 'Signing Algorithm',
+            hidden: isNew$,
+        },
+        {
+            id: 'signingSecret',
+            kind: 'Display',
+            label: 'Signing Secret',
+            hidden: isNew$,
+        },
+        {
             id: 'identifier',
             kind: 'Text',
             props: {

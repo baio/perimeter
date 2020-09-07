@@ -6,7 +6,7 @@ import { ApiItem } from './models';
 import { mapListRequestParams, mapListResponse } from '../utils';
 import { map } from 'rxjs/operators';
 
-const mapItem = (x) => x;
+const mapItem = (x) => ({ ...x, signingSecret: x.hS256SigningSecret });
 
 const mapPayload = (x) => {
     const m = { ...x };
@@ -36,7 +36,9 @@ export class ApisDataAccessService {
     }
 
     loadItem(domainId: number, id: number): Observable<ApiItem> {
-        return this.http.get<ApiItem>(`/tenant/domains/${domainId}/apis/${id}`);
+        return this.http
+            .get<ApiItem>(`/tenant/domains/${domainId}/apis/${id}`)
+            .pipe(map(mapItem));
     }
 
     createItem(domainId: number, data: Partial<ApiItem>): Observable<ApiItem> {
