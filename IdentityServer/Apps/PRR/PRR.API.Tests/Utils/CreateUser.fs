@@ -16,7 +16,8 @@ open System.Web
 module CreateUser =
 
     let logIn' (testFixture: TestFixture) (data: PRR.Domain.Auth.LogIn.Models.Data) =
-        testFixture.HttpPostFormAsync' "/auth/login"
+        testFixture.HttpPostFormAsync'
+            "/auth/login"
             (Map
                 (seq {
                     ("Client_Id", data.Client_Id)
@@ -51,23 +52,26 @@ module CreateUser =
 
     let private randomString length =
 
-        let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~"
+        let chars =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~"
+
         [ 0 .. length ]
         |> Seq.map (fun x -> chars.[random.Next(chars.Length)])
         |> System.String.Concat
 
-    let private createCodeChallenge() =
+    let private createCodeChallenge () =
 
         let codeVerfier = randomString 128
 
         (codeVerfier,
-         (SHA256Provider.getSha256Base64Hash sha256 codeVerfier) |> LogInToken.LogInToken.cleanupCodeChallenge)
+         (SHA256Provider.getSha256Base64Hash sha256 codeVerfier)
+         |> LogInToken.LogInToken.cleanupCodeChallenge)
 
     let logInUser (fixture: TestFixture) (clientId: string) (email: string) (password: string) =
         task {
             let redirectUri = "http://localhost:4200"
 
-            let (codeVerifier, codeChallenge) = createCodeChallenge()
+            let (codeVerifier, codeChallenge) = createCodeChallenge ()
 
             let clientId = clientId
 
@@ -92,32 +96,31 @@ module CreateUser =
                   Code_Verifier = codeVerifier }
 
             let! result = fixture.HttpPostAsync' "/auth/token" loginTokenData
-            let! result = result |> readAsJsonAsync<PRR.Domain.Auth.LogInToken.Models.Result>
+
+            let! result =
+                result
+                |> readAsJsonAsync<PRR.Domain.Auth.LogInToken.Models.Result>
 
             return result
         }
 
     let createUser'' signInUnderSampleDomain (env: UserTestContext) (userData: SignUp.Models.Data) =
         task {
-            printfn "111"
             let! _ = env.TestFixture.HttpPostAsync' "/auth/sign-up" userData
             env.ConfirmTokenWaitHandle.WaitOne() |> ignore
-            let confirmData: SignUpConfirm.Models.Data =
-                { Token = env.GetConfirmToken() }
+            let confirmData: SignUpConfirm.Models.Data = { Token = env.GetConfirmToken() }
 
-            printfn "2222"
             let! _ = env.TestFixture.HttpPostAsync' "/auth/sign-up/confirm" confirmData
 
             env.TenantWaitHandle.WaitOne() |> ignore
 
             let tenant = env.GetTenant()
-            
+
             let clientId =
-                if signInUnderSampleDomain then tenant.DomainManagementApplicationClientId
+                if signInUnderSampleDomain
+                then tenant.DomainManagementApplicationClientId
                 else tenant.TenantManagementApplicationClientId
 
-            printfn "3333 %s" clientId
-            
             let! result = logInUser env.TestFixture clientId userData.Email userData.Password
 
             return result
@@ -126,6 +129,7 @@ module CreateUser =
     let createUser' a b c =
         task {
             let! result = createUser'' a b c
-            return result.access_token }
+            return result.access_token
+        }
 
     let createUser = createUser' true

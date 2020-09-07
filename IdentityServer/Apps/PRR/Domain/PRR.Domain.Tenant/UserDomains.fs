@@ -39,8 +39,6 @@ module UserDomains =
     let getClientDomains (dataContext: DbDataContext) (userId: UserId) =
         task {
             
-            printfn "??????????????????"
-
             let! userEmail = query {
                                  for user in dataContext.Users do
                                      where (user.Id = userId)

@@ -56,11 +56,11 @@ module Authorize =
             let dataContext = env.DataContext
             task {
 
-                printfn "login:start %s %s" data.Client_Id data.Email
+                printfn "login:1 %s %s" data.Client_Id data.Email
                 let! { ClientId = clientId; Issuer = issuer } = getAppInfo env.DataContext data.Client_Id data.Email 1<minutes>
-                printfn "login:start:1 %s %s" clientId issuer
+                printfn "login:2 %s %s" clientId issuer
                 let! (ssoEnabled, callbackUrls, poolTenantId, domainTenantId) = getClientAppData dataContext clientId
-                printfn "login:start:2"
+                printfn "login:3"
 
                 let tenantId =
                     match (poolTenantId.HasValue, domainTenantId.HasValue) with
@@ -98,7 +98,7 @@ module Authorize =
 
                     let! validatedScopes = validateScopes dataContext data.Email clientId scopes
                     
-                    printfn "111 %s %A %A" clientId scopes validatedScopes
+                    printfn "login:4 %s %A %A" clientId scopes validatedScopes
 
                     let loginItem: LogIn.Item =
                         { Code = code
