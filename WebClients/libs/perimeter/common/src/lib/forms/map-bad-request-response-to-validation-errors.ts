@@ -10,6 +10,7 @@ import {
     MISS_SPECIAL_CHAR,
     MISS_UPPER_CASE_LETTER,
     NOT_DOMAIN_NAME,
+    PASSWORD,
 } from './validation-errors';
 
 const mapServerError = (err: string) => {
@@ -33,6 +34,8 @@ const mapServerError = (err: string) => {
             return MISS_SPECIAL_CHAR;
         case 'NOT_DOMAIN_NAME':
             return NOT_DOMAIN_NAME;
+        case 'PASSWORD':
+            return PASSWORD;    
         default:
             console.warn('Unmapped server bad request error content !', err);
             return null;

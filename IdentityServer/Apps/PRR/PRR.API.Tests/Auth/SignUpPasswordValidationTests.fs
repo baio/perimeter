@@ -1,6 +1,7 @@
 ﻿namespace PRR.API.Tests
 
 open Akkling
+open Common.Domain.Models
 open Common.Test.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
@@ -13,145 +14,51 @@ open System
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
+open PRR.Domain.Auth.Utils
 
-module SignUpValidatePassword = ()
-
-(*    
-
-    let mutable userToken: string = null
-    let mutable actualEmail: SendMailParams option = None
-
-    let waitHandle = new System.Threading.AutoResetEvent(false)
-
-    let userData: Data =
-        { FirstName = "First"
-          LastName = "Last"
-          Email = "user@user.com"
-          Password = "#6VvR&^" }
-
-    let sendMail: SendMail =
-        fun data ->
-            task {
-                actualEmail <- Some data
-                match data.Template with
-                | ConfirmSignUpMail x ->
-                    userToken <- x.Token
-                waitHandle.Set() |> ignore
-            }
-
-    let mutable tenant: CreatedTenantInfo option = None
-    let tenantWaitHandle = new System.Threading.AutoResetEvent(false)
-
-    let mutable sysException: Exception = null
-
-    let systemEventHandled =
-        function
-        | UserTenantCreatedEvent data ->
-            tenant <- Some data
-            tenantWaitHandle.Set() |> ignore
-        | CommandFailureEvent e ->
-            sysException <- e
-            tenantWaitHandle.Set() |> ignore
-        | QueryFailureEvent e ->
-            sysException <- e
-            tenantWaitHandle.Set() |> ignore
-        | _ ->
-            ()
+module SignUpPasswordValidation =
+    ()
 
 
-    [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
-    type ``sign-up-validate-password-api``(testFixture: TestFixture, output: ITestOutputHelper) =
-        do setConsoleOutput output
-        interface IClassFixture<TestFixture>
 
-        [<Fact>]
-        [<Priority(-1)>]
-        member __.``0 BeforeAll``() =
-            testFixture.OverrideServices(fun services ->
-                let sp = services.BuildServiceProvider()
-                let systemEnv = sp.GetService<SystemEnv>()
 
-                let systemEnv =
-                    { systemEnv with
-                          SendMail = sendMail
-                          EventHandledCallback = systemEventHandled }
+[<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
+type ``sign-up-password-validation-api``(testFixture: TestFixture, output: ITestOutputHelper) =
+    do setConsoleOutput output
+    interface IClassFixture<TestFixture>
 
-                let sys = PRR.System.Setup.setUp systemEnv
-                services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore)
+    [<Fact>]
+    member __.``only low chars must fails``() =
+        let pass = "gswfhjgjhergfjh"
 
-        [<Fact>]
-        member __.``A SignUp password min length``() =
+        let actual =
+            validatePassword pass
+            |> Array.filter (fun x -> x.IsSome)
 
-            task {
-                let invalidUserData: Data =
-                    { FirstName = "First"
-                      LastName = "Last"
-                      Email = "max@gmail.com"
-                      Password = "Aa!1" }
+        let expected =
+            [ Some(BadRequestFieldError("password", PASSWORD)) ]
 
-                let! result = testFixture.HttpPostAsync' "/auth/sign-up" invalidUserData
+        actual |> should equal expected
 
-                ensureBadRequest result
+    [<Fact>]
+    member __.``only digits must fails``() =
+        let pass = "12567576215376"
 
-                let! json = result.Content.ReadAsStringAsync()
+        let actual =
+            validatePassword pass
+            |> Array.filter (fun x -> x.IsSome)
 
-                json |> should equal """{"password":["MIN_LENGTH:6"]}"""
-            }
+        let expected =
+            [ Some(BadRequestFieldError("password", PASSWORD)) ]
 
-        [<Fact>]
-        member __.``B SignUp password empty``() =
+        actual |> should equal expected
 
-            task {
-                let invalidUserData: Data =
-                    { FirstName = "First"
-                      LastName = "Last"
-                      Email = "max@gmail.com"
-                      Password = "" }
+    [<Fact>]
+    member __.``at least one char and one digit``() =
+        let pass = "a12567576215376"
 
-                let! result = testFixture.HttpPostAsync' "/auth/sign-up" invalidUserData
+        let actual =
+            validatePassword pass
+            |> Array.filter (fun x -> x.IsSome)
 
-                ensureBadRequest result
-
-                let! json = result.Content.ReadAsStringAsync()
-
-                json |> should equal """{"password":["EMPTY_STRING"]}"""
-            }
-
-        [<Fact>]
-        member __.``C SignUp password doesn't contain special characters``() =
-
-            task {
-                let invalidUserData: Data =
-                    { FirstName = "First"
-                      LastName = "Last"
-                      Email = "max@gmail.com"
-                      Password = "123456" }
-
-                let! result = testFixture.HttpPostAsync' "/auth/sign-up" invalidUserData
-
-                ensureBadRequest result
-
-                let! json = result.Content.ReadAsStringAsync()
-
-                json |> should equal """{"password":["MISS_UPPER_LETTER","MISS_LOWER_LETTER","MISS_SPECIAL_CHAR"]}"""
-            }
-
-        [<Fact>]
-        member __.``D SignUp password doesn't contain number``() =
-
-            task {
-                let invalidUserData: Data =
-                    { FirstName = "First"
-                      LastName = "Last"
-                      Email = "max@gmail.com"
-                      Password = "Azz!@gyut&" }
-
-                let! result = testFixture.HttpPostAsync' "/auth/sign-up" invalidUserData
-
-                ensureBadRequest result
-
-                let! json = result.Content.ReadAsStringAsync()
-
-                json |> should equal """{"password":["MISS_DIGIT"]}"""
-            }
-*)
+        actual |> should equal []

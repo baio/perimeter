@@ -18,11 +18,21 @@ module Utils =
             // a through z
             // 0 through 9
             // Non-alphanumeric characters (special characters): (~!@#$%^&*_-+=`|\(){}[]:;"'<>,.?/) Currency symbols such as the Euro or British Pound are not counted as special characters for this policy setting.
-            let validate = fun a b -> validateRegex "password" a b password
+            // number || special character ||upper letter
+            let validate =
+                fun a b -> validateRegex "password" a b password
+
+            let validatedPassword =
+                [| validate MISS_UPPER_LETTER "[A-Z]"
+                   validate MISS_SPECIAL_CHAR @"[!@#$%^&*()_+=\[{\]};:<>|./?,-]"
+                   validate MISS_DIGIT "[0-9]" |]
+                |> Seq.forall (fun x -> x.IsSome)
+                |> function
+                | true -> Some(BadRequestFieldError("password", PASSWORD))
+                | false -> None
+                
             [| validateNullOrEmpty "password" password
                validateMinLength 6 "password" password
                validateMaxLength 100 "password" password
-               validate MISS_UPPER_LETTER "[A-Z]"
-               validate MISS_LOWER_LETTER "[a-z]"
-               validate MISS_SPECIAL_CHAR @"[!@#$%^&*()_+=\[{\]};:<>|./?,-]"
-               validate MISS_DIGIT "[0-9]" |]
+               validate PASSWORD "[a-z]"
+               validatedPassword |]

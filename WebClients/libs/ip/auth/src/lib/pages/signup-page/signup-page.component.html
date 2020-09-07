@@ -63,6 +63,16 @@
                     Password should not be more than 100 characters
                 </span>
                 <span
+                    data-cy="password-error"
+                    *ngIf="control.hasError('password')"
+                >
+                    Password should contain at least one lower case letter and
+                    (or at least one digit or upper case letter or one special
+                    character
+                    [@#$%^&*()_+=\[&U+007B;\]&U+007D;;:&#60;&#62;|./?,-!])
+                </span>
+                <!--
+                <span
                     data-cy="password-miss-upper-case-letter-error"
                     *ngIf="control.hasError('miss-upper-case-letter')"
                 >
@@ -86,6 +96,7 @@
                 >
                     Password should contain at least one special character [@#$%^&*()_+=\[&U+007B;\]&U+007D;;:&#60;&#62;|./?,-!]
                 </span>
+                -->
             </ng-template>
         </nz-form-control>
     </nz-form-item>
@@ -229,7 +240,7 @@
     </div>
     <ng-template #modalFooter>
         <button
-            data-cy="agreement-modal-close"            
+            data-cy="agreement-modal-close"
             nz-button
             nzType="primary"
             (click)="isAgreementVisible = false"

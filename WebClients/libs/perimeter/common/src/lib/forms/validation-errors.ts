@@ -6,6 +6,7 @@ export const MISS_DIGIT = { ['miss-digit']: true };
 export const MISS_SPECIAL_CHAR = { ['miss-special-char']: true };
 export const UNIQUE_CONFLICT = { unique_conflict: true };
 export const EMPTY_STRING = { required: true };
+export const PASSWORD = { password: true };
 export const MIN_LENGTH = (x: number) => ({
     minlength: x,
 });

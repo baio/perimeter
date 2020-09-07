@@ -47,10 +47,12 @@ export class SignupPageComponent implements OnInit {
                     FormValidators.empty,
                     Validators.minLength(6),
                     Validators.maxLength(100),
+                    FormValidators.password,
+                    /*
                     FormValidators.missUpperCaseLetter,
                     FormValidators.missLowerCaseLetter,
                     FormValidators.missDigit,
-                    FormValidators.missSpecialChar,
+                    FormValidators.missSpecialChar, */
                 ],
             ],
             checkPassword: [
@@ -89,7 +91,9 @@ export class SignupPageComponent implements OnInit {
     async submitForm() {
         try {
             this.isSubmitting = true;
-            await this.authDataAccess.signUp(this.form.value, this.qs).toPromise();
+            await this.authDataAccess
+                .signUp(this.form.value, this.qs)
+                .toPromise();
             this.errorMessage = null;
         } catch (_err) {
             const err = _err as HttpErrorResponse;
