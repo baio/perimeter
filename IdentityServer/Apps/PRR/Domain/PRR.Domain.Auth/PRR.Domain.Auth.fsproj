@@ -6,6 +6,10 @@
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+      <DefineConstants>DEBUG;TRACE</DefineConstants>
+    </PropertyGroup>
+
     <ItemGroup>
         <Compile Include="Constants.fs" />
         <Compile Include="JwtConfig.fs" />

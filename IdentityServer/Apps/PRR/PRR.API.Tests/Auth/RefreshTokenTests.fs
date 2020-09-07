@@ -84,7 +84,7 @@ module RefreshToken =
             task {
 
                 let data: RefreshToken.Models.Data =
-                    { RefreshToken = "xxxx" }
+                    { RefreshToken = "xxxx" }                                                                           
 
                 let! result = testFixture.HttpPostAsync accessToken "/auth/refresh-token" data
 
@@ -115,7 +115,7 @@ module RefreshToken =
                     { RefreshToken = refreshToken }
 
                 // Wait in order to get updated access token
-                do! System.Threading.Tasks.Task.Delay(1000)
+                do! System.Threading.Tasks.Task.Delay(1000)                
 
                 let! result = testFixture.HttpPostAsync accessToken "/auth/refresh-token" data
 

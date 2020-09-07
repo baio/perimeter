@@ -14,3 +14,6 @@ AzureStorageEmulator for akka persistence
 ## Tests
 
 Run tests with Test configuration !
+```
+dotnet test --filter "FullyQualifiedName~sign-in-api" -c Test
+```

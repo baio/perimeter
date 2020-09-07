@@ -32,7 +32,7 @@ module Helpers =
              SSOEnabled = true,
              IsDomainManagement = true)
 
-    let createTenantManagementApi (authStringProvider: AuthStringsProvider) authConfig (domain: Domain) =
+    let createTenantManagementApi authConfig (domain: Domain) =
         Api
             (Domain = domain,
              Name = "Tenant domains management API",
@@ -40,7 +40,7 @@ module Helpers =
              IsDomainManagement = false,
              AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn),
              SigningAlgorithm = SigningAlgorithmType.HS256,
-             HS256SigningSecret = authStringProvider.HS256SigningSecret())
+             HS256SigningSecret = authConfig.AccessTokenSecret)
 
     //
     let createMainDomain (domainPool: DomainPool) =
@@ -69,15 +69,21 @@ module Helpers =
             (Domain = domain,
              Name = "Domain management application",
              ClientId = authStringProvider.ClientId(),
-             ClientSecret = authStringProvider.ClientSecret(),
+             ClientSecret = authConfig.AccessTokenSecret,
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
              RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
              AllowedCallbackUrls = "*",
              AllowedLogoutCallbackUrls = "*",
              Flow = FlowType.PKCE,
+             SSOEnabled = true,
              IsDomainManagement = true)
 
-    let createDomainApi (authConfig: AuthConfig) (domain: Domain) name identifier =
+    let createDomainApi (authStringProvider: AuthStringsProvider)
+                        (authConfig: AuthConfig)
+                        (domain: Domain)
+                        name
+                        identifier
+                        =
         Api
             (Domain = domain,
              Name = name,
@@ -89,6 +95,8 @@ module Helpers =
                      domain.Pool.Identifier
                      domain.Pool.Tenant.Name,
              IsDomainManagement = false,
+             SigningAlgorithm = SigningAlgorithmType.HS256,
+             HS256SigningSecret = authStringProvider.HS256SigningSecret(),
              AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
 
     let createDomainManagementApi (authConfig: AuthConfig) (domain: Domain) =
@@ -102,6 +110,8 @@ module Helpers =
                      domain.Pool.Identifier
                      domain.Pool.Tenant.Name,
              IsDomainManagement = true,
+             SigningAlgorithm = SigningAlgorithmType.HS256,
+             HS256SigningSecret = authConfig.AccessTokenSecret,
              AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn))
 
     let createDomainUserRoles (userEmail: string) (domain: Domain) (roleIds: int seq) =

@@ -16,6 +16,7 @@ module Env =
 
     type AuthConfig =
         { IdTokenExpiresIn: int<minutes>
+          AccessTokenSecret: string          
           AccessTokenExpiresIn: int<minutes>
           RefreshTokenExpiresIn: int<minutes>
           SignUpTokenExpiresIn: int<minutes>

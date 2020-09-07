@@ -24,10 +24,8 @@ module RefreshToken =
                         // TODO : When available scopes changed while refreshing tokens what to do ?
                         // Now just silently change scopes
                         let scopes = item.Scopes
-
-                        let! validatedScopes = validateScopes env.DataContext tokenData.Email item.ClientId scopes
-
-                        let! (res, clientId) = signInUser env tokenData item.ClientId validatedScopes
+                       
+                        let! (res, clientId) = signInUser env tokenData item.ClientId (RequestedScopes scopes)
 
                         return (res,
                                 RefreshTokenSuccessEvent

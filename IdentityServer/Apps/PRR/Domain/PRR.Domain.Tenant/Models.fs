@@ -8,6 +8,7 @@ module Models =
 
     type AuthConfig =
         { IdTokenExpiresIn: int<minutes>
+          AccessTokenSecret: string
           AccessTokenExpiresIn: int<minutes>
           RefreshTokenExpiresIn: int<minutes> }
 

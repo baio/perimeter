@@ -12,6 +12,8 @@ module Models =
     type DomainId = int
 
     type ClientId = string
+    
+    type Issuer = string
 
     type RoleId = int
 

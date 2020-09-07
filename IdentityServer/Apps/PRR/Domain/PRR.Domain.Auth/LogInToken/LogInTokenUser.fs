@@ -1,11 +1,14 @@
 ﻿namespace PRR.Domain.Auth.LogInToken
 
+open System.Threading.Tasks
 open Common.Domain.Models
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Models
 open PRR.Data.DataContext
+open PRR.Domain.Auth
 open PRR.Domain.Auth.LogInToken
+open Common.Domain.Utils.LinqHelpers
 
 [<AutoOpen>]
 module internal SignInUser =
@@ -14,23 +17,41 @@ module internal SignInUser =
     // https://jasonwatmore.com/post/2019/10/11/aspnet-core-3-jwt-authentication-tutorial-with-example-api
     // https://jasonwatmore.com/post/2020/05/25/aspnet-core-3-api-jwt-authentication-with-refresh-tokens
 
-    let signInUser' env clientId issuer tokenData (validatedScopes: AudienceScopes seq) =
+    type SignInData =
+        { TokenData: TokenData
+          ClientId: ClientId
+          Issuer: string
+          AudienceScopes: AudienceScopes seq
+          RefreshTokenProvider: unit -> string
+          AccessTokenSecret: string
+          AccessTokenExpiresIn: int<minutes>
+          IdTokenExpiresIn: int<minutes> }
 
+    let signInUser' (data: SignInData) =
+
+        printf "---3333 %O" data
+        
         let audiences =
-            validatedScopes |> Seq.map (fun x -> x.Audience)
+            data.AudienceScopes
+            |> Seq.map (fun x -> x.Audience)
 
         let rolesPermissions =
-            validatedScopes |> Seq.collect (fun x -> x.Scopes)
+            data.AudienceScopes
+            |> Seq.collect (fun x -> x.Scopes)
+
+        printf "3333 %A" rolesPermissions            
 
         let accessToken =
-            createAccessTokenClaims clientId issuer tokenData rolesPermissions audiences
-            |> (createToken env.JwtConfig.AccessTokenSecret env.JwtConfig.AccessTokenExpiresIn)
+            createAccessTokenClaims data.ClientId data.Issuer data.TokenData rolesPermissions audiences
+            |> (createSignedToken data.AccessTokenSecret data.AccessTokenExpiresIn)
+            
+        printf "4444 %A" accessToken            
 
         let idToken =
-            createIdTokenClaims clientId issuer tokenData rolesPermissions
-            |> (createToken env.JwtConfig.IdTokenSecret env.JwtConfig.IdTokenExpiresIn)
+            createIdTokenClaims data.ClientId data.Issuer data.TokenData rolesPermissions
+            |> (createUnsignedToken data.IdTokenExpiresIn)
 
-        let refreshToken = env.HashProvider()
+        let refreshToken = data.RefreshTokenProvider()
 
         { id_token = idToken
           access_token = accessToken
@@ -69,13 +90,80 @@ module internal SignInUser =
                        (Seq.append rolesPermissions perimeterUserRolePermissions)
         }
 
-    let signInUser env (tokenData: TokenData) clientId (validatedScopes: AudienceScopes seq) =
-        task {
-            let! (clientId, issuer) =
-                PRR.Domain.Auth.LogIn.UserHelpers.getClientIdAndIssuer env.DataContext clientId tokenData.Email
+    type SignInScopes =
+        | RequestedScopes of string seq
+        | ValidatedScopes of AudienceScopes seq
 
-            let result =
-                signInUser' env clientId issuer tokenData validatedScopes
+    let private getValidatedScopes dataContext email clientId (scopes: SignInScopes) =
+        task {
+            match scopes with
+            | RequestedScopes scopes -> return! validateScopes dataContext email clientId scopes
+            | ValidatedScopes scopes -> return scopes
+        }
+
+    let signInUser env (tokenData: TokenData) clientId (scopes: SignInScopes) =
+        task {
+
+            let! { ClientId = clientId; Issuer = issuer; IdTokenExpiresIn = idTokenExpiresIn } =
+                PRR.Domain.Auth.LogIn.UserHelpers.getAppInfo
+                    env.DataContext
+                    clientId
+                    tokenData.Email
+                    env.JwtConfig.IdTokenExpiresIn
+
+            printfn "signInUser:1 %s %s %A" clientId issuer scopes
+
+            let! validatedScopes = getValidatedScopes env.DataContext tokenData.Email clientId scopes
+
+            printfn "signInUser:2 %A" validatedScopes
+
+            // TODO !
+            // We can create single access token for various apis only if they had exactly same config
+            // Should move access token config data to the domain
+            // And then override them if necessary for each config, this case when there
+            // is requested scopes from different apis and some otf them overriden, we should
+            // throw authorization request unsupported (think of message) exception
+
+            let audiences =
+                validatedScopes |> Seq.map (fun x -> x.Audience)
+
+            if (Seq.length audiences = 0)
+            then return raise (unAuthorized "Empty audience is not supported")
+
+            let auds = audiences |> Seq.toList
+
+            let aud =
+                match auds with
+                // first is perimeter audience and second is not, choose second
+                | [ aud1; aud2 ] when aud1 = PERIMETER_USERS_AUDIENCE
+                                      && aud2 <> PERIMETER_USERS_AUDIENCE -> aud2
+                // only perimeter audience
+                | [ aud1 ] when aud1 = PERIMETER_USERS_AUDIENCE -> aud1
+                | _ -> raise (unAuthorized (sprintf "Unexpected audiences %A" auds))
+
+            let! (accessTokenExpiresIn, hs256SigningSecret) =
+                match aud = PERIMETER_USERS_AUDIENCE with
+                | true -> Task.FromResult(int env.JwtConfig.AccessTokenExpiresIn, env.JwtConfig.AccessTokenSecret)
+                | false ->
+                    query {
+                        for api in env.DataContext.Apis do
+                            where (api.Identifier = aud)
+                            select (api.AccessTokenExpiresIn, api.HS256SigningSecret)
+                    }
+                    |> toSingleAsync
+
+            let data =
+                { TokenData = tokenData
+                  ClientId = clientId
+                  Issuer = issuer
+                  AudienceScopes = validatedScopes
+                  // TODO !
+                  RefreshTokenProvider = env.HashProvider
+                  AccessTokenSecret = hs256SigningSecret
+                  AccessTokenExpiresIn = accessTokenExpiresIn * 1<minutes>
+                  IdTokenExpiresIn = idTokenExpiresIn }
+
+            let result = signInUser' data
 
             return (result, clientId)
         }

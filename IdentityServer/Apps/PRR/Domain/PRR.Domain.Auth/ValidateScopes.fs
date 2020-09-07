@@ -89,7 +89,7 @@ module ValidateScopes =
         | Some x -> x.Audience
         | None -> raise (unexpected "Audience not found by scope")
 
-    let private validateScopes' (dataContext: DbDataContext) userEmail clientId scopes =
+    let private validateScopes'' (dataContext: DbDataContext) userEmail clientId scopes =
         task {
 
             let! (domainId, isDomainManagement, isTenantManagement) =
@@ -128,7 +128,7 @@ module ValidateScopes =
             return Seq.append audScopesWithAudiences audScopesNoAudiences
         }
 
-    let validateScopes (dataContext: DbDataContext) userEmail clientId scopes =
+    let validateScopes' (dataContext: DbDataContext) userEmail clientId scopes =
         task {
             if clientId = PERIMETER_CLIENT_ID then
                 return seq {
@@ -136,5 +136,21 @@ module ValidateScopes =
                              Scopes = [] }
                        }
             else
-                return! validateScopes' dataContext userEmail clientId scopes
+                return! validateScopes'' dataContext userEmail clientId scopes
+        }
+
+    let defaultAudienceScopes =
+        { Audience = PERIMETER_USERS_AUDIENCE
+          Scopes = [ "openid"; "profile" ] }
+
+    let validateScopes (dataContext: DbDataContext) userEmail clientId scopes =
+        task {
+            if clientId = PERIMETER_CLIENT_ID then
+                return seq {
+                           { Audience = PERIMETER_USERS_AUDIENCE
+                             Scopes = [ "openid"; "profile" ] }
+                       }
+            else
+                let! audScopes = validateScopes' dataContext userEmail clientId scopes
+                return Seq.append [ defaultAudienceScopes ] audScopes
         }

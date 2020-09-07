@@ -36,9 +36,9 @@ module Domains =
         [<Fact>]
         [<Priority(-1)>]
         member __.``0 BEFORE ALL``() =
-            task {
+            task {                
                 testContext <- Some(createUserTestContext testFixture)
-                let! userToken' = createUser' false testContext.Value userData
+                let! userToken' = createUser' false testContext.Value userData 
                 userToken <- userToken'
             }
 
@@ -50,5 +50,4 @@ module Domains =
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<TenantDomain array> result
                 result |> should haveLength 2
-                printf "+++ %A" result
             }

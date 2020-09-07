@@ -15,7 +15,7 @@ module Authorize =
     let validateData (data: Data): BadRequestError array =
         let scope =
             if data.Scope = null then "" else data.Scope
- 
+
         [| (validateNullOrEmpty "client_id" data.Client_Id)
            (validateNullOrEmpty "response_type" data.Response_Type)
            (validateContains [| "code" |] "response_type" data.Response_Type)
@@ -56,11 +56,11 @@ module Authorize =
             let dataContext = env.DataContext
             task {
 
-                let! (clientId, issuer) = getClientIdAndIssuer env.DataContext data.Client_Id data.Email
-
-                let! app = getClientAppData dataContext clientId
-
-                let (ssoEnabled, callbackUrls, poolTenantId, domainTenantId) = app
+                printfn "login:start %s %s" data.Client_Id data.Email
+                let! { ClientId = clientId; Issuer = issuer } = getAppInfo env.DataContext data.Client_Id data.Email 1<minutes>
+                printfn "login:start:1 %s %s" clientId issuer
+                let! (ssoEnabled, callbackUrls, poolTenantId, domainTenantId) = getClientAppData dataContext clientId
+                printfn "login:start:2"
 
                 let tenantId =
                     match (poolTenantId.HasValue, domainTenantId.HasValue) with
@@ -97,6 +97,8 @@ module Authorize =
                     let scopes = data.Scope.Split " "
 
                     let! validatedScopes = validateScopes dataContext data.Email clientId scopes
+                    
+                    printfn "111 %s %A %A" clientId scopes validatedScopes
 
                     let loginItem: LogIn.Item =
                         { Code = code

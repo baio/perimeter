@@ -36,7 +36,8 @@ module Authorize =
             let dataContext = env.DataContext
             task {
 
-                let! (clientId, issuer) = PRR.Domain.Auth.LogIn.UserHelpers.getClientIdAndIssuer dataContext data.Client_Id sso.Email
+                let! { ClientId = clientId; Issuer = issuer } =
+                    PRR.Domain.Auth.LogIn.UserHelpers.getAppInfo env.DataContext data.Client_Id sso.Email 1<minutes>
 
                 let! app =
                     query {

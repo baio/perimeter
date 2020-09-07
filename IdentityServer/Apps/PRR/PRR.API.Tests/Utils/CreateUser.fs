@@ -99,21 +99,25 @@ module CreateUser =
 
     let createUser'' signInUnderSampleDomain (env: UserTestContext) (userData: SignUp.Models.Data) =
         task {
+            printfn "111"
             let! _ = env.TestFixture.HttpPostAsync' "/auth/sign-up" userData
             env.ConfirmTokenWaitHandle.WaitOne() |> ignore
             let confirmData: SignUpConfirm.Models.Data =
                 { Token = env.GetConfirmToken() }
 
+            printfn "2222"
             let! _ = env.TestFixture.HttpPostAsync' "/auth/sign-up/confirm" confirmData
 
             env.TenantWaitHandle.WaitOne() |> ignore
 
             let tenant = env.GetTenant()
-
+            
             let clientId =
                 if signInUnderSampleDomain then tenant.DomainManagementApplicationClientId
                 else tenant.TenantManagementApplicationClientId
 
+            printfn "3333 %s" clientId
+            
             let! result = logInUser env.TestFixture clientId userData.Email userData.Password
 
             return result

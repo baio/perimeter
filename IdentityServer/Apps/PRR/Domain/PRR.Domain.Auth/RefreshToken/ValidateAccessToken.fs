@@ -13,13 +13,18 @@ module internal ValidateAccessToken =
 
     let validateToken (token: string) tokenValidationParameters =
         let tokenHandler = JwtSecurityTokenHandler()
-        try            
-            let (principal, securityToken) = tokenHandler.ValidateToken(token, tokenValidationParameters)
+        try
+            let (principal, securityToken) =
+                tokenHandler.ValidateToken(token, tokenValidationParameters)
+
             let jwtSecurityToken = securityToken :?> JwtSecurityToken
             if (jwtSecurityToken = null
                 || (jwtSecurityToken.Header.Alg.Equals
-                        (SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase) |> not)) then None
-            else Some principal
+                        (SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase)
+                    |> not)) then
+                None
+            else
+                Some principal
         with :? System.Exception as ex ->
             printfn "Validate token fails %O" ex
             None
@@ -38,9 +43,15 @@ module internal ValidateAccessToken =
     let getClaimInt x = x |> getClaim' tryParseInt
 
     let validateAccessToken (token: Token) (key: string) =
+
         let tokenValidationParameters =
             TokenValidationParameters
-                (ValidateAudience = false, ValidateIssuer = false, ValidateIssuerSigningKey = true,
-                 IssuerSigningKey = SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)), ValidateLifetime = false)
+                (ValidateAudience = false,
+                 ValidateIssuer = false,
+                 ValidateIssuerSigningKey = true,
+                 IssuerSigningKey = SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                 ValidateLifetime = false)
 
-        (principalCalims <!> validateToken token tokenValidationParameters) >>= getClaimInt CLAIM_TYPE_UID
+        (principalCalims
+         <!> validateToken token tokenValidationParameters)
+        >>= getClaimInt CLAIM_TYPE_UID

@@ -160,7 +160,8 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
           PasswordSalter = serviceProvider.GetService<IPasswordSaltProvider>().SaltPassword
           AuthStringsProvider = serviceProvider.GetService<IAuthStringsProvider>().AuthStringsProvider
           AuthConfig =
-              { IdTokenExpiresIn = config.Jwt.IdTokenExpiresIn
+              { AccessTokenSecret = config.Jwt.AccessTokenSecret
+                IdTokenExpiresIn = config.Jwt.IdTokenExpiresIn
                 AccessTokenExpiresIn = config.Jwt.AccessTokenExpiresIn
                 RefreshTokenExpiresIn = config.Jwt.RefreshTokenExpiresIn
                 SignUpTokenExpiresIn = config.SignUpTokenExpiresIn

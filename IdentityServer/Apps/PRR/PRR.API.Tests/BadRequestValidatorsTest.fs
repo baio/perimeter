@@ -10,7 +10,7 @@ open FsUnit
 
 module BadRequestValidatorsTests =
 
-    type ``me-domains-api``(output: ITestOutputHelper) =
+    type ``bad-request-validators-api``(output: ITestOutputHelper) =
         do setConsoleOutput output
 
         [<Fact>]

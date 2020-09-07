@@ -34,7 +34,8 @@ module private DomainPoolHandlers =
                      { AuthStringsProvider = getAuthStringsProvider ctx
                        DataContext = getDataContext ctx
                        AuthConfig =
-                           { AccessTokenExpiresIn = config.Jwt.AccessTokenExpiresIn
+                           { AccessTokenSecret = config.Jwt.AccessTokenSecret
+                             AccessTokenExpiresIn = config.Jwt.AccessTokenExpiresIn
                              IdTokenExpiresIn = config.Jwt.IdTokenExpiresIn
                              RefreshTokenExpiresIn = config.Jwt.RefreshTokenExpiresIn } }))
 

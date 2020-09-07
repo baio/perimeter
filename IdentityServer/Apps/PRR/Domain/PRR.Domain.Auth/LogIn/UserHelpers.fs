@@ -20,27 +20,73 @@ module internal UserHelpers =
         |> toSingleOptionAsync
 
 
-    let getClientIdAndIssuer (dataContext: DbDataContext) clientId email =
+    type AppType =
+        | Regular
+        | DomainManagement
+        | TenantManagement
+        | PerimeterManagement
+
+    // TODO : Remove
+    type AppInfo =
+        { ClientId: ClientId
+          Issuer: Issuer
+          IdTokenExpiresIn: int<minutes>
+          Type: AppType }
+
+    let private getAppType =
+        function
+        | (true, false) -> DomainManagement
+        | (true, true) -> TenantManagement
+        | (false, false) -> Regular
+        | _ -> raise (unexpected "App both domain and tenant management")
+
+    let getAppInfo (dataContext: DbDataContext) clientId email idTokenExpires =
         task {
             if clientId = DEFAULT_CLIENT_ID then
+                printfn "getAppInfo:DEFAULT_CLIENT_ID"
                 let! res =
                     query {
                         for app in dataContext.Applications do
                             where (app.Domain.Tenant.User.Email = email)
-                            select (app.ClientId, app.Domain.Issuer)
+                            select
+                                (app.ClientId,
+                                 app.Domain.Issuer,
+                                 app.IdTokenExpiresIn,
+                                 app.IsDomainManagement,
+                                 app.Domain.Tenant <> null)
                     }
                     |> LinqHelpers.toSingleOptionAsync
 
                 return match res with
-                       | Some res -> res
-                       | None -> (PERIMETER_CLIENT_ID, PERIMETER_ISSUER)
+                       | Some (clientId, issuer, idTokenExpiresIn, isDomainManagement, isTenantManagement) ->
+                           { ClientId = clientId
+                             Issuer = issuer
+                             IdTokenExpiresIn = idTokenExpiresIn * 1<minutes>
+                             Type = getAppType (isDomainManagement, isTenantManagement) }
+                       | None ->
+                           { ClientId = PERIMETER_CLIENT_ID
+                             Issuer = PERIMETER_ISSUER
+                             IdTokenExpiresIn = idTokenExpires
+                             Type = PerimeterManagement }
+
             else
-                let! issuer =
+                printfn "getAppInfo:2"
+                let! (issuer, idTokenExpiresIn, isDomainManagement, isTenantManagement) =
                     query {
                         for app in dataContext.Applications do
                             where (app.ClientId = clientId)
-                            select app.Domain.Issuer
+                            select
+                                (app.Domain.Issuer,
+                                 app.IdTokenExpiresIn,
+                                 app.IsDomainManagement,
+                                 app.Domain.Tenant <> null)
                     }
-                    |> LinqHelpers.toSingleExnAsync (unexpected (sprintf "ClientId %s is not found" clientId))                
-                return (clientId, issuer)
+                    |> LinqHelpers.toSingleExnAsync (unexpected (sprintf "ClientId %s is not found" clientId))
+
+                printfn "getAppInfo:3 %s %i" issuer idTokenExpires
+
+                return { ClientId = clientId
+                         Issuer = issuer
+                         IdTokenExpiresIn = idTokenExpiresIn * 1<minutes>
+                         Type = getAppType (isDomainManagement, isTenantManagement) }
         }

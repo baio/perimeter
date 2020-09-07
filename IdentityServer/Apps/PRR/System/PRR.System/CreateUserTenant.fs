@@ -34,6 +34,7 @@ module private CreateUserTenant =
 
         let authConfig: PRR.Domain.Tenant.Models.AuthConfig =
             { IdTokenExpiresIn = authConfig'.IdTokenExpiresIn
+              AccessTokenSecret = authConfig'.AccessTokenSecret
               AccessTokenExpiresIn = authConfig'.AccessTokenExpiresIn
               RefreshTokenExpiresIn = authConfig'.ResetPasswordTokenExpiresIn }
 
@@ -42,6 +43,8 @@ module private CreateUserTenant =
             use dpr = env.GetDataContextProvider()
 
             let dataContext = dpr.DataContext
+
+            let add x = x |> add dataContext
 
             let add' x = x |> add' dataContext
 
@@ -58,15 +61,16 @@ module private CreateUserTenant =
                 |> add'
 
             let tenantManagementApi =
-                createTenantManagementApi env.AuthStringsProvider authConfig tenantManagementDomain
+                createTenantManagementApi authConfig tenantManagementDomain
                 |> add'
 
             createDomainUserRole data.Email tenantManagementDomain Seed.Roles.TenantOwner.Id
-            |> add'
+            |> add
 
             //
             let pool =
-                createDomainPool tenant "sample-domain" "default-domain" |> add'
+                createDomainPool tenant "sample-domain" "default-domain"
+                |> add'
 
             let sampleDomain = createMainDomain pool |> add'
 
@@ -79,7 +83,7 @@ module private CreateUserTenant =
                 |> add'
 
             createDomainUserRole data.Email sampleDomain Seed.Roles.DomainOwner.Id
-            |> add'
+            |> add
 
             //
 
@@ -88,7 +92,7 @@ module private CreateUserTenant =
                 |> add'
 
             let sampleApi =
-                createDomainApi authConfig sampleDomain "sample-api" "sample-api"
+                createDomainApi env.AuthStringsProvider authConfig sampleDomain "sample-api" "sample-api"
                 |> add'
 
             do! saveChangesAsync dataContext
