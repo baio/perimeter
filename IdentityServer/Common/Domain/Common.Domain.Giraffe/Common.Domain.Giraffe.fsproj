@@ -2,8 +2,15 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <Configurations>Debug;Release;E2E</Configurations>
+        <Configurations>Debug;Release;E2E;Stage</Configurations>
         <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Stage' ">
+      <Optimize Condition=" '$(Optimize)' == '' ">true</Optimize>
+      <DebugSymbols Condition="'$(DebugSymbols)' == '' ">false</DebugSymbols>
+      <Optimize Condition="'$(Optimize)' == '' ">true</Optimize>
+      <Tailcalls Condition="'$(Tailcalls)' == '' ">true</Tailcalls>
     </PropertyGroup>
 
     <ItemGroup>

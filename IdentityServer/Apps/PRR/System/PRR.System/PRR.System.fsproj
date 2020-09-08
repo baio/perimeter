@@ -2,12 +2,19 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <Configurations>Debug;Release;E2E;Test</Configurations>
+        <Configurations>Debug;Release;E2E;Test;Stage</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|AnyCPU'">
       <DefineConstants>DEBUG;TRACE</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Stage' ">
+      <Optimize Condition=" '$(Optimize)' == '' ">true</Optimize>
+      <DebugSymbols Condition="'$(DebugSymbols)' == '' ">false</DebugSymbols>
+      <Optimize Condition="'$(Optimize)' == '' ">true</Optimize>
+      <Tailcalls Condition="'$(Tailcalls)' == '' ">true</Tailcalls>
     </PropertyGroup>
 
     <ItemGroup>

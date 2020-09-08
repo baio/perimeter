@@ -5,7 +5,7 @@
 
         <IsPackable>false</IsPackable>
         <GenerateProgramFile>false</GenerateProgramFile>
-        <Configurations>Debug;Release;Test;E2E</Configurations>
+        <Configurations>Debug;Release;Test;E2E;Stage</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
@@ -27,6 +27,14 @@
       <DefineConstants>TRACE;ASPNETCORE_ENVIRONMENT=Test;TEST</DefineConstants>
       <Optimize>false</Optimize>
       <Tailcalls>true</Tailcalls>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Stage' ">
+      <DefineConstants>TRACE;TEST</DefineConstants>
+      <Optimize Condition=" '$(Optimize)' == '' ">true</Optimize>
+      <DebugSymbols Condition="'$(DebugSymbols)' == '' ">false</DebugSymbols>
+      <Optimize Condition="'$(Optimize)' == '' ">true</Optimize>
+      <Tailcalls Condition="'$(Tailcalls)' == '' ">true</Tailcalls>
     </PropertyGroup>
 
     <ItemGroup>

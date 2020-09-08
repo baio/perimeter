@@ -174,16 +174,15 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     services.AddSingleton<SystemEnv>(fun _ -> systemEnv)
     |> ignore
 #else
-    let akkaConfFile = "akka.e2e.hocon"
-#if E2E
-    let akkaConfFile = "akka.e2e.hocon"
-#else
-    let akkaConfFile = "akka.hocon"
-#endif
+    let env =
+        (context.HostingEnvironment.EnvironmentName.ToLower())
+    let akkaConfFile = sprintf "akka.%s.hocon" env
+    printfn "Akka conf file %s" akkaConfFile
     let sys = setUp' systemEnv akkaConfFile
     services.AddSingleton<ICQRSSystem>(fun _ -> sys)
     |> ignore
 #endif
+
 
 let configureLogging (builder: ILoggingBuilder) =
     builder.AddFilter(fun l -> l.Equals LogLevel.Error).AddConsole().AddDebug()

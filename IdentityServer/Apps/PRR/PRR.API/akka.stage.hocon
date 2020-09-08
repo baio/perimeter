@@ -15,14 +15,13 @@ actor {
 
 # Configure journal
 akka.persistence.journal.plugin = akka.persistence.journal.azure-table
-#akka.persistence.journal.azure-table.connection-string = "DefaultEndpointsProtocol=https;AccountName=hlc7home7app;AccountKey=UdPfh17HXy/4J9By+U/BYc/h1ECkDomoP74hg4RrEROazLdVuP+eg65NyUsC8EaweDnpS3huqtZljIZcNzusFA==;EndpointSuffix=core.windows.net"
-akka.persistence.journal.azure-table.connection-string = "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
-akka.persistence.journal.azure-table.table-name = "e2e7sys7journal"
+akka.persistence.journal.azure-table.connection-string = "DefaultEndpointsProtocol=https;AccountName=prr7storaged1e602fb;AccountKey=5Lzgvm2wWfwaBTBTPeq8m6knB83b8gCK5RCAzi1yY83AHkzcgTlOw6Vx9w+KPhMajcWU+QH2yjF7knDkaLLipA==;EndpointSuffix=core.windows.net"
+akka.persistence.journal.azure-table.table-name = "stg7sys7journal"
 akka.persistence.journal.azure-table.class = "Akka.Persistence.Azure.Journal.AzureTableStorageJournal, Akka.Persistence.Azure"
 
 # Configure snapshots
 akka.persistence.snapshot-store.plugin = akka.persistence.snapshot-store.azure-blob-store
-akka.persistence.snapshot-store.azure-blob-store.connection-string = "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
-akka.persistence.snapshot-store.azure-blob-store.container-name = "e2e7sys7snapshots"
+akka.persistence.snapshot-store.azure-blob-store.connection-string = "DefaultEndpointsProtocol=https;AccountName=prr7storaged1e602fb;AccountKey=5Lzgvm2wWfwaBTBTPeq8m6knB83b8gCK5RCAzi1yY83AHkzcgTlOw6Vx9w+KPhMajcWU+QH2yjF7knDkaLLipA==;EndpointSuffix=core.windows.net"
+akka.persistence.snapshot-store.azure-blob-store.container-name = "stg7sys7snapshots"
 akka.persistence.snapshot-store.azure-blob-store.class = "Akka.Persistence.Azure.Snapshot.AzureBlobSnapshotStore, Akka.Persistence.Azure"
 

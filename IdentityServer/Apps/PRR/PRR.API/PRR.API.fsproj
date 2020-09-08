@@ -3,7 +3,7 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <Configurations>Debug;Release;Test;E2E</Configurations>
+        <Configurations>Debug;Release;Test;E2E;Stage</Configurations>
         <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
@@ -21,6 +21,13 @@
       <DefineConstants>DEBUG;TRACE;E2E</DefineConstants>
       <Optimize>false</Optimize>
       <Tailcalls>true</Tailcalls>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Stage' ">
+      <Optimize Condition=" '$(Optimize)' == '' ">true</Optimize>
+      <DebugSymbols Condition="'$(DebugSymbols)' == '' ">false</DebugSymbols>
+      <Optimize Condition="'$(Optimize)' == '' ">true</Optimize>
+      <Tailcalls Condition="'$(Tailcalls)' == '' ">true</Tailcalls>
     </PropertyGroup>
 
     <ItemGroup>
@@ -43,6 +50,9 @@
         <Content Include="appsettings.e2e.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Include="appsettings.stage.json">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
         <Compile Include="Routes\DIHelpers.fs" />
         <Compile Include="Routes\AuthRoutes.fs" />
         <Compile Include="Routes\MeRoutes.fs" />
@@ -61,6 +71,9 @@
         <Compile Include="Routes\E2ERoutes.fs" />
         <Compile Include="Program.fs" />
         <Content Include="akka.e2e.hocon">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Include="akka.stage.hocon">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="akka.hocon">
