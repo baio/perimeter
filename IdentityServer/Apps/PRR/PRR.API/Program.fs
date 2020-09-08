@@ -34,6 +34,19 @@ let webApp =
 #endif
              setStatusCode 404 >=> text "Not Found" ]
 
+
+let migrateDatabase (webHost: IWebHost) =
+    // https://docs.microsoft.com/en-us/archive/msdn-magazine/2019/april/data-points-ef-core-in-a-docker-containerized-app#migrating-the-database
+    use scope = webHost.Services.CreateScope()
+    let services = scope.ServiceProvider
+    try
+        let db =
+            services.GetRequiredService<DbDataContext>()
+
+        db.Database.Migrate()
+    with ex -> printfn "An error occurred while migrating the database. %O" ex
+
+
 let createDbContext (connectionString: string) =
     let optionsBuilder = DbContextOptionsBuilder<DbDataContext>()
     optionsBuilder.UseNpgsql
@@ -116,6 +129,8 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     let connectionString =
         context.Configuration.GetConnectionString "PostgreSQL"
 
+    printfn "Connection string: %s" connectionString
+
     services.AddDbContext<DbDataContext>
         ((fun o ->
             let o' =
@@ -168,6 +183,7 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
                 ResetPasswordTokenExpiresIn = config.ResetPasswordTokenExpiresIn }
           EventHandledCallback = fun _ -> () }
 
+
 #if TEST
     // Tests must initialize sys by themselves
     //For tests
@@ -176,6 +192,7 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
 #else
     let env =
         (context.HostingEnvironment.EnvironmentName.ToLower())
+
     let akkaConfFile = sprintf "akka.%s.hocon" env
     printfn "Akka conf file %s" akkaConfFile
     let sys = setUp' systemEnv akkaConfFile
@@ -189,18 +206,27 @@ let configureLogging (builder: ILoggingBuilder) =
     |> ignore
 
 let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigurationBuilder) =
-    config.AddJsonFile("appsettings.json", false, true)
-          .AddJsonFile(sprintf "appsettings.%s.json" context.HostingEnvironment.EnvironmentName, true)
+    let env =
+        (context.HostingEnvironment.EnvironmentName.ToLower())
+
+    config.AddJsonFile("appsettings.json", false, true).AddJsonFile(sprintf "appsettings.%s.json" env, true)
           .AddEnvironmentVariables()
     |> ignore
 
-
-
 [<EntryPoint>]
 let main _ =
-    WebHostBuilder().UseKestrel()
-        // .UseWebRoot(Directory.GetCurrentDirectory())
-        .UseIISIntegration().ConfigureAppConfiguration(configureAppConfiguration)
-        .Configure(Action<IApplicationBuilder> configureApp).ConfigureServices(configureServices)
-        .ConfigureLogging(configureLogging).Build().Run()
+    let app =
+        WebHostBuilder().UseKestrel()
+            // .UseWebRoot(Directory.GetCurrentDirectory())
+            .UseIISIntegration().ConfigureAppConfiguration(configureAppConfiguration)
+            .Configure(Action<IApplicationBuilder> configureApp).ConfigureServices(configureServices)
+            .ConfigureLogging(configureLogging).Build()
+
+    // TODO : Prod migrations ?
+    // https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli#apply-migrations-at-runtime
+#if !TEST
+    // test will apply migrations by itself
+    migrateDatabase app
+#endif
+    app.Run()
     0
