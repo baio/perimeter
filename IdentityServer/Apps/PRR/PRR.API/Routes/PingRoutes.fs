@@ -1,11 +1,15 @@
 ﻿namespace PRR.API.Routes
 
-module VersionRoutes =
+open Giraffe
 
-    let private recreatedDb ctx =
-        let dataContext = getDataContext ctx
-        dataContext.Database.EnsureDeleted() |> ignore
-        dataContext.Database.Migrate() |> ignore
+module PingRoutes =
 
     let createRoutes () =
-        choose [ route "/e2e/reset"
+        route "/version"
+        >=> GET
+        >=> (fun next ctx ->
+            json
+                {| Version = 1
+                   Environment = ctx.GetHostingEnvironment().EnvironmentName |}
+                next
+                ctx)

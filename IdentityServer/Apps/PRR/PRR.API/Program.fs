@@ -29,6 +29,7 @@ let webApp =
     choose [ Auth.createRoutes ()
              Me.createRoutes ()
              Tenant.createRoutes ()
+             PingRoutes.createRoutes ()
 #if E2E
              E2E.createRoutes ()
 #endif
