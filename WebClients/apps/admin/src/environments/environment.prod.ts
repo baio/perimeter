@@ -1,11 +1,11 @@
 export const environment = {
     production: true,
-    baseUrl: 'api',
+    baseUrl: 'http://localhost:5000',
     auth: {
-        loginUrl: 'http://localhost:8070/auth/login',
-        signupUrl: 'http://localhost:8070/auth/register',
-        tokenUrl: 'api/auth/token',
-        logoutUrl: 'api/auth/logout',
+        loginUrl: 'http://localhost:8071/auth/login',
+        signupUrl: 'http://localhost:8071/auth/register',
+        tokenUrl: 'http://localhost:5000/auth/token',
+        logoutUrl: 'http://localhost:5000/auth/logout',
         returnLoginUri: 'http://localhost:8071/login-cb',
         returnLoginPath: '/',
         returnLogoutUri: 'http://localhost:8071',
@@ -13,6 +13,6 @@ export const environment = {
         scope: 'openid profile',
         stateStringLength: 64,
         pkceCodeVerifierLength: 128,
-        refreshTokenUrl: 'api/auth/refresh-token',
+        refreshTokenUrl: 'http://localhost:5000/auth/refresh-token',
     },
 };

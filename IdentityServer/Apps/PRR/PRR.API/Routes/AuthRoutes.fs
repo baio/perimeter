@@ -201,7 +201,9 @@ module private Handlers =
                     // sso cookie not found just redirect back to itself with sso cookie
                     let hasher = getHash ctx
                     let token = hasher ()
-                    ctx.Response.Cookies.Append("sso", token, CookieOptions(HttpOnly = true, Secure = true))
+                    // TODO : Secure = TRUE !!!
+                    // TODO : Handle TOO many redirects when cookie couldn't be set
+                    ctx.Response.Cookies.Append("sso", token, CookieOptions(HttpOnly = true, Secure = false))
                     let url = ctx.Request.HttpContext.GetRequestUrl()
                     ctx.Response.Redirect(url, true)
                     ctx.SetStatusCode(307)
@@ -218,7 +220,8 @@ module private Handlers =
                   AccessTokenSecret = (getConfig ctx).Jwt.AccessTokenSecret })
         <*> ofReader (fun _ -> data)
 
-    let logoutHandler next ctx =
+    let logoutHandler next (ctx: HttpContext) =
+        ctx.Response.Cookies.Delete("sso")
         task {
             let returnUri =
                 bindQueryString "return_uri" ctx
@@ -236,7 +239,6 @@ module private Handlers =
                 let! res = logout data ctx
                 let! (result, evt) = res
                 sendEvent evt ctx
-                ctx.Response.Cookies.Delete("sso")
                 return! redirectTo false result.ReturnUri next ctx
             with _ ->
                 let url = redirectUrl ctx "return_uri"

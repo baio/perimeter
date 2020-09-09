@@ -1,3 +1,4 @@
+$Env:ASPNETCORE_ENVIRONMENT = "STAGE"
 dotnet publish -c Release -o published
 
 ---
@@ -17,7 +18,8 @@ docker push baio/prr-web-idp
 ---
 ```
 docker build -t prr-api -f api.dockerfile ../IdentityServer
-docker run -d -p 80:80 -e ASPNETCORE_ENVIRONMENT=STAGE prr-api
+docker run -p 5000:80 -e ASPNETCORE_ENVIRONMENT=STAGE prr-api
 docker tag prr-api baio/prr-api
 docker push baio/prr-api
 ```
+

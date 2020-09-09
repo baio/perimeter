@@ -41,7 +41,7 @@ const prrWebAdminLoadBalancer = new k8s.core.v1.Service('prr-web-admin', {
 export const prrWebAdminLoadBalancerUrn = prrWebAdminLoadBalancer.urn;
 
 // prr-web-idp
-
+/*
 const prrWebIdpLabels = { app: 'prr-web-idp' };
 const prrWebIdpDeployment = new k8s.apps.v1.Deployment('prr-web-idp', {
     spec: {
@@ -80,6 +80,7 @@ const prrWebIdpLoadBalancer = new k8s.core.v1.Service('prr-web-idp', {
 
 export const prrWebIdpLoadBalancerUrn = prrWebIdpLoadBalancer.urn;
 
+*/
 // prr-api
 
 const prrApiLabels = { app: 'prr-api' };
@@ -105,6 +106,7 @@ const prrApiDeployment = new k8s.apps.v1.Deployment('prr-api', {
 });
 export const prrApiDeploymentName = prrApiDeployment.metadata.name;
 
+/*
 const prrApiClusterIP = new k8s.core.v1.Service('prr-api-cip', {
     metadata: {
         name: 'prr-api-cip',
@@ -125,7 +127,7 @@ const prrApiClusterIP = new k8s.core.v1.Service('prr-api-cip', {
 });
 
 export const prrApiClusterIPUrn = prrApiClusterIP.urn;
-
+*/
 
 const prrIpLoadBalancer = new k8s.core.v1.Service('prr-api', {
     metadata: {
@@ -138,7 +140,7 @@ const prrIpLoadBalancer = new k8s.core.v1.Service('prr-api', {
         type: 'LoadBalancer',
         ports: [
             {
-                port: 8080,
+                port: 5000,
                 targetPort: 80,
             },
         ],
