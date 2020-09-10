@@ -19,8 +19,8 @@ docker push baio/prr-web-idp
 ```
 docker build -t prr-api -f api.dockerfile ../IdentityServer
 docker run -p 5000:80 -e ASPNETCORE_ENVIRONMENT=STAGE prr-api
-docker tag prr-api baio/prr-api:v0.6
-docker push baio/prr-api:v0.6
+docker tag prr-api baio/prr-api:v0.7
+docker push baio/prr-api:v0.7
 ```
 
 ## AKS Cluster

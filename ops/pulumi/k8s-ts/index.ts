@@ -94,10 +94,14 @@ const prrApiDeployment = new k8s.apps.v1.Deployment('prr-api', {
                 containers: [
                     {
                         name: 'prr-api',
-                        image: 'baio/prr-api:v0.6',
+                        image: 'baio/prr-api:v0.7',
                         env: [
                             { name: 'ASPNETCORE_ENVIRONMENT', value: 'STAGE' },
-                            { name : 'MailSender__Project__BaseUrl', value: 'https://perimeter.azurefd.net'}
+                            { name : 'MailSender__Project__BaseUrl', value: 'https://perimeter.azurefd.net'},
+                            { name : 'MailSender__Project__Name', value: 'Perimeter (stage)'},
+                            { name : 'MailSender__FromEmail', value: 'maxp@scal.io'},
+                            { name : 'MailSender__FromName', value: 'Perimeter (stage)'},
+                            { name : 'SendGridApiKey', value: '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'}
                         ],
                     },
                 ],
