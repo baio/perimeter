@@ -26,14 +26,16 @@ open System
 open System.Security.Cryptography
 
 let webApp =
-    choose [ Auth.createRoutes ()
-             Me.createRoutes ()
-             Tenant.createRoutes ()
-             PingRoutes.createRoutes ()
+    subRoute
+        "/api"
+        (choose [ Auth.createRoutes ()
+                  Me.createRoutes ()
+                  Tenant.createRoutes ()
+                  PingRoutes.createRoutes ()
 #if E2E
-             E2E.createRoutes ()
+                  E2E.createRoutes ()
 #endif
-             setStatusCode 404 >=> text "Not Found" ]
+                  setStatusCode 404 >=> text "Not Found" ])
 
 
 let migrateDatabase (webHost: IWebHost) =
@@ -69,8 +71,8 @@ let configureApp (app: IApplicationBuilder) =
     (match env.IsDevelopment() with
      | true -> app.UseDeveloperExceptionPage()
      //| false -> app.UseGiraffeErrorHandler errorHandler).UseHttpsRedirection().UseAuthentication().UseAuthorization()
-     | false -> app.UseGiraffeErrorHandler errorHandler).UseAuthentication().UseAuthorization()
-        .UseCors(configureCors).UseGiraffe(webApp)
+     | false -> app.UseGiraffeErrorHandler errorHandler).UseAuthentication().UseAuthorization().UseCors(configureCors)
+        .UseGiraffe(webApp)
 
 
 let configureServices (context: WebHostBuilderContext) (services: IServiceCollection) =
