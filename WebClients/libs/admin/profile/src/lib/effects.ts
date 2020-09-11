@@ -1,29 +1,21 @@
+import { ProfileDataAccessService } from '@admin/data-access';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { EMPTY, of } from 'rxjs';
-import {
-    map,
-    mergeMap,
-    catchError,
-    switchMap,
-    tap,
-    withLatestFrom,
-} from 'rxjs/operators';
+import { Store } from '@ngrx/store';
 import { AuthService } from '@perimeter/ngx-auth';
+import { of } from 'rxjs';
+import { catchError, delay, map, switchMap, tap } from 'rxjs/operators';
 import {
     authenticate,
-    authenticationSuccess,
     authenticationFails,
-    profileLoadSuccess,
-    profileLoadFails,
+    authenticationSuccess,
     loadManagementDomains,
     loadManagementDomainsSuccess,
+    profileLoadFails,
+    profileLoadSuccess,
 } from './actions';
-import { ProfileDataAccessService } from '@admin/data-access';
-import { Router } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { selectProfileDomainsList } from './selectors';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable()
 export class ProfileEffects {
@@ -112,7 +104,7 @@ export class ProfileEffects {
                         if (tenantManagementDomain) {
                             this.router.navigate([
                                 'tenants',
-                                tenantManagementDomain.id,
+                                tenantManagementDomain.tenant.id,
                                 'domains',
                             ]);
                         } else if (domains.length > 0) {
