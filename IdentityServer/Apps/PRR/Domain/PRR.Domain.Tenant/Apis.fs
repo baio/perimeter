@@ -1,10 +1,11 @@
 ﻿namespace PRR.Domain.Tenant
 
-open System.Text.Json.Serialization
 open Common.Domain.Models
 open Common.Domain.Utils
 open Common.Domain.Utils.CRUD
 open Common.Utils
+open Newtonsoft.Json
+open Newtonsoft.Json.Converters
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
@@ -31,6 +32,7 @@ module Apis =
           DateCreated: System.DateTime
           AccessTokenExpiresIn: int
           Permissions: PermissionGetLike seq
+          [<JsonConverter(typeof<StringEnumConverter>)>]
           SigningAlgorithm: SigningAlgorithmType
           HS256SigningSecret: string }
 
