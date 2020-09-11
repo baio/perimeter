@@ -19,9 +19,6 @@ open PRR.Domain.Auth.Utils
 module SignUpPasswordValidation =
     ()
 
-
-
-
 [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
 type ``sign-up-password-validation-api``(output: ITestOutputHelper) =
     do setConsoleOutput output
