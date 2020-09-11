@@ -44,17 +44,28 @@ module Authorize =
                         for app in dataContext.Applications do
                             where (app.ClientId = clientId)
                             select
-                                (Tuple.Create(app.Domain.Pool.TenantId, app.Domain.TenantId, app.AllowedCallbackUrls))
+                                (Tuple.Create
+                                    (app.Domain.Pool.TenantId,
+                                     app.Domain.TenantId,
+                                     app.AllowedCallbackUrls,
+                                     app.IsDomainManagement))
                     }
                     |> toSingleExnAsync (unAuthorized ("client_id not found"))
 
-                let (poolTenantId, managementDomainTenantId, callbackUrls) = app
+                let (poolTenantId, managementDomainTenantId, callbackUrls, isDomainManagementClient) = app
 
                 let tenantId =
                     if managementDomainTenantId.HasValue then managementDomainTenantId.Value else poolTenantId
 
-                if tenantId <> sso.TenantId
-                then return raise (unAuthorized "sso wrong tenant")
+                if tenantId <> sso.TenantId then
+                    // Switch to management client (from any tenant) should be valid
+                    // admin should be relogined silently when switching between tenants
+                    // TODO : Add IsTenantManagement to app, anyway we can figure it out implicitly like so
+                    let isTenantManagementClient = managementDomainTenantId.HasValue
+                    if not
+                        (isDomainManagementClient
+                         || isTenantManagementClient) then
+                        return raise (unAuthorized "sso wrong tenant")
 
                 if (callbackUrls
                     <> "*"
