@@ -12,8 +12,8 @@
     "env": {
         "apiBaseUrl": "https://localhost:5001",
         "authBaseUrl": "http://localhost:4201",
-        "resetDbUrl": "e2e/reset",
-        "reinitDbUrl": "e2e/reinit",
+        "resetDbUrl": "api/e2e/reset",
+        "reinitDbUrl": "api/e2e/reinit",
         "confirmSignupToken": "HASH"
     }
 }
