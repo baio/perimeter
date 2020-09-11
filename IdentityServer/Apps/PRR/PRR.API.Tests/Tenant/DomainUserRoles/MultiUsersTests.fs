@@ -79,10 +79,10 @@ module MultiUsers =
                 let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
                 let! permissionId = (testFixture.HttpPostAsync userToken
-                                         (sprintf "/tenant/apis/%i/permissions" tenant.SampleApiId)
+                                         (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
                                          { testPermission with Name = "test:permission:1" }) >>= (readAsJsonAsync<int>)
                 let! roleId = testFixture.HttpPostAsync userToken
-                                  (sprintf "/tenant/domains/%i/roles" tenant.DomainId)
+                                  (sprintf "/api/tenant/domains/%i/roles" tenant.DomainId)
                                   { testRole with
                                         Name = "test:role:1"
                                         PermissionIds = [ permissionId ] }
@@ -115,7 +115,7 @@ module MultiUsers =
                     { UserEmail = newUserEmail
                       RolesIds = [ u1.RoleId.Value ] }
                 let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do! ensureSuccessAsync result
             }
 
@@ -129,7 +129,7 @@ module MultiUsers =
                     { UserEmail = u2.Data.Email
                       RolesIds = [ u1.RoleId.Value ] }
                 let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do! ensureSuccessAsync result
             }
 
@@ -160,7 +160,7 @@ module MultiUsers =
                     { UserEmail = "other@mail.com"
                       RolesIds = [ u1.RoleId.Value ] }
                 let! result = testFixture.HttpPostAsync u2.Token.Value
-                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 ensureForbidden result
             }
 
@@ -175,7 +175,7 @@ module MultiUsers =
                     { UserEmail = u2.Data.Email
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
                 let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do! ensureSuccessAsync result
             }
 
@@ -206,7 +206,7 @@ module MultiUsers =
                     { UserEmail = "other@mail.com"
                       RolesIds = [ u1.RoleId.Value ] }                    
                 let! result = testFixture.HttpPostAsync u2.Token.Value
-                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do! ensureSuccessAsync result
             }
 
@@ -220,7 +220,7 @@ module MultiUsers =
                     { UserEmail = "other1@mail.com"
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
                 let! result = testFixture.HttpPostAsync u2.Token.Value
-                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do ensureForbidden result
             }
 
@@ -235,7 +235,7 @@ module MultiUsers =
                     { UserEmail = u2.Data.Email
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainSuperAdmin.Id ] }
                 let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do! ensureSuccessAsync result
             }
 
@@ -268,7 +268,7 @@ module MultiUsers =
                     { UserEmail = "other-admin@mail.com"
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
                 let! result = testFixture.HttpPostAsync u2.Token.Value
-                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do! ensureSuccessAsync result
             }
 
@@ -279,7 +279,7 @@ module MultiUsers =
             let u1 = users.[0]
             task {
                 let! result = testFixture.HttpDeleteAsync u1.Token.Value
-                                  (sprintf "/tenant/domains/%i/users/%s" u1.Tenant.Value.DomainId u1.Data.Email)
+                                  (sprintf "/api/tenant/domains/%i/users/%s" u1.Tenant.Value.DomainId u1.Data.Email)
                 do ensureForbidden result }
 
         [<Fact>]
@@ -291,7 +291,7 @@ module MultiUsers =
                     { UserEmail = u1.Data.Email
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
                 let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do ensureForbidden result
             }
 
@@ -304,7 +304,7 @@ module MultiUsers =
                     { UserEmail = "test"
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
                 let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
                 do ensureBadRequest result
                 let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
 

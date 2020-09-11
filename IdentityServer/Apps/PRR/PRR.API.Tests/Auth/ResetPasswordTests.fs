@@ -49,7 +49,7 @@ module ResetPasswordTests =
         member __.``A Reset password must work``() =
             task {
                 let resetPasswordData: PRR.Domain.Auth.ResetPassword.Models.Data = { Email = users.[0].Data.Email }
-                let! res = testFixture.HttpPostAsync' "/auth/reset-password" resetPasswordData
+                let! res = testFixture.HttpPostAsync' "/api/auth/reset-password" resetPasswordData
                 do! ensureSuccessAsync res
                 testContext.Value.ResetPasswordTokenHandle.WaitOne() |> ignore
                 testContext.Value.GetResetPasswordToken() |> should be (not' null)
@@ -62,7 +62,7 @@ module ResetPasswordTests =
                 let data: Data =
                     { Token = testContext.Value.GetResetPasswordToken()
                       Password = "1234A!sd" }
-                let! res = testFixture.HttpPostAsync' "/auth/reset-password/confirm" data
+                let! res = testFixture.HttpPostAsync' "/api/auth/reset-password/confirm" data
                 do! ensureSuccessAsync res
             }
 
@@ -73,7 +73,7 @@ module ResetPasswordTests =
                 let data: Data =
                     { Token = testContext.Value.GetResetPasswordToken()
                       Password = "1234A!sd" }
-                let! res = testFixture.HttpPostAsync' "/auth/reset-password/confirm" data
+                let! res = testFixture.HttpPostAsync' "/api/auth/reset-password/confirm" data
                 ensureUnauthorized res
             }
 
@@ -82,7 +82,7 @@ module ResetPasswordTests =
         member __.``D Send reset password to unexistent user email should fail``() =
             task {
                 let resetPasswordData: PRR.Domain.Auth.ResetPassword.Models.Data = { Email = "unexistent@mail.com" }
-                let! res = testFixture.HttpPostAsync' "/auth/reset-password" resetPasswordData
+                let! res = testFixture.HttpPostAsync' "/api/auth/reset-password" resetPasswordData
                 ensureNotFound res
             }
 
@@ -93,7 +93,7 @@ module ResetPasswordTests =
                 let resetPasswordData: PRR.Domain.Auth.UpdatePassword.Models.Data =
                     { OldPassword = "1234A!sd"
                       Password = "1234A!sd8" }
-                let! res = testFixture.HttpPutAsync accessToken.Value "/me/password" resetPasswordData
+                let! res = testFixture.HttpPutAsync accessToken.Value "/api/me/password" resetPasswordData
                 do! ensureSuccessAsync res
             }
 
@@ -104,6 +104,6 @@ module ResetPasswordTests =
                 let resetPasswordData: PRR.Domain.Auth.UpdatePassword.Models.Data =
                     { OldPassword = "1234A!sd"
                       Password = "1234A!sd8+" }
-                let! res = testFixture.HttpPutAsync accessToken.Value "/me/password" resetPasswordData
+                let! res = testFixture.HttpPutAsync accessToken.Value "/api/me/password" resetPasswordData
                 ensureUnauthorized res
             }

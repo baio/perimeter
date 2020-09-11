@@ -63,14 +63,14 @@ module CRUD =
                     { Name = "read:test1"
                       Description = "test description" }
                 let! permissionId' = testFixture.HttpPostAsync userToken
-                                         (sprintf "/tenant/apis/%i/permissions"
+                                         (sprintf "/api/tenant/apis/%i/permissions"
                                               (testContext.Value.GetTenant().SampleApiId)) data >>= readAsJsonAsync<int>
                 permissionId1 <- Some permissionId'
                 let data: Permissions.PostLike =
                     { Name = "read:test2"
                       Description = "test description" }
                 let! permissionId' = testFixture.HttpPostAsync userToken
-                                         (sprintf "/tenant/apis/%i/permissions"
+                                         (sprintf "/api/tenant/apis/%i/permissions"
                                               (testContext.Value.GetTenant().SampleApiId)) data >>= readAsJsonAsync<int>
                 permissionId2 <- Some permissionId'
             }
@@ -85,7 +85,7 @@ module CRUD =
                     { Name = "role"
                       Description = "role description"
                       PermissionIds = [ permissionId1.Value ] }
-                let! result = testFixture.HttpPostAsync userToken (sprintf "/tenant/domains/%i/roles" domainId) data
+                let! result = testFixture.HttpPostAsync userToken (sprintf "/api/tenant/domains/%i/roles" domainId) data
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<int> result
                 roleId <- Some(result)
@@ -100,7 +100,7 @@ module CRUD =
                     { Name = "role"
                       Description = "role description"
                       PermissionIds = [ permissionId1.Value ] }
-                let! result = testFixture.HttpPostAsync userToken (sprintf "/tenant/domains/%i/roles" domainId) data
+                let! result = testFixture.HttpPostAsync userToken (sprintf "/api/tenant/domains/%i/roles" domainId) data
                 ensureConflict result
             }
 
@@ -118,7 +118,7 @@ module CRUD =
                       id = -1
                       dateCreated = DateTime.UtcNow }
                 let! result = testFixture.HttpGetAsync userToken
-                                  (sprintf "/tenant/domains/%i/roles/%i" domainId roleId.Value)
+                                  (sprintf "/api/tenant/domains/%i/roles/%i" domainId roleId.Value)
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
@@ -139,7 +139,7 @@ module CRUD =
                       Description = "test description2"
                       PermissionIds = [ permissionId2.Value ] }
                 let! result = testFixture.HttpPutAsync userToken
-                                  (sprintf "/tenant/domains/%i/roles/%i" apiId roleId.Value) data
+                                  (sprintf "/api/tenant/domains/%i/roles/%i" apiId roleId.Value) data
                 do! ensureSuccessAsync result
             }
 
@@ -158,7 +158,7 @@ module CRUD =
                       id = -1
                       dateCreated = DateTime.UtcNow }
                 let! result = testFixture.HttpGetAsync userToken
-                                  (sprintf "/tenant/domains/%i/roles/%i" domainId roleId.Value)
+                                  (sprintf "/api/tenant/domains/%i/roles/%i" domainId roleId.Value)
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
@@ -175,5 +175,5 @@ module CRUD =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
                 let! result = testFixture.HttpDeleteAsync userToken
-                                  (sprintf "/tenant/domains/%i/roles/%i" domainId roleId.Value)
+                                  (sprintf "/api/tenant/domains/%i/roles/%i" domainId roleId.Value)
                 do! ensureSuccessAsync result }

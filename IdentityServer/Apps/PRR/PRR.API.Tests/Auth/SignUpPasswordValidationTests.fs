@@ -23,9 +23,8 @@ module SignUpPasswordValidation =
 
 
 [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
-type ``sign-up-password-validation-api``(testFixture: TestFixture, output: ITestOutputHelper) =
+type ``sign-up-password-validation-api``(output: ITestOutputHelper) =
     do setConsoleOutput output
-    interface IClassFixture<TestFixture>
 
     [<Fact>]
     member __.``only low chars must fails``() =

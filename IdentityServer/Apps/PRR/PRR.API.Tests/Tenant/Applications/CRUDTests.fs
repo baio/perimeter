@@ -68,7 +68,7 @@ module CRUD =
                 let data: PostLike = { Name = "App 1" }
 
                 let! result =
-                    testFixture.HttpPostAsync userToken (sprintf "/tenant/domains/%i/applications" domainId) data
+                    testFixture.HttpPostAsync userToken (sprintf "/api/tenant/domains/%i/applications" domainId) data
 
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<int> result
@@ -83,7 +83,7 @@ module CRUD =
                 let! result =
                     testFixture.HttpGetAsync
                         userToken
-                        (sprintf "/tenant/domains/%i/applications/%i" domainId applicationId.Value)
+                        (sprintf "/api/tenant/domains/%i/applications/%i" domainId applicationId.Value)
 
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
@@ -117,7 +117,7 @@ module CRUD =
                 let! result =
                     testFixture.HttpPutAsync
                         userToken
-                        (sprintf "/tenant/domains/%i/applications/%i" domainId applicationId.Value)
+                        (sprintf "/api/tenant/domains/%i/applications/%i" domainId applicationId.Value)
                         data
 
                 do! ensureSuccessAsync result
@@ -131,7 +131,7 @@ module CRUD =
                 let! result =
                     testFixture.HttpGetAsync
                         userToken
-                        (sprintf "/tenant/domains/%i/applications/%i" domainId applicationId.Value)
+                        (sprintf "/api/tenant/domains/%i/applications/%i" domainId applicationId.Value)
 
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
@@ -155,7 +155,7 @@ module CRUD =
                 let! result =
                     testFixture.HttpDeleteAsync
                         userToken
-                        (sprintf "/tenant/domains/%i/applications/%i" domainId applicationId.Value)
+                        (sprintf "/api/tenant/domains/%i/applications/%i" domainId applicationId.Value)
 
                 do! ensureSuccessAsync result
             }

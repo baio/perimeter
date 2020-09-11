@@ -17,7 +17,7 @@ module CreateUser =
 
     let logIn' (testFixture: TestFixture) (data: PRR.Domain.Auth.LogIn.Models.Data) =
         testFixture.HttpPostFormAsync'
-            "/auth/login"
+            "/api/auth/login"
             (Map
                 (seq {
                     ("Client_Id", data.Client_Id)
@@ -95,7 +95,7 @@ module CreateUser =
                   Client_Id = clientId
                   Code_Verifier = codeVerifier }
 
-            let! result = fixture.HttpPostAsync' "/auth/token" loginTokenData
+            let! result = fixture.HttpPostAsync' "/api/auth/token" loginTokenData
 
             let! result =
                 result
@@ -106,11 +106,11 @@ module CreateUser =
 
     let createUser'' signInUnderSampleDomain (env: UserTestContext) (userData: SignUp.Models.Data) =
         task {
-            let! _ = env.TestFixture.HttpPostAsync' "/auth/sign-up" userData
+            let! _ = env.TestFixture.HttpPostAsync' "/api/auth/sign-up" userData
             env.ConfirmTokenWaitHandle.WaitOne() |> ignore
             let confirmData: SignUpConfirm.Models.Data = { Token = env.GetConfirmToken() }
 
-            let! _ = env.TestFixture.HttpPostAsync' "/auth/sign-up/confirm" confirmData
+            let! _ = env.TestFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
 
             env.TenantWaitHandle.WaitOne() |> ignore
 

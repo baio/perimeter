@@ -72,11 +72,11 @@ module SignIn =
                 services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore)
 
             task {
-                let! _ = testFixture.HttpPostAsync' "/auth/sign-up" ownerData
+                let! _ = testFixture.HttpPostAsync' "/api/auth/sign-up" ownerData
                 confirmTokenWaitHandle.WaitOne() |> ignore
                 let confirmData: SignUpConfirm.Models.Data =
                     { Token = confirmToken }
-                let! _ = testFixture.HttpPostAsync' "/auth/sign-up/confirm" confirmData
+                let! _ = testFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
                 tenantWaitHandle.WaitOne() |> ignore
                 return ()
             }

@@ -70,7 +70,7 @@ module MultiUsers =
                 let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
                 let! permissionId = (testFixture.HttpPostAsync userToken
-                                        (sprintf "/tenant/apis/%i/permissions" tenant.SampleApiId)
+                                        (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
                                         { testPermission with Name = "test:permission:1" }) >>= (readAsJsonAsync<int>)
                 users.[0] <- {| u with
                                     Token = Some(userToken)
@@ -82,7 +82,7 @@ module MultiUsers =
                 let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
                 let! permissionId = testFixture.HttpPostAsync userToken
-                                        (sprintf "/tenant/apis/%i/permissions" tenant.SampleApiId)
+                                        (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
                                         { testPermission with Name = "test:permission:2" } >>= (readAsJsonAsync<int>)
                 users.[1] <- {| u with
                                     Token = Some(userToken)
@@ -99,7 +99,7 @@ module MultiUsers =
                 let data: PostLike =
                     { Name = "test:permissions"
                       Description = "test description" }
-                let! result = testFixture.HttpPostAsync u1.Token.Value (sprintf "/tenant/apis/%i/permissions" u2.Tenant.Value.SampleApiId) data
+                let! result = testFixture.HttpPostAsync u1.Token.Value (sprintf "/api/tenant/apis/%i/permissions" u2.Tenant.Value.SampleApiId) data
                 ensureForbidden result
             }
 
@@ -112,7 +112,7 @@ module MultiUsers =
                 let data: PostLike =
                     { Name = "test:permissions"
                       Description = "test description" }
-                let! result = testFixture.HttpPutAsync u1.Token.Value (sprintf "/tenant/apis/%i/permissions/%i" u2.Tenant.Value.SampleApiId u2.PermissionId.Value) data
+                let! result = testFixture.HttpPutAsync u1.Token.Value (sprintf "/api/tenant/apis/%i/permissions/%i" u2.Tenant.Value.SampleApiId u2.PermissionId.Value) data
                 ensureForbidden result
             }
 
@@ -122,7 +122,7 @@ module MultiUsers =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let! result = testFixture.HttpGetAsync u1.Token.Value (sprintf "/tenant/apis/%i/permissions/%i" u2.Tenant.Value.SampleApiId u2.PermissionId.Value)
+                let! result = testFixture.HttpGetAsync u1.Token.Value (sprintf "/api/tenant/apis/%i/permissions/%i" u2.Tenant.Value.SampleApiId u2.PermissionId.Value)
                 ensureForbidden result
             }
 
@@ -132,6 +132,6 @@ module MultiUsers =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let! result = testFixture.HttpDeleteAsync u1.Token.Value (sprintf "/tenant/apis/%i/permissions/%i" u2.Tenant.Value.SampleApiId u2.PermissionId.Value)
+                let! result = testFixture.HttpDeleteAsync u1.Token.Value (sprintf "/api/tenant/apis/%i/permissions/%i" u2.Tenant.Value.SampleApiId u2.PermissionId.Value)
                 ensureForbidden result
             }

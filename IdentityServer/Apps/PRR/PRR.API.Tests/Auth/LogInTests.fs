@@ -112,7 +112,7 @@ module LogIn =
                       Client_Id = clientId
                       Code_Verifier = sprintf "%s1" codeVerfier }
 
-                let! result = testFixture.HttpPostAsync' "/auth/token" loginTokenData
+                let! result = testFixture.HttpPostAsync' "/api/auth/token" loginTokenData
                 do ensureUnauthorized result
             }
 
@@ -145,7 +145,7 @@ module LogIn =
                       Client_Id = clientId
                       Code_Verifier = codeVerfier }
 
-                let! result' = testFixture.HttpPostAsync' "/auth/token" loginTokenData
+                let! result' = testFixture.HttpPostAsync' "/api/auth/token" loginTokenData
                 do! ensureSuccessAsync result'
                 let! result = result' |> readAsJsonAsync<PRR.Domain.Auth.LogInToken.Models.Result>
                 result.access_token |> should be (not' Empty)
@@ -164,5 +164,5 @@ module LogIn =
                   Client_Id = testContext.Value.GetTenant().TenantManagementApplicationClientId
                   Code_Verifier = codeVerfier }
             task {
-                let! result = testFixture.HttpPostAsync' "/auth/token" loginTokenData
+                let! result = testFixture.HttpPostAsync' "/api/auth/token" loginTokenData
                 do ensureUnauthorized result }

@@ -89,7 +89,7 @@ module MultiUsers =
                 let data: PutLike =
                     { Name = "Domain update" }
                 let! result = testFixture.HttpPutAsync u2.Token.Value
-                                  (sprintf "/tenant/domain-pools/%i/domains/%i" u1.Tenant.Value.DomainPoolId
+                                  (sprintf "/api/tenant/domain-pools/%i/domains/%i" u1.Tenant.Value.DomainPoolId
                                        u1.Tenant.Value.DomainId) data
                 ensureForbidden result
             }

@@ -114,7 +114,7 @@ module RefreshTokenPersistence =
                 // Wait in order to get updated access token
                 do! System.Threading.Tasks.Task.Delay(1000)
 
-                let! result = testFixture.HttpPostAsync accessToken "/auth/refresh-token" data
+                let! result = testFixture.HttpPostAsync accessToken "/api/auth/refresh-token" data
 
                 do! ensureSuccessAsync result
 

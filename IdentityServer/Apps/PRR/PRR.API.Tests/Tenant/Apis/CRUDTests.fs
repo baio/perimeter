@@ -65,14 +65,14 @@ module CRUD =
                     { Name = "read:test1"
                       Description = "test description" }
                 let! permissionId' = testFixture.HttpPostAsync userToken
-                                         (sprintf "/tenant/apis/%i/permissions" (testContext.Value.GetTenant().SampleApiId))
+                                         (sprintf "/api/tenant/apis/%i/permissions" (testContext.Value.GetTenant().SampleApiId))
                                          data >>= readAsJsonAsync<int>
                 permissionId1 <- Some permissionId'
                 let data: Permissions.PostLike =
                     { Name = "read:test2"
                       Description = "test description" }
                 let! permissionId' = testFixture.HttpPostAsync userToken
-                                         (sprintf "/tenant/apis/%i/permissions" (testContext.Value.GetTenant().SampleApiId))
+                                         (sprintf "/api/tenant/apis/%i/permissions" (testContext.Value.GetTenant().SampleApiId))
                                          data >>= readAsJsonAsync<int>
                 permissionId2 <- Some permissionId'
             }
@@ -88,7 +88,7 @@ module CRUD =
                       Identifier = "xxx"
                       AccessTokenExpiresIn = 15
                     }
-                let! result = testFixture.HttpPostAsync userToken (sprintf "/tenant/domains/%i/apis" domainId) data
+                let! result = testFixture.HttpPostAsync userToken (sprintf "/api/tenant/domains/%i/apis" domainId) data
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<int> result
                 apiId <- Some(result)
@@ -107,7 +107,7 @@ module CRUD =
                       id = -1
                       dateCreated = DateTime.UtcNow }
                 let! result = testFixture.HttpGetAsync userToken
-                                  (sprintf "/tenant/domains/%i/apis/%i" domainId apiId.Value)
+                                  (sprintf "/api/tenant/domains/%i/apis/%i" domainId apiId.Value)
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
@@ -129,7 +129,7 @@ module CRUD =
                       AccessTokenExpiresIn = 15
                     }
                 let! result = testFixture.HttpPutAsync userToken
-                                  (sprintf "/tenant/domains/%i/apis/%i" domainId apiId.Value) data
+                                  (sprintf "/api/tenant/domains/%i/apis/%i" domainId apiId.Value) data
                 do! ensureSuccessAsync result
             }
 
@@ -148,7 +148,7 @@ module CRUD =
                       accessTokenExpiresIn = 15
                       dateCreated = DateTime.UtcNow }
                 let! result = testFixture.HttpGetAsync userToken
-                                  (sprintf "/tenant/domains/%i/apis/%i" domainId apiId.Value)
+                                  (sprintf "/api/tenant/domains/%i/apis/%i" domainId apiId.Value)
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
@@ -165,5 +165,5 @@ module CRUD =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
                 let! result = testFixture.HttpDeleteAsync userToken
-                                  (sprintf "/tenant/domains/%i/apis/%i" domainId apiId.Value)
+                                  (sprintf "/api/tenant/domains/%i/apis/%i" domainId apiId.Value)
                 do! ensureSuccessAsync result }

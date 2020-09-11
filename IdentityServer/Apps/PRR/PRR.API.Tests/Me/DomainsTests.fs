@@ -46,7 +46,7 @@ module Domains =
         [<Priority(1)>]
         member __.``A Get user domains``() =
             task {
-                let! result = testFixture.HttpGetAsync userToken "/me/management/domains"
+                let! result = testFixture.HttpGetAsync userToken "/api/me/management/domains"
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<TenantDomain array> result
                 result |> should haveLength 2

@@ -54,14 +54,14 @@ module LogInValidation =
         [<Fact>]
         member __.``A Login data with empty client_id should give validation error``() =
             task {
-                let! result = testFixture.HttpPostFormJsonAsync userToken "/auth/login" {| logInData with client_id = "" |}
+                let! result = testFixture.HttpPostFormJsonAsync userToken "/api/auth/login" {| logInData with client_id = "" |}
                 do! ensureRedirectErrorAsync result                
             }
 
         [<Fact>]
         member __.``B All empty fields should give validation error``() =
             task {
-                let! result = testFixture.HttpPostFormJsonAsync userToken "/auth/login" {|  |}
+                let! result = testFixture.HttpPostFormJsonAsync userToken "/api/auth/login" {|  |}
                 do! ensureRedirectErrorAsync result
                 
                 
@@ -86,7 +86,7 @@ module LogInValidation =
         [<Fact>]
         member __.``C response_type different from 'code' should give error``() =
             task {
-                let! result = testFixture.HttpPostFormJsonAsync userToken "/auth/login"
+                let! result = testFixture.HttpPostFormJsonAsync userToken "/api/auth/login"
                                   {| logInData with response_type = "not_code" |}
                                   
                 do! ensureRedirectErrorAsync result
@@ -105,7 +105,7 @@ module LogInValidation =
         [<Fact>]
         member __.``D redirect_uri not url``() =
             task {
-                let! result = testFixture.HttpPostFormJsonAsync userToken "/auth/login"
+                let! result = testFixture.HttpPostFormJsonAsync userToken "/api/auth/login"
                                   {| logInData with redirect_uri = "redirect_uri" |}
                 
                 do! ensureRedirectErrorAsync result
@@ -126,7 +126,7 @@ module LogInValidation =
         [<Fact>]
         member __.``E scopes doesn't contain required scopes``() =
             task {
-                let! result = testFixture.HttpPostFormJsonAsync userToken "/auth/login" {| logInData with scope = "openid" |}
+                let! result = testFixture.HttpPostFormJsonAsync userToken "/api/auth/login" {| logInData with scope = "openid" |}
                 do! ensureRedirectErrorAsync result
                 (*
                 do ensureBadRequest result
@@ -145,7 +145,7 @@ module LogInValidation =
         [<Fact>]
         member __.``F email is not email should return error``() =
             task {
-                let! result = testFixture.HttpPostFormJsonAsync userToken "/auth/login"
+                let! result = testFixture.HttpPostFormJsonAsync userToken "/api/auth/login"
                                   {| logInData with email = "not_email" |}
                 do! ensureRedirectErrorAsync result                  
                 (*                                      
@@ -165,7 +165,7 @@ module LogInValidation =
         [<Fact>]
         member __.``G code_challenge_method is not S256 should give error``() =
             task {
-                let! result = testFixture.HttpPostFormJsonAsync userToken "/auth/login"
+                let! result = testFixture.HttpPostFormJsonAsync userToken "/api/auth/login"
                                   {| logInData with code_challenge_method = "not_S256" |}
                 do! ensureRedirectErrorAsync result                                  
                 (*                                  

@@ -65,7 +65,7 @@ module CRUD =
                     { Name = "domain 1"
                       Identifier = "domain-1" }
 
-                let! result = testFixture.HttpPostAsync userToken "/tenant/domain-pools" data
+                let! result = testFixture.HttpPostAsync userToken "/api/tenant/domain-pools" data
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<int> result
                 domainPoolId <- Some(result)
@@ -80,7 +80,7 @@ module CRUD =
                       Identifier = "domain-1-updated" }
 
                 let! result =
-                    testFixture.HttpPutAsync userToken (sprintf "/tenant/domain-pools/%i" domainPoolId.Value) data
+                    testFixture.HttpPutAsync userToken (sprintf "/api/tenant/domain-pools/%i" domainPoolId.Value) data
 
                 do! ensureSuccessAsync result
             }
@@ -93,7 +93,7 @@ module CRUD =
                     { Name = "domain 1 updated"
                       Identifier = "domain-1-updated" }
 
-                let! result = testFixture.HttpGetAsync userToken (sprintf "/tenant/domain-pools/%i" domainPoolId.Value)
+                let! result = testFixture.HttpGetAsync userToken (sprintf "/api/tenant/domain-pools/%i" domainPoolId.Value)
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
@@ -106,7 +106,7 @@ module CRUD =
         [<Priority(3)>]
         member __.``C.2 Get domains list be success``() =
             task {
-                let! result = testFixture.HttpGetAsync userToken "/tenant/domain-pools"
+                let! result = testFixture.HttpGetAsync userToken "/api/tenant/domain-pools"
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<ListResponse> result
                 result |> should be (not' null)
@@ -123,7 +123,7 @@ module CRUD =
         member __.``D Delete domain must be success``() =
             task {
                 let! result =
-                    testFixture.HttpDeleteAsync userToken (sprintf "/tenant/domain-pools/%i" domainPoolId.Value)
+                    testFixture.HttpDeleteAsync userToken (sprintf "/api/tenant/domain-pools/%i" domainPoolId.Value)
 
                 do! ensureSuccessAsync result
             }

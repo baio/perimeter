@@ -80,7 +80,7 @@ module MultiUsers =
                 let u1 = users.[0]
 
                 let! _ = testFixture.HttpPostAsync u1.Token.Value
-                             (sprintf "/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+                             (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
 
                 // create user 2
                 let u2 = users.[1]
@@ -101,7 +101,7 @@ module MultiUsers =
                 let data: DomainPools.PutLike =
                     { Name = "Domain pool 2" }
                 let! result = testFixture.HttpPutAsync u2.Token.Value
-                                  (sprintf "/tenant/domain-pools/%i" u2.Tenant.Value.DomainPoolId) data
+                                  (sprintf "/api/tenant/domain-pools/%i" u2.Tenant.Value.DomainPoolId) data
                 ensureForbidden result
             }
 
@@ -125,7 +125,7 @@ module MultiUsers =
                 
                 let token = u1.Token.Value               
 
-                let! res = testFixture.HttpPostAsync token  "/tenant/admins" data
+                let! res = testFixture.HttpPostAsync token  "/api/tenant/admins" data
 
                 do! ensureSuccessAsync res
             }
@@ -148,7 +148,7 @@ module MultiUsers =
                 let data: DomainPools.PutLike =
                     { Name = "Domain pool 2" }
                 let! result = testFixture.HttpPutAsync u2.Token.Value
-                                  (sprintf "/tenant/domain-pools/%i" u1.Tenant.Value.DomainPoolId) data
+                                  (sprintf "/api/tenant/domain-pools/%i" u1.Tenant.Value.DomainPoolId) data
                 do! ensureSuccessAsync result
 
                 ()
@@ -164,7 +164,7 @@ module MultiUsers =
 
             task {
 
-                let! res = testFixture.HttpPostAsync users.[1].Token.Value "/tenant/admins" data
+                let! res = testFixture.HttpPostAsync users.[1].Token.Value "/api/tenant/admins" data
 
                 ensureForbidden res
             }
@@ -175,7 +175,7 @@ module MultiUsers =
             let u1 = users.[0]
             task {
                 let! result = testFixture.HttpDeleteAsync u1.Token.Value
-                                  (sprintf "/tenant/admins/%s" u1.Data.Email)
+                                  (sprintf "/api/tenant/admins/%s" u1.Data.Email)
                 do ensureForbidden result }
 
         [<Fact>]
@@ -187,6 +187,6 @@ module MultiUsers =
                     { UserEmail = u1.Data.Email
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
                 let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/tenant/admins") data
+                                  (sprintf "/api/tenant/admins") data
                 do ensureForbidden result
             }

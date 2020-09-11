@@ -57,7 +57,7 @@ module CRUD =
                 let data: PostLike =
                     { Name = "test:permissions"
                       Description = "test description" }
-                let! result = testFixture.HttpPostAsync userToken (sprintf "/tenant/apis/%i/permissions" apiId) data
+                let! result = testFixture.HttpPostAsync userToken (sprintf "/api/tenant/apis/%i/permissions" apiId) data
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<int> result
                 permissionId <- Some(result)
@@ -71,7 +71,7 @@ module CRUD =
                 let data: PostLike =
                     { Name = "test:permissions"
                       Description = "test description" }
-                let! result = testFixture.HttpPostAsync userToken (sprintf "/tenant/apis/%i/permissions" apiId) data
+                let! result = testFixture.HttpPostAsync userToken (sprintf "/api/tenant/apis/%i/permissions" apiId) data
                 do ensureConflict result
             }
             
@@ -85,7 +85,7 @@ module CRUD =
                     { Name = "test:permissions2"
                       Description = "test description2" }
                 let! result = testFixture.HttpPutAsync userToken
-                                  (sprintf "/tenant/apis/%i/permissions/%i" apiId permissionId.Value) data
+                                  (sprintf "/api/tenant/apis/%i/permissions/%i" apiId permissionId.Value) data
                 do! ensureSuccessAsync result
             }
 
@@ -98,7 +98,7 @@ module CRUD =
                     { Name = "test:permissions2"
                       Description = "test description2" }
                 let! result = testFixture.HttpGetAsync userToken
-                                  (sprintf "/tenant/apis/%i/permissions/%i" apiId permissionId.Value)
+                                  (sprintf "/api/tenant/apis/%i/permissions/%i" apiId permissionId.Value)
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
@@ -114,5 +114,5 @@ module CRUD =
             let apiId = testContext.Value.GetTenant().SampleApiId
             task {
                 let! result = testFixture.HttpDeleteAsync userToken
-                                  (sprintf "/tenant/apis/%i/permissions/%i" apiId permissionId.Value)
+                                  (sprintf "/api/tenant/apis/%i/permissions/%i" apiId permissionId.Value)
                 do! ensureSuccessAsync result }

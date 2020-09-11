@@ -90,7 +90,7 @@ module SignUp =
                       Password = "#6VvR&^"
                       QueryString = null }
 
-                let! result = testFixture.HttpPostAsync' "/auth/sign-up" invalidUserData
+                let! result = testFixture.HttpPostAsync' "/api/auth/sign-up" invalidUserData
 
                 ensureBadRequest result
             }
@@ -101,7 +101,7 @@ module SignUp =
 
             task {
 
-                let! result = testFixture.HttpPostAsync' "/auth/sign-up" userData
+                let! result = testFixture.HttpPostAsync' "/api/auth/sign-up" userData
 
                 do! ensureSuccessAsync result
 
@@ -140,7 +140,7 @@ module SignUp =
                 let confirmData: SignUpConfirm.Models.Data =
                     { Token = userToken }
 
-                let! result = testFixture.HttpPostAsync' "/auth/sign-up/confirm" confirmData
+                let! result = testFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
 
                 do! ensureSuccessAsync result
             }
@@ -154,7 +154,7 @@ module SignUp =
                 let confirmData: SignUpConfirm.Models.Data =
                     { Token = userToken }
 
-                let! result = testFixture.HttpPostAsync' "/auth/sign-up/confirm" confirmData
+                let! result = testFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
 
                 ensureUnauthorized result
             }
@@ -165,7 +165,7 @@ module SignUp =
 
             task {
 
-                let! result = testFixture.HttpPostAsync' "/auth/sign-up" userData
+                let! result = testFixture.HttpPostAsync' "/api/auth/sign-up" userData
 
                 ensureConflict result }
 
@@ -175,14 +175,14 @@ module SignUp =
 
             task {
 
-                let! _ = testFixture.HttpPostAsync' "/auth/sign-up" { userData with Email = "user2@user.com" }
+                let! _ = testFixture.HttpPostAsync' "/api/auth/sign-up" { userData with Email = "user2@user.com" }
 
                 waitHandle.WaitOne() |> ignore
 
                 let confirmData: SignUpConfirm.Models.Data =
                     { Token = userToken }
 
-                let! result = testFixture.HttpPostAsync' "/auth/sign-up/confirm" confirmData
+                let! result = testFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
 
                 do! ensureSuccessAsync result
 
