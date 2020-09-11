@@ -1,4 +1,6 @@
 export interface IUser {
-  sub: string;
-  scopes: string[];
+    id: number;
+    sub: string;
+    scopes: string[];
+    email: string;
 }

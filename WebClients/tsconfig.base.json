@@ -18,7 +18,9 @@
     "paths": {
       "#@nz-holistic/forms": ["nz-holistic-libs/forms/src/index.ts"],
       "#@nz-holistic/nz-forms": ["nz-holistic-libs/nz-forms/src/index.ts"],
-      "#@nz-holistic/nz-controls": ["nz-holistic-libs/nz-controls/src/index.ts"],
+      "#@nz-holistic/nz-controls": [
+        "nz-holistic-libs/nz-controls/src/index.ts"
+      ],
       "#@nz-holistic/nz-list": ["nz-holistic-libs/nz-list/src/index.ts"],
       "@admin/auth": ["libs/admin/auth/src/index.ts"],
       "@perimeter/ngx-auth": ["libs/perimeter/ng-auth/src/index.ts"],

@@ -1,12 +1,4 @@
 {
-    "name": "@perimeter/nestjs-auth",
-    "version": "0.0.1",
-    "peerDependencies": {
-        "jwt-simple": "^0.5.6",
-        "@nestjs/common": "^7.0.0",
-        "@nestjs/core": "^7.0.0"    
-    },
-    "dependencies": {
-        "tslib": "^2.0.0"
-    }
+  "name": "@perimeter/nestjs-auth",
+  "version": "0.0.1"
 }

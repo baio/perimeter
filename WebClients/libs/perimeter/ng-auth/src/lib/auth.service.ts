@@ -39,7 +39,7 @@ export interface AuthOptions {
 
 export type HashMap = { [key: string]: string | number };
 
-interface JWTToken extends HashMap {
+export interface JWTToken extends HashMap {
     iss: string;
     sub: string;
     aud: string;

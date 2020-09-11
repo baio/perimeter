@@ -17,6 +17,7 @@ module private CreateClaims =
         let permissions = scopes |> strJoin
         // TODO : RBA + Include permissions flag
         [| Claim(CLAIM_TYPE_SUB, (sprintf "prr|%s" tokenData.Email))
+           Claim(ClaimTypes.Email, tokenData.Email)
            Claim(CLAIM_TYPE_UID, tokenData.Id.ToString())
            Claim(CLAIM_TYPE_SCOPE, permissions)
            Claim(CLAIM_TYPE_ISSUER, issuer)

@@ -4,6 +4,7 @@ open Akka.Actor
 open Akka.Configuration
 open Akkling
 open Giraffe
+open Giraffe.Serialization
 open Microsoft.AspNetCore.Authentication.JwtBearer
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
@@ -13,6 +14,9 @@ open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 open Microsoft.IdentityModel.Tokens
+open Newtonsoft.Json
+open Newtonsoft.Json.Converters
+open Newtonsoft.Json.Serialization
 open PRR.API
 open PRR.API.Infra
 open PRR.API.Infra.Mail
@@ -74,8 +78,17 @@ let configureApp (app: IApplicationBuilder) =
      | false -> app.UseGiraffeErrorHandler errorHandler).UseAuthentication().UseAuthorization().UseCors(configureCors)
         .UseGiraffe(webApp)
 
-
 let configureServices (context: WebHostBuilderContext) (services: IServiceCollection) =
+    // Json
+    (*
+    let customSettings =
+        JsonSerializerSettings(ContractResolver = CamelCasePropertyNamesContractResolver())
+    customSettings.Converters.Add(StringEnumConverter())
+    services.AddSingleton<IJsonSerializer>(NewtonsoftJsonSerializer(customSettings))
+    |> ignore
+    *)
+
+    // auth
     let config =
         Infra.Config.getConfig context.Configuration ()
     // Authentication
@@ -133,6 +146,7 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     let connectionString =
         context.Configuration.GetConnectionString "PostgreSQL"
 
+    printfn "ENV %s" context.HostingEnvironment.EnvironmentName
     printfn "Connection string: %s" connectionString
 
     services.AddDbContext<DbDataContext>
@@ -149,8 +163,6 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
             |> ignore))
     |> ignore
 
-
-    printf "+++%s %O" context.HostingEnvironment.EnvironmentName
     // Actors system
 
     // TODO : Why not working like so https://stackoverflow.com/questions/56442871/is-there-a-way-to-use-f-record-types-to-extract-the-appsettings-json-configurat

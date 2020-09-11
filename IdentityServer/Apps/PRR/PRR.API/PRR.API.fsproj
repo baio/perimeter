@@ -77,7 +77,7 @@
         <Content Include="akka.stage.hocon">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Include="akka.hocon">
+        <Content Include="akka.local.hocon">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>

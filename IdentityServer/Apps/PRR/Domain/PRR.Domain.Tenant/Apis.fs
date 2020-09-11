@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Tenant
 
+open System.Text.Json.Serialization
 open Common.Domain.Models
 open Common.Domain.Utils
 open Common.Domain.Utils.CRUD

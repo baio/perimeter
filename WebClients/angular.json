@@ -638,6 +638,16 @@
             "tsConfig": "libs/perimeter/nestjs-auth/tsconfig.spec.json",
             "passWithNoTests": true
           }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "options": {
+            "outputPath": "dist/libs/perimeter/nestjs-auth",
+            "tsConfig": "libs/perimeter/nestjs-auth/tsconfig.lib.json",
+            "packageJson": "libs/perimeter/nestjs-auth/package.json",
+            "main": "libs/perimeter/nestjs-auth/src/index.ts",
+            "assets": ["libs/perimeter/nestjs-auth/*.md"]
+          }
         }
       }
     }
