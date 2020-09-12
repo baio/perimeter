@@ -26,13 +26,14 @@ export class TenantAdminsDataAccessService {
         return this.http.get<any[]>(`/roles/tenant-admins`);
     }
 
-    loadItem(userEmail: string): Observable<UserRole> {
+    loadItem(tenantId: number, userEmail: string): Observable<UserRole> {
         return this.http
-            .get(`/tenant/admins/${userEmail}`)
+            .get(`/tenants/${tenantId}/admins/${userEmail}`)
             .pipe(map(mapItem));
     }
 
     loadList(
+        tenantId: number,
         searchParams: HlcNzTable.Data.DataProviderState
     ): Observable<HlcNzTable.Data.DataProviderResult<UserRole>> {
         const params = mapListRequestParams(searchParams);
@@ -40,17 +41,20 @@ export class TenantAdminsDataAccessService {
             params['filter.email'] = searchParams.filter.text;
         }
         return this.http
-            .get(`/tenant/admins`, { params })
+            .get(`/tenants/${tenantId}/admins`, { params })
             .pipe(map(mapListResponse(mapItem, searchParams)));
     }
 
-    removeItem(userEmail: string): Observable<any> {
-        return this.http.delete(`/tenant/admins/${userEmail}`);
+    removeItem(tenantId: number, userEmail: string): Observable<any> {
+        return this.http.delete(`/tenants/${tenantId}/admins/${userEmail}`);
     }
 
-    updateItem(data: Partial<UserRole>): Observable<UserRole> {
+    updateItem(
+        tenantId: number,
+        data: Partial<UserRole>
+    ): Observable<UserRole> {
         return this.http.post<UserRole>(
-            `/tenant/admins`,
+            `/tenants/${tenantId}/admins`,
             mapPayload(data)
         );
     }

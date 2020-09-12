@@ -45,7 +45,7 @@ module private Handlers =
                        | None -> true
                        | Some _ -> false)
 #else
-                        fun _ -> false
+                        (fun _ -> false)
 #endif
                       )
              <*> (ofReader (fun ctx -> { DataContext = getDataContext ctx }))
