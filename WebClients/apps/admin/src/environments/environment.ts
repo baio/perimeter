@@ -7,7 +7,7 @@ export const environment = {
     baseUrl: 'https://localhost:5001/api',
     auth: {
         loginUrl: 'http://localhost:4201/auth/login',
-        signupUrl: 'http://localhost:4201/api/auth/register',
+        signupUrl: 'http://localhost:4201/auth/register',
         tokenUrl: 'https://localhost:5001/api/auth/token',
         logoutUrl: 'https://localhost:5001/api/auth/logout',
         returnLoginUri: 'http://localhost:4201/login-cb',
