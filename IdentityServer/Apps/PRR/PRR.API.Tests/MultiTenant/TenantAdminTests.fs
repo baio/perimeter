@@ -140,3 +140,65 @@ module TenantAdminTests =
 
                 do! ensureSuccessAsync result
             }
+
+        [<Fact>]
+        [<Priority(4)>]
+        member __.``D Get user2 domains should return tenant1 and created domain``() =
+            task {
+                let u2 = users.[1]
+                let! result = testFixture.HttpGetAsync u2.Token.Value "/api/me/management/domains"
+                do! ensureSuccessAsync result
+
+                let! data = result |> readAsJsonAsync<TenantDomain []>
+
+                printfn "%A" data
+
+                data.Length |> should equal 2
+            }
+
+
+        [<Fact>]
+        [<Priority(5)>]
+        member __.``E User1 add user2 as domain admin for sample domain``() =
+            task {
+
+                let u1 = users.[0]
+
+                // relogin under domain admin first
+                let! loginResult =
+                    logInUser
+                        testFixture
+                        u1.Tenant.Value.DomainManagementApplicationClientId
+                        u1.Data.Email
+                        u1.Data.Password
+
+                let data: PostLike =
+                    { UserEmail = users.[1].Data.Email
+                      RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
+
+                printfn "+++ %s" loginResult.access_token
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        loginResult.access_token
+                        (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
+                        data
+
+                do! ensureSuccessAsync result
+            }
+
+
+        [<Fact>]
+        [<Priority(6)>]
+        member __.``F Get user2 domains should return tenant1 and sample1 management domain``() =
+            task {
+                let u2 = users.[1]
+                let! result = testFixture.HttpGetAsync u2.Token.Value "/api/me/management/domains"
+                do! ensureSuccessAsync result
+
+                let! data = result |> readAsJsonAsync<TenantDomain []>
+
+                printfn "%A" data
+
+                data.Length |> should equal 3
+            }
