@@ -34,30 +34,34 @@ module private TenantUserRolesHandlers =
              | _ -> None))
         |> ofReader
 
-    let getTenantAdminsList =
+    let getTenantAdminsList tenantId =
         wrap
             (getList
              <!> getDataContext'
-             <*> (doublet <!> bindUserClaimId <*> bindListQuery))
+             <*> (triplet tenantId
+                  <!> bindUserClaimId
+                  <*> bindListQuery))
 
-    let getOne email =
+    let getOne tenantId email =
         wrap
-            (getOne email
+            (getOne tenantId email
              <!> bindUserClaimId
              <*> getDataContext')
 
-    let remove email =
+    let remove tenantId email =
         wrap
-            (remove email
+            (remove tenantId email
              <!> bindUserClaimId
              <*> getDataContext')
 
 module TenantUserRole =
     let createRoutes () =
         subRoutef "/tenants/%i/admins" (fun tenantId ->
-            choose [ DELETE >=> routef "/%s" remove
-                     GET >=> routef "/%s" getOne
-                     GET >=> route "" >=> getTenantAdminsList
+            choose [ DELETE >=> routef "/%s" (remove tenantId)
+                     GET >=> routef "/%s" (getOne tenantId)
+                     GET
+                     >=> route ""
+                     >=> (getTenantAdminsList tenantId)
                      POST
                      >=> route ""
                      >=> choose [ permissionOptGuard MANAGE_TENANT_ADMINS
