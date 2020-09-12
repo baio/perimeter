@@ -30,7 +30,7 @@ const prrWebAdminLoadBalancer = new k8s.core.v1.Service('prr-web-admin', {
         type: 'LoadBalancer',
         ports: [
             {
-                port: 8071,
+                port: 80,
                 targetPort: 80,
             },
         ],
@@ -94,7 +94,7 @@ const prrApiDeployment = new k8s.apps.v1.Deployment('prr-api', {
                 containers: [
                     {
                         name: 'prr-api',
-                        image: 'baio/prr-api:v0.9',
+                        image: 'baio/prr-api:v0.11',
                         env: [
                             { name: 'ASPNETCORE_ENVIRONMENT', value: 'STAGE' },
                             { name : 'MailSender__Project__BaseUrl', value: 'https://perimeter.azurefd.net'},
@@ -145,7 +145,7 @@ const prrIpLoadBalancer = new k8s.core.v1.Service('prr-api', {
         type: 'LoadBalancer',
         ports: [
             {
-                port: 5000,
+                port: 80,
                 targetPort: 80,
             },
         ],

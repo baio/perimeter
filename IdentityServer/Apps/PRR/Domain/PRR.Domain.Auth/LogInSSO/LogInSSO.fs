@@ -61,11 +61,13 @@ module Authorize =
                     // Switch to management client (from any tenant) should be valid
                     // admin should be relogined silently when switching between tenants
                     // TODO : Add IsTenantManagement to app, anyway we can figure it out implicitly like so
+                    (*
                     let isTenantManagementClient = managementDomainTenantId.HasValue
                     if not
                         (isDomainManagementClient
                          || isTenantManagementClient) then
-                        return raise (unAuthorized "sso wrong tenant")
+                    *)
+                    return raise (unAuthorized "sso wrong tenant")
 
                 if (callbackUrls
                     <> "*"

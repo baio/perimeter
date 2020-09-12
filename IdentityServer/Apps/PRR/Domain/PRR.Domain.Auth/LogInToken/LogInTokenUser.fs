@@ -28,8 +28,6 @@ module internal SignInUser =
           IdTokenExpiresIn: int<minutes> }
 
     let signInUser' (data: SignInData) =
-
-        printf "---3333 %O" data
         
         let audiences =
             data.AudienceScopes
@@ -39,14 +37,10 @@ module internal SignInUser =
             data.AudienceScopes
             |> Seq.collect (fun x -> x.Scopes)
 
-        printf "3333 %A" rolesPermissions            
-
         let accessToken =
             createAccessTokenClaims data.ClientId data.Issuer data.TokenData rolesPermissions audiences
             |> (createSignedToken data.AccessTokenSecret data.AccessTokenExpiresIn)
             
-        printf "4444 %A" accessToken            
-
         let idToken =
             createIdTokenClaims data.ClientId data.Issuer data.TokenData rolesPermissions
             |> (createUnsignedToken data.IdTokenExpiresIn)

@@ -17,7 +17,7 @@ module private CreateToken =
         let issuedAt = DateTime.UtcNow
         // TODO : Not before will be added automatically and could potentially fails if user PC time is wrong
         // Should be able set skew on client ?
-        let issuedAtSkew = issuedAt.AddMinutes(float 1)
+        let issuedAtSkew = issuedAt.AddMinutes(float -1)
 
         let expires =
             issuedAt.AddMinutes(float expireInMinutes)
@@ -29,7 +29,8 @@ module private CreateToken =
             (Subject = subject,
              Expires = Nullable(expires),
              SigningCredentials = signingCredentials,
-             IssuedAt = Nullable(issuedAtSkew))
+             IssuedAt = Nullable(issuedAt),
+             NotBefore = Nullable(issuedAtSkew))
         |> tokenHandler.CreateToken
         |> tokenHandler.WriteToken
 
@@ -38,11 +39,15 @@ module private CreateToken =
         let subject = claims |> ClaimsIdentity
         let tokenHandler = JwtSecurityTokenHandler()
         let issuedAt = DateTime.Now
-        let issuedAtSkew = issuedAt.AddMinutes(float 1)
+        let issuedAtSkew = issuedAt.AddMinutes(float -1)
 
         let expires =
             issuedAt.AddMinutes(float expireInMinutes)
 
-        SecurityTokenDescriptor(Subject = subject, Expires = Nullable(expires), IssuedAt = Nullable(issuedAtSkew))
+        SecurityTokenDescriptor
+            (Subject = subject,
+             Expires = Nullable(expires),
+             IssuedAt = Nullable(issuedAt),
+             NotBefore = Nullable(issuedAtSkew))
         |> tokenHandler.CreateToken
         |> tokenHandler.WriteToken
