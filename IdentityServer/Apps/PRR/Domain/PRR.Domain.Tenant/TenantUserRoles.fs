@@ -31,7 +31,7 @@ module TenantUserRoles =
         |> map (fun cnt ->
             if cnt > 0 then raise Forbidden')
 
-    let updateTenantRoles forbidenRoles ((tenantId, dto): TenantId * PostLike) (dbContext: DbDataContext) =
+    let updateTenantRoles forbiddenRoles ((tenantId, dto): TenantId * PostLike) (dbContext: DbDataContext) =
         task {
             let! domainId = query {
                                 for domain in dbContext.Domains do
@@ -41,7 +41,7 @@ module TenantUserRoles =
                             |> toSingleAsync
 
             do! checkUserNotTenantOwner domainId dto.UserEmail dbContext
-            return updateRoles validateRoles forbidenRoles (domainId, dto) dbContext
+            return updateRoles validateRoles forbiddenRoles (domainId, dto) dbContext
         }
 
     let private getUsersTenantManagementDomain userId (dbContext: DbDataContext) =

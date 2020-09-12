@@ -68,13 +68,14 @@
         <Compile Include="Auth\SignUpPasswordValidationTests.fs" />
         <Compile Include="Me\DomainsTests.fs" />
         <Compile Include="BadRequestValidatorsTest.fs" />
-        <Compile Include="Program.fs" />
         <Content Include="akka.hocon">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
         <Content Include="appsettings.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Compile Include="MultiTenant\TenantAdminTests.fs" />
+        <Compile Include="Program.fs" />
     </ItemGroup>
 
     <ItemGroup>

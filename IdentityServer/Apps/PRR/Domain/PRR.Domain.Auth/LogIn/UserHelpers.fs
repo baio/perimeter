@@ -1,10 +1,13 @@
 ﻿namespace PRR.Domain.Auth.LogIn
 
+open System
+open System.Threading.Tasks
 open Common.Domain.Models
 open Common.Domain.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
 open PRR.Domain.Auth
+open System.Linq
 
 [<AutoOpen>]
 module internal UserHelpers =
@@ -40,53 +43,84 @@ module internal UserHelpers =
         | (false, false) -> Regular
         | _ -> raise (unexpected "App both domain and tenant management")
 
+    (*
+    // Fallback in case current getDefaultClientId fails
+    let __getDefaultClientId (dataContext: DbDataContext) email =
+        query {
+            for app in dataContext.Applications do
+                where (app.Domain.Tenant.User.Email = email)
+                select app.ClientId
+        }
+        |> toSingleOptionAsync
+    *)
+
+    let getDefaultClientId (dataContext: DbDataContext) email =
+        task {
+
+            let! result =
+                query {
+                    for dur in dataContext.DomainUserRole do
+                        where
+                            (dur.UserEmail = email
+                             && (dur.Role.IsTenantManagement
+                                 || dur.Role.IsDomainManagement))
+                        select
+                            (Tuple.Create
+                                (dur.RoleId,
+                                 (if dur.Domain.Tenant = null
+                                  then dur.Domain.Applications.First(fun x -> x.IsDomainManagement).ClientId
+                                  else dur.Domain.Applications.First().ClientId)))
+                }
+                |> toListAsync
+
+            let priorityRoles =
+                [ Seed.Roles.TenantOwner.Id
+                  Seed.Roles.DomainOwner.Id
+                  Seed.Roles.TenantSuperAdmin.Id
+                  Seed.Roles.TenantAdmin.Id
+                  Seed.Roles.DomainSuperAdmin.Id
+                  Seed.Roles.DomainAdmin.Id ]
+
+            let sortedResult =
+                result
+                |> Seq.sortBy (fun x -> Seq.findIndex (fun y -> y = fst x) priorityRoles)
+
+            return sortedResult |> Seq.map snd |> Seq.tryHead
+        }
+
+    let getClientAppInfo (dataContext: DbDataContext) clientId =
+        task {
+            let! (issuer, idTokenExpiresIn, isDomainManagement, isTenantManagement) =
+                query {
+                    for app in dataContext.Applications do
+                        where (app.ClientId = clientId)
+                        select
+                            (app.Domain.Issuer, app.IdTokenExpiresIn, app.IsDomainManagement, app.Domain.Tenant <> null)
+                }
+                |> LinqHelpers.toSingleExnAsync (unexpected (sprintf "ClientId %s is not found" clientId))
+
+            return { ClientId = clientId
+                     Issuer = issuer
+                     IdTokenExpiresIn = idTokenExpiresIn * 1<minutes>
+                     Type = getAppType (isDomainManagement, isTenantManagement) }
+        }
+
     let getAppInfo (dataContext: DbDataContext) clientId email idTokenExpires =
         task {
             if clientId = DEFAULT_CLIENT_ID then
                 printfn "getAppInfo:DEFAULT_CLIENT_ID"
-                let! res =
-                    query {
-                        for app in dataContext.Applications do
-                            where (app.Domain.Tenant.User.Email = email)
-                            select
-                                (app.ClientId,
-                                 app.Domain.Issuer,
-                                 app.IdTokenExpiresIn,
-                                 app.IsDomainManagement,
-                                 app.Domain.Tenant <> null)
-                    }
-                    |> LinqHelpers.toSingleOptionAsync
+                let! clientId' = getDefaultClientId dataContext email
 
-                return match res with
-                       | Some (clientId, issuer, idTokenExpiresIn, isDomainManagement, isTenantManagement) ->
-                           { ClientId = clientId
-                             Issuer = issuer
-                             IdTokenExpiresIn = idTokenExpiresIn * 1<minutes>
-                             Type = getAppType (isDomainManagement, isTenantManagement) }
-                       | None ->
-                           { ClientId = PERIMETER_CLIENT_ID
-                             Issuer = PERIMETER_ISSUER
-                             IdTokenExpiresIn = idTokenExpires
-                             Type = PerimeterManagement }
+                return! match clientId' with
+                        | Some clientId -> getClientAppInfo dataContext clientId
+                        | None ->
+                            { ClientId = PERIMETER_CLIENT_ID
+                              Issuer = PERIMETER_ISSUER
+                              IdTokenExpiresIn = idTokenExpires
+                              Type = PerimeterManagement }
+                            |> Task.FromResult
 
             else
                 printfn "getAppInfo:2"
-                let! (issuer, idTokenExpiresIn, isDomainManagement, isTenantManagement) =
-                    query {
-                        for app in dataContext.Applications do
-                            where (app.ClientId = clientId)
-                            select
-                                (app.Domain.Issuer,
-                                 app.IdTokenExpiresIn,
-                                 app.IsDomainManagement,
-                                 app.Domain.Tenant <> null)
-                    }
-                    |> LinqHelpers.toSingleExnAsync (unexpected (sprintf "ClientId %s is not found" clientId))
-
-                printfn "getAppInfo:3 %s %i" issuer idTokenExpires
-
-                return { ClientId = clientId
-                         Issuer = issuer
-                         IdTokenExpiresIn = idTokenExpiresIn * 1<minutes>
-                         Type = getAppType (isDomainManagement, isTenantManagement) }
+                return! getClientAppInfo dataContext clientId
         }
