@@ -38,22 +38,15 @@ module private TenantUserRolesHandlers =
         wrap
             (getList
              <!> getDataContext'
-             <*> (triplet tenantId
-                  <!> bindUserClaimId
-                  <*> bindListQuery))
+             <*> (doublet tenantId <!> bindListQuery))
 
     let getOne tenantId email =
-        wrap
-            (getOne tenantId email
-             <!> bindUserClaimId
-             <*> getDataContext')
+        wrap (getOne tenantId email <!> getDataContext')
 
     let remove tenantId email =
-        wrap
-            (remove tenantId email
-             <!> bindUserClaimId
-             <*> getDataContext')
+        wrap (remove tenantId email <!> getDataContext')
 
+// TODO : User has permission to work with tenant !
 module TenantUserRole =
     let createRoutes () =
         subRoutef "/tenants/%i/admins" (fun tenantId ->

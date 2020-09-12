@@ -70,22 +70,22 @@ module TenantUserRoles =
         }
         |> toSingleAsync
 
-    type GetList = DbDataContext -> (TenantId * UserId * ListQuery) -> Task<ListResponse>
+    type GetList = DbDataContext -> (TenantId * ListQuery) -> Task<ListResponse>
 
     let getList: GetList =
-        fun dataContext (tenantId, userId, prms) ->
+        fun dataContext (tenantId, prms) ->
             task {
                 let! domainId = getTenantManagementDomain tenantId dataContext
                 return! getList RoleType.TenantManagement dataContext (domainId, prms)
             }
 
-    let getOne tenantId userEmail userId (dataContext: DbDataContext) =
+    let getOne tenantId userEmail (dataContext: DbDataContext) =
         task {
             let! domainId = getTenantManagementDomain tenantId dataContext
             return! getOne userEmail domainId dataContext
         }
 
-    let remove tenantId userEmail userId (dataContext: DbDataContext) =
+    let remove tenantId userEmail (dataContext: DbDataContext) =
         task {
             let! domainId = getTenantManagementDomain tenantId dataContext
             do! checkUserNotTenantOwner domainId userEmail dataContext

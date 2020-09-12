@@ -58,6 +58,7 @@
         <Compile Include="Tenant\Applications\CRUDTests.fs" />
         <Compile Include="Tenant\TenantUserRoles\MultiUsersTests.fs" />
         <Compile Include="Tenant\Tenants\CRUDTests.fs" />
+        <Compile Include="Tenant\Tenants\MultiTenantAdminTests.fs" />
         <Compile Include="Auth\SignUpTests.fs" />
         <Compile Include="Auth\LogInTests.fs" />
         <Compile Include="Auth\LogInValidationTests.fs" />
@@ -74,7 +75,6 @@
         <Content Include="appsettings.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Compile Include="MultiTenant\TenantAdminTests.fs" />
         <Compile Include="Program.fs" />
     </ItemGroup>
 

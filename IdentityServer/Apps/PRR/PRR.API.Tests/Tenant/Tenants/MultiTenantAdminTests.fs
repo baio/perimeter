@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Tests.MultiTenant
+﻿namespace PRR.API.Tests.Tenants
 
 open Akkling
 open Common.Test.Utils
@@ -26,7 +26,7 @@ open FsUnit
 // 3. Signup user2 (no tenant)
 // 4. Get user2 domains should return tenant1 management domain
 // 5. User2 can create domains for tenant1
-module TenantAdminTests =
+module MultiTenantAdminTests =
 
     let user1Data: Data =
         { FirstName = "user1"
@@ -42,7 +42,6 @@ module TenantAdminTests =
           Password = "#6VvR&^"
           QueryString = null }
 
-
     let private users =
         System.Collections.Generic.List<_>
             [ {| Data = user1Data
@@ -51,7 +50,6 @@ module TenantAdminTests =
               {| Data = user2Data
                  Token = None
                  Tenant = None |} ]
-
 
     let mutable testContext: UserTestContext option = None
 
