@@ -12,12 +12,13 @@ import { AuthService } from '@perimeter/ngx-auth';
     styleUrls: ['./list.component.scss'],
 })
 export class DomainsPoolListComponent implements OnInit {
+    private readonly tenantId = +this.activatedRoute.parent.snapshot.params['id'];
     readonly listDefinition = listDefinition;
     readonly dataProvider: HlcNzTable.Data.DataProvider = (state) =>
-        this.dataAccess.loadList(state);
+        this.dataAccess.loadList(this.tenantId, state);
     readonly removeItemDataAccess: AdminList.Data.RemoveItemDataAccess = ({
         id,
-    }) => this.dataAccess.removeItem(id);
+    }) => this.dataAccess.removeItem(this.tenantId, id);
 
     constructor(
         private readonly dataAccess: DomainsDataAccessService,

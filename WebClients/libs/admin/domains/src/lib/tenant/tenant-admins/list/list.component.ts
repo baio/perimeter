@@ -17,13 +17,14 @@ import { ActivatedRoute } from '@angular/router';
     styleUrls: ['./list.component.scss'],
 })
 export class TenantAdminsListComponent implements OnInit {
+    private readonly tenantId = +this.activatedRoute.parent.snapshot.params['id'];
     readonly listDefinition = listDefinition;
     readonly dataProvider: HlcNzTable.Data.DataProvider = (state) =>
-        this.dataAccess.loadList(state);
+        this.dataAccess.loadList(this.tenantId, state);
     readonly removeItemDataAccess: AdminList.Data.RemoveItemDataAccess = ({
         id,
     }) => {
-        return this.dataAccess.removeItem(id);
+        return this.dataAccess.removeItem(this.tenantId, id);
     };
 
     readonly canRemoveRow: AdminList.CheckRowFun<UserRole> = (row) =>
@@ -33,7 +34,7 @@ export class TenantAdminsListComponent implements OnInit {
         row.roles.some((x) => x.id !== USER_ROLE_TENANT_OWNER_ID);
 
     constructor(
-        activatedRoute: ActivatedRoute,
+        private readonly activatedRoute: ActivatedRoute,
         private readonly dataAccess: TenantAdminsDataAccessService
     ) {}
 

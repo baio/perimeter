@@ -18,41 +18,51 @@ module private TenantUserRolesHandlers =
 
     let private dataContext = getDataContext |> ofReader
 
-    let updateRolesHandler (forbidenRoles) =
-        wrap (updateTenantRoles forbidenRoles <!> (doublet <!> tenantId <*> bindJsonAsync<PostLike>) <*> dataContext)
+    let updateRolesHandler tenantId (forbiddenRoles) =
+        wrap
+            (updateTenantRoles forbiddenRoles
+             <!> (doublet tenantId <!> bindJsonAsync<PostLike>)
+             <*> dataContext)
 
     let bindListQuery =
         bindListQuery
             ((function
-             | "email" ->
-                 Some SortField.UserEmail
+             | "email" -> Some SortField.UserEmail
              | _ -> None),
              (function
-             | "email" ->
-                 Some FilterField.UserEmail
+             | "email" -> Some FilterField.UserEmail
              | _ -> None))
         |> ofReader
 
-    let getTenantAdminsList =
-        wrap (getList <!> getDataContext' <*> (doublet <!> bindUserClaimId <*> bindListQuery))
+    let getTenantAdminsList tenantId =
+        wrap
+            (getList
+             <!> getDataContext'
+             <*> (doublet tenantId <!> bindListQuery))
 
-    let getOne email =
-        wrap (getOne email <!> bindUserClaimId <*> getDataContext')
+    let getOne tenantId email =
+        wrap (getOne tenantId email <!> getDataContext')
 
-    let remove email =
-        wrap (remove email <!> bindUserClaimId <*> getDataContext')
+    let remove tenantId email =
+        wrap (remove tenantId email <!> getDataContext')
+
+// TODO : User has permission to work with tenant !
 module TenantUserRole =
-    let createRoutes() =
-        choose
-            [ DELETE >=> routef "/tenant/admins/%s" remove
-              GET >=> routef "/tenant/admins/%s" getOne
-              GET >=> route "/tenant/admins" >=> getTenantAdminsList
-              POST >=> route "/tenant/admins" >=> choose
-                                                      [ permissionOptGuard MANAGE_TENANT_ADMINS
-                                                        >=> updateRolesHandler [ Seed.Roles.TenantOwner.Id ]
-                                                        permissionOptGuard MANAGE_TENANT_DOMAINS
-                                                        >=> updateRolesHandler
-                                                                [ Seed.Roles.TenantOwner.Id
-                                                                  Seed.Roles.TenantSuperAdmin.Id
-                                                                  Seed.Roles.TenantAdmin.Id ]
-                                                        RequestErrors.FORBIDDEN "User can't manage provided roles" ] ]
+    let createRoutes () =
+        subRoutef "/tenants/%i/admins" (fun tenantId ->
+            choose [ DELETE >=> routef "/%s" (remove tenantId)
+                     GET >=> routef "/%s" (getOne tenantId)
+                     GET
+                     >=> route ""
+                     >=> (getTenantAdminsList tenantId)
+                     POST
+                     >=> route ""
+                     >=> choose [ permissionOptGuard MANAGE_TENANT_ADMINS
+                                  >=> updateRolesHandler tenantId [ Seed.Roles.TenantOwner.Id ]
+                                  permissionOptGuard MANAGE_TENANT_DOMAINS
+                                  >=> updateRolesHandler
+                                          tenantId
+                                          [ Seed.Roles.TenantOwner.Id
+                                            Seed.Roles.TenantSuperAdmin.Id
+                                            Seed.Roles.TenantAdmin.Id ]
+                                  RequestErrors.FORBIDDEN "User can't manage provided roles" ] ])

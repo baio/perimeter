@@ -57,16 +57,20 @@ module MultiUsers =
                 testContext <- Some(createUserTestContext testFixture)
                 // create user 1 + tenant + permission
                 let u = users.[0]
+
                 let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
+
                 users.[0] <- {| u with
                                     Token = Some(userToken)
                                     Tenant = Some(tenant) |}
 
                 // create user 2 + tenant + permission
                 let u = users.[1]
+
                 let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
+
                 users.[1] <- {| u with
                                     Token = Some(userToken)
                                     Tenant = Some(tenant) |}
@@ -78,9 +82,13 @@ module MultiUsers =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let data: PutLike =
-                    { Name = "Domain pool update" }
-                let! result = testFixture.HttpPutAsync u2.Token.Value
-                                  (sprintf "/api/tenant/domain-pools/%i" u1.Tenant.Value.DomainPoolId) data
+                let data: PutLike = { Name = "Domain pool update" }
+
+                let! result =
+                    testFixture.HttpPutAsync
+                        u2.Token.Value
+                        (sprintf "/api/tenants/%i/domain-pools/%i" u1.Tenant.Value.TenantId u1.Tenant.Value.DomainPoolId)
+                        data
+
                 ensureForbidden result
             }

@@ -34,16 +34,21 @@ module private Handlers =
         >>= ((bindSysQuery (SignUpToken.GetToken >> Queries.SignUpToken))
              >> noneFails (UnAuthorized None))
 
-#if TEST
-    let createTenantOnSignup = true
-#else
-    let createTenantOnSignup = false
-#endif
     let signUpConfirmHandler =
         sysWrap
-            (signUpConfirm createTenantOnSignup
-             <!> ((fun ctx -> { DataContext = getDataContext ctx })
-                  |> ofReader)
+            (signUpConfirm
+             <!> (ofReader
+// Create default tenant for tests only                       
+#if TEST                                          
+                      (bindQueryString "skipCreateTenant"
+                       >> function
+                       | None -> true
+                       | Some _ -> false)
+#else
+                        (fun _ -> false)
+#endif
+                      )
+             <*> (ofReader (fun ctx -> { DataContext = getDataContext ctx }))
              <*> bindSignUpTokenQuery)
 
     open PRR.Domain.Auth.ResetPassword

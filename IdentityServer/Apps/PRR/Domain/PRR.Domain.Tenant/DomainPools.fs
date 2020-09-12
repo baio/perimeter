@@ -64,7 +64,7 @@ module DomainPools =
         [| (validateNullOrEmpty "name" data.Name) |]
         |> Array.choose id
 
-    let create ((userId, tenantId, data): UserId * TenantId * PostLike) (env: Env) =
+    let create ((tenantId, userId, data): UserId * TenantId * PostLike) (env: Env) =
         let dataContext = env.DataContext
 
         let add x = x |> add dataContext

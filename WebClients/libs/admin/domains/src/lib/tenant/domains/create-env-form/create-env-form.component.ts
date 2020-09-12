@@ -13,7 +13,7 @@ import { loadManagementDomains } from '@admin/profile';
     styleUrls: ['./create-env-form.component.scss'],
 })
 export class CreateEnvFormComponent {
-    private readonly domainId: number;
+    private readonly domainId = +this.activatedRoute.snapshot.params['id'];
     readonly definition = definition;
 
     readonly storeValueDataAccess: AdminForm.Data.StoreValueDataAccess = (
@@ -32,9 +32,7 @@ export class CreateEnvFormComponent {
         private readonly router: Router,
         private readonly dataAccess: DomainsDataAccessService,
         private readonly listService: AdminListService
-    ) {
-        this.domainId = +activatedRoute.snapshot.params['id'];
-    }
+    ) {}
 
     onClose() {
         this.router.navigate(['.'], {

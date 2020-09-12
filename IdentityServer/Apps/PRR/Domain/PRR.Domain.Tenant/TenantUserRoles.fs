@@ -14,36 +14,45 @@ module TenantUserRoles =
     let private checkUserNotTenantOwner (domainId: DomainId) (email: string) (dbContext: DbDataContext) =
         query {
             for dur in dbContext.DomainUserRole do
-                where (dur.DomainId = domainId && dur.UserEmail = email && dur.RoleId = Seed.Roles.TenantOwner.Id)
+                where
+                    (dur.DomainId = domainId
+                     && dur.UserEmail = email
+                     && dur.RoleId = Seed.Roles.TenantOwner.Id)
                 select dur.UserEmail
         }
         |> countAsync
         |> map (fun cnt ->
-            if cnt = 1 then raise (forbidden "Tenant owner could not be deleted or edited"))
+            if cnt = 1
+            then raise (forbidden "Tenant owner could not be deleted or edited"))
 
     let private validateRoles (_, rolesIds: int seq) (dataContext: DbDataContext) =
         query {
             for p in dataContext.Roles do
-                where (p.IsTenantManagement <> true && (%in' (rolesIds)) p.Id)
+                where
+                    (p.IsTenantManagement
+                     <> true
+                     && (%in' (rolesIds)) p.Id)
                 select p.Id
         }
         |> toCountAsync
-        |> map (fun cnt ->
-            if cnt > 0 then raise Forbidden')
+        |> map (fun cnt -> if cnt > 0 then raise Forbidden')
 
-    let updateTenantRoles forbidenRoles ((tenantId, dto): TenantId * PostLike) (dbContext: DbDataContext) =
+    let updateTenantRoles forbiddenRoles ((tenantId, dto): TenantId * PostLike) (dbContext: DbDataContext) =
         task {
-            let! domainId = query {
-                                for domain in dbContext.Domains do
-                                    where (domain.TenantId = Nullable(tenantId))
-                                    select domain.Id
-                            }
-                            |> toSingleAsync
+            let! domainId =
+                query {
+                    for domain in dbContext.Domains do
+                        where (domain.TenantId = Nullable(tenantId))
+                        select domain.Id
+                }
+                |> toSingleAsync
 
             do! checkUserNotTenantOwner domainId dto.UserEmail dbContext
-            return updateRoles validateRoles forbidenRoles (domainId, dto) dbContext
+
+            return updateRoles validateRoles forbiddenRoles (domainId, dto) dbContext
         }
 
+    (*
     let private getUsersTenantManagementDomain userId (dbContext: DbDataContext) =
         query {
             for domain in dbContext.Domains do
@@ -51,23 +60,34 @@ module TenantUserRoles =
                 select domain.Id
         }
         |> toSingleAsync
+    *)
 
-    type GetList = DbDataContext -> (UserId * ListQuery) -> Task<ListResponse>
+    let private getTenantManagementDomain tenantId (dbContext: DbDataContext) =
+        query {
+            for domain in dbContext.Domains do
+                where (domain.TenantId = Nullable(tenantId))
+                select domain.Id
+        }
+        |> toSingleAsync
+
+    type GetList = DbDataContext -> (TenantId * ListQuery) -> Task<ListResponse>
 
     let getList: GetList =
-        fun dataContext (userId, prms) ->
+        fun dataContext (tenantId, prms) ->
             task {
-                let! domainId = getUsersTenantManagementDomain userId dataContext
-                return! getList RoleType.TenantManagement dataContext (domainId, prms) }
+                let! domainId = getTenantManagementDomain tenantId dataContext
+                return! getList RoleType.TenantManagement dataContext (domainId, prms)
+            }
 
-    let getOne userEmail userId (dataContext: DbDataContext) =
+    let getOne tenantId userEmail (dataContext: DbDataContext) =
         task {
-            let! domainId = getUsersTenantManagementDomain userId dataContext
-            return! getOne userEmail domainId dataContext }
+            let! domainId = getTenantManagementDomain tenantId dataContext
+            return! getOne userEmail domainId dataContext
+        }
 
-    let remove userEmail userId (dataContext: DbDataContext) =
+    let remove tenantId userEmail (dataContext: DbDataContext) =
         task {
-            let! domainId = getUsersTenantManagementDomain userId dataContext
+            let! domainId = getTenantManagementDomain tenantId dataContext
             do! checkUserNotTenantOwner domainId userEmail dataContext
             return! remove domainId userEmail dataContext
         }

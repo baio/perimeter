@@ -133,3 +133,18 @@ module CreateUser =
         }
 
     let createUser = createUser' true
+
+    let createUserNoTenant (env: UserTestContext) (userData: SignUp.Models.Data) =
+        task {
+            let! _ = env.TestFixture.HttpPostAsync' "/api/auth/sign-up" userData
+            env.ConfirmTokenWaitHandle.WaitOne() |> ignore
+            let confirmData: SignUpConfirm.Models.Data = { Token = env.GetConfirmToken() }
+
+            let! _ = env.TestFixture.HttpPostAsync' "/api/auth/sign-up/confirm?skipCreateTenant=true" confirmData
+
+            let clientId = "__DEFAULT_CLIENT_ID__"
+
+            let! result = logInUser env.TestFixture clientId userData.Email userData.Password
+
+            return result.access_token
+        }

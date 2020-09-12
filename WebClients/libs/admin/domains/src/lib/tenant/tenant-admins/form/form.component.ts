@@ -1,4 +1,7 @@
-import { AdminsDataAccessService, TenantAdminsDataAccessService } from '@admin/data-access';
+import {
+    AdminsDataAccessService,
+    TenantAdminsDataAccessService,
+} from '@admin/data-access';
 import { AdminForm, isNew$ } from '@admin/shared';
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -10,19 +13,19 @@ import { getDefinition } from './form.definition';
     styleUrls: ['./form.component.scss'],
 })
 export class TenantAdminFormComponent {
-
+    private readonly tenantId = +this.activatedRoute.parent.parent.snapshot.params['id'];
     readonly definition: AdminForm.FormDefinition;
 
     readonly loadValueDataAccess: AdminForm.Data.LoadValueDataAccess = (
         id: string
-    ) => this.dataAccess.loadItem(id);
+    ) => this.dataAccess.loadItem(this.tenantId, id);
 
     readonly storeValueDataAccess: AdminForm.Data.StoreValueDataAccess = (
         item: any
-    ) => this.dataAccess.updateItem(item);
+    ) => this.dataAccess.updateItem(this.tenantId, item);
 
     constructor(
-        activatedRoute: ActivatedRoute,
+        private readonly activatedRoute: ActivatedRoute,
         private readonly dataAccess: TenantAdminsDataAccessService
     ) {
         this.definition = getDefinition(

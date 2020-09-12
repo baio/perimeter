@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 const mapItem = (item) => ({
     id: item.id,
     name: item.name,
-    identifier: item.identifier, 
+    identifier: item.identifier,
     dateCreated: item.dateCreated,
     envs: item.domains.map((m) => ({
         id: m.id,
@@ -24,6 +24,7 @@ export class DomainsDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
     loadList(
+        tenantId: number,
         searchParams: HlcNzTable.Data.DataProviderState
     ): Observable<HlcNzTable.Data.DataProviderResult<DomainItem>> {
         const params = mapListRequestParams(searchParams);
@@ -31,16 +32,18 @@ export class DomainsDataAccessService {
             params['filter.name'] = searchParams.filter.text;
         }
         return this.http
-            .get(`tenant/domain-pools`, { params })
+            .get(`tenants/${tenantId}/domain-pools`, { params })
             .pipe(map(mapListResponse(mapItem, searchParams)));
     }
 
-    loadItem(id: number): Observable<DomainItem> {
-        return this.http.get(`tenant/domain-pools/${id}`).pipe(map(mapItem));
+    loadItem(tenantId: number, id: number): Observable<DomainItem> {
+        return this.http
+            .get(`tenants/${tenantId}/domain-pools/${id}`)
+            .pipe(map(mapItem));
     }
 
-    createItem(data: { name: string }): Observable<any> {
-        return this.http.post(`tenant/domain-pools`, data);
+    createItem(tenantId: number, data: { name: string }): Observable<any> {
+        return this.http.post(`tenants/${tenantId}/domain-pools`, data);
     }
 
     createEnvItem(
@@ -50,11 +53,15 @@ export class DomainsDataAccessService {
         return this.http.post(`tenant/domain-pools/${domainId}/domains`, data);
     }
 
-    updateItem(id: number, data: { name: string }): Observable<any> {
-        return this.http.put(`tenant/domain-pools/${id}`, data);
+    updateItem(
+        tenantId: number,
+        id: number,
+        data: { name: string }
+    ): Observable<any> {
+        return this.http.put(`tenants/${tenantId}/domain-pools/${id}`, data);
     }
 
-    removeItem(id: number): Observable<any> {
-        return this.http.delete(`tenant/domain-pools/${id}`);
+    removeItem(tenantId: number, id: number): Observable<any> {
+        return this.http.delete(`tenants/${tenantId}/domain-pools/${id}`);
     }
 }

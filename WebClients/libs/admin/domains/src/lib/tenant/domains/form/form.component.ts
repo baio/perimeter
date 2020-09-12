@@ -14,19 +14,21 @@ import { loadManagementDomains } from '@admin/profile';
     styleUrls: ['./form.component.scss'],
 })
 export class DomainPoolFormComponent {
+    private readonly tenantId = +this.activatedRoute.parent.parent.snapshot
+        .params['id'];
     readonly definition = getDefinition(isNew$(this.activatedRoute));
 
     readonly storeValueDataAccess: AdminForm.Data.StoreValueDataAccess = (
         item: any
     ) =>
         (item.id
-            ? this.dataAccess.updateItem(item.id, item)
-            : this.dataAccess.createItem(item)
+            ? this.dataAccess.updateItem(this.tenantId, item.id, item)
+            : this.dataAccess.createItem(this.tenantId, item)
         ).pipe(tap(() => this.store.dispatch(loadManagementDomains())));
 
     readonly loadValueDataAccess: AdminForm.Data.LoadValueDataAccess = (
         id: number
-    ) => (id ? this.dataAccess.loadItem(id) : of({}));
+    ) => (id ? this.dataAccess.loadItem(this.tenantId, id) : of({}));
 
     constructor(
         private readonly store: Store,

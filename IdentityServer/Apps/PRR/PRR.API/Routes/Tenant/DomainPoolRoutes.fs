@@ -15,19 +15,20 @@ module private DomainPoolHandlers =
 
     let private dataContext = getDataContext |> ofReader
 
+    (*
     let tenantId =
         bindUserClaimId
         >>= (fun id ctx ->
             ctx
             |> getDataContext
             |> Helpers.getTenantIdFromUserId id)
+    *)
 
-    let createHandler =
+    let createHandler tenantId =
         wrap
             (create
-             <!> (triplet
+             <!> (triplet tenantId
                   <!> bindUserClaimId
-                  <*> tenantId
                   <*> bindValidateJsonAsync validatePostData)
              <*> ofReader (fun ctx ->
                      let config = getConfig ctx
@@ -61,21 +62,23 @@ module private DomainPoolHandlers =
              | _ -> None))
         |> ofReader
 
-    let getList =
+    let getList tenantId =
         wrap
             (getList
              <!> getDataContext'
-             <*> (doublet <!> tenantId <*> bindListQuery))
+             <*> (doublet tenantId <!> bindListQuery))
 
 module DomainPool =
 
     let createRoutes () =
-        subRoute "/tenant/domain-pools" requiresAuth
-        >=> permissionGuard MANAGE_TENANT_DOMAINS
-        >=> (choose [ POST >=> createHandler
-                      routef "/%i" (fun domainPoolId ->
-                          wrapAudienceGuard fromDomainPoolId domainPoolId
-                          >=> choose [ PUT >=> updateHandler domainPoolId
-                                       DELETE >=> removeHandler domainPoolId
-                                       GET >=> getOne domainPoolId ])
-                      GET >=> getList ])
+        subRoutef "/tenants/%i/domain-pools" (fun tenantId ->
+            // TODO : Check user to manage this tenantId !!!
+            requiresAuth
+            >=> permissionGuard MANAGE_TENANT_DOMAINS
+            >=> (choose [ POST >=> createHandler tenantId
+                          routef "/%i" (fun domainPoolId ->
+                              wrapAudienceGuard fromDomainPoolId domainPoolId
+                              >=> choose [ PUT >=> updateHandler domainPoolId
+                                           DELETE >=> removeHandler domainPoolId
+                                           GET >=> getOne domainPoolId ])
+                          GET >=> getList tenantId ]))
