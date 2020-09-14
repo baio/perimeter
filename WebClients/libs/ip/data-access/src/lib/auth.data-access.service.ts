@@ -33,6 +33,10 @@ export interface LoginPassword {
     password: string;
 }
 
+export interface AppInfo {
+    title: string;
+}
+
 @Injectable()
 export class AuthDataAccessService {
     constructor(private readonly http: HttpClient) {}
@@ -55,5 +59,9 @@ export class AuthDataAccessService {
 
     resetPasswordConfirm(data: ResetPasswordConfirmData): Observable<any> {
         return this.http.post('auth/reset-password/confirm', data);
+    }
+
+    getAppInfo(clientId: string): Observable<any> {
+        return this.http.get<AppInfo>(`applications/${clientId}`);
     }
 }
