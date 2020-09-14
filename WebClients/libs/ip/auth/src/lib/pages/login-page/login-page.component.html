@@ -27,118 +27,121 @@
 >
 </nz-alert>
 
-<form
-    style="display: none;"
-    nz-form
-    [formGroup]="form"
-    class="login-form"
-    method="POST"
-    [attr.action]="submitAction"
-    id="login_form"
-    #submitForm
-    (ngSubmit)="onSubmit(submitForm)"
->
-    <input type="hidden" name="client_id" formControlName="client_id" />
-    <input
-        type="hidden"
-        name="response_type"
-        [attr.value]="loginParams.response_type"
-    />
-    <input type="hidden" name="state" formControlName="state" />
-    <input
-        type="hidden"
-        name="redirect_uri"
-        [value]="loginParams.redirect_uri"
-    />
-    <input type="hidden" name="scope" formControlName="scope" />
-    <input
-        type="hidden"
-        name="code_challenge"
-        formControlName="code_challenge"
-    />
-    <input
-        type="hidden"
-        name="code_challenge_method"
-        formControlName="code_challenge_method"
-    />
-    <input type="hidden" name="prompt" formControlName="prompt" />
+<div style="display: none;" id="login_form_container">
+    <h1>{{ appInfo?.title }}</h1>
+    <h2>please login</h2>
+    <form
+        id="login_form"
+        nz-form
+        [formGroup]="form"
+        class="login-form"
+        method="POST"
+        [attr.action]="submitAction"
+        #submitForm
+        (ngSubmit)="onSubmit(submitForm)"
+    >
+        <input type="hidden" name="client_id" formControlName="client_id" />
+        <input
+            type="hidden"
+            name="response_type"
+            [attr.value]="loginParams.response_type"
+        />
+        <input type="hidden" name="state" formControlName="state" />
+        <input
+            type="hidden"
+            name="redirect_uri"
+            [value]="loginParams.redirect_uri"
+        />
+        <input type="hidden" name="scope" formControlName="scope" />
+        <input
+            type="hidden"
+            name="code_challenge"
+            formControlName="code_challenge"
+        />
+        <input
+            type="hidden"
+            name="code_challenge_method"
+            formControlName="code_challenge_method"
+        />
+        <input type="hidden" name="prompt" formControlName="prompt" />
 
-    <nz-form-item>
-        <nz-form-control [nzErrorTip]="emailErrorTpl">
-            <nz-input-group nzPrefixIcon="user">
-                <input
-                    name="email"
-                    data-cy="email"
-                    type="text"
-                    nz-input
-                    formControlName="email"
-                    placeholder="Email"
-                />
-                <ng-template #emailErrorTpl let-control>
-                    <span
-                        data-cy="email-required-error"
-                        *ngIf="control.hasError('empty')"
-                    >
-                        E-mail is required!
-                    </span>
-                    <span
-                        data-cy="email-invalid-error"
-                        *ngIf="control.hasError('email')"
-                    >
-                        The input is not valid E-mail!
-                    </span>
-                </ng-template>
-            </nz-input-group>
-        </nz-form-control>
-    </nz-form-item>
-    <nz-form-item>
-        <nz-form-control [nzErrorTip]="passwordErrorTpl">
-            <nz-input-group nzPrefixIcon="lock">
-                <input
-                    name="password"
-                    data-cy="password"
-                    type="password"
-                    nz-input
-                    formControlName="password"
-                    placeholder="Password"
-                />
-                <ng-template #passwordErrorTpl let-control>
-                    <span
-                        data-cy="password-required-error"
-                        *ngIf="control.hasError('empty')"
-                    >
-                        Password should not be empty
-                    </span>
-                </ng-template>
-            </nz-input-group>
-        </nz-form-control>
-    </nz-form-item>
-    <div nz-row class="login-form-margin">
-        <!--
+        <nz-form-item>
+            <nz-form-control [nzErrorTip]="emailErrorTpl">
+                <nz-input-group nzPrefixIcon="user">
+                    <input
+                        name="email"
+                        data-cy="email"
+                        type="text"
+                        nz-input
+                        formControlName="email"
+                        placeholder="Email"
+                    />
+                    <ng-template #emailErrorTpl let-control>
+                        <span
+                            data-cy="email-required-error"
+                            *ngIf="control.hasError('empty')"
+                        >
+                            E-mail is required!
+                        </span>
+                        <span
+                            data-cy="email-invalid-error"
+                            *ngIf="control.hasError('email')"
+                        >
+                            The input is not valid E-mail!
+                        </span>
+                    </ng-template>
+                </nz-input-group>
+            </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+            <nz-form-control [nzErrorTip]="passwordErrorTpl">
+                <nz-input-group nzPrefixIcon="lock">
+                    <input
+                        name="password"
+                        data-cy="password"
+                        type="password"
+                        nz-input
+                        formControlName="password"
+                        placeholder="Password"
+                    />
+                    <ng-template #passwordErrorTpl let-control>
+                        <span
+                            data-cy="password-required-error"
+                            *ngIf="control.hasError('empty')"
+                        >
+                            Password should not be empty
+                        </span>
+                    </ng-template>
+                </nz-input-group>
+            </nz-form-control>
+        </nz-form-item>
+        <div nz-row class="login-form-margin">
+            <!--
         <div nz-col [nzSpan]="12">
             <label nz-checkbox formControlName="remember">
                 <span>Remember me</span>
             </label>
         </div>
         -->
-        <div nz-col [nzSpan]="12">
-            <a
-                data-cy="forgot-password"
-                class="login-form-forgot"
-                routerLink="../forgot-password"
-                preserveQueryParams
-                >Forgot password</a
-            >
+            <div nz-col [nzSpan]="12">
+                <a
+                    data-cy="forgot-password"
+                    class="login-form-forgot"
+                    routerLink="../forgot-password"
+                    preserveQueryParams
+                    >Forgot password</a
+                >
+            </div>
         </div>
-    </div>
-    <button
-        data-cy="submit"
-        [disabled]="form.invalid || !loginParams"
-        nz-button
-        class="login-form-button login-form-margin"
-        [nzType]="'primary'"
-    >
-        Log in
-    </button>
-    Or <a routerLink="../register" preserveQueryParams> register now! </a>
-</form>
+        <button
+            data-cy="submit"
+            [disabled]="form.invalid || !loginParams"
+            nz-button
+            class="login-form-button login-form-margin"
+            [nzType]="'primary'"
+        >
+            Log in
+        </button>
+        Or <a routerLink="../register" preserveQueryParams> register now! </a>
+    </form>
+</div>

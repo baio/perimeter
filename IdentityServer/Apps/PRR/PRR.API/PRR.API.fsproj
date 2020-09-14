@@ -63,6 +63,7 @@
         <Compile Include="Routes\Tenant\DomainRoutes.fs" />
         <Compile Include="Routes\Tenant\ApiRoutes.fs" />
         <Compile Include="Routes\Tenant\ApplicationRoutes.fs" />
+        <Compile Include="Routes\Tenant\ApplicationInfoRoutes.fs" />
         <Compile Include="Routes\Tenant\PermissionRoutes.fs" />
         <Compile Include="Routes\Tenant\RoleRoutes.fs" />
         <Compile Include="Routes\Tenant\DomainUserRoleRoutes.fs" />

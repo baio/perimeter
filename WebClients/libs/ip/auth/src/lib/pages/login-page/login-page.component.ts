@@ -10,8 +10,8 @@ import {
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { FormValidators, HTTP_BASE_URL_CONFIG } from '@perimeter/common';
-import { LoginParams, AuthDataAccessService } from '@ip/data-access';
-import { HttpErrorResponse } from '@angular/common/http';
+import { LoginParams, AuthDataAccessService, AppInfo } from '@ip/data-access';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 @Component({
     selector: 'ip-login-page',
@@ -20,10 +20,12 @@ import { HttpErrorResponse } from '@angular/common/http';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginPageComponent implements OnInit, AfterViewInit {
+    // Hide Form UI till data init
     loginParams: LoginParams;
     errorMessage: string;
     queryEvent: string;
-    public readonly form: FormGroup;
+    readonly form: FormGroup;
+    appInfo: AppInfo;
 
     @ViewChild('submitForm') formElement: HTMLFormElement;
 
@@ -34,9 +36,9 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
     constructor(
         fb: FormBuilder,
         @Inject(HTTP_BASE_URL_CONFIG) private readonly baseUrl: string,
-        private readonly dataAccess: AuthDataAccessService,
+        dataAccess: AuthDataAccessService,
         private readonly activatedRoute: ActivatedRoute,
-        private readonly cdr: ChangeDetectorRef
+        readonly cdr: ChangeDetectorRef
     ) {
         const urlParams = this.activatedRoute.snapshot.params;
         const urlQueryParams = this.activatedRoute.snapshot.queryParams;
@@ -84,6 +86,24 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
             this.loginParams = {} as any;
         } else {
             this.loginParams = parsedParams;
+
+            const clientId = urlQueryParams['client_id'];
+
+            if (!!clientId) {
+                if (clientId === '__DEFAULT_CLIENT_ID__') {
+                    this.appInfo = {
+                        title: 'Perimeter',
+                    };
+                } else {
+                    dataAccess
+                        .getAppInfo(clientId)
+                        .toPromise()
+                        .then((res) => {
+                            this.appInfo = res;
+                            cdr.markForCheck();
+                        });
+                }
+            }
         }
 
         this.form = fb.group({
@@ -104,11 +124,14 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit(): void {
         const urlQueryParams = this.activatedRoute.snapshot.queryParams;
+        const formContainer = document.getElementById(
+            'login_form_container'
+        ) as HTMLFormElement;
         const form = document.getElementById('login_form') as HTMLFormElement;
         if (urlQueryParams['prompt'] === 'none') {
             form.submit();
         } else {
-            form.style.display = 'block';
+            formContainer.style.display = 'block';
         }
     }
 

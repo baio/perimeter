@@ -36,6 +36,7 @@ let webApp =
                   Me.createRoutes ()
                   Tenant.createRoutes ()
                   PingRoutes.createRoutes ()
+                  ApplicationInfo.createRoutes ()
 #if E2E
                   E2E.createRoutes ()
 #endif
