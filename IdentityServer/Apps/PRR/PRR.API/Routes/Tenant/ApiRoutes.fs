@@ -24,7 +24,7 @@ module private ApiHandlers =
             (create
              <!> (ofReader getEnv)
              <*> ((doublet domainId)
-                  <!> bindValidateJsonAsync validateData)
+                  <!> bindValidateJsonAsync validatePostData)
              <*> dataContext)
 
     let updateHandler domainId id =
@@ -32,7 +32,7 @@ module private ApiHandlers =
             (update
              <!> ((doublet id)
                   <!> (doublet domainId
-                       <!> bindValidateJsonAsync validateData))
+                       <!> bindValidateJsonAsync validatePutData))
              <*> dataContext)
 
     let removeHandler (id: int) = wrap (remove id <!> dataContext)

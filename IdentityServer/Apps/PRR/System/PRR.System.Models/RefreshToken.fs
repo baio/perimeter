@@ -11,7 +11,8 @@ module RefreshToken =
     type Item =
         { Token: Token
           ClientId: ClientId
-          UserId: UserId
+          UserId: UserId          
+          SigningAudience: string
           ExpiresAt: DateTime
           Scopes: string seq }
 

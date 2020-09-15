@@ -49,23 +49,22 @@ export interface JWTToken extends HashMap {
 
 const parseQueryString = (qs: string) => {
     if (!qs) {
-      return {};
+        return {};
     }
     try {
-      return JSON.parse(
-        '{"' +
-          decodeURI(qs)
-            .replace(/^\?/g, '')
-            .replace(/"/g, '\\"')
-            .replace(/&/g, '","')
-            .replace(/=/g, '":"') +
-          '"}'
-      );
+        return JSON.parse(
+            '{"' +
+                decodeURI(qs)
+                    .replace(/^\?/g, '')
+                    .replace(/"/g, '\\"')
+                    .replace(/&/g, '","')
+                    .replace(/=/g, '":"') +
+                '"}'
+        );
     } catch {
-      return {};
+        return {};
     }
-  };
-  
+};
 
 const parseJwt = (token: string): JWTToken => {
     const base64Url = token.split('.')[1];
@@ -275,14 +274,20 @@ export class AuthService {
 
     async refreshToken() {
         const refreshToken = localStorage.getItem(REFRESH_TOKEN);
-        if (!refreshToken) {
+        const accessToken = localStorage.getItem(ACCESS_TOKEN);
+        console.log('+++', refreshToken, accessToken);
+        if (!refreshToken || !accessToken) {
             return false;
         }
         try {
             const result = await this.http
-                .post<TokensResult>(this.config.refreshTokenUrl, {
-                    refreshToken,
-                })
+                .post<TokensResult>(
+                    this.config.refreshTokenUrl,
+                    {
+                        refreshToken,
+                    },
+                    { headers: { Authorization: `Bearer ${accessToken}` } }
+                )
                 .toPromise();
             localStorage.setItem(ID_TOKEN, result.id_token);
             localStorage.setItem(ACCESS_TOKEN, result.access_token);

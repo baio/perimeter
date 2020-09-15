@@ -39,8 +39,7 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(
         AdminDomainsModule,
         HlcNzFormModule.forRoot(),
         RouterModule,
-        AuthModule.forRoot(environment.baseUrl, environment.auth),
-        HttpErrorMessageInterceptorModule,
+        AuthModule.forRoot(environment.baseUrl, environment.auth),        
         HttpBaseUrlInterceptorModule.forRoot({ baseUrl: environment.baseUrl }),
         AdminProfileModule,
         StoreModule.forRoot({}),
@@ -48,6 +47,8 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(
         StoreDevtoolsModule.instrument({
             logOnly: environment.production,
         }),
+        // Important ! Always last in order to not mess with other interceptors !
+        HttpErrorMessageInterceptorModule,
     ],
     providers: [
         { provide: NZ_ICONS, useValue: icons },

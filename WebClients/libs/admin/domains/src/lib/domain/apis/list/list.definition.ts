@@ -18,7 +18,7 @@ export const listDefinition: AdminList.TableDefinition = {
             } as any,
         },
         {
-            id: 'identifier',
+            id: 'identifierUri',
             title: 'Identifier',
         },
         {
