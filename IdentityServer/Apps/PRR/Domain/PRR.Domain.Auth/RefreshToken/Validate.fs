@@ -15,12 +15,10 @@ module private Validate =
         | UserNotMatch
         | Success
 
-    let validate env accessToken (expiresAt, userId) =
+    let validate env accessToken (expiresAt, userId, secret) =
         match expiresAt < DateTime.UtcNow with
         | true -> RefreshTokenExpired
         | false ->
-            match validateAccessToken accessToken env.JwtConfig.AccessTokenSecret with
-            | Some userId' ->
-                if userId <> userId' then UserNotMatch
-                else Success
+            match validateAccessToken accessToken secret with
+            | Some userId' -> if userId <> userId' then UserNotMatch else Success
             | None -> AccessTokenInvalid

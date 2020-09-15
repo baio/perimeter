@@ -36,9 +36,7 @@ module CRUD =
     let mutable apiId: int option = None
 
     [<CLIMutable>]
-    type PermissionGetLikeDto =
-        { id: int
-          name: string }
+    type PermissionGetLikeDto = { id: int; name: string }
 
     [<CLIMutable>]
     type GetLikeDto =
@@ -61,19 +59,31 @@ module CRUD =
                 testContext <- Some(createUserTestContext testFixture)
                 let! userToken' = createUser testContext.Value userData
                 userToken <- userToken'
+
                 let data: Permissions.PostLike =
                     { Name = "read:test1"
                       Description = "test description" }
-                let! permissionId' = testFixture.HttpPostAsync userToken
-                                         (sprintf "/api/tenant/apis/%i/permissions" (testContext.Value.GetTenant().SampleApiId))
-                                         data >>= readAsJsonAsync<int>
+
+                let! permissionId' =
+                    testFixture.HttpPostAsync
+                        userToken
+                        (sprintf "/api/tenant/apis/%i/permissions" (testContext.Value.GetTenant().SampleApiId))
+                        data
+                    >>= readAsJsonAsync<int>
+
                 permissionId1 <- Some permissionId'
+
                 let data: Permissions.PostLike =
                     { Name = "read:test2"
                       Description = "test description" }
-                let! permissionId' = testFixture.HttpPostAsync userToken
-                                         (sprintf "/api/tenant/apis/%i/permissions" (testContext.Value.GetTenant().SampleApiId))
-                                         data >>= readAsJsonAsync<int>
+
+                let! permissionId' =
+                    testFixture.HttpPostAsync
+                        userToken
+                        (sprintf "/api/tenant/apis/%i/permissions" (testContext.Value.GetTenant().SampleApiId))
+                        data
+                    >>= readAsJsonAsync<int>
+
                 permissionId2 <- Some permissionId'
             }
 
@@ -86,8 +96,8 @@ module CRUD =
                 let data: PostLike =
                     { Name = "Api 1"
                       Identifier = "xxx"
-                      AccessTokenExpiresIn = 15
-                    }
+                      AccessTokenExpiresIn = 15 }
+
                 let! result = testFixture.HttpPostAsync userToken (sprintf "/api/tenant/domains/%i/apis" domainId) data
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<int> result
@@ -99,22 +109,15 @@ module CRUD =
         member __.``B Get api must be success``() =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
-                let expected: GetLikeDto =
-                    { name = "Api 1"
-                      identifier = "https://xxx.dev.sample-domain.sample-tenant.com"
-                      accessTokenExpiresIn = 15
-                      permissions = [||]
-                      id = -1
-                      dateCreated = DateTime.UtcNow }
-                let! result = testFixture.HttpGetAsync userToken
-                                  (sprintf "/api/tenant/domains/%i/apis/%i" domainId apiId.Value)
+                let! result =
+                    testFixture.HttpGetAsync userToken (sprintf "/api/tenant/domains/%i/apis/%i" domainId apiId.Value)
+
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
                 result.id |> should equal apiId.Value
-                result.name |> should equal expected.name
-                result.identifier |> should be (not' null)
-                result.permissions |> should equal expected.permissions
+                result.name |> should equal "Api 1"
+                result.permissions |> should equal [||]
                 result.dateCreated |> should be (not' null)
             }
 
@@ -126,10 +129,14 @@ module CRUD =
                 let data: PostLike =
                     { Name = "Api 1 Updated"
                       Identifier = "yyy"
-                      AccessTokenExpiresIn = 15
-                    }
-                let! result = testFixture.HttpPutAsync userToken
-                                  (sprintf "/api/tenant/domains/%i/apis/%i" domainId apiId.Value) data
+                      AccessTokenExpiresIn = 15 }
+
+                let! result =
+                    testFixture.HttpPutAsync
+                        userToken
+                        (sprintf "/api/tenant/domains/%i/apis/%i" domainId apiId.Value)
+                        data
+
                 do! ensureSuccessAsync result
             }
 
@@ -139,23 +146,15 @@ module CRUD =
         member __.``D Get updated api must be success``() =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
-                let expected: GetLikeDto =
-                    { name = "Api 1 Updated"
-                      identifier = "https://xxx.dev.sample-domain.sample-tenant.com"
-                      permissions =
-                          [| |]
-                      id = -1
-                      accessTokenExpiresIn = 15
-                      dateCreated = DateTime.UtcNow }
-                let! result = testFixture.HttpGetAsync userToken
-                                  (sprintf "/api/tenant/domains/%i/apis/%i" domainId apiId.Value)
+                let! result =
+                    testFixture.HttpGetAsync userToken (sprintf "/api/tenant/domains/%i/apis/%i" domainId apiId.Value)
+
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
                 result.id |> should equal apiId.Value
-                result.name |> should equal expected.name
-                result.identifier |> should be (not' null)
-                result.permissions |> should equal expected.permissions
+                result.name |> should equal "Api 1 Updated"
+                result.permissions |> should equal [||]
                 result.dateCreated |> should be (not' null)
             }
 
@@ -164,6 +163,10 @@ module CRUD =
         member __.``E Delete role must be success``() =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
-                let! result = testFixture.HttpDeleteAsync userToken
-                                  (sprintf "/api/tenant/domains/%i/apis/%i" domainId apiId.Value)
-                do! ensureSuccessAsync result }
+                let! result =
+                    testFixture.HttpDeleteAsync
+                        userToken
+                        (sprintf "/api/tenant/domains/%i/apis/%i" domainId apiId.Value)
+
+                do! ensureSuccessAsync result
+            }

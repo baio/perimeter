@@ -22,13 +22,18 @@ module Apis =
           AccessTokenExpiresIn: int }
 
     [<CLIMutable>]
+    type PutLike =
+        { Name: string
+          AccessTokenExpiresIn: int }
+
+    [<CLIMutable>]
     type PermissionGetLike = { Id: int; Name: string }
 
     [<CLIMutable>]
     type GetLike =
         { Id: int
           Name: string
-          Identifier: string
+          IdentifierUri: string
           DateCreated: System.DateTime
           AccessTokenExpiresIn: int
           Permissions: PermissionGetLike seq
@@ -36,11 +41,15 @@ module Apis =
           SigningAlgorithm: SigningAlgorithmType
           HS256SigningSecret: string }
 
-    let validateData (data: PostLike) =
+    let validatePostData (data: PostLike) =
         [| (validateNullOrEmpty "name" data.Name)
            (validateDomainName "identifier" data.Identifier) |]
         |> Array.choose id
 
+
+    let validatePutData (data: PutLike) =
+        [| (validateNullOrEmpty "name" data.Name) |]
+        |> Array.choose id
 
     type CreateEnv =
         { AccessTokenExpiresIn: int<minutes>
@@ -85,8 +94,10 @@ module Apis =
 
 
 
-    let update: Update<int, DomainId * PostLike, DbDataContext> =
-        updateCatch<Api, _, _, _> catch (fun id -> Api(Id = id)) (fun (_, dto) entity -> entity.Name <- dto.Name)
+    let update: Update<int, DomainId * PutLike, DbDataContext> =
+        updateCatch<Api, _, _, _> catch (fun id -> Api(Id = id)) (fun (_, dto) entity ->
+            entity.Name <- dto.Name
+            entity.AccessTokenExpiresIn <- dto.AccessTokenExpiresIn)
 
     let remove: Remove<int, DbDataContext> = remove (fun id -> Api(Id = id))
 
@@ -94,7 +105,7 @@ module Apis =
         <@ fun (p: Api) ->
             { Id = p.Id
               Name = p.Name
-              Identifier = p.Identifier
+              IdentifierUri = p.Identifier
               DateCreated = p.DateCreated
               AccessTokenExpiresIn = p.AccessTokenExpiresIn
               Permissions = p.Permissions.Select(fun x -> { Id = x.Id; Name = x.Name })

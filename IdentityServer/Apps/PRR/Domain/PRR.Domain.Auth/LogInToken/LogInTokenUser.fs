@@ -94,6 +94,18 @@ module internal SignInUser =
             | RequestedScopes scopes -> return! validateScopes dataContext email clientId scopes
             | ValidatedScopes scopes -> return scopes
         }
+        
+    let getAudienceSecretAndExpire env aud =
+        match aud = PERIMETER_USERS_AUDIENCE with
+        | true -> Task.FromResult(int env.JwtConfig.AccessTokenExpiresIn, env.JwtConfig.AccessTokenSecret)
+        | false ->
+            query {
+                for api in env.DataContext.Apis do
+                    where (api.Identifier = aud)
+                    select (api.AccessTokenExpiresIn, api.HS256SigningSecret)
+            }
+            |> toSingleAsync
+
 
     let signInUser env (tokenData: TokenData) clientId (scopes: SignInScopes) =
         task {
@@ -135,22 +147,13 @@ module internal SignInUser =
                 | [ aud1 ] when aud1 = PERIMETER_USERS_AUDIENCE -> aud1
                 | _ -> raise (unAuthorized (sprintf "Unexpected audiences %A" auds))
 
-            let! (accessTokenExpiresIn, hs256SigningSecret) =
-                match aud = PERIMETER_USERS_AUDIENCE with
-                | true -> Task.FromResult(int env.JwtConfig.AccessTokenExpiresIn, env.JwtConfig.AccessTokenSecret)
-                | false ->
-                    query {
-                        for api in env.DataContext.Apis do
-                            where (api.Identifier = aud)
-                            select (api.AccessTokenExpiresIn, api.HS256SigningSecret)
-                    }
-                    |> toSingleAsync
-
+            let! (accessTokenExpiresIn, hs256SigningSecret) = getAudienceSecretAndExpire env aud
+            
             let data =
                 { TokenData = tokenData
                   ClientId = clientId
                   Issuer = issuer
-                  AudienceScopes = validatedScopes
+                  AudienceScopes = validatedScopes                  
                   // TODO !
                   RefreshTokenProvider = env.HashProvider
                   AccessTokenSecret = hs256SigningSecret
@@ -159,5 +162,5 @@ module internal SignInUser =
 
             let result = signInUser' data
 
-            return (result, clientId)
+            return (result, clientId, aud)
         }

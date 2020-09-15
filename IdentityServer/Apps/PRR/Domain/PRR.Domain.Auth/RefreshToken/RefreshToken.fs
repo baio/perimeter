@@ -16,7 +16,9 @@ module RefreshToken =
     let refreshToken: RefreshToken =
         fun env accessToken item ->
             task {
-                match validate env accessToken (item.ExpiresAt, item.UserId) with
+                let! (_, secret) = getAudienceSecretAndExpire env item.SigningAudience
+
+                match validate env accessToken (item.ExpiresAt, item.UserId, secret) with
                 | Success ->
                     match! getUserDataForToken env.DataContext item.UserId with
                     | Some tokenData ->
@@ -24,14 +26,15 @@ module RefreshToken =
                         // TODO : When available scopes changed while refreshing tokens what to do ?
                         // Now just silently change scopes
                         let scopes = item.Scopes
-                       
-                        let! (res, clientId) = signInUser env tokenData item.ClientId (RequestedScopes scopes)
+
+                        let! (res, clientId, _) = signInUser env tokenData item.ClientId (RequestedScopes scopes)
 
                         return (res,
                                 RefreshTokenSuccessEvent
                                     { ClientId = clientId
                                       UserId = tokenData.Id
                                       RefreshToken = res.refresh_token
+                                      SigningAudience = item.SigningAudience
                                       OldRefreshToken = item.Token
                                       Scopes = item.Scopes })
                     | None -> return! raise (UnAuthorized None)

@@ -1,12 +1,14 @@
 import {
-    Injectable,
     CanActivate,
     ExecutionContext,
-    Inject,
+    Inject, Injectable,
+
+
+    UnauthorizedException
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { IUser } from './models';
 import { decode } from 'jwt-simple';
+import { IUser } from './models';
 
 export interface TokenConfig {
     secret: string;
@@ -16,14 +18,19 @@ const getRequestUser = (request: any, tokenConfig: TokenConfig) => {
     const authorizationHeader: string = request.headers['authorization'];
     if (!!authorizationHeader) {
         const pts = authorizationHeader.split(' ');
-        const jwt = decode(pts[1], tokenConfig.secret);
-        const user: IUser = {
-            id: +jwt.uid,
-            email: jwt.email,
-            sub: jwt.sub,
-            scopes: jwt.scope.split(' '),
-        };
-        return user;
+        try {
+            const jwt = decode(pts[1], tokenConfig.secret);
+            const user: IUser = {
+                id: +jwt.uid,
+                email: jwt.email,
+                sub: jwt.sub,
+                scopes: jwt.scope.split(' '),
+            };
+            
+            return user;    
+        } catch(err) {
+            throw new UnauthorizedException(err.message);
+        }
     }
     return null;
 };
