@@ -29,11 +29,15 @@ export const getDefinition = (
         {
             id: 'identifier',
             kind: 'Text',
-            props: {
-                readonly: isNew$.pipe(not$),
-                label: 'Identifier',
-            },
+            hidden: isNew$.pipe(not$),
+            label: 'Identifier',
             validators: [Validators.required, FormValidators.domainName],
+        },
+        {
+            id: 'identifierUri',
+            kind: 'Display',
+            hidden: isNew$,
+            label: 'Identifier',
         },
         {
             id: 'accessTokenExpiresIn',
