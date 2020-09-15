@@ -6,14 +6,25 @@ import {
     HttpRequest,
 } from '@angular/common/http';
 import { Inject, Injectable, InjectionToken } from '@angular/core';
-import { from, Observable, of, throwError } from 'rxjs';
-import { catchError, filter, flatMap, map, switchMap } from 'rxjs/operators';
+import { from, Observable, throwError } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { ACCESS_TOKEN } from './constants';
 
 export const PERIMETER_AUTH_APP_BASE_URL = new InjectionToken(
     'PERIMETER_AUTH_APP_BASE_URL'
 );
+
+const nextHandle = (request: HttpRequest<any>, next: HttpHandler) => {
+    const accessToken = localStorage.getItem(ACCESS_TOKEN);
+    const request1 = request.clone({
+        headers: request.headers.append(
+            'Authorization',
+            `Bearer ${accessToken}`
+        ),
+    });
+    return next.handle(request1);
+};
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -34,15 +45,8 @@ export class AuthInterceptor implements HttpInterceptor {
             url.startsWith('http://') || url.startsWith('https://');
         const isTheSameBaseUrl = url.startsWith(this.appBaseUrl);
         if (accessToken && (!hasSchema || isTheSameBaseUrl)) {
-            const request1 = request.clone({
-                headers: request.headers.append(
-                    'Authorization',
-                    `Bearer ${accessToken}`
-                ),
-            });
-
             // Possible token is expired refresh one
-            return next.handle(request1).pipe(
+            return nextHandle(request, next).pipe(
                 catchError((err) => {
                     if (
                         err instanceof HttpErrorResponse &&
@@ -51,17 +55,8 @@ export class AuthInterceptor implements HttpInterceptor {
                         return from(this.authService.refreshToken()).pipe(
                             catchError(() => throwError(err)),
                             switchMap((f) => {
-                                const accessTokenRefreshed = localStorage.getItem(
-                                    ACCESS_TOKEN
-                                );
-                                const request2 = request.clone({
-                                    headers: request.headers.append(
-                                        'Authorization',
-                                        `Bearer ${accessTokenRefreshed}`
-                                    ),
-                                });
                                 return f
-                                    ? next.handle(request2)
+                                    ? nextHandle(request, next)
                                     : throwError(err);
                             })
                         );
