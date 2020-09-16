@@ -14,6 +14,7 @@ export const getDefinition = (
             label: 'Name',
             validators: [Validators.required],
         },
+        /*
         {
             id: 'signingAlgorithm',
             kind: 'Display',
@@ -25,7 +26,7 @@ export const getDefinition = (
             kind: 'Display',
             label: 'Signing Secret',
             hidden: isNew$,
-        },
+        },*/
         {
             id: 'identifier',
             kind: 'Text',
@@ -39,11 +40,12 @@ export const getDefinition = (
             hidden: isNew$,
             label: 'Identifier',
         },
+        /*
         {
             id: 'accessTokenExpiresIn',
             kind: 'Number',
             label: 'Access Token Expires in Minutes',
             validators: [Validators.required],
-        },
+        },*/
     ],
 });

@@ -43,10 +43,6 @@ describe('apis', () => {
                 .type('new')
                 .formField('identifier')
                 .type('new')                
-                .formField('accessTokenExpiresIn')
-                .type('15')
-                .formField('identifier')
-                .type('xxx')
                 .submitButton()
                 .click();
             cy.url().should('not.match', /\/domains\/\d+\/apis\/new/);
@@ -59,10 +55,6 @@ describe('apis', () => {
                 .type('new')
                 .formField('identifier')
                 .type('new')                
-                .formField('accessTokenExpiresIn')
-                .type('15')
-                .formField('identifier')
-                .type('xxx')
                 .submitButton()
                 .click();
             cy.url().should('match', /\/domains\/\d+\/apis\/new/);
