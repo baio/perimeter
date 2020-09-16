@@ -79,7 +79,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     TenantId = table.Column<int>(nullable: true),
                     IsMain = table.Column<bool>(nullable: false, defaultValue: false),
                     DateCreated = table.Column<DateTime>(nullable: false, defaultValueSql: "now()"),
-                    Issuer = table.Column<string>(nullable: false)
+                    Issuer = table.Column<string>(nullable: false),
+                    AccessTokenExpiresIn = table.Column<int>(nullable: false),
+                    SigningAlgorithm = table.Column<string>(nullable: false),
+                    HS256SigningSecret = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -108,10 +111,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     DomainId = table.Column<int>(nullable: false),
                     Identifier = table.Column<string>(nullable: false),
                     IsDomainManagement = table.Column<bool>(nullable: false, defaultValue: false),
-                    DateCreated = table.Column<DateTime>(nullable: false, defaultValueSql: "now()"),
-                    SigningAlgorithm = table.Column<string>(nullable: false),
-                    HS256SigningSecret = table.Column<string>(nullable: true),
-                    AccessTokenExpiresIn = table.Column<int>(nullable: false)
+                    DateCreated = table.Column<DateTime>(nullable: false, defaultValueSql: "now()")
                 },
                 constraints: table =>
                 {

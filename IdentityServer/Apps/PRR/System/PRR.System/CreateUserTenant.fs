@@ -54,7 +54,8 @@ module private CreateUserTenant =
 
             //
             let tenantManagementDomain =
-                createTenantManagementDomain tenant |> add'
+                createTenantManagementDomain authConfig tenant
+                |> add'
 
             let tenantManagementApp =
                 createTenantManagementApp env.AuthStringsProvider authConfig tenantManagementDomain
@@ -72,7 +73,14 @@ module private CreateUserTenant =
                 createDomainPool tenant "sample-domain" "default-domain"
                 |> add'
 
-            let sampleDomain = createMainDomain pool |> add'
+            (*
+            let authConfig: PRR.Domain.Tenant.Models.AuthConfig =
+                { IdTokenExpiresIn = env.AuthConfig.AccessTokenExpiresIn
+                  AccessTokenSecret = env.AuthConfig.AccessTokenSecret
+                  AccessTokenExpiresIn = env.AuthConfig.AccessTokenExpiresIn
+                  RefreshTokenExpiresIn = env.AuthConfig.RefreshTokenExpiresIn }
+            *)
+            let sampleDomain = createMainDomain authConfig pool |> add'
 
             let domainManagementApp =
                 createDomainManagementApp env.AuthStringsProvider authConfig sampleDomain

@@ -5,14 +5,9 @@ open Common.Domain.Models
 [<AutoOpen>]
 module RefreshTokenSuccess =
 
-    type RefreshTokenSuccess = {
-        ClientId: ClientId
-        UserId: UserId
-        SigningAudience: string
-        RefreshToken: string
-        OldRefreshToken: string
-        Scopes: string seq
-    }
-
-
-
+    type RefreshTokenSuccess =
+        { ClientId: ClientId
+          UserId: UserId
+          RefreshToken: string
+          OldRefreshToken: string
+          Scopes: string seq }

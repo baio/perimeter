@@ -85,7 +85,8 @@ module DomainPools =
                 createDomainPool tenant data.Name data.Identifier
                 |> add'
 
-            let domain = createMainDomain domainPool |> add'
+            let domain =
+                createMainDomain env.AuthConfig domainPool |> add'
 
             createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
             |> add

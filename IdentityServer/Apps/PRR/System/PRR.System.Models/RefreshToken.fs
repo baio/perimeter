@@ -12,7 +12,6 @@ module RefreshToken =
         { Token: Token
           ClientId: ClientId
           UserId: UserId          
-          SigningAudience: string
           ExpiresAt: DateTime
           Scopes: string seq }
 

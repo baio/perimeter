@@ -10,7 +10,7 @@ using PRR.Data.DataContext;
 namespace PRR.Data.DataContextMigrations.Migrations
 {
     [DbContext(typeof(DbDataContext))]
-    [Migration("20200906203932_Initial")]
+    [Migration("20200916193954_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -28,9 +28,6 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("AccessTokenExpiresIn")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
@@ -38,9 +35,6 @@ namespace PRR.Data.DataContextMigrations.Migrations
 
                     b.Property<int>("DomainId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("HS256SigningSecret")
-                        .HasColumnType("text");
 
                     b.Property<string>("Identifier")
                         .IsRequired()
@@ -52,10 +46,6 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasDefaultValue(false);
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("SigningAlgorithm")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -143,6 +133,9 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<int>("AccessTokenExpiresIn")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
@@ -150,6 +143,9 @@ namespace PRR.Data.DataContextMigrations.Migrations
 
                     b.Property<string>("EnvName")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("HS256SigningSecret")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsMain")
@@ -163,6 +159,10 @@ namespace PRR.Data.DataContextMigrations.Migrations
 
                     b.Property<int?>("PoolId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("SigningAlgorithm")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("integer");

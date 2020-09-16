@@ -41,5 +41,12 @@ namespace PRR.Data.Entities
         public virtual ICollection<DomainUserRole> DomainUsersRoles { get; set; }
 
         public virtual ICollection<Role> Roles { get; set; }
+        
+        [Required] public int AccessTokenExpiresIn { get; set; }
+        
+        [Required] public SigningAlgorithmType SigningAlgorithm { get; set; }
+
+        public string HS256SigningSecret { get; set; }
+
     }
 }

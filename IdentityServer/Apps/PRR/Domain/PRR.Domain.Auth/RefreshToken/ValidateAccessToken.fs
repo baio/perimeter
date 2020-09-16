@@ -29,7 +29,16 @@ module internal ValidateAccessToken =
             printfn "Validate token fails %O" ex
             None
 
-    let private principalCalims (principal: ClaimsPrincipal) = principal.Claims
+    let readToken (token: string) =
+        let tokenHandler = JwtSecurityTokenHandler()
+        try
+            let securityToken = tokenHandler.ReadToken(token)
+            if (securityToken = null) then None else Some securityToken
+        with :? System.Exception as ex ->
+            printfn "Read token fails %O" ex
+            None
+
+    let private principalClaims (principal: ClaimsPrincipal) = principal.Claims
 
     open FSharpx.Option
 
@@ -52,6 +61,10 @@ module internal ValidateAccessToken =
                  IssuerSigningKey = SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
                  ValidateLifetime = false)
 
-        (principalCalims
+        (principalClaims
          <!> validateToken token tokenValidationParameters)
         >>= getClaimInt CLAIM_TYPE_UID
+
+
+    let getTokenIssuer =
+        readToken >> Option.map (fun x -> x.Issuer)

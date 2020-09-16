@@ -57,7 +57,8 @@ module CRUD =
             task {
                 testContext <- Some(createUserTestContext testFixture)
                 let! userToken' = createUser testContext.Value userData
-                userToken <- userToken'
+                userToken' |> should be (not' null)
+                userToken <- userToken'               
             }
 
         [<Fact>]

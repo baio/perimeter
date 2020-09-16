@@ -88,8 +88,7 @@ module E2E =
                                      signupItem.Email
                                      signupItem.Password
 
-                             let (result, _, _) = res
-
+                             let (result, _) = res
 
                              ctx.Response.Cookies.Delete("sso")
 

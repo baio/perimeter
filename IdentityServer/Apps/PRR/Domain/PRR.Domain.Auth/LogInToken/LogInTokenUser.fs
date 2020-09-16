@@ -28,7 +28,7 @@ module internal SignInUser =
           IdTokenExpiresIn: int<minutes> }
 
     let signInUser' (data: SignInData) =
-        
+
         let audiences =
             data.AudienceScopes
             |> Seq.map (fun x -> x.Audience)
@@ -40,7 +40,7 @@ module internal SignInUser =
         let accessToken =
             createAccessTokenClaims data.ClientId data.Issuer data.TokenData rolesPermissions audiences
             |> (createSignedToken data.AccessTokenSecret data.AccessTokenExpiresIn)
-            
+
         let idToken =
             createIdTokenClaims data.ClientId data.Issuer data.TokenData rolesPermissions
             |> (createUnsignedToken data.IdTokenExpiresIn)
@@ -94,15 +94,15 @@ module internal SignInUser =
             | RequestedScopes scopes -> return! validateScopes dataContext email clientId scopes
             | ValidatedScopes scopes -> return scopes
         }
-        
-    let getAudienceSecretAndExpire env aud =
-        match aud = PERIMETER_USERS_AUDIENCE with
+
+    let getDomainSecretAndExpire env issuer =
+        match issuer = PERIMETER_ISSUER with
         | true -> Task.FromResult(int env.JwtConfig.AccessTokenExpiresIn, env.JwtConfig.AccessTokenSecret)
         | false ->
             query {
-                for api in env.DataContext.Apis do
-                    where (api.Identifier = aud)
-                    select (api.AccessTokenExpiresIn, api.HS256SigningSecret)
+                for domain in env.DataContext.Domains do
+                    where (domain.Issuer = issuer)
+                    select (domain.AccessTokenExpiresIn, domain.HS256SigningSecret)
             }
             |> toSingleAsync
 
@@ -136,6 +136,7 @@ module internal SignInUser =
             if (Seq.length audiences = 0)
             then return raise (unAuthorized "Empty audience is not supported")
 
+            (*
             let auds = audiences |> Seq.toList
 
             let aud =
@@ -146,15 +147,15 @@ module internal SignInUser =
                 // only perimeter audience
                 | [ aud1 ] when aud1 = PERIMETER_USERS_AUDIENCE -> aud1
                 | _ -> raise (unAuthorized (sprintf "Unexpected audiences %A" auds))
+            *)                
 
-            let! (accessTokenExpiresIn, hs256SigningSecret) = getAudienceSecretAndExpire env aud
-            
+            let! (accessTokenExpiresIn, hs256SigningSecret) = getDomainSecretAndExpire env issuer
+
             let data =
                 { TokenData = tokenData
                   ClientId = clientId
                   Issuer = issuer
-                  AudienceScopes = validatedScopes                  
-                  // TODO !
+                  AudienceScopes = validatedScopes
                   RefreshTokenProvider = env.HashProvider
                   AccessTokenSecret = hs256SigningSecret
                   AccessTokenExpiresIn = accessTokenExpiresIn * 1<minutes>
@@ -162,5 +163,5 @@ module internal SignInUser =
 
             let result = signInUser' data
 
-            return (result, clientId, aud)
+            return (result, clientId)
         }

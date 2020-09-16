@@ -3,13 +3,15 @@
 open Common.Domain.Models
 open Common.Domain.Utils
 open Common.Domain.Utils.CRUD
-open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open Newtonsoft.Json
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
 open System.Linq
 open Microsoft.EntityFrameworkCore
+open Newtonsoft.Json.Converters
+
 
 module Domains =
 
@@ -23,7 +25,11 @@ module Domains =
     type GetLike =
         { Id: int
           EnvName: string
-          DateCreated: System.DateTime
+          DateCreated: DateTime
+          AccessTokenExpiresIn: int
+          [<JsonConverter(typeof<StringEnumConverter>)>]
+          SigningAlgorithm: SigningAlgorithmType
+          HS256SigningSecret: string
           Applications: ItemGetLike seq
           Apis: ItemGetLike seq
           Roles: ItemGetLike seq }
@@ -82,7 +88,10 @@ module Domains =
                              "https://%s.%s.%s.perimeter.com/domain/issuer"
                              dto.EnvName
                              pool.Identifier
-                             pool.Tenant.Name)
+                             pool.Tenant.Name,
+                     AccessTokenExpiresIn = (int env.AuthConfig.AccessTokenExpiresIn),
+                     SigningAlgorithm = SigningAlgorithmType.HS256,
+                     HS256SigningSecret = env.AuthConfig.AccessTokenSecret)
                 |> add'
 
             createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
@@ -121,6 +130,9 @@ module Domains =
                     { Id = p.Id
                       EnvName = p.EnvName
                       DateCreated = p.DateCreated
+                      AccessTokenExpiresIn = p.AccessTokenExpiresIn
+                      SigningAlgorithm = p.SigningAlgorithm
+                      HS256SigningSecret = p.HS256SigningSecret
                       Applications = p.Applications.Select(fun x -> { Id = x.Id; Name = x.Name })
                       Apis = p.Apis.Select(fun x -> { Id = x.Id; Name = x.Name })
                       Roles = p.Roles.Select(fun x -> { Id = x.Id; Name = x.Name }) } @>)
