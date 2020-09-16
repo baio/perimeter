@@ -10,7 +10,7 @@
         <button
             data-cy="env-btn"
             (click)="$event.stopPropagation()"
-            [routerLink]="['../../..', 'domains', item.id, 'apps']"
+            [routerLink]="['../../..', 'domains', item.id, 'info']"
             *ngFor="let item of items; let last = last"
             nz-button
             nzSize="small"

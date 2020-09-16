@@ -30,6 +30,7 @@ module Domains =
           [<JsonConverter(typeof<StringEnumConverter>)>]
           SigningAlgorithm: SigningAlgorithmType
           HS256SigningSecret: string
+          Issuer: string
           Applications: ItemGetLike seq
           Apis: ItemGetLike seq
           Roles: ItemGetLike seq }
@@ -133,6 +134,7 @@ module Domains =
                       AccessTokenExpiresIn = p.AccessTokenExpiresIn
                       SigningAlgorithm = p.SigningAlgorithm
                       HS256SigningSecret = p.HS256SigningSecret
+                      Issuer = p.Issuer
                       Applications = p.Applications.Select(fun x -> { Id = x.Id; Name = x.Name })
                       Apis = p.Apis.Select(fun x -> { Id = x.Id; Name = x.Name })
                       Roles = p.Roles.Select(fun x -> { Id = x.Id; Name = x.Name }) } @>)

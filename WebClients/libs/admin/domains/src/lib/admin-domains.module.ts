@@ -22,6 +22,7 @@ import { ApisListComponent } from './domain/apis/list/list.component';
 import { AppFormComponent } from './domain/apps/form/form.component';
 import { AppsListComponent } from './domain/apps/list/list.component';
 import { DomainLayoutComponent } from './domain/domain-layout/domain-layout.component';
+import { DomainFormComponent } from './domain/info/form/form.component';
 import { PermFormComponent } from './domain/perms/form/form.component';
 import { PermsListComponent } from './domain/perms/list/list.component';
 import { RoleFormComponent } from './domain/roles/form/form.component';
@@ -77,6 +78,7 @@ import { TenantLayoutComponent } from './tenant/tenant-layout/tenant-layout.comp
         ProfileLayoutComponent,
         ProfileHomeComponent,
         CreateTenantFormComponent,
+        DomainFormComponent,
     ],
 })
 export class AdminDomainsModule {}

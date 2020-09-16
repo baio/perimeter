@@ -47,10 +47,30 @@ export class DomainsDataAccessService {
     }
 
     createEnvItem(
+        domainPoolId: number,
+        data: { envName: string }
+    ): Observable<any> {
+        return this.http.post(
+            `tenant/domain-pools/${domainPoolId}/domains`,
+            data
+        );
+    }
+
+    updateEnvItem(
+        domainPoolId: number,
         domainId: number,
         data: { envName: string }
     ): Observable<any> {
-        return this.http.post(`tenant/domain-pools/${domainId}/domains`, data);
+        return this.http.put(
+            `tenant/domain-pools/${domainPoolId}/domains/${domainId}`,
+            data
+        );
+    }
+
+    loadEnvItem(domainPoolId: number, domainId: number): Observable<any> {
+        return this.http.get(
+            `tenant/domain-pools/${domainPoolId}/domains/${domainId}`
+        );
     }
 
     updateItem(

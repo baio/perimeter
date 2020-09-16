@@ -81,6 +81,7 @@ let configureApp (app: IApplicationBuilder) =
 
 let configureServices (context: WebHostBuilderContext) (services: IServiceCollection) =
     // Json
+
     (*
     let customSettings =
         JsonSerializerSettings(ContractResolver = CamelCasePropertyNamesContractResolver())
