@@ -46,8 +46,6 @@ export interface FormView {
     error?: string;
 }
 
-export type AdminFormMode = 'none' | 'routed';
-
 export interface FormCreatedEvent {
     form: FormGroup;
     loadedVale: any;
@@ -60,17 +58,13 @@ export interface FormCreatedEvent {
     styleUrls: ['./form-page.component.scss'],
 })
 export class AdminFormPageComponent implements OnInit, AfterViewInit {
-    @Input()
-    closeOnStoreSuccess = true;
+    private origValue: any;
 
     @Input()
     definition: AdminForm.FormDefinition;
 
     @Input()
     loadValueDataAccess: AdminForm.Data.LoadValueDataAccess;
-
-    @Input()
-    mode: AdminFormMode = 'routed';
 
     @Input()
     storeValueDataAccess: AdminForm.Data.StoreValueDataAccess;
@@ -99,11 +93,9 @@ export class AdminFormPageComponent implements OnInit, AfterViewInit {
     view$: Observable<FormView>;
 
     get itemId$(): Observable<number | string> {
-        return this.mode === 'routed'
-            ? this.activatedRoute.params.pipe(
-                  map(({ id }) => (id === 'new' ? null : +id || (id as string)))
-              )
-            : of(null);
+        return this.activatedRoute.parent.params.pipe(
+            map(({ id }) => (id === 'new' ? null : +id || (id as string)))
+        );
     }
 
     constructor(
@@ -122,6 +114,7 @@ export class AdminFormPageComponent implements OnInit, AfterViewInit {
                       switchMap((id) =>
                           id !== null ? this.loadValueDataAccess(id) : of(null)
                       ),
+                      tap((val) => (this.origValue = val)),
                       shareReplay(1)
                   );
 
@@ -169,16 +162,14 @@ export class AdminFormPageComponent implements OnInit, AfterViewInit {
                             error: null,
                         })),
                         tap(() => {
-                            if (this.closeOnStoreSuccess) {
-                                const successMessage = value.id
-                                    ? MESSAGE_UPDATE_SUCCESS
-                                    : MESSAGE_CREATE_SUCCESS;
-                                this.notificationService.success(
-                                    successMessage,
-                                    ''
-                                );
-                                this.onClose();
-                            }
+                            this.origValue = this.form.value;
+                            const successMessage = value.id
+                                ? MESSAGE_UPDATE_SUCCESS
+                                : MESSAGE_CREATE_SUCCESS;
+                            this.notificationService.success(
+                                successMessage,
+                                ''
+                            );
                         }),
                         catchError((error) => {
                             // debugger;
@@ -297,11 +288,8 @@ export class AdminFormPageComponent implements OnInit, AfterViewInit {
         return this.form.invalid;
     }
 
-    onClose() {
-        if (this.mode === 'routed') {
-            // this.router.navigate(['..'], { relativeTo: this.activatedRoute });
-        }
-        this.close.emit();
+    onCancel(form: FormGroup) {
+        form.reset(this.origValue);
     }
 
     onSubmit(value: any) {
