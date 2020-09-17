@@ -43,6 +43,7 @@ export interface FormView {
     status: FormStatus;
     value: any;
     submitDisabled: boolean;
+    cancelDisabled: boolean;
     error?: string;
 }
 
@@ -202,7 +203,6 @@ export class AdminFormPageComponent implements OnInit, AfterViewInit {
                                 successMessage,
                                 ''
                             );
-                            this.onClose();
                             if (this.listService) {
                                 this.listService.onRowRemoved(value);
                             }
@@ -253,18 +253,39 @@ export class AdminFormPageComponent implements OnInit, AfterViewInit {
             distinctUntilChanged()
         );
 
+        const cancelDisabled$ = combineLatest([
+            formValueChanged$,
+            statusChanged$,
+        ]).pipe(
+            delay(0),
+            map(([form, status]) => {
+                return !form || form.pristine || status !== 'none';
+            }),
+            startWith(true),
+            distinctUntilChanged()
+        );
+
         this.view$ = combineLatest([
             valueWithStatus$,
             this.itemId$,
             submitDisabled$,
+            cancelDisabled$,
         ]).pipe(
-            map(([{ value, status, error }, itemId, submitDisabled]) => ({
-                value,
-                status,
-                isNew: itemId === null,
-                error,
-                submitDisabled,
-            }))
+            map(
+                ([
+                    { value, status, error },
+                    itemId,
+                    submitDisabled,
+                    cancelDisabled,
+                ]) => ({
+                    value,
+                    status,
+                    isNew: itemId === null,
+                    error,
+                    submitDisabled,
+                    cancelDisabled,
+                })
+            )
         );
 
         formCreated$

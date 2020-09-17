@@ -27,6 +27,7 @@
                 data-cy="drawer-close"
                 nz-button
                 nzType="default"
+                [disabled]="view.cancelDisabled"
                 (click)="onCancel(hlcForm.form)"
             >
                 Cancel
