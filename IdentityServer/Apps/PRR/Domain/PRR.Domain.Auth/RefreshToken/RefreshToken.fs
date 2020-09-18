@@ -23,7 +23,7 @@ module RefreshToken =
         fun env accessToken item ->
             task {
                 let issuer = getTokenIssuer accessToken
-                let! domainSecret = getDomainSecretAndExpire env issuer
+                let! domainSecret = getDomainSecretAndExpire env issuer item.IsPerimeterClient
 
                 match validate env accessToken (item.ExpiresAt, item.UserId, domainSecret.SigningCredentials.Key) with
                 | Success ->
@@ -33,11 +33,12 @@ module RefreshToken =
                         // Now just silently change scopes
                         let scopes = item.Scopes
 
-                        let! (res, clientId) = signInUser env tokenData item.ClientId (RequestedScopes scopes)
+                        let! (res, clientId, _) = signInUser env tokenData item.ClientId (RequestedScopes scopes)
 
                         return (res,
                                 RefreshTokenSuccessEvent
                                     { ClientId = clientId
+                                      IsPerimeterClient = item.IsPerimeterClient
                                       UserId = tokenData.Id
                                       RefreshToken = res.refresh_token
                                       OldRefreshToken = item.Token

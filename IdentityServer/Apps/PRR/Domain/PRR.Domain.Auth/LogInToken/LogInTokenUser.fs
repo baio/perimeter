@@ -11,6 +11,7 @@ open Models
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open PRR.Domain.Auth
+open PRR.Domain.Auth.LogIn.UserHelpers
 open PRR.Domain.Auth.LogInToken
 open Common.Domain.Utils.LinqHelpers
 
@@ -120,9 +121,10 @@ module internal SignInUser =
         { AccessTokenExpiresIn: int
           SigningCredentials: SigningCredentials }
 
-    let getDomainSecretAndExpire env issuer =
+    let getDomainSecretAndExpire env issuer isPerimeterClient =
         task {
-            match issuer = PERIMETER_ISSUER with
+            // perimeter clients should always use internal credentials
+            match isPerimeterClient with
             | true ->
                 return { AccessTokenExpiresIn = int env.JwtConfig.AccessTokenExpiresIn
                          SigningCredentials = createHS256Credentials env.JwtConfig.AccessTokenSecret }
@@ -151,12 +153,8 @@ module internal SignInUser =
     let signInUser env (tokenData: TokenData) clientId (scopes: SignInScopes) =
         task {
 
-            let! { ClientId = clientId; Issuer = issuer; IdTokenExpiresIn = idTokenExpiresIn } =
-                PRR.Domain.Auth.LogIn.UserHelpers.getAppInfo
-                    env.DataContext
-                    clientId
-                    tokenData.Email
-                    env.JwtConfig.IdTokenExpiresIn
+            let! { ClientId = clientId; Issuer = issuer; IdTokenExpiresIn = idTokenExpiresIn; Type = clientType } =
+                getAppInfo env.DataContext clientId tokenData.Email env.JwtConfig.IdTokenExpiresIn
 
             printfn "signInUser:1 %s %s %A" clientId issuer scopes
 
@@ -177,7 +175,9 @@ module internal SignInUser =
             if (Seq.length audiences = 0)
             then return raise (unAuthorized "Empty audience is not supported")
 
-            let! secretData = getDomainSecretAndExpire env issuer
+            let isPerimeterClient = clientType <> Regular
+
+            let! secretData = getDomainSecretAndExpire env issuer isPerimeterClient
 
             let data =
                 { TokenData = tokenData
@@ -191,5 +191,5 @@ module internal SignInUser =
 
             let result = signInUser' data
 
-            return (result, clientId)
+            return (result, clientId, isPerimeterClient)
         }

@@ -13,7 +13,8 @@ module RefreshToken =
           ClientId: ClientId
           UserId: UserId          
           ExpiresAt: DateTime
-          Scopes: string seq }
+          Scopes: string seq
+          IsPerimeterClient: bool }
 
     type GetRefreshTokenQueryResult = ValueResult<Item>
 

@@ -57,7 +57,7 @@ module LogInToken =
             task {
                 match! getUserDataForToken dataContext item.UserId with
                 | Some tokenData ->
-                    let! (result, clientId) =
+                    let! (result, clientId, isPerimeterClient) =
                         signInUser env tokenData data.Client_Id (ValidatedScopes item.ValidatedScopes)
 
                     let refreshTokenItem: RefreshToken.Item =
@@ -65,9 +65,11 @@ module LogInToken =
                           ClientId = clientId
                           UserId = item.UserId
                           ExpiresAt = DateTime.UtcNow.AddMinutes(float env.SSOCookieExpiresIn)
-                          Scopes = item.RequestedScopes }
+                          Scopes = item.RequestedScopes
+                          IsPerimeterClient = isPerimeterClient }
 
-                    let evt = UserLogInTokenSuccessEvent(item.Code, refreshTokenItem)
+                    let evt =
+                        UserLogInTokenSuccessEvent(item.Code, refreshTokenItem)
 
                     return (result, evt)
                 | None -> return! raiseTask (unAuthorized "user is not found")

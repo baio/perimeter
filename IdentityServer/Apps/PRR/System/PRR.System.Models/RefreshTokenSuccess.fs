@@ -7,6 +7,7 @@ module RefreshTokenSuccess =
 
     type RefreshTokenSuccess =
         { ClientId: ClientId
+          IsPerimeterClient: bool
           UserId: UserId
           RefreshToken: string
           OldRefreshToken: string
