@@ -39,7 +39,7 @@ module LogIn =
     let codeVerfier = randomString 128
 
     let sha256 = SHA256.Create()
-    let codeChellenge = SHA256Provider.getSha256Base64Hash sha256 codeVerfier |> LogInToken.cleanupCodeChallenge
+    let codeChellenge = SHA256.getSha256Base64Hash sha256 codeVerfier |> LogInToken.cleanupCodeChallenge
 
     let mutable testContext: UserTestContext option = None
 

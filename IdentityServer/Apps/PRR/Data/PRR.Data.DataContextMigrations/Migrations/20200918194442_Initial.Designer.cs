@@ -10,7 +10,7 @@ using PRR.Data.DataContext;
 namespace PRR.Data.DataContextMigrations.Migrations
 {
     [DbContext(typeof(DbDataContext))]
-    [Migration("20200916193954_Initial")]
+    [Migration("20200918194442_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -159,6 +159,9 @@ namespace PRR.Data.DataContextMigrations.Migrations
 
                     b.Property<int?>("PoolId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("RS256Params")
+                        .HasColumnType("text");
 
                     b.Property<string>("SigningAlgorithm")
                         .IsRequired()

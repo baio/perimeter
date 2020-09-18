@@ -158,6 +158,9 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     b.Property<int?>("PoolId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("RS256Params")
+                        .HasColumnType("text");
+
                     b.Property<string>("SigningAlgorithm")
                         .IsRequired()
                         .HasColumnType("text");

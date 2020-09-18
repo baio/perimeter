@@ -61,12 +61,18 @@ module CRUD =
         [<Fact>]
         [<Priority(1)>]
         member __.``A Create domain must be success``() =
-            let domainPoolId = testContext.Value.GetTenant().DomainPoolId
+            let domainPoolId =
+                testContext.Value.GetTenant().DomainPoolId
+
             task {
-                let data: PostLike =
-                    { EnvName = "stage" }
-                let! result = testFixture.HttpPostAsync userToken
-                                  (sprintf "/api/tenant/domain-pools/%i/domains" domainPoolId) data
+                let data: PostLike = { EnvName = "stage" }
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        userToken
+                        (sprintf "/api/tenant/domain-pools/%i/domains" domainPoolId)
+                        data
+
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<int> result
                 domainId <- Some(result)
@@ -75,24 +81,38 @@ module CRUD =
         [<Fact>]
         [<Priority(2)>]
         member __.``B Update domain pool must be success``() =
-            let domainPoolId = testContext.Value.GetTenant().DomainPoolId
+            let domainPoolId =
+                testContext.Value.GetTenant().DomainPoolId
+
             task {
-                let data: PostLike =
-                    { EnvName = "stage" }
-                let! result = testFixture.HttpPutAsync userToken
-                                  (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value) data
+                let data: PutLike =
+                    { EnvName = "stage"
+                      SigningAlgorithm = "HS256"
+                      AccessTokenExpiresIn = 100 }
+
+                let! result =
+                    testFixture.HttpPutAsync
+                        userToken
+                        (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
+                        data
+
                 do! ensureSuccessAsync result
             }
 
         [<Fact>]
         [<Priority(3)>]
         member __.``C Get domain must be success``() =
-            let domainPoolId = testContext.Value.GetTenant().DomainPoolId
+            let domainPoolId =
+                testContext.Value.GetTenant().DomainPoolId
+
             task {
-                let expected: PostLike =
-                    { EnvName = "stage" }
-                let! result = testFixture.HttpGetAsync userToken
-                                  (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
+                let expected: PostLike = { EnvName = "stage" }
+
+                let! result =
+                    testFixture.HttpGetAsync
+                        userToken
+                        (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
+
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
@@ -104,8 +124,14 @@ module CRUD =
         [<Fact>]
         [<Priority(4)>]
         member __.``D Delete domain must be success``() =
-            let domainPoolId = testContext.Value.GetTenant().DomainPoolId
+            let domainPoolId =
+                testContext.Value.GetTenant().DomainPoolId
+
             task {
-                let! result = testFixture.HttpGetAsync userToken
-                                  (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
-                do! ensureSuccessAsync result }
+                let! result =
+                    testFixture.HttpGetAsync
+                        userToken
+                        (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
+
+                do! ensureSuccessAsync result
+            }

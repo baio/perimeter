@@ -2,6 +2,7 @@
 
 open System
 open Common.Domain.Models
+open System.Security.Cryptography
 
 [<AutoOpen>]
 module RandomStringProvider =
@@ -21,7 +22,11 @@ module RandomStringProvider =
           ClientSecret = fun () -> getRandomString 50
           // TODO : Read ???
           AuthorizationCode = fun () -> getRandomString 35
-          HS256SigningSecret = fun () -> getRandomString 35 }
+          HS256SigningSecret = fun () -> getRandomString 35
+          RS256XMLParams =
+              fun () ->
+                  let rsa = RSA.Create(2048)
+                  rsa.ToXmlString(true) }
 
     type AuthStringsProvider() =
         interface IAuthStringsProvider with

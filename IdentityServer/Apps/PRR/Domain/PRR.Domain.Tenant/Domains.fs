@@ -4,6 +4,7 @@ open Common.Domain.Models
 open Common.Domain.Utils
 open Common.Domain.Utils.CRUD
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open FSharpx
 open Newtonsoft.Json
 open PRR.Data.DataContext
 open PRR.Data.Entities
@@ -17,6 +18,13 @@ module Domains =
 
     [<CLIMutable>]
     type PostLike = { EnvName: string }
+
+    [<CLIMutable>]
+    type PutLike =
+        { EnvName: string
+          AccessTokenExpiresIn: int
+          SigningAlgorithm: string }
+
 
     [<CLIMutable>]
     type ItemGetLike = { Id: int; Name: string }
@@ -55,11 +63,17 @@ module Domains =
         | UniqueConstraintException "IX_Domains_PoolId_EnvName" (ConflictErrorField ("envName", UNIQUE)) ex -> raise ex
         | ex -> raise ex
 
-    let validateData (data: PostLike) =
+    let validatePostData (data: PostLike) =
         [| (validateDomainName "envName" data.EnvName) |]
         |> Array.choose id
 
-    let create (env: Env) (domainPoolId, dto: PostLike, userId) =
+    let validatePutData (data: PutLike) =
+        [| (validateDomainName "envName" data.EnvName)
+           (validateContains [| "SH256"; "RS256" |] "envName" data.SigningAlgorithm)
+           (validateIntRange (1, 100000) "accessTokenExpiresIn" data.AccessTokenExpiresIn) |]
+        |> Array.choose id
+
+    let create (env: Env) (authStringsProvider: AuthStringsProvider) (domainPoolId, dto: PostLike, userId) =
 
         let dataContext = env.DataContext
 
@@ -91,8 +105,8 @@ module Domains =
                              pool.Identifier
                              pool.Tenant.Name,
                      AccessTokenExpiresIn = (int env.AuthConfig.AccessTokenExpiresIn),
-                     SigningAlgorithm = SigningAlgorithmType.HS256,
-                     HS256SigningSecret = env.AuthConfig.AccessTokenSecret)
+                     SigningAlgorithm = SigningAlgorithmType.RS256,
+                     RS256Params = authStringsProvider.RS256XMLParams())
                 |> add'
 
             createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
@@ -119,8 +133,11 @@ module Domains =
         }
 
     // TODO : EnvName could not be updated !
-    let update: Update<int, PostLike, DbDataContext> =
-        updateCatch<Domain, _, _, _> catch (fun id -> Domain(Id = id)) (fun dto entity -> entity.EnvName <- dto.EnvName)
+    let update: Update<int, PutLike, DbDataContext> =
+        updateCatch<Domain, _, _, _> catch (fun id -> Domain(Id = id)) (fun dto entity ->
+            entity.EnvName <- dto.EnvName
+            entity.AccessTokenExpiresIn <- dto.AccessTokenExpiresIn
+            entity.SigningAlgorithm <- Enum.Parse<SigningAlgorithmType>(dto.SigningAlgorithm))
 
     let remove: Remove<int, DbDataContext> = remove (fun id -> Role(Id = id))
 

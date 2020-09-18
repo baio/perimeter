@@ -51,14 +51,14 @@ module internal ValidateAccessToken =
 
     let getClaimInt x = x |> getClaim' tryParseInt
 
-    let validateAccessToken (token: Token) (key: string) =
+    let validateAccessToken (token: Token) (key: SecurityKey) =
 
         let tokenValidationParameters =
             TokenValidationParameters
                 (ValidateAudience = false,
                  ValidateIssuer = false,
                  ValidateIssuerSigningKey = true,
-                 IssuerSigningKey = SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                 IssuerSigningKey = key,  //SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
                  ValidateLifetime = false)
 
         (principalClaims

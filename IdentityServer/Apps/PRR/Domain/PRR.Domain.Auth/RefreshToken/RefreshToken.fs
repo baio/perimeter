@@ -23,9 +23,9 @@ module RefreshToken =
         fun env accessToken item ->
             task {
                 let issuer = getTokenIssuer accessToken
-                let! (_, secret) = getDomainSecretAndExpire env issuer
+                let! domainSecret = getDomainSecretAndExpire env issuer
 
-                match validate env accessToken (item.ExpiresAt, item.UserId, secret) with
+                match validate env accessToken (item.ExpiresAt, item.UserId, domainSecret.SigningCredentials.Key) with
                 | Success ->
                     match! getUserDataForToken env.DataContext item.UserId with
                     | Some tokenData ->

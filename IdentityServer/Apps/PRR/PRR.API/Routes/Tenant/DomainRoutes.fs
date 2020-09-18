@@ -33,14 +33,15 @@ module private DomainHandlers =
         wrap
             (create
              <!> ofReader (getEnv)
+             <*> ofReader (getAuthStringsProvider)
              <*> ((triplet domainPoolId)
-                  <!> bindValidateJsonAsync validateData
+                  <!> bindValidateJsonAsync validatePostData
                   <*> bindUserClaimId))
 
     let updateHandler id =
         wrap
             (update
-             <!> ((doublet id) <!> bindJsonAsync<PostLike>)
+             <!> ((doublet id) <!> bindJsonAsync<PutLike>)
              <*> dataContext)
 
     let removeHandler (id: DomainId) = wrap (remove id <!> dataContext)

@@ -64,7 +64,7 @@ module CreateUser =
         let codeVerfier = randomString 128
 
         (codeVerfier,
-         (SHA256Provider.getSha256Base64Hash sha256 codeVerfier)
+         (SHA256.getSha256Base64Hash sha256 codeVerfier)
          |> LogInToken.LogInToken.cleanupCodeChallenge)
 
     let logInUser (fixture: TestFixture) (clientId: string) (email: string) (password: string) =

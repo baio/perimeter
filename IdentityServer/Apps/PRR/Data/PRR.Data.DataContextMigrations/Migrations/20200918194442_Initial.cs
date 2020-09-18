@@ -82,7 +82,8 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     Issuer = table.Column<string>(nullable: false),
                     AccessTokenExpiresIn = table.Column<int>(nullable: false),
                     SigningAlgorithm = table.Column<string>(nullable: false),
-                    HS256SigningSecret = table.Column<string>(nullable: true)
+                    HS256SigningSecret = table.Column<string>(nullable: true),
+                    RS256Params = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

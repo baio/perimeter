@@ -47,6 +47,7 @@ namespace PRR.Data.Entities
         [Required] public SigningAlgorithmType SigningAlgorithm { get; set; }
 
         public string HS256SigningSecret { get; set; }
-
+        
+        public string RS256Params { get; set; }
     }
 }

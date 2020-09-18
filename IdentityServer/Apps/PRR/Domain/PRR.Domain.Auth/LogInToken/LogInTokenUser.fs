@@ -1,11 +1,15 @@
 ﻿namespace PRR.Domain.Auth.LogInToken
 
+open System.Security.Cryptography
 open System.Threading.Tasks
 open Common.Domain.Models
 
+open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open Microsoft.IdentityModel.Tokens
 open Models
 open PRR.Data.DataContext
+open PRR.Data.Entities
 open PRR.Domain.Auth
 open PRR.Domain.Auth.LogInToken
 open Common.Domain.Utils.LinqHelpers
@@ -23,7 +27,7 @@ module internal SignInUser =
           Issuer: string
           AudienceScopes: AudienceScopes seq
           RefreshTokenProvider: unit -> string
-          AccessTokenSecret: string
+          AccessTokenCredentials: SigningCredentials
           AccessTokenExpiresIn: int<minutes>
           IdTokenExpiresIn: int<minutes> }
 
@@ -39,7 +43,7 @@ module internal SignInUser =
 
         let accessToken =
             createAccessTokenClaims data.ClientId data.Issuer data.TokenData rolesPermissions audiences
-            |> (createSignedToken data.AccessTokenSecret data.AccessTokenExpiresIn)
+            |> (createSignedToken data.AccessTokenCredentials data.AccessTokenExpiresIn)
 
         let idToken =
             createIdTokenClaims data.ClientId data.Issuer data.TokenData rolesPermissions
@@ -95,16 +99,53 @@ module internal SignInUser =
             | ValidatedScopes scopes -> return scopes
         }
 
+    let private createSymmetricKey (secret: string) =
+        secret
+        |> System.Text.Encoding.ASCII.GetBytes
+        |> SymmetricSecurityKey
+
+    let private createHS256Credentials (secret: string) =
+        SigningCredentials((createSymmetricKey secret), SecurityAlgorithms.HmacSha256Signature)
+
+    let private createRS256Credentials (xmlParams: string) =
+        let rsa = RSA.Create()
+        rsa.FromXmlString(xmlParams)
+
+        let rsaKey =
+            RsaSecurityKey(rsa.ExportParameters(true))
+
+        SigningCredentials(rsaKey, SecurityAlgorithms.RsaSha256)
+
+    type DomainSecretData =
+        { AccessTokenExpiresIn: int
+          SigningCredentials: SigningCredentials }
+
     let getDomainSecretAndExpire env issuer =
-        match issuer = PERIMETER_ISSUER with
-        | true -> Task.FromResult(int env.JwtConfig.AccessTokenExpiresIn, env.JwtConfig.AccessTokenSecret)
-        | false ->
-            query {
-                for domain in env.DataContext.Domains do
-                    where (domain.Issuer = issuer)
-                    select (domain.AccessTokenExpiresIn, domain.HS256SigningSecret)
-            }
-            |> toSingleAsync
+        task {
+            match issuer = PERIMETER_ISSUER with
+            | true ->
+                return { AccessTokenExpiresIn = int env.JwtConfig.AccessTokenExpiresIn
+                         SigningCredentials = createHS256Credentials env.JwtConfig.AccessTokenSecret }
+            | false ->
+                let! (expiresIn, algo, hs256key, rs256params) =
+                    query {
+                        for domain in env.DataContext.Domains do
+                            where (domain.Issuer = issuer)
+                            select
+                                (domain.AccessTokenExpiresIn,
+                                 domain.SigningAlgorithm,
+                                 domain.HS256SigningSecret,
+                                 domain.RS256Params)
+                    }
+                    |> toSingleAsync
+
+                return { AccessTokenExpiresIn = expiresIn
+                         SigningCredentials =
+                             if algo = SigningAlgorithmType.HS256 then
+                                 createHS256Credentials hs256key
+                             else
+                                 createRS256Credentials rs256params }
+        }
 
 
     let signInUser env (tokenData: TokenData) clientId (scopes: SignInScopes) =
@@ -136,20 +177,7 @@ module internal SignInUser =
             if (Seq.length audiences = 0)
             then return raise (unAuthorized "Empty audience is not supported")
 
-            (*
-            let auds = audiences |> Seq.toList
-
-            let aud =
-                match auds with
-                // first is perimeter audience and second is not, choose second
-                | [ aud1; aud2 ] when aud1 = PERIMETER_USERS_AUDIENCE
-                                      && aud2 <> PERIMETER_USERS_AUDIENCE -> aud2
-                // only perimeter audience
-                | [ aud1 ] when aud1 = PERIMETER_USERS_AUDIENCE -> aud1
-                | _ -> raise (unAuthorized (sprintf "Unexpected audiences %A" auds))
-            *)                
-
-            let! (accessTokenExpiresIn, hs256SigningSecret) = getDomainSecretAndExpire env issuer
+            let! secretData = getDomainSecretAndExpire env issuer
 
             let data =
                 { TokenData = tokenData
@@ -157,8 +185,8 @@ module internal SignInUser =
                   Issuer = issuer
                   AudienceScopes = validatedScopes
                   RefreshTokenProvider = env.HashProvider
-                  AccessTokenSecret = hs256SigningSecret
-                  AccessTokenExpiresIn = accessTokenExpiresIn * 1<minutes>
+                  AccessTokenCredentials = secretData.SigningCredentials
+                  AccessTokenExpiresIn = secretData.AccessTokenExpiresIn * 1<minutes>
                   IdTokenExpiresIn = idTokenExpiresIn }
 
             let result = signInUser' data
