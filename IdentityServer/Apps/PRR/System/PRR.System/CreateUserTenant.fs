@@ -80,7 +80,10 @@ module private CreateUserTenant =
                   AccessTokenExpiresIn = env.AuthConfig.AccessTokenExpiresIn
                   RefreshTokenExpiresIn = env.AuthConfig.RefreshTokenExpiresIn }
             *)
-            let sampleDomain = createMainDomain authConfig pool |> add'
+
+            let sampleDomain =
+                createMainDomain env.AuthStringsProvider authConfig pool
+                |> add'
 
             let domainManagementApp =
                 createDomainManagementApp env.AuthStringsProvider authConfig sampleDomain

@@ -86,7 +86,7 @@ module DomainPools =
                 |> add'
 
             let domain =
-                createMainDomain env.AuthConfig domainPool |> add'
+                createMainDomain env.AuthStringsProvider env.AuthConfig domainPool |> add'
 
             createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
             |> add

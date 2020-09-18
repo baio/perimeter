@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { take } from 'rxjs/operators';
-import { definition } from './form.definition';
+import { getDefinition } from './form.definition';
 
 @Component({
     selector: 'admin-api-form',
@@ -18,7 +18,7 @@ import { definition } from './form.definition';
 export class DomainFormComponent {
     private domainPoolId: number;
     private domainId: number;
-    readonly definition = definition;
+    readonly definition = getDefinition;
     // TODO : id ?
     readonly loadValueDataAccess: AdminForm.Data.LoadValueDataAccess = (
         id: number

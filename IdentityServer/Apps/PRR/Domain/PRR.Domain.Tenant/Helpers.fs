@@ -43,14 +43,15 @@ module Helpers =
              IsDomainManagement = false)
 
     //
-    let createMainDomain authConfig (domainPool: DomainPool) =
+    let createMainDomain (authStringProviders: AuthStringsProvider) authConfig (domainPool: DomainPool) =
         Domain
             (Pool = domainPool,
              EnvName = "dev",
              IsMain = true,
              AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn),
-             SigningAlgorithm = SigningAlgorithmType.HS256,
+             SigningAlgorithm = SigningAlgorithmType.RS256,
              HS256SigningSecret = authConfig.AccessTokenSecret,
+             RS256Params = authStringProviders.RS256XMLParams(),
              Issuer =
                  sprintf "https://dev.%s.%s.perimeter.com/domain/issuer" domainPool.Identifier domainPool.Tenant.Name)
 

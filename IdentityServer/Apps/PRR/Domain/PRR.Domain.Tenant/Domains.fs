@@ -135,12 +135,11 @@ module Domains =
             with ex -> return catch ex
         }
 
-    // TODO : EnvName could not be updated !
     let update: Update<int, PutLike, DbDataContext> =
         updateCatch<Domain, _, _, _> catch (fun id -> Domain(Id = id)) (fun dto entity ->
+            entity.SigningAlgorithm <- Enum.Parse<SigningAlgorithmType>(dto.SigningAlgorithm)
             entity.EnvName <- dto.EnvName
-            entity.AccessTokenExpiresIn <- dto.AccessTokenExpiresIn
-            entity.SigningAlgorithm <- Enum.Parse<SigningAlgorithmType>(dto.SigningAlgorithm))
+            entity.AccessTokenExpiresIn <- dto.AccessTokenExpiresIn)
 
     let remove: Remove<int, DbDataContext> = remove (fun id -> Role(Id = id))
 

@@ -1,7 +1,8 @@
 import { AdminForm } from '@admin/shared';
-import { Validators } from '@angular/forms';
+import { FormGroup, Validators } from '@angular/forms';
+import { map } from 'rxjs/operators';
 
-export const definition: AdminForm.FormDefinition = {
+export const getDefinition = (form: FormGroup): AdminForm.FormDefinition => ({
     kind: 'tabs',
     $content: [
         {
@@ -35,13 +36,43 @@ export const definition: AdminForm.FormDefinition = {
                     fields: [
                         {
                             id: 'signingAlgorithm',
-                            kind: 'Display',
+                            kind: 'Select',
                             label: 'Signing Algorithm',
+                            props: {
+                                mode: 'default',
+                                items: [
+                                    {
+                                        key: 'HS256',
+                                        label: 'HS256',
+                                    },
+                                    {
+                                        key: 'RS256',
+                                        label: 'RS256',
+                                    },
+                                ],
+                            },
+                        },
+                        {
+                            id: 'rS256PublicKey',
+                            kind: 'Display',
+                            label: 'Public Key',
+                            hidden: form.valueChanges.pipe(
+                                map(
+                                    ({ signingAlgorithm }) =>
+                                        signingAlgorithm !== 'RS256'
+                                )
+                            ),
                         },
                         {
                             id: 'hS256SigningSecret',
                             kind: 'Display',
                             label: 'Signing Secret',
+                            hidden: form.valueChanges.pipe(
+                                map(
+                                    ({ signingAlgorithm }) =>
+                                        signingAlgorithm !== 'HS256'
+                                )
+                            ),
                         },
                         {
                             id: 'accessTokenExpiresIn',
@@ -54,4 +85,4 @@ export const definition: AdminForm.FormDefinition = {
             ],
         },
     ],
-};
+});
