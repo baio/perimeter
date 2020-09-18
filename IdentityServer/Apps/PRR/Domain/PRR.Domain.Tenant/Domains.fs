@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Tenant
 
+open System.Security.Cryptography
 open Common.Domain.Models
 open Common.Domain.Utils
 open Common.Domain.Utils.CRUD
@@ -38,6 +39,7 @@ module Domains =
           [<JsonConverter(typeof<StringEnumConverter>)>]
           SigningAlgorithm: SigningAlgorithmType
           HS256SigningSecret: string
+          RS256PublicKey: string
           Issuer: string
           Applications: ItemGetLike seq
           Apis: ItemGetLike seq
@@ -106,6 +108,7 @@ module Domains =
                              pool.Tenant.Name,
                      AccessTokenExpiresIn = (int env.AuthConfig.AccessTokenExpiresIn),
                      SigningAlgorithm = SigningAlgorithmType.RS256,
+                     HS256SigningSecret = authStringsProvider.HS256SigningSecret(),
                      RS256Params = authStringsProvider.RS256XMLParams())
                 |> add'
 
@@ -141,17 +144,48 @@ module Domains =
 
     let remove: Remove<int, DbDataContext> = remove (fun id -> Role(Id = id))
 
+    let private getPublicKeyFromRS256Params xml =
+        let rsa = RSA.Create()
+        rsa.FromXmlString xml
+        let publicKey = rsa.ExportRSAPublicKey()
+        Convert.ToBase64String publicKey
+
     let getOne: GetOne<int, GetLike, DbDataContext> =
-        getOne<Domain, _, _, _>
-            (<@ fun p id -> p.Id = id @>)
-            (<@ fun p ->
-                    { Id = p.Id
-                      EnvName = p.EnvName
-                      DateCreated = p.DateCreated
-                      AccessTokenExpiresIn = p.AccessTokenExpiresIn
-                      SigningAlgorithm = p.SigningAlgorithm
-                      HS256SigningSecret = p.HS256SigningSecret
-                      Issuer = p.Issuer
-                      Applications = p.Applications.Select(fun x -> { Id = x.Id; Name = x.Name })
-                      Apis = p.Apis.Select(fun x -> { Id = x.Id; Name = x.Name })
-                      Roles = p.Roles.Select(fun x -> { Id = x.Id; Name = x.Name }) } @>)
+        fun id dbContext ->
+            task {
+                let! result =
+                    getOne<Domain, _, _, _>
+                        (<@ fun p id -> p.Id = id @>)
+                        (<@ fun p ->
+                                { Id = p.Id
+                                  EnvName = p.EnvName
+                                  DateCreated = p.DateCreated
+                                  AccessTokenExpiresIn = p.AccessTokenExpiresIn
+                                  SigningAlgorithm = p.SigningAlgorithm
+                                  HS256SigningSecret = p.HS256SigningSecret
+                                  RS256PublicKey = p.RS256Params
+                                  Issuer = p.Issuer
+                                  Applications = p.Applications.Select(fun x -> { Id = x.Id; Name = x.Name })
+                                  Apis = p.Apis.Select(fun x -> { Id = x.Id; Name = x.Name })
+                                  Roles = p.Roles.Select(fun x -> { Id = x.Id; Name = x.Name }) } @>)
+                        id
+                        dbContext
+
+                // Get public key from params
+                let rsa256PublicKey =
+                    if result.SigningAlgorithm = SigningAlgorithmType.RS256
+                    then getPublicKeyFromRS256Params result.RS256PublicKey
+                    else null
+                // Don't expose secret data for not used algo
+                let hs256SigningSecret =
+                    if result.SigningAlgorithm = SigningAlgorithmType.HS256
+                    then result.HS256SigningSecret
+                    else null
+
+                let result' =
+                    { result with
+                          RS256PublicKey = rsa256PublicKey
+                          HS256SigningSecret = hs256SigningSecret }
+
+                return result'
+            }

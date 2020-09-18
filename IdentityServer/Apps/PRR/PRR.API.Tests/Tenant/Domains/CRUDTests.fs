@@ -87,7 +87,7 @@ module CRUD =
             task {
                 let data: PutLike =
                     { EnvName = "stage"
-                      SigningAlgorithm = "HS256"
+                      SigningAlgorithm = "RS256"
                       AccessTokenExpiresIn = 100 }
 
                 let! result =
