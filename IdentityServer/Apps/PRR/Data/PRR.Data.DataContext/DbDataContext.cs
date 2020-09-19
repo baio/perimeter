@@ -57,10 +57,13 @@ namespace PRR.Data.DataContext
                 entity.Property(x => x.IsMain).HasDefaultValue(false);
                 entity.Property(x => x.DateCreated).HasDefaultValueSql("now()");
                 entity.HasOne(x => x.Pool).WithMany(x => x.Domains).OnDelete(DeleteBehavior.Cascade);
-
-                entity.Property(d => d.SigningAlgorithm)
+                
+                entity.Property(d => d.SigningAlgorithm).HasConversion<string>();
+                    /*
                     .HasConversion(
-                        new EnumToStringConverter<SigningAlgorithmType>());
+                        new EnumToNumberConverter<SigningAlgorithmType, int>());
+                    */                        
+                
             });
 
             modelBuilder.Entity<Application>(entity =>

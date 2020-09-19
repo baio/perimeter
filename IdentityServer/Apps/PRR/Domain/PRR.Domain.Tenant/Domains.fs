@@ -136,10 +136,13 @@ module Domains =
         }
 
     let update: Update<int, PutLike, DbDataContext> =
-        updateCatch<Domain, _, _, _> catch (fun id -> Domain(Id = id)) (fun dto entity ->
-            entity.SigningAlgorithm <- Enum.Parse<SigningAlgorithmType>(dto.SigningAlgorithm)
-            entity.EnvName <- dto.EnvName
-            entity.AccessTokenExpiresIn <- dto.AccessTokenExpiresIn)
+        fun data dbContext ->
+            updateCatch<Domain, int, PutLike, _> catch (fun id -> Domain(Id = id)) (fun dto entity ->
+                // TODO : EF cant trace changes in enum fields (((
+                entity.SigningAlgorithm <- Enum.Parse<SigningAlgorithmType>(dto.SigningAlgorithm)
+                dbContext.Entry(entity).Property("SigningAlgorithm").IsModified <- true
+                entity.EnvName <- dto.EnvName
+                entity.AccessTokenExpiresIn <- dto.AccessTokenExpiresIn) data dbContext
 
     let remove: Remove<int, DbDataContext> = remove (fun id -> Role(Id = id))
 
