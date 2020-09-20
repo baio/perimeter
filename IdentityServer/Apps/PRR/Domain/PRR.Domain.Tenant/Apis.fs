@@ -16,15 +16,10 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 module Apis =
 
     [<CLIMutable>]
-    type PostLike =
-        { Name: string
-          Identifier: string
-          AccessTokenExpiresIn: int }
+    type PostLike = { Name: string; Identifier: string }
 
     [<CLIMutable>]
-    type PutLike =
-        { Name: string
-          AccessTokenExpiresIn: int }
+    type PutLike = { Name: string }
 
     [<CLIMutable>]
     type PermissionGetLike = { Id: int; Name: string }
@@ -34,12 +29,8 @@ module Apis =
         { Id: int
           Name: string
           IdentifierUri: string
-          DateCreated: System.DateTime
-          AccessTokenExpiresIn: int
-          Permissions: PermissionGetLike seq
-          [<JsonConverter(typeof<StringEnumConverter>)>]
-          SigningAlgorithm: SigningAlgorithmType
-          HS256SigningSecret: string }
+          DateCreated: DateTime
+          Permissions: PermissionGetLike seq }
 
     let validatePostData (data: PostLike) =
         [| (validateNullOrEmpty "name" data.Name)
@@ -80,9 +71,6 @@ module Apis =
                      Identifier = (sprintf "https://%s.%s.%s.%s.com" dto.Identifier envName poolIdentifier tenantName),
                      DomainId = domainId,
                      IsDomainManagement = false,
-                     AccessTokenExpiresIn = int env.AccessTokenExpiresIn,
-                     SigningAlgorithm = SigningAlgorithmType.HS256,
-                     HS256SigningSecret = env.HS256SigningSecret(),
                      Permissions = [||])
                 |> add' dataContext
 
@@ -95,9 +83,7 @@ module Apis =
 
 
     let update: Update<int, DomainId * PutLike, DbDataContext> =
-        updateCatch<Api, _, _, _> catch (fun id -> Api(Id = id)) (fun (_, dto) entity ->
-            entity.Name <- dto.Name
-            entity.AccessTokenExpiresIn <- dto.AccessTokenExpiresIn)
+        updateCatch<Api, _, _, _> catch (fun id -> Api(Id = id)) (fun (_, dto) entity -> entity.Name <- dto.Name)
 
     let remove: Remove<int, DbDataContext> = remove (fun id -> Api(Id = id))
 
@@ -107,10 +93,7 @@ module Apis =
               Name = p.Name
               IdentifierUri = p.Identifier
               DateCreated = p.DateCreated
-              AccessTokenExpiresIn = p.AccessTokenExpiresIn
-              Permissions = p.Permissions.Select(fun x -> { Id = x.Id; Name = x.Name })
-              SigningAlgorithm = p.SigningAlgorithm
-              HS256SigningSecret = p.HS256SigningSecret } @>
+              Permissions = p.Permissions.Select(fun x -> { Id = x.Id; Name = x.Name }) } @>
 
 
     let getOne: GetOne<int, GetLike, DbDataContext> =

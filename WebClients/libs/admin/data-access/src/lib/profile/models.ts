@@ -6,7 +6,7 @@ export interface Item {
 export interface Domain {
     id: number;
     tenant: Item;
-    poolName: string;
+    pool: Item;
     envName: string;
     managementClientId: string;
     isTenantManagement: boolean;

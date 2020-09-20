@@ -81,6 +81,7 @@ let configureApp (app: IApplicationBuilder) =
 
 let configureServices (context: WebHostBuilderContext) (services: IServiceCollection) =
     // Json
+
     (*
     let customSettings =
         JsonSerializerSettings(ContractResolver = CamelCasePropertyNamesContractResolver())
@@ -142,7 +143,7 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
 
     // Configure DataContext
     let loggerFactory =
-        LoggerFactory.Create(fun builder -> (*builder.AddConsole() |> ignore *) ())
+        LoggerFactory.Create(fun builder -> builder.AddConsole() |> ignore)
 
     let connectionString =
         context.Configuration.GetConnectionString "PostgreSQL"

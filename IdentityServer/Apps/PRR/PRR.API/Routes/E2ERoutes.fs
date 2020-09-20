@@ -90,7 +90,6 @@ module E2E =
 
                              let (result, _, _) = res
 
-
                              ctx.Response.Cookies.Delete("sso")
 
                              return! Successful.OK result next ctx

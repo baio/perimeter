@@ -20,7 +20,7 @@ export const listDefinition: AdminList.TableDefinition = {
         {
             id: 'identifierUri',
             title: 'Identifier',
-        },
+        }/*,
         {
             id: 'signingAlgorithm',
             title: 'Signing Algorithm',
@@ -28,7 +28,7 @@ export const listDefinition: AdminList.TableDefinition = {
         {
             id: 'signingSecret',
             title: 'Signing Secret',
-        },
+        }*/,        
         {
             id: 'dateCreated',
             title: 'Created',

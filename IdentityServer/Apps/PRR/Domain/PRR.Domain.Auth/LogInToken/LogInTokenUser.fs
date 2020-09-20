@@ -1,12 +1,17 @@
 ﻿namespace PRR.Domain.Auth.LogInToken
 
+open System.Security.Cryptography
 open System.Threading.Tasks
 open Common.Domain.Models
 
+open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open Microsoft.IdentityModel.Tokens
 open Models
 open PRR.Data.DataContext
+open PRR.Data.Entities
 open PRR.Domain.Auth
+open PRR.Domain.Auth.LogIn.UserHelpers
 open PRR.Domain.Auth.LogInToken
 open Common.Domain.Utils.LinqHelpers
 
@@ -23,12 +28,12 @@ module internal SignInUser =
           Issuer: string
           AudienceScopes: AudienceScopes seq
           RefreshTokenProvider: unit -> string
-          AccessTokenSecret: string
+          AccessTokenCredentials: SigningCredentials
           AccessTokenExpiresIn: int<minutes>
           IdTokenExpiresIn: int<minutes> }
 
     let signInUser' (data: SignInData) =
-        
+
         let audiences =
             data.AudienceScopes
             |> Seq.map (fun x -> x.Audience)
@@ -39,8 +44,8 @@ module internal SignInUser =
 
         let accessToken =
             createAccessTokenClaims data.ClientId data.Issuer data.TokenData rolesPermissions audiences
-            |> (createSignedToken data.AccessTokenSecret data.AccessTokenExpiresIn)
-            
+            |> (createSignedToken data.AccessTokenCredentials data.AccessTokenExpiresIn)
+
         let idToken =
             createIdTokenClaims data.ClientId data.Issuer data.TokenData rolesPermissions
             |> (createUnsignedToken data.IdTokenExpiresIn)
@@ -94,28 +99,62 @@ module internal SignInUser =
             | RequestedScopes scopes -> return! validateScopes dataContext email clientId scopes
             | ValidatedScopes scopes -> return scopes
         }
-        
-    let getAudienceSecretAndExpire env aud =
-        match aud = PERIMETER_USERS_AUDIENCE with
-        | true -> Task.FromResult(int env.JwtConfig.AccessTokenExpiresIn, env.JwtConfig.AccessTokenSecret)
-        | false ->
-            query {
-                for api in env.DataContext.Apis do
-                    where (api.Identifier = aud)
-                    select (api.AccessTokenExpiresIn, api.HS256SigningSecret)
-            }
-            |> toSingleAsync
+
+    let private createSymmetricKey (secret: string) =
+        secret
+        |> System.Text.Encoding.ASCII.GetBytes
+        |> SymmetricSecurityKey
+
+    let private createHS256Credentials (secret: string) =
+        SigningCredentials((createSymmetricKey secret), SecurityAlgorithms.HmacSha256Signature)
+
+    let private createRS256Credentials (xmlParams: string) =
+        let rsa = RSA.Create()
+        rsa.FromXmlString(xmlParams)
+
+        let rsaKey =
+            RsaSecurityKey(rsa.ExportParameters(true))
+
+        SigningCredentials(rsaKey, SecurityAlgorithms.RsaSha256)
+
+    type DomainSecretData =
+        { AccessTokenExpiresIn: int
+          SigningCredentials: SigningCredentials }
+
+    let getDomainSecretAndExpire env issuer isPerimeterClient =
+        task {
+            // perimeter clients should always use internal credentials
+            match isPerimeterClient with
+            | true ->
+                return { AccessTokenExpiresIn = int env.JwtConfig.AccessTokenExpiresIn
+                         SigningCredentials = createHS256Credentials env.JwtConfig.AccessTokenSecret }
+            | false ->
+                let! (expiresIn, algo, hs256key, rs256params) =
+                    query {
+                        for domain in env.DataContext.Domains do
+                            where (domain.Issuer = issuer)
+                            select
+                                (domain.AccessTokenExpiresIn,
+                                 domain.SigningAlgorithm,
+                                 domain.HS256SigningSecret,
+                                 domain.RS256Params)
+                    }
+                    |> toSingleAsync
+
+                return { AccessTokenExpiresIn = expiresIn
+                         SigningCredentials =
+                             if algo = SigningAlgorithmType.HS256 then
+                                 createHS256Credentials hs256key
+                             else
+                                 createRS256Credentials rs256params }
+        }
 
 
     let signInUser env (tokenData: TokenData) clientId (scopes: SignInScopes) =
         task {
 
-            let! { ClientId = clientId; Issuer = issuer; IdTokenExpiresIn = idTokenExpiresIn } =
-                PRR.Domain.Auth.LogIn.UserHelpers.getAppInfo
-                    env.DataContext
-                    clientId
-                    tokenData.Email
-                    env.JwtConfig.IdTokenExpiresIn
+            let! { ClientId = clientId; Issuer = issuer; IdTokenExpiresIn = idTokenExpiresIn; Type = clientType } =
+                getAppInfo env.DataContext clientId tokenData.Email env.JwtConfig.IdTokenExpiresIn
 
             printfn "signInUser:1 %s %s %A" clientId issuer scopes
 
@@ -136,31 +175,21 @@ module internal SignInUser =
             if (Seq.length audiences = 0)
             then return raise (unAuthorized "Empty audience is not supported")
 
-            let auds = audiences |> Seq.toList
+            let isPerimeterClient = clientType <> Regular
 
-            let aud =
-                match auds with
-                // first is perimeter audience and second is not, choose second
-                | [ aud1; aud2 ] when aud1 = PERIMETER_USERS_AUDIENCE
-                                      && aud2 <> PERIMETER_USERS_AUDIENCE -> aud2
-                // only perimeter audience
-                | [ aud1 ] when aud1 = PERIMETER_USERS_AUDIENCE -> aud1
-                | _ -> raise (unAuthorized (sprintf "Unexpected audiences %A" auds))
+            let! secretData = getDomainSecretAndExpire env issuer isPerimeterClient
 
-            let! (accessTokenExpiresIn, hs256SigningSecret) = getAudienceSecretAndExpire env aud
-            
             let data =
                 { TokenData = tokenData
                   ClientId = clientId
                   Issuer = issuer
-                  AudienceScopes = validatedScopes                  
-                  // TODO !
+                  AudienceScopes = validatedScopes
                   RefreshTokenProvider = env.HashProvider
-                  AccessTokenSecret = hs256SigningSecret
-                  AccessTokenExpiresIn = accessTokenExpiresIn * 1<minutes>
+                  AccessTokenCredentials = secretData.SigningCredentials
+                  AccessTokenExpiresIn = secretData.AccessTokenExpiresIn * 1<minutes>
                   IdTokenExpiresIn = idTokenExpiresIn }
 
             let result = signInUser' data
 
-            return (result, clientId, aud)
+            return (result, clientId, isPerimeterClient)
         }

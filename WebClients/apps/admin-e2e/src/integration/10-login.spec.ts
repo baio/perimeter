@@ -23,7 +23,7 @@ describe('login', () => {
             before(() => cy.dataCy('env-btn').click());
 
             it('must be redirected to domain', () => {
-                cy.url().should('match', /\/domains\/\d+\/apps/);
+                cy.url().should('match', /\/domains\/\d+\/info/);
             });
 
             describe('when navigate back to tenant', () => {

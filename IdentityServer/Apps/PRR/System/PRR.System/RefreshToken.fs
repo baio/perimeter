@@ -39,10 +39,10 @@ module private RefreshToken =
                         | UpdateToken (x) ->
                             let item =
                                 { ClientId = x.ClientId
+                                  IsPerimeterClient = x.IsPerimeterClient
                                   UserId = x.UserId
                                   Token = x.RefreshToken
                                   ExpiresAt = DateTime.UtcNow.AddMinutes(float (int tokenExpiresIs))
-                                  SigningAudience = x.SigningAudience
                                   Scopes = x.Scopes }
 
                             return Persist(Event(TokenUpdated(item, x.OldRefreshToken)))

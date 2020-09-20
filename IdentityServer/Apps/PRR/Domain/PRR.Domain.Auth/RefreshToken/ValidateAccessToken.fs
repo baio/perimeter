@@ -18,18 +18,28 @@ module internal ValidateAccessToken =
                 tokenHandler.ValidateToken(token, tokenValidationParameters)
 
             let jwtSecurityToken = securityToken :?> JwtSecurityToken
-            if (jwtSecurityToken = null
-                || (jwtSecurityToken.Header.Alg.Equals
+            if (jwtSecurityToken = null) then
+                (*                || (jwtSecurityToken.Header.Alg.Equals
                         (SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase)
                     |> not)) then
+                *)
                 None
             else
                 Some principal
-        with :? System.Exception as ex ->
+        with :? Exception as ex ->
             printfn "Validate token fails %O" ex
             None
 
-    let private principalCalims (principal: ClaimsPrincipal) = principal.Claims
+    let readToken (token: string) =
+        let tokenHandler = JwtSecurityTokenHandler()
+        try
+            let securityToken = tokenHandler.ReadToken(token)
+            if (securityToken = null) then None else Some securityToken
+        with :? Exception as ex ->
+            printfn "Read token fails %O" ex
+            None
+
+    let private principalClaims (principal: ClaimsPrincipal) = principal.Claims
 
     open FSharpx.Option
 
@@ -42,16 +52,20 @@ module internal ValidateAccessToken =
 
     let getClaimInt x = x |> getClaim' tryParseInt
 
-    let validateAccessToken (token: Token) (key: string) =
+    let validateAccessToken (token: Token) (key: SecurityKey) =
 
         let tokenValidationParameters =
             TokenValidationParameters
                 (ValidateAudience = false,
                  ValidateIssuer = false,
                  ValidateIssuerSigningKey = true,
-                 IssuerSigningKey = SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                 IssuerSigningKey = key,  //SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
                  ValidateLifetime = false)
 
-        (principalCalims
+        (principalClaims
          <!> validateToken token tokenValidationParameters)
         >>= getClaimInt CLAIM_TYPE_UID
+
+
+    let getTokenIssuer =
+        readToken >> Option.map (fun x -> x.Issuer)

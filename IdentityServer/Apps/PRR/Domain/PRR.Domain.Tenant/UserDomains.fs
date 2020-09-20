@@ -13,14 +13,13 @@ open System.Threading.Tasks
 module UserDomains =
 
     [<CLIMutable>]
-    type ItemGetLike =
-        { Id: int
-          Name: string }
+    type ItemGetLike = { Id: int; Name: string }
 
+    [<CLIMutable>]
     type TenantDomain =
         { Id: int
           Tenant: ItemGetLike
-          PoolName: string
+          Pool: ItemGetLike
           EnvName: string
           ManagementClientId: string
           IsTenantManagement: bool
@@ -30,7 +29,7 @@ module UserDomains =
     type TenantDomainSingle =
         { Id: int
           Tenant: ItemGetLike
-          PoolName: string
+          Pool: ItemGetLike
           EnvName: string
           ManagementClientId: string
           IsTenantManagement: bool
@@ -38,36 +37,52 @@ module UserDomains =
 
     let getClientDomains (dataContext: DbDataContext) (userId: UserId) =
         task {
-            
-            let! userEmail = query {
-                                 for user in dataContext.Users do
-                                     where (user.Id = userId)
-                                     select user.Email
-                             }
-                             |> toSingleExnAsync (unAuthorized "User is not found")
 
-            let! items = query {
-                             for p in dataContext.DomainUserRole do
-                                 where (p.UserEmail = userEmail && (p.Role.IsDomainManagement || p.Role.IsTenantManagement))
-                                 select
-                                     { Id = p.Domain.Id
-                                       Tenant =
-                                           if p.Domain.Tenant <> null then
-                                               { Id = p.Domain.Tenant.Id
-                                                 Name = p.Domain.Tenant.Name }
-                                           else
-                                               { Id = p.Domain.Pool.Tenant.Id
-                                                 Name = p.Domain.Pool.Tenant.Name }
-                                       PoolName = p.Domain.Pool.Name
-                                       EnvName = p.Domain.EnvName
-                                       ManagementClientId =
-                                           (p.Domain.Applications.FirstOrDefault(fun p -> p.IsDomainManagement = true)).ClientId
-                                       IsTenantManagement = p.Domain.Pool = null
-                                       Role =
-                                           { Id = p.Role.Id
-                                             Name = p.Role.Name } }
-                         }
-                         |> toListAsync
+            let! userEmail =
+                query {
+                    for user in dataContext.Users do
+                        where (user.Id = userId)
+                        select user.Email
+                }
+                |> toSingleExnAsync (unAuthorized "User is not found")
+
+            let! items =
+                query {
+                    for p in dataContext.DomainUserRole do
+                        where
+                            (p.UserEmail = userEmail
+                             && (p.Role.IsDomainManagement
+                                 || p.Role.IsTenantManagement))
+                        select
+                            { Id = p.Domain.Id
+                              Tenant =
+                                  if p.Domain.Tenant <> null then
+                                      { Id = p.Domain.Tenant.Id
+                                        Name = p.Domain.Tenant.Name }
+                                  else
+                                      { Id = p.Domain.Pool.Tenant.Id
+                                        Name = p.Domain.Pool.Tenant.Name }
+                              Pool =
+                                  // TODO : Fucking json converter, make it convert as null !
+                                  { Id = p.Domain.Pool.Id
+                                    Name = p.Domain.Pool.Name }
+                              (*
+                                  if p.Domain.Pool <> null then
+                                      Some
+                                          { Id = p.Domain.Pool.Id
+                                            Name = p.Domain.Pool.Name }
+                                  else
+                                      None
+                                  *)
+                              EnvName = p.Domain.EnvName
+                              ManagementClientId =
+                                  (p.Domain.Applications.FirstOrDefault(fun p -> p.IsDomainManagement = true)).ClientId
+                              IsTenantManagement = p.Domain.Pool = null
+                              Role = { Id = p.Role.Id; Name = p.Role.Name } }
+                }
+                |> toListAsync
+
+            let nl: Object = null
 
             let res =
                 items
@@ -78,7 +93,7 @@ module UserDomains =
 
                     { Id = head.Id
                       Tenant = head.Tenant
-                      PoolName = head.PoolName
+                      Pool = head.Pool
                       EnvName = head.EnvName
                       ManagementClientId = head.ManagementClientId
                       IsTenantManagement = head.IsTenantManagement

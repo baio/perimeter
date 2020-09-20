@@ -5,6 +5,7 @@ open Common.Test.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
 open PRR.API.Tests.Utils
+open PRR.Data.Entities
 open PRR.Domain.Auth.SignUp
 open PRR.Domain.Tenant.Domains
 open PRR.System.Models
@@ -28,22 +29,6 @@ module CRUD =
 
     let mutable domainId: int option = None
 
-
-    [<CLIMutable>]
-    type GetLikeItemDto =
-        { id: int
-          name: string
-          dateCreated: System.DateTime }
-
-    [<CLIMutable>]
-    type GetLikeDto =
-        { id: int
-          envName: string
-          dateCreated: System.DateTime
-          roles: GetLikeItemDto seq
-          applications: GetLikeItemDto seq
-          apis: GetLikeItemDto seq }
-
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
     type ``domain-crud-api``(testFixture: TestFixture, output: ITestOutputHelper) =
         do setConsoleOutput output
@@ -61,51 +46,172 @@ module CRUD =
         [<Fact>]
         [<Priority(1)>]
         member __.``A Create domain must be success``() =
-            let domainPoolId = testContext.Value.GetTenant().DomainPoolId
+            let domainPoolId =
+                testContext.Value.GetTenant().DomainPoolId
+
             task {
-                let data: PostLike =
-                    { EnvName = "stage" }
-                let! result = testFixture.HttpPostAsync userToken
-                                  (sprintf "/api/tenant/domain-pools/%i/domains" domainPoolId) data
+                let data: PostLike = { EnvName = "stage" }
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        userToken
+                        (sprintf "/api/tenant/domain-pools/%i/domains" domainPoolId)
+                        data
+
                 do! ensureSuccessAsync result
+
                 let! result = readAsJsonAsync<int> result
+
                 domainId <- Some(result)
             }
-
+            
         [<Fact>]
         [<Priority(2)>]
-        member __.``B Update domain pool must be success``() =
-            let domainPoolId = testContext.Value.GetTenant().DomainPoolId
+        member __.``A.1 Get domain must be success``() =
+            let domainPoolId =
+                testContext.Value.GetTenant().DomainPoolId
+
             task {
-                let data: PostLike =
-                    { EnvName = "stage" }
-                let! result = testFixture.HttpPutAsync userToken
-                                  (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value) data
+
+                let! result =
+                    testFixture.HttpGetAsync
+                        userToken
+                        (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
+
                 do! ensureSuccessAsync result
+
+                let! result = readAsJsonAsync<GetLike> result
+
+                result |> should be (not' null)
+
+                result.Id |> should equal domainId.Value
+
+                result.EnvName |> should equal "stage"
+
+                result.SigningAlgorithm
+                |> should equal SigningAlgorithmType.RS256
+
+                result.AccessTokenExpiresIn |> should equal 30
+
+                result.DateCreated |> should be (not' null)
             }
+            
 
         [<Fact>]
         [<Priority(3)>]
-        member __.``C Get domain must be success``() =
-            let domainPoolId = testContext.Value.GetTenant().DomainPoolId
+        member __.``B Update domain pool must be success``() =
+            let domainPoolId =
+                testContext.Value.GetTenant().DomainPoolId
+
             task {
-                let expected: PostLike =
-                    { EnvName = "stage" }
-                let! result = testFixture.HttpGetAsync userToken
-                                  (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
+                let data: PutLike =
+                    { EnvName = "stage!"
+                      SigningAlgorithm = "HS256"
+                      AccessTokenExpiresIn = 500 }
+
+                let! result =
+                    testFixture.HttpPutAsync
+                        userToken
+                        (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
+                        data
+
                 do! ensureSuccessAsync result
-                let! result = readAsJsonAsync<GetLikeDto> result
-                result |> should be (not' null)
-                result.id |> should equal domainId.Value
-                result.envName |> should equal expected.EnvName
-                result.dateCreated |> should be (not' null)
             }
 
         [<Fact>]
         [<Priority(4)>]
-        member __.``D Delete domain must be success``() =
-            let domainPoolId = testContext.Value.GetTenant().DomainPoolId
+        member __.``C Get domain must be success``() =
+            let domainPoolId =
+                testContext.Value.GetTenant().DomainPoolId
+
             task {
-                let! result = testFixture.HttpGetAsync userToken
-                                  (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
-                do! ensureSuccessAsync result }
+
+                let! result =
+                    testFixture.HttpGetAsync
+                        userToken
+                        (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
+
+                do! ensureSuccessAsync result
+
+                let! result = readAsJsonAsync<GetLike> result
+
+                result |> should be (not' null)
+
+                result.Id |> should equal domainId.Value
+
+                result.EnvName |> should equal "stage!"
+
+                result.SigningAlgorithm
+                |> should equal SigningAlgorithmType.HS256
+
+                result.AccessTokenExpiresIn |> should equal 500
+
+                result.DateCreated |> should be (not' null)
+            }
+
+        [<Fact>]
+        [<Priority(5)>]
+        member __.``D Update domain pool must be success``() =
+            let domainPoolId =
+                testContext.Value.GetTenant().DomainPoolId
+
+            task {
+                let data: PutLike =
+                    { EnvName = "stage"
+                      SigningAlgorithm = "RS256"
+                      AccessTokenExpiresIn = 700 }
+
+                let! result =
+                    testFixture.HttpPutAsync
+                        userToken
+                        (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
+                        data
+
+                do! ensureSuccessAsync result
+            }
+
+        [<Fact>]
+        [<Priority(6)>]
+        member __.``E Get domain must be success``() =
+            let domainPoolId =
+                testContext.Value.GetTenant().DomainPoolId
+
+            task {
+
+                let! result =
+                    testFixture.HttpGetAsync
+                        userToken
+                        (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
+
+                do! ensureSuccessAsync result
+
+                let! result = readAsJsonAsync<GetLike> result
+
+                result |> should be (not' null)
+
+                result.Id |> should equal domainId.Value
+
+                result.EnvName |> should equal "stage"
+
+                result.SigningAlgorithm
+                |> should equal SigningAlgorithmType.RS256
+
+                result.AccessTokenExpiresIn |> should equal 700
+
+                result.DateCreated |> should be (not' null)
+            }
+
+        [<Fact>]
+        [<Priority(7)>]
+        member __.``F Delete domain must be success``() =
+            let domainPoolId =
+                testContext.Value.GetTenant().DomainPoolId
+
+            task {
+                let! result =
+                    testFixture.HttpGetAsync
+                        userToken
+                        (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
+
+                do! ensureSuccessAsync result
+            }

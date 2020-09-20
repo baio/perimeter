@@ -12,7 +12,7 @@ module Models =
     type DomainId = int
 
     type ClientId = string
-    
+
     type Issuer = string
 
     type RoleId = int
@@ -56,7 +56,8 @@ module Models =
         { ClientId: unit -> string
           ClientSecret: unit -> string
           AuthorizationCode: unit -> string
-          HS256SigningSecret: unit -> string  }
+          HS256SigningSecret: unit -> string
+          RS256XMLParams: unit -> string }
 
     type AudienceScopes =
         { Audience: string

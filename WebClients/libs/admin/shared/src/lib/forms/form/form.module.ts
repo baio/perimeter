@@ -15,7 +15,7 @@ import {
     NzAlertModule,
     NzButtonModule,
     NzDrawerModule,
-    NzSpinModule
+    NzSpinModule,
 } from 'ng-zorro-antd';
 
 import {
@@ -28,11 +28,12 @@ import {
     adminFieldsMap,
     adminFieldsModules,
 } from './fields-map';
+import { AdminFormPageComponent } from './form-page/form-page.component';
 import { AdminFormComponent } from './form/form.component';
 
 @NgModule({
-    declarations: [AdminFormComponent],
-    exports: [AdminFormComponent],
+    declarations: [AdminFormComponent, AdminFormPageComponent],
+    exports: [AdminFormComponent, AdminFormPageComponent],
     imports: [
         BrowserModule,
         HlcNzFormModule,

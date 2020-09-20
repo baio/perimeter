@@ -10,10 +10,10 @@ open System.Text
 [<AutoOpen>]
 module private CreateToken =
 
-    let createSignedToken (secret: string) (expireInMinutes: int<minutes>) (claims: Claim seq) =
+    let createSignedToken (signingCredentials: SigningCredentials) (expireInMinutes: int<minutes>) (claims: Claim seq) =
         let subject = claims |> ClaimsIdentity
         let tokenHandler = JwtSecurityTokenHandler()
-        let key = Encoding.ASCII.GetBytes secret
+        // let key = Encoding.ASCII.GetBytes secret
         let issuedAt = DateTime.UtcNow
         // TODO : Not before will be added automatically and could potentially fails if user PC time is wrong
         // Should be able set skew on client ?
@@ -22,8 +22,11 @@ module private CreateToken =
         let expires =
             issuedAt.AddMinutes(float expireInMinutes)
 
+        (*
         let signingCredentials =
-            SigningCredentials(SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            SigningCredentials(securityKey, securityAlgorithm)
+        *)
+        //SigningCredentials(SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
 
         SecurityTokenDescriptor
             (Subject = subject,

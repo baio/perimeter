@@ -13,16 +13,22 @@ module RefreshToken =
     let private getUserDataForToken dataContext userId =
         getUserDataForToken' dataContext <@ fun (user: User) -> (user.Id = userId) @>
 
+    let getTokenIssuer =
+        getTokenIssuer
+        >> function
+        | Some token -> token
+        | None -> raise (unAuthorized "Token issuer not found")
+
     let refreshToken: RefreshToken =
         fun env accessToken item ->
             task {
-                let! (_, secret) = getAudienceSecretAndExpire env item.SigningAudience
+                let issuer = getTokenIssuer accessToken
+                let! domainSecret = getDomainSecretAndExpire env issuer item.IsPerimeterClient
 
-                match validate env accessToken (item.ExpiresAt, item.UserId, secret) with
+                match validate env accessToken (item.ExpiresAt, item.UserId, domainSecret.SigningCredentials.Key) with
                 | Success ->
                     match! getUserDataForToken env.DataContext item.UserId with
                     | Some tokenData ->
-
                         // TODO : When available scopes changed while refreshing tokens what to do ?
                         // Now just silently change scopes
                         let scopes = item.Scopes
@@ -32,9 +38,9 @@ module RefreshToken =
                         return (res,
                                 RefreshTokenSuccessEvent
                                     { ClientId = clientId
+                                      IsPerimeterClient = item.IsPerimeterClient
                                       UserId = tokenData.Id
                                       RefreshToken = res.refresh_token
-                                      SigningAudience = item.SigningAudience
                                       OldRefreshToken = item.Token
                                       Scopes = item.Scopes })
                     | None -> return! raise (UnAuthorized None)

@@ -4,7 +4,7 @@ open System
 open System.Security.Cryptography
 
 [<AutoOpen>]
-module SHA256Provider =
+module SHA256 =
 
     let getSha256Base64Hash sha256 = getSha256Hash sha256 >> Convert.ToBase64String
 

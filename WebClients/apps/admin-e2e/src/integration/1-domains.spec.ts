@@ -118,7 +118,7 @@ describe('domains', () => {
 
         it('open new domain should succeed', () => {
             cy.rows(0, 1).dataCy('env-btn').eq(1).click();
-            cy.url().should('match', /\/domains\/\d+\/apps/);
+            cy.url().should('match', /\/domains\/\d+\/info/);
             cy.visit('/tenants/1/domains');
         });
     });

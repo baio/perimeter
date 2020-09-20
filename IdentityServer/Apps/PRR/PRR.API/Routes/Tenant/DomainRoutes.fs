@@ -33,14 +33,15 @@ module private DomainHandlers =
         wrap
             (create
              <!> ofReader (getEnv)
+             <*> ofReader (getAuthStringsProvider)
              <*> ((triplet domainPoolId)
-                  <!> bindValidateJsonAsync validateData
+                  <!> bindValidateJsonAsync validatePostData
                   <*> bindUserClaimId))
 
     let updateHandler id =
         wrap
             (update
-             <!> ((doublet id) <!> bindJsonAsync<PostLike>)
+             <!> ((doublet id) <!> bindJsonAsync<PutLike>)
              <*> dataContext)
 
     let removeHandler (id: DomainId) = wrap (remove id <!> dataContext)
@@ -51,10 +52,11 @@ module Domain =
 
     let createRoutes () =
         subRoutef "/tenant/domain-pools/%i/domains" (fun domainPoolId ->
-            permissionGuard MANAGE_TENANT_DOMAINS
-            >=> wrapAudienceGuard fromDomainPoolId domainPoolId
-            >=> (choose [ POST >=> createHandler domainPoolId
-                          routef "/%i" (fun domainId ->
-                              choose [ PUT >=> updateHandler domainId
-                                       DELETE >=> removeHandler domainId
-                                       GET >=> getOne domainId ]) ]))
+            // TODO : Protect !
+            // permissionGuard MANAGE_TENANT_DOMAINS
+            // >=> wrapAudienceGuard fromDomainPoolId domainPoolId
+            choose [ POST >=> createHandler domainPoolId
+                     routef "/%i" (fun domainId ->
+                         choose [ PUT >=> updateHandler domainId
+                                  DELETE >=> removeHandler domainId
+                                  GET >=> getOne domainId ]) ])

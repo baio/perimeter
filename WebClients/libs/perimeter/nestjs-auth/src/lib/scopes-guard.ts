@@ -11,6 +11,8 @@ import { decode } from 'jwt-simple';
 import { IUser } from './models';
 
 export interface TokenConfig {
+    algorithm: 'HS256' | 'RS256'
+    // either secretKey for HS256 or publicKey for RS256
     secret: string;
 }
 
@@ -19,7 +21,9 @@ const getRequestUser = (request: any, tokenConfig: TokenConfig) => {
     if (!!authorizationHeader) {
         const pts = authorizationHeader.split(' ');
         try {
-            const jwt = decode(pts[1], tokenConfig.secret);
+            
+            const secret = tokenConfig.algorithm === 'RS256' ? `-----BEGIN RSA PUBLIC KEY-----\n${tokenConfig.secret}\n-----END RSA PUBLIC KEY-----` : tokenConfig.secret;            
+            const jwt = decode(pts[1], secret);
             const user: IUser = {
                 id: +jwt.uid,
                 email: jwt.email,

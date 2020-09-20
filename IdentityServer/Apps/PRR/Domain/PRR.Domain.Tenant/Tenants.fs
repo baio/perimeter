@@ -43,7 +43,8 @@ module Tenants =
 
             // tenant management
             let tenantManagementDomain =
-                createTenantManagementDomain tenant |> add'
+                createTenantManagementDomain env.AuthConfig tenant
+                |> add'
 
             createTenantManagementApp env.AuthStringsProvider env.AuthConfig tenantManagementDomain
             |> add
@@ -59,7 +60,9 @@ module Tenants =
                 createDomainPool tenant "Default" "default"
                 |> add'
 
-            let domain = createMainDomain domainPool |> add'
+            let domain =
+                createMainDomain env.AuthStringsProvider env.AuthConfig domainPool
+                |> add'
 
             createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
             |> add

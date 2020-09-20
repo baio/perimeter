@@ -93,12 +93,10 @@ module CRUD =
         member __.``A Create api must be success``() =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
-                let data: PostLike =
-                    { Name = "Api 1"
-                      Identifier = "xxx"
-                      AccessTokenExpiresIn = 15 }
+                let data: PostLike = { Name = "Api 1"; Identifier = "xxx" }
 
                 let! result = testFixture.HttpPostAsync userToken (sprintf "/api/tenant/domains/%i/apis" domainId) data
+
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<int> result
                 apiId <- Some(result)
@@ -113,6 +111,7 @@ module CRUD =
                     testFixture.HttpGetAsync userToken (sprintf "/api/tenant/domains/%i/apis/%i" domainId apiId.Value)
 
                 do! ensureSuccessAsync result
+
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
                 result.id |> should equal apiId.Value
@@ -128,8 +127,7 @@ module CRUD =
             task {
                 let data: PostLike =
                     { Name = "Api 1 Updated"
-                      Identifier = "yyy"
-                      AccessTokenExpiresIn = 15 }
+                      Identifier = "yyy" }
 
                 let! result =
                     testFixture.HttpPutAsync
@@ -150,6 +148,7 @@ module CRUD =
                     testFixture.HttpGetAsync userToken (sprintf "/api/tenant/domains/%i/apis/%i" domainId apiId.Value)
 
                 do! ensureSuccessAsync result
+
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
                 result.id |> should equal apiId.Value

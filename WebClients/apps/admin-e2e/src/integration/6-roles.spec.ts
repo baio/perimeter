@@ -59,7 +59,7 @@ describe('roles', () => {
                     .click();
                 cy.url().should('not.match', /\/domains\/\d+\/roles\/new/);
                 cy.rows().should('have.length', 1);
-                cy.rows(0, 2).should('contain.text', 'write:all');
+                // cy.rows(0, 2).should('contain.text', 'write:all');
             });
         });
 

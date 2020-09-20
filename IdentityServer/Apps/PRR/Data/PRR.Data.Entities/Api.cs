@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
@@ -34,12 +35,8 @@ namespace PRR.Data.Entities
 
         [Required] public DateTime DateCreated { get; set; }
 
-        [Required] public SigningAlgorithmType SigningAlgorithm { get; set; }
-
-        public string HS256SigningSecret { get; set; }
 
         public virtual ICollection<Permission> Permissions { get; set; }
-
-        [Required] public int AccessTokenExpiresIn { get; set; }
+        
     }
 }
