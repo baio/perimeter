@@ -18,14 +18,15 @@ module internal ValidateAccessToken =
                 tokenHandler.ValidateToken(token, tokenValidationParameters)
 
             let jwtSecurityToken = securityToken :?> JwtSecurityToken
-            if (jwtSecurityToken = null
-                || (jwtSecurityToken.Header.Alg.Equals
+            if (jwtSecurityToken = null) then
+                (*                || (jwtSecurityToken.Header.Alg.Equals
                         (SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase)
                     |> not)) then
+                *)
                 None
             else
                 Some principal
-        with :? System.Exception as ex ->
+        with :? Exception as ex ->
             printfn "Validate token fails %O" ex
             None
 
@@ -34,7 +35,7 @@ module internal ValidateAccessToken =
         try
             let securityToken = tokenHandler.ReadToken(token)
             if (securityToken = null) then None else Some securityToken
-        with :? System.Exception as ex ->
+        with :? Exception as ex ->
             printfn "Read token fails %O" ex
             None
 
