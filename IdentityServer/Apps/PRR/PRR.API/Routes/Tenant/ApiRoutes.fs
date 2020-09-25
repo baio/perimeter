@@ -6,6 +6,7 @@ open Common.Utils.ReaderTask
 open Giraffe
 open PRR.API.Routes
 open PRR.Domain.Tenant.Apis
+open PRR.Domain.Auth.GetAudience
 
 [<AutoOpen>]
 module private ApiHandlers =
@@ -60,10 +61,9 @@ module Api =
 
     let createRoutes () =
         subRoutef "/tenant/domains/%i/apis" (fun domainId ->
-            // TODO : Check domain belongs user
             permissionGuard MANAGE_DOMAIN
+            >=> wrapAudienceGuard fromDomainId domainId
             >=> (choose [ POST >=> createHandler domainId
-                          // TODO : Check api belongs domain
                           PUT >=> routef "/%i" (updateHandler domainId)
                           DELETE >=> routef "/%i" removeHandler
                           GET >=> routef "/%i" getOne
