@@ -1,36 +1,36 @@
-<h2>Welcome to Perimeter</h2>
+<div class="buttons-container" style="display: table;">
+    <button
+        data-cy="login-button"
+        nz-button
+        [nzSize]="'big'"
+        nzShape="round"
+        (click)="onLogin()"
+    >
+        <i nz-icon nzType="user"></i>Login
+    </button>
 
-<button
-    data-cy="login-button"
-    nz-button
-    nzType="primary"
-    [nzSize]="'big'"
-    nzShape="round"
-    (click)="onLogin()"
->
-    <i nz-icon nzType="user"></i>Login
-</button>
+    <button
+        data-cy="signup-button"
+        nz-button
+        nzType="secondary"
+        [nzSize]="'big'"
+        nzShape="round"
+        (click)="onSignUp()"
+    >
+        <i nz-icon nzType="user-add"></i>Register
+    </button>
 
+    <!--
+    <button
+        data-cy="logout-button"
+        nz-button
+        nzType="secondary"
+        [nzSize]="'big'"
+        nzShape="round"
+        (click)="onLogout()"
+    >
+        <i nz-icon nzType="user"></i>Logout
+    </button>
+--></div>
 
-<button
-    data-cy="signup-button"
-    nz-button
-    nzType="secondary"
-    [nzSize]="'big'"
-    nzShape="round"
-    (click)="onSignUp()"
->
-    <i nz-icon nzType="user"></i>Register
-</button>
-
-
-<button
-    data-cy="logout-button"
-    nz-button
-    nzType="secondary"
-    [nzSize]="'big'"
-    nzShape="round"
-    (click)="onLogout()"
->
-    <i nz-icon nzType="user"></i>Logout
-</button>
+<img src="assets/logo_transparent.png" alt="Logo" class="center" />
