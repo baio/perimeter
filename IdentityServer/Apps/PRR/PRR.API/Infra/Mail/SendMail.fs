@@ -28,7 +28,7 @@ module SendMail =
                 <br>
                 Cheers, %s.
             </p>
-        """ proj.BaseUrl proj.ConfirmSignUpUrl item.Token proj.Name
+        """ proj.BaseUrl proj.ResetPasswordUrl item.Token proj.Name
 
 
     let private createSendMail' (env: MailEnv) (prms: SendMailParams) =

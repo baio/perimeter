@@ -50,6 +50,7 @@ export class ForgotPasswordPageComponent implements OnInit {
         if (!this.errorMessage) {
             this.router.navigate(['..', 'forgot-password-sent'], {
                 relativeTo: this.activatedRoute,
+                queryParamsHandling: 'preserve',
             });
         }
     }

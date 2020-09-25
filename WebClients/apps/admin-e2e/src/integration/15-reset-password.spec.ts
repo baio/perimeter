@@ -1,4 +1,6 @@
 import { clearLocalStorage } from './_setup';
+import { EMAIL } from '../integration/_setup';
+import { data } from 'cypress/types/jquery';
 
 // tslint:disable: no-unused-expression
 describe('reset-password', () => {
@@ -6,51 +8,53 @@ describe('reset-password', () => {
 
     before(() => clearLocalStorage());
 
-    before(() => cy.visit('/'));
-
-    it('unauthorized user must be redirected to home page', () => {
-        cy.url().should('include', 'home');
+    before(() => {
+        cy.visit('/');
+        cy.dataCy('login-button').click();
     });
 
-    describe('when login', () => {
-        before(() => cy.login());
+    describe('forgot password', () => {
+        before(() => cy.dataCy('forgot-password').click());
 
-        it('must be redirected to first available tenant', () => {
-            cy.url().should('match', /\/tenants\/\d+\/domains/);
+        it('must be redirected forgot password page', () => {
+            cy.url().should('include', 'auth/forgot-password');
         });
 
-        describe('when move to domain', () => {
-            before(() => cy.dataCy('env-btn').click());
+        describe('when send reset email', () => {
+            before(() => {
+                cy.dataCy('email').type(EMAIL);
+                cy.dataCy('submit').click();
+            });
 
             it('must be redirected to domain', () => {
-                cy.url().should('match', /\/domains\/\d+\/info/);
+                cy.url().should('include', 'auth/forgot-password-sent');
             });
 
-            describe('when navigate back to tenant', () => {
-                before(() => cy.visit('/'));
+            describe('when open reset password page', () => {
+                before(() => {
+                    const url = `/auth/forgot-password-reset?token=${Cypress.env(
+                        'confirmSignupToken'
+                    )}`;
 
-                it('must be redirected to tenant', () => {
-                    cy.url().should('match', /\/tenants\/\d+\/domains/);
+                    cy.visit(url);
+                });
+
+                it('forgot password reset page should be open', () => {
+                    cy.url().should('include', '/auth/forgot-password-reset');
+                });
+
+                describe('reset password must be success', () => {
+                    before(() => {
+                        cy.dataCy('password').type('Test123456');
+                        cy.dataCy('confirm-password').type('Test123456');
+                        cy.dataCy('submit').click();
+                    });
+
+                    it('should be redirected to success page', () => {
+                        cy.url().should('include', 'auth/login');
+                    });
                 });
             });
-        });
-    });
-
-    // referer is wrong in cypress tests
-    describe.skip('wrong email password', () => {
-        it('login with wrong email / password should give error', () => {
-            clearLocalStorage();
-            cy.visit('/');
-            cy.dataCy('login-button').click();
-            cy.url().should('include', 'auth/login');
-            cy.dataCy('email')
-                .type('wrong@email.com')
-                .dataCy('password')
-                .type('123')
-                .dataCy('submit')
-                .click();
-
-            cy.dataCy('error-message').should('be.visible');
         });
     });
 });

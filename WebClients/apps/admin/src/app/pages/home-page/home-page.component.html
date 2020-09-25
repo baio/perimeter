@@ -1,3 +1,14 @@
+<nz-alert
+    *ngIf="queryEvent === 'reset-password-success'"
+    data-cy="reset-password-success"
+    nz-row
+    nzType="success"
+    nzCloseable
+    nzMessage="Password reset! You can login now."
+    class="full-width"
+>
+</nz-alert>
+
 <div class="buttons-container" style="display: table;">
     <button
         data-cy="login-button"

@@ -45,10 +45,7 @@ export class ForgotPasswordResetPageComponent implements OnInit {
                     FormValidators.empty,
                     Validators.minLength(6),
                     Validators.maxLength(100),
-                    FormValidators.missUpperCaseLetter,
-                    FormValidators.missLowerCaseLetter,
-                    FormValidators.missDigit,
-                    FormValidators.missSpecialChar,
+                    FormValidators.password,
                 ],
             ],
             checkPassword: [
@@ -101,10 +98,10 @@ export class ForgotPasswordResetPageComponent implements OnInit {
             this.cdr.markForCheck();
         }
         if (!this.errorMessage) {
-            this.router.navigate(
-                ['..', 'login', { event: 'reset-password-success' }],
-                { relativeTo: this.activatedRoute, preserveQueryParams: true }
-            );
+            this.router.navigate(['/home', { event: 'reset-password-success' }], {
+                relativeTo: this.activatedRoute,
+                preserveQueryParams: true,
+            });
         }
     }
 }

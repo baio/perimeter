@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '@perimeter/ngx-auth';
 
 const REDIRECT_PATH = '/';
@@ -10,7 +11,14 @@ const REDIRECT_PATH = '/';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomePageComponent implements OnInit {
-    constructor(private readonly authService: AuthService) {}
+    queryEvent: string;
+
+    constructor(
+        private readonly authService: AuthService,
+        activatedRoute: ActivatedRoute
+    ) {
+        this.queryEvent = activatedRoute.snapshot.params['event'];
+    }
 
     ngOnInit(): void {}
 
