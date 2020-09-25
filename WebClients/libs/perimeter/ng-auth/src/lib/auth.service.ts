@@ -81,29 +81,60 @@ const parseJwt = (token: string): JWTToken => {
     return JSON.parse(jsonPayload);
 };
 
-/**
- * Get parsed token if it exists and not expired
- */
-const validateToken = (token: string, validateExp = true): JWTToken | null => {
+export interface ValidateTokenResultSuccess {
+    kind: 'VALIDATE_TOKEN_SUCCESS';
+    jwtToken: JWTToken;
+}
+
+export interface ValidateTokenResultError {
+    kind: 'VALIDATE_TOKEN_ERROR';
+    error: 'TOKEN_EXPIRED_NOT_FOUND' | 'TOKEN_EXPIRED' | 'TOKEN_NOT_FOUND';
+}
+
+export type ValidateTokenResult =
+    | ValidateTokenResultSuccess
+    | ValidateTokenResultError;
+
+const isValidateTokenResultExpiredError = (res: ValidateTokenResult) =>
+    res.kind === 'VALIDATE_TOKEN_ERROR' && res.error === 'TOKEN_EXPIRED';
+
+const validateTokenResult = (
+    token: string,
+    validateExp = true
+): ValidateTokenResult => {
     if (token) {
         const jwtToken = parseJwt(token);
         console.log('token', jwtToken);
         if (validateExp) {
             if (!jwtToken.exp) {
                 console.warn('token.exp is undefined');
-                return null;
+                return {
+                    kind: 'VALIDATE_TOKEN_ERROR',
+                    error: 'TOKEN_EXPIRED_NOT_FOUND',
+                };
             }
             const now = new Date().getTime() / 1000;
             if (jwtToken.exp < now) {
                 console.warn('token expired');
-                return null;
+                return { kind: 'VALIDATE_TOKEN_ERROR', error: 'TOKEN_EXPIRED' };
             }
         }
-        return jwtToken;
+        return { kind: 'VALIDATE_TOKEN_SUCCESS', jwtToken };
     } else {
         console.warn('idToken / accessToken not found');
-        return null;
+        return {
+            kind: 'VALIDATE_TOKEN_ERROR',
+            error: 'TOKEN_NOT_FOUND',
+        };
     }
+};
+
+/**
+ * Get parsed token if it exists and not expired
+ */
+const validateToken = (token: string, validateExp = true): JWTToken | null => {
+    const result = validateTokenResult(token, validateExp);
+    return result.kind === 'VALIDATE_TOKEN_SUCCESS' ? result.jwtToken : null;
 };
 
 @Injectable({ providedIn: 'root' })
@@ -253,6 +284,43 @@ export class AuthService {
             }
         }
         return jwtIdToken;
+    }
+
+    async validateTokensWithRefresh(
+        validateExp = true,
+        validateAccessToken = true
+    ): Promise<JWTToken | null> {
+        const idToken = this.idToken;
+        let jwtAccessToken: ValidateTokenResult = null;
+        const jwtIdToken = validateTokenResult(idToken, validateExp);
+        if (
+            jwtIdToken.kind === 'VALIDATE_TOKEN_SUCCESS' &&
+            validateAccessToken
+        ) {
+            const accessToken = this.accessToken;
+            jwtAccessToken = validateTokenResult(accessToken, validateExp);
+        }
+
+        if (
+            isValidateTokenResultExpiredError(jwtIdToken) ||
+            (validateAccessToken &&
+                isValidateTokenResultExpiredError(jwtAccessToken))
+        ) {
+            if (await this.refreshToken()) {
+                return this.validateTokens(validateExp, validateAccessToken);
+            } else {
+                return null;
+            }
+        } else {
+            if (
+                jwtIdToken.kind === 'VALIDATE_TOKEN_SUCCESS' &&
+                jwtAccessToken.kind === 'VALIDATE_TOKEN_SUCCESS'
+            ) {
+                return jwtIdToken.jwtToken;
+            } else {
+                return null;
+            }
+        }
     }
 
     get idToken() {

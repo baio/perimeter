@@ -7,7 +7,7 @@ import {
 } from '@angular/common/http';
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { from, Observable, throwError } from 'rxjs';
-import { catchError, finalize, switchMap } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { ACCESS_TOKEN } from './constants';
 
@@ -39,7 +39,6 @@ export class AuthInterceptor implements HttpInterceptor {
         next: HttpHandler
     ): Observable<HttpEvent<any>> {
         const url = request.url;
-        // TODO
         const accessToken = localStorage.getItem(ACCESS_TOKEN);
         const hasSchema =
             url.startsWith('http://') || url.startsWith('https://');

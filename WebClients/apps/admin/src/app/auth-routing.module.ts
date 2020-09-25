@@ -8,8 +8,15 @@ import {
     ForgotPasswordSentPageComponent,
     ForgotPasswordResetPageComponent,
 } from '@ip/auth';
-import { Routes, RouterModule } from '@angular/router';
+import {
+    Routes,
+    RouterModule,
+    Router,
+    NavigationCancel,
+} from '@angular/router';
 import { NgModule } from '@angular/core';
+import { filter } from 'rxjs/operators';
+import { ROUTE_NOT_AUTHENTICATED } from 'libs/admin/domains/src/lib/client.guard';
 
 // Exclusively for cypress tests !
 // Multi host apps is critical for test with oauth protocol, cypress has poor support for these scenarios
@@ -44,4 +51,17 @@ export const routes: Routes = [
 @NgModule({
     imports: [IPPagesModule, RouterModule.forChild(routes)],
 })
-export class AuthRoutingModule {}
+export class AuthRoutingModule {
+    constructor(router: Router) {
+        router.events
+            .pipe(filter((event) => event instanceof NavigationCancel))
+            .subscribe((event: NavigationCancel) => {
+                switch (event.reason) {
+                    case ROUTE_NOT_AUTHENTICATED:
+                        // navigate to login page
+                        router.navigate(['/auth/login']);
+                        break;
+                }
+            });
+    }
+}
