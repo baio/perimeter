@@ -4,15 +4,11 @@ open Akkling
 open Common.Test.Utils
 open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open FSharpx
-open FsUnit
-open PRR.API.Routes.Tenant
 open PRR.API.Tests.Utils
-open PRR.Data.Entities
 open PRR.Domain.Auth.SignUp
-open PRR.Domain.Tenant.DomainPools
+open PRR.Domain.Tenant
+open PRR.Domain.Tenant.Domains
 open PRR.System.Models
-open TaskUtils
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
@@ -88,11 +84,14 @@ module MultiUsers =
 
         [<Fact>]
         [<Priority(1)>]
-        member __.``A user 1 forbidden to update domain of 2 tenant``() =
+        member __.``A user 2 forbidden to update domain of 1 tenant``() =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let data: PutLike = { Name = "Domain update" }
+                let data: PutLike =
+                    { EnvName = "stage"
+                      AccessTokenExpiresIn = 100
+                      SigningAlgorithm = "HS256" }
 
                 let! result =
                     testFixture.HttpPutAsync
@@ -108,13 +107,11 @@ module MultiUsers =
 
         [<Fact>]
         [<Priority(2)>]
-        member __.``B user 1 forbidden to create domain of 2 tenant``() =
+        member __.``B user 2 forbidden to create domain of 1 tenant``() =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let data: PostLike =
-                    { Name = "New Domain"
-                      Identifier = "new-dom" }
+                let data: PostLike = { EnvName = "New Domain" }
 
                 let! result =
                     testFixture.HttpPostAsync
@@ -127,19 +124,46 @@ module MultiUsers =
 
         [<Fact>]
         [<Priority(3)>]
-        member __.``C When user 2 give permissions to user 1, user 1 can create domain of 2 tenant``() =
+        member __.``C When user 1 give permissions to user 2, user 1 can create domain for 2 tenant``() =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let data: PostLike =
-                    { Name = "New Domain"
-                      Identifier = "new-dom" }
 
-                let! result =
+                let data: DomainUserRoles.PostLike =
+                    { UserEmail = u2.Data.Email
+                      RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
+
+                let! res =
                     testFixture.HttpPostAsync
-                        u2.Token.Value
-                        (sprintf "/api/tenant/domain-pools/%i/domains" u1.Tenant.Value.DomainPoolId)
+                        u1.Token.Value
+                        (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
                         data
 
-                ensureForbidden result
+                do! ensureSuccessAsync res
+
+                // relogin user 2 under domain 1
+                let! res =
+                    logInUser
+                        testFixture
+                        u1.Tenant.Value.DomainManagementApplicationClientId
+                        u2.Data.Email
+                        u2.Data.Password
+
+                //
+
+                let data: PutLike =
+                    { EnvName = "stage"
+                      AccessTokenExpiresIn = 100
+                      SigningAlgorithm = "HS256" }
+
+                let! result =
+                    testFixture.HttpPutAsync
+                        res.access_token
+                        (sprintf
+                            "/api/tenant/domain-pools/%i/domains/%i"
+                             u1.Tenant.Value.DomainPoolId
+                             u1.Tenant.Value.DomainId)
+                        data
+
+                do! ensureSuccessAsync result
             }

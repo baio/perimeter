@@ -52,10 +52,13 @@ module Domain =
 
     let createRoutes () =
         subRoutef "/tenant/domain-pools/%i/domains" (fun domainPoolId ->
-            permissionGuard MANAGE_TENANT_DOMAINS
-            >=> wrapAudienceGuard fromDomainPoolId domainPoolId
-            >=> choose [ POST >=> createHandler domainPoolId
-                         routef "/%i" (fun domainId ->
-                             choose [ PUT >=> updateHandler domainId
+            choose [ POST
+                     >=> permissionGuard MANAGE_TENANT_DOMAINS
+                     >=> wrapAudienceGuard fromDomainPoolId domainPoolId
+                     >=> createHandler domainPoolId
+                     routef "/%i" (fun domainId ->
+                         permissionGuard MANAGE_DOMAIN
+                         >=> wrapAudienceGuard fromDomainId domainId
+                         >=> choose [ PUT >=> updateHandler domainId
                                       DELETE >=> removeHandler domainId
                                       GET >=> getOne domainId ]) ])

@@ -8,6 +8,7 @@ open PRR.API.Tests.Utils
 open PRR.Data.Entities
 open PRR.Domain.Auth.SignUp
 open PRR.Domain.Tenant.Domains
+open PRR.Domain.Tenant.UserDomains
 open PRR.System.Models
 open Xunit
 open Xunit.Abstractions
@@ -64,9 +65,33 @@ module CRUD =
 
                 domainId <- Some(result)
             }
-            
+
         [<Fact>]
         [<Priority(2)>]
+        member __.``A.0 Login under newly created tenant``() =
+
+            task {
+
+                let! result = testFixture.HttpGetAsync userToken "/api/me/management/domains"
+
+                do! ensureSuccessAsync result
+
+                let! result = readAsJsonAsync<TenantDomain array> result
+
+                let domain =
+                    result
+                    |> Seq.find (fun f -> f.Id = domainId.Value)
+
+                let! res = logInUser testFixture domain.ManagementClientId userData.Email userData.Password
+
+                userToken <- res.access_token
+
+                ()
+            }
+
+
+        [<Fact>]
+        [<Priority(3)>]
         member __.``A.1 Get domain must be success``() =
             let domainPoolId =
                 testContext.Value.GetTenant().DomainPoolId
@@ -95,10 +120,10 @@ module CRUD =
 
                 result.DateCreated |> should be (not' null)
             }
-            
+
 
         [<Fact>]
-        [<Priority(3)>]
+        [<Priority(4)>]
         member __.``B Update domain pool must be success``() =
             let domainPoolId =
                 testContext.Value.GetTenant().DomainPoolId
@@ -119,7 +144,7 @@ module CRUD =
             }
 
         [<Fact>]
-        [<Priority(4)>]
+        [<Priority(5)>]
         member __.``C Get domain must be success``() =
             let domainPoolId =
                 testContext.Value.GetTenant().DomainPoolId
@@ -150,7 +175,7 @@ module CRUD =
             }
 
         [<Fact>]
-        [<Priority(5)>]
+        [<Priority(6)>]
         member __.``D Update domain pool must be success``() =
             let domainPoolId =
                 testContext.Value.GetTenant().DomainPoolId
@@ -171,7 +196,7 @@ module CRUD =
             }
 
         [<Fact>]
-        [<Priority(6)>]
+        [<Priority(7)>]
         member __.``E Get domain must be success``() =
             let domainPoolId =
                 testContext.Value.GetTenant().DomainPoolId
@@ -202,7 +227,7 @@ module CRUD =
             }
 
         [<Fact>]
-        [<Priority(7)>]
+        [<Priority(8)>]
         member __.``F Delete domain must be success``() =
             let domainPoolId =
                 testContext.Value.GetTenant().DomainPoolId
