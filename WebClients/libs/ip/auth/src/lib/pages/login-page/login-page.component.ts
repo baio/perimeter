@@ -120,7 +120,14 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
         });
     }
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        const urlQueryParams = this.activatedRoute.snapshot.queryParams;
+        if (urlQueryParams['error']) {
+            this.errorMessage =
+                urlQueryParams['error_description'] ||
+                'Unknown authentication error';
+        }
+    }
 
     ngAfterViewInit(): void {
         const urlQueryParams = this.activatedRoute.snapshot.queryParams;

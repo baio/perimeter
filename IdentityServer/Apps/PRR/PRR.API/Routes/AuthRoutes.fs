@@ -1,5 +1,6 @@
 ﻿module PRR.API.Routes.Auth
 
+open System.Web
 open Common.Domain.Giraffe
 open Common.Domain.Models
 open Common.Utils
@@ -38,16 +39,16 @@ module private Handlers =
         sysWrap
             (signUpConfirm
              <!> (ofReader
-// Create default tenant for tests only                       
-#if TEST                                          
+                      // Create default tenant for tests only
+#if TEST
                       (bindQueryString "skipCreateTenant"
                        >> function
                        | None -> true
                        | Some _ -> false)
 #else
-                        (fun _ -> false)
+                      (fun _ -> false)
 #endif
-                      )
+             )
              <*> (ofReader (fun ctx -> { DataContext = getDataContext ctx }))
              <*> bindSignUpTokenQuery)
 
@@ -87,16 +88,32 @@ module private Handlers =
               CodeExpiresIn = config.Jwt.CodeExpiresIn
               SSOExpiresIn = config.SSOCookieExpiresIn })
 
-    let private concatError referer err =
-        sprintf "%s%serror=%s" referer (if referer.Contains "?" then "&" else "?") err
+    let private concatQueryString (url: string) key v =
+        let kv = sprintf "%s=%s" key v
+        if kv |> (HttpUtility.UrlDecode url).Contains |> not
+        then sprintf "%s%s%s" url (if url.Contains "?" then "&" else "?") kv
+        else url
 
-    let private redirectUrl ctx err =
-        let rurl =
-            match bindHeader "Referer" ctx with
-            | Some ref -> ref
-            | None _ -> "http://referer-not-found"
+    let private concatError url = concatQueryString url "error"
 
-        concatError rurl err
+    let private concatErrorDescription url =
+        concatQueryString url "error_description"
+
+    let concatErrorAndDescription url err =
+        function
+        | Some descr -> concatErrorDescription (concatError url err) descr
+        | None -> err |> concatError url
+
+    let private getRefererHeader ctx = ctx |> bindHeader "Referer"
+
+    let private getRefererUrl ctx =
+        ctx
+        |> getRefererHeader
+        |> function
+        | Some x -> x
+        | None -> "http://referer-not-found"
+
+    let private redirectUrl ctx err = concatError (getRefererUrl ctx) err
 
     let private getRedirectUrl isSSO redirUrl: GetResultUrlFun<_> =
         // TODO : Distinguish redir urls
@@ -114,9 +131,28 @@ module private Handlers =
                     | _ -> "server_error"
                 |> fun err -> if redirUrl <> null then concatError redirUrl err else redirectUrl ctx err
 
-    let logInHandler sso redirUrl =
-        sysWrapRedirect
-            (getRedirectUrl false redirUrl)
+    let private getLoginSuccessRedirectUrl (res: Result) =
+        sprintf "%s?code=%s&state=%s" res.RedirectUri res.Code res.State
+
+    let private getLoginErrorRedirectUrl (refererUrl, redirectUri) (ex: exn) =
+        // RedirectUri could not be retrieved in some cases
+        let redirectUri =
+            if System.String.IsNullOrEmpty redirectUri then refererUrl else redirectUri
+
+        match ex with
+        | :? UnAuthorized as e -> concatErrorAndDescription refererUrl "unauthorized_client" e.Data0
+        | :? BadRequest -> concatError redirectUri "invalid_request"
+        | _ -> concatError redirectUri "server_error"
+
+    let private getRedirectUrl' urls =
+        function
+        | Ok res -> getLoginSuccessRedirectUrl res
+        | Error (ex: exn) -> getLoginErrorRedirectUrl urls ex
+
+    let logInHandler sso redirectUri =
+        sysWrapRedirect (fun ctx ->
+            let refererUrl = getRefererUrl ctx
+            getRedirectUrl' (refererUrl, redirectUri))
             (logIn sso
              <!> getLogInEnv
              <*> bindValidateFormAsync validateData)

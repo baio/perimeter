@@ -24,7 +24,7 @@ module LogInValidation =
            response_type = "code"
            state = "state"
            redirect_uri = "http://localhost:4200"
-           scope = "openid profile email" 
+           scope = "openid profile email"
            email = signUpData.Email
            password = signUpData.Password
            code_challenge = "123"
@@ -54,8 +54,10 @@ module LogInValidation =
         [<Fact>]
         member __.``A Login data with empty client_id should give validation error``() =
             task {
-                let! result = testFixture.HttpPostFormJsonAsync userToken "/api/auth/login" {| logInData with client_id = "" |}
-                do! ensureRedirectErrorAsync result                
+                let! result =
+                    testFixture.HttpPostFormJsonAsync userToken "/api/auth/login" {| logInData with client_id = "" |}
+
+                do! ensureRedirectErrorAsync result
             }
 
         [<Fact>]
@@ -63,121 +65,64 @@ module LogInValidation =
             task {
                 let! result = testFixture.HttpPostFormJsonAsync userToken "/api/auth/login" {|  |}
                 do! ensureRedirectErrorAsync result
-                
-                
-                (*
-                let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
-
-                let expected =
-                    [ ("client_id", [| "EMPTY_STRING" |])
-                      ("code_challenge", [| "EMPTY_STRING" |])
-                      ("code_challenge_method", [| "EMPTY_STRING" |])
-                      ("email", [| "EMPTY_STRING" |])
-                      ("password", [| "EMPTY_STRING" |])
-                      ("redirect_uri", [| "EMPTY_STRING" |])
-                      ("response_type", [| "EMPTY_STRING" |])
-                      ("scope", [| "EMPTY_STRING" |]) ]
-                    |> Map
-
-                result'.Data |> should equal expected
-                *)
             }
 
         [<Fact>]
         member __.``C response_type different from 'code' should give error``() =
             task {
-                let! result = testFixture.HttpPostFormJsonAsync userToken "/api/auth/login"
-                                  {| logInData with response_type = "not_code" |}
-                                  
+                let! result =
+                    testFixture.HttpPostFormJsonAsync
+                        userToken
+                        "/api/auth/login"
+                        {| logInData with
+                               response_type = "not_code" |}
+
                 do! ensureRedirectErrorAsync result
-                (*
-                let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
-
-                let expected =
-                    [ ("response_type", [| "NOT_CONTAINS_STRING:code" |]) ] |> Map
-
-                printf "+++ %A" result'.Data
-
-                result'.Data |> should equal expected
-                *)
             }
 
         [<Fact>]
         member __.``D redirect_uri not url``() =
             task {
-                let! result = testFixture.HttpPostFormJsonAsync userToken "/api/auth/login"
-                                  {| logInData with redirect_uri = "redirect_uri" |}
-                
+                let! result =
+                    testFixture.HttpPostFormJsonAsync
+                        userToken
+                        "/api/auth/login"
+                        {| logInData with
+                               redirect_uri = "redirect_uri" |}
+
                 do! ensureRedirectErrorAsync result
-                (*
-                do ensureBadRequest result
-
-                let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
-
-                let expected =
-                    [ ("redirect_uri", [| "NOT_URL_STRING" |]) ] |> Map
-
-                printf "+++ %A" result'.Data
-
-                result'.Data |> should equal expected
-                *)
             }
 
         [<Fact>]
         member __.``E scopes doesn't contain required scopes``() =
             task {
-                let! result = testFixture.HttpPostFormJsonAsync userToken "/api/auth/login" {| logInData with scope = "openid" |}
+                let! result =
+                    testFixture.HttpPostFormJsonAsync userToken "/api/auth/login" {| logInData with scope = "openid" |}
+
                 do! ensureRedirectErrorAsync result
-                (*
-                do ensureBadRequest result
-
-                let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
-
-                let expected =
-                    [ ("scope", [| "NOT_CONTAINS_ALL_STRING:openid,profile" |]) ] |> Map
-
-                printf "+++ %A" result'.Data
-
-                result'.Data |> should equal expected
-                *)
             }
 
         [<Fact>]
         member __.``F email is not email should return error``() =
             task {
-                let! result = testFixture.HttpPostFormJsonAsync userToken "/api/auth/login"
-                                  {| logInData with email = "not_email" |}
-                do! ensureRedirectErrorAsync result                  
-                (*                                      
-                do ensureBadRequest result
+                let! result =
+                    testFixture.HttpPostFormJsonAsync
+                        userToken
+                        "/api/auth/login"
+                        {| logInData with email = "not_email" |}
 
-                let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
-
-                let expected =
-                    [ ("email", [| "NOT_EMAIL_STRING" |]) ] |> Map
-
-                printf "+++ %A" result'.Data
-
-                result'.Data |> should equal expected
-                *)
+                do! ensureRedirectErrorAsync result
             }
 
         [<Fact>]
         member __.``G code_challenge_method is not S256 should give error``() =
             task {
-                let! result = testFixture.HttpPostFormJsonAsync userToken "/api/auth/login"
-                                  {| logInData with code_challenge_method = "not_S256" |}
-                do! ensureRedirectErrorAsync result                                  
-                (*                                  
-                do ensureBadRequest result
+                let! result =
+                    testFixture.HttpPostFormJsonAsync
+                        userToken
+                        "/api/auth/login"
+                        {| logInData with
+                               code_challenge_method = "not_S256" |}
 
-                let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
-
-                let expected =
-                    [ ("code_challenge_method", [| "NOT_CONTAINS_STRING:S256" |]) ] |> Map
-
-                printf "+++ %A" result'.Data
-
-                result'.Data |> should equal expected
-                *)
+                do! ensureRedirectErrorAsync result
             }
