@@ -173,6 +173,7 @@ module Domains =
                         id
                         dbContext
 
+                (*
                 // Get public key from params
                 let rsa256PublicKey =
                     if result.SigningAlgorithm = SigningAlgorithmType.RS256
@@ -183,6 +184,15 @@ module Domains =
                     if result.SigningAlgorithm = SigningAlgorithmType.HS256
                     then result.HS256SigningSecret
                     else null
+                *)
+
+                // Get public key from params
+                let rsa256PublicKey =
+                    getPublicKeyFromRS256Params result.RS256PublicKey
+
+                // Don't expose secret data for not used algo
+                let hs256SigningSecret = result.HS256SigningSecret
+
 
                 let result' =
                     { result with

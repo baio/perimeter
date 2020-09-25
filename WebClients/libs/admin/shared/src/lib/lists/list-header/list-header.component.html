@@ -9,7 +9,7 @@
     }}</nz-page-header-subtitle>
 
     <nz-page-header-extra *ngIf="canAdd">
-        <button
+        <button            
             data-cy="create-item"
             nz-button
             nzShape="circle"
@@ -17,7 +17,7 @@
             *ngIf="canAdd"
             (click)="onAdd()"
         >
-            <i nz-icon nzType="plus"></i>
+            <i nz-icon nzType="plus" style="margin-bottom: 3px;"></i>
         </button>
     </nz-page-header-extra>
 
