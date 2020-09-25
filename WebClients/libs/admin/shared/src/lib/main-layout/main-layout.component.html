@@ -1,6 +1,12 @@
 <nz-layout>
     <nz-header *ngIf="view$ | async as view">
-        <div data-cy="logo" class="logo">Perimeter</div>
+        <div data-cy="logo" class="logo">
+            <img
+                src="assets/logo-small.png"
+                style="margin-left: -30px; margin-bottom: 5px;"
+            />
+            Perimeter
+        </div>
         <div class="tool">
             <a data-cy="tool" nz-dropdown [nzDropdownMenu]="tool">
                 <i nz-icon nzType="user" nzTheme="outline"></i>
