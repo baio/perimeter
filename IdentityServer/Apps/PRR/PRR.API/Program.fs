@@ -56,7 +56,7 @@ let migrateDatabase (webHost: IWebHost) =
 
 let createDbContext (connectionString: string) =
     let optionsBuilder = DbContextOptionsBuilder<DbDataContext>()
-    optionsBuilder.UseNpgsqlg
+    optionsBuilder.UseNpgsql
         (connectionString,
          (fun b ->
              b.MigrationsAssembly("PRR.Data.DataContextMigrations")

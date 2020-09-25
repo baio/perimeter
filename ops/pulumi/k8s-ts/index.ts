@@ -94,7 +94,7 @@ const prrApiDeployment = new k8s.apps.v1.Deployment('prr-api', {
                 containers: [
                     {
                         name: 'prr-api',
-                        image: 'baio/prr-api:v0.16',
+                        image: 'baio/prr-api:v0.17',
                         env: [
                             { name: 'ASPNETCORE_ENVIRONMENT', value: 'STAGE' },
                             { name : 'MailSender__Project__BaseUrl', value: 'https://perimeter.azurefd.net'},

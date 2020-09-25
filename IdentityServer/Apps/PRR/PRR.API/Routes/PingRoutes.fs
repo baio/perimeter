@@ -9,7 +9,7 @@ module PingRoutes =
         >=> GET
         >=> (fun next ctx ->
             json
-                {| Version = 1
+                {| Version = 17
                    Environment = ctx.GetHostingEnvironment().EnvironmentName |}
                 next
                 ctx)
