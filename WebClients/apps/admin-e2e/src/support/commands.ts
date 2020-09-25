@@ -114,12 +114,13 @@ Cypress.Commands.add('reinitDb', (loginAsDomain) => {
 
     const url = resolve(baseUrl, refreshDbUrl);
 
-    return cy.request('POST', url, { loginAsDomain }).then((resp) =>
-        cy.window().then((win) => {
+    return cy.request('POST', url, { loginAsDomain }).then((resp) => {
+        console.log('+++', resp);
+        return cy.window().then((win) => {
             win.localStorage.setItem('access_token', resp.body.access_token);
             win.localStorage.setItem('id_token', resp.body.id_token);
-        })
-    );
+        });
+    });
 });
 
 Cypress.Commands.add('login', () => {

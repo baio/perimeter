@@ -1,6 +1,7 @@
 // tslint:disable: no-unused-expression
 describe('tenant-admins', () => {
     before(() => cy.reinitDb());
+    before(() => cy.login());
     before(() => cy.visit('/tenants/1/admins'));
 
     it('roles should be open', () => {
