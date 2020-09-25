@@ -61,9 +61,10 @@ module Api =
     let createRoutes () =
         subRoutef "/tenant/domains/%i/apis" (fun domainId ->
             // TODO : Check domain belongs user
-            (choose [ POST >=> createHandler domainId
-                      // TODO : Check api belongs domain
-                      PUT >=> routef "/%i" (updateHandler domainId)
-                      DELETE >=> routef "/%i" removeHandler
-                      GET >=> routef "/%i" getOne
-                      GET >=> getList domainId ]))
+            permissionGuard MANAGE_DOMAIN
+            >=> (choose [ POST >=> createHandler domainId
+                          // TODO : Check api belongs domain
+                          PUT >=> routef "/%i" (updateHandler domainId)
+                          DELETE >=> routef "/%i" removeHandler
+                          GET >=> routef "/%i" getOne
+                          GET >=> getList domainId ]))

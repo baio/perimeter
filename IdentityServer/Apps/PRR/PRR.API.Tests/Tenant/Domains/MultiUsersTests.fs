@@ -124,3 +124,22 @@ module MultiUsers =
 
                 ensureForbidden result
             }
+
+        [<Fact>]
+        [<Priority(3)>]
+        member __.``C When user 2 give permissions to user 1, user 1 can create domain of 2 tenant``() =
+            let u1 = users.[0]
+            let u2 = users.[1]
+            task {
+                let data: PostLike =
+                    { Name = "New Domain"
+                      Identifier = "new-dom" }
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        u2.Token.Value
+                        (sprintf "/api/tenant/domain-pools/%i/domains" u1.Tenant.Value.DomainPoolId)
+                        data
+
+                ensureForbidden result
+            }

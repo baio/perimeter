@@ -61,7 +61,7 @@ module Application =
     let createRoutes () =
         subRoutef "/tenant/domains/%i/applications" (fun domainId ->
             wrapAudienceGuard fromDomainId domainId
-            >=> permissionGuard MAMANGE_DOMAIN
+            >=> permissionGuard MANAGE_DOMAIN
             >=> (choose [ POST >=> createHandler domainId
                           PUT >=> routef "/%i" (updateHandler domainId)
                           DELETE >=> routef "/%i" removeHandler
