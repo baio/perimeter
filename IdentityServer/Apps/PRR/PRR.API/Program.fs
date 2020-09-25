@@ -50,14 +50,13 @@ let migrateDatabase (webHost: IWebHost) =
     try
         let db =
             services.GetRequiredService<DbDataContext>()
-
         db.Database.Migrate()
     with ex -> printfn "An error occurred while migrating the database. %O" ex
 
 
 let createDbContext (connectionString: string) =
     let optionsBuilder = DbContextOptionsBuilder<DbDataContext>()
-    optionsBuilder.UseNpgsql
+    optionsBuilder.UseNpgsqlg
         (connectionString,
          (fun b ->
              b.MigrationsAssembly("PRR.Data.DataContextMigrations")
