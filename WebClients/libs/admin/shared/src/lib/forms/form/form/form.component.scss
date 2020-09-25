@@ -1,0 +1,26 @@
+.footer-buttons {
+    float: right;
+}
+
+.footer-buttons button {
+    margin-left: 10px;
+}
+
+::ng-deep .ant-drawer-body {
+    .ant-spin-nested-loading {
+        position: static;
+    }
+
+    .ant-spin-container {
+        position: static;
+    }
+}
+.ant-drawer-footer {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    border-top: 1px solid #edf2f9;
+    padding: 0.625rem 24px;
+    left: 0px;
+    background: #fff;
+}

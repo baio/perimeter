@@ -13,37 +13,39 @@
             >
             </nz-alert>
 
-            <button
-                data-cy="drawer-submit"
-                nz-button
-                nzType="primary"
-                [disabled]="view.submitDisabled"
-                (click)="onSubmit(hlcForm.form.value)"
-            >
-                Submit
-            </button>
+            <div class="footer-buttons">
+                <button
+                    data-cy="drawer-submit"
+                    nz-button
+                    nzType="primary"
+                    [disabled]="view.submitDisabled"
+                    (click)="onSubmit(hlcForm.form.value)"
+                >
+                    Submit
+                </button>
 
-            <button
-                data-cy="drawer-close"
-                nz-button
-                nzType="default"
-                [disabled]="view.cancelDisabled"
-                (click)="onCancel(hlcForm.form)"
-            >
-                Cancel
-            </button>
+                <button
+                    data-cy="drawer-close"
+                    nz-button
+                    nzType="default"
+                    [disabled]="view.cancelDisabled"
+                    (click)="onCancel(hlcForm.form)"
+                >
+                    Cancel
+                </button>
 
-            <button
-                *ngIf="!!removeItemDataAccess && !view.isNew"
-                style="float: right;"
-                data-cy="drawer-remove"
-                nz-button
-                nzType="default"
-                nzDanger
-                (click)="onRemove(view.value)"
-            >
-                Delete
-            </button>
+                <button
+                    *ngIf="!!removeItemDataAccess && !view.isNew"
+                    style="float: right;"
+                    data-cy="drawer-remove"
+                    nz-button
+                    nzType="default"
+                    nzDanger
+                    (click)="onRemove(view.value)"
+                >
+                    Delete
+                </button>
+            </div>
         </div>
     </nz-spin>
 </div>
