@@ -35,4 +35,22 @@ describe('login', () => {
             });
         });
     });
+
+    // referer is wrong in cypress tests
+    describe.skip('wrong email password', () => {
+        it('login with wrong email / password should give error', () => {
+            clearLocalStorage();
+            cy.visit('/');
+            cy.dataCy('login-button').click();
+            cy.url().should('include', 'auth/login');
+            cy.dataCy('email')
+                .type('wrong@email.com')
+                .dataCy('password')
+                .type('123')
+                .dataCy('submit')
+                .click();
+
+            cy.dataCy('error-message').should('be.visible');
+        });
+    });
 });
