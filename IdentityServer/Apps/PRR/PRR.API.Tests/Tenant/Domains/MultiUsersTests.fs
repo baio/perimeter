@@ -65,32 +65,62 @@ module MultiUsers =
                 testContext <- Some(createUserTestContext testFixture)
                 // create user 1 + tenant + permission
                 let u = users.[0]
+
                 let! userToken = createUser testContext.Value u.Data
+
                 let tenant = testContext.Value.GetTenant()
+
                 users.[0] <- {| u with
                                     Token = Some(userToken)
                                     Tenant = Some(tenant) |}
 
                 // create user 2 + tenant + permission
                 let u = users.[1]
+
                 let! userToken = createUser testContext.Value u.Data
+
                 let tenant = testContext.Value.GetTenant()
+
                 users.[1] <- {| u with
                                     Token = Some(userToken)
                                     Tenant = Some(tenant) |}
             }
 
-        // TODO : Restore !!! 
-        //[<Fact>]
+        [<Fact>]
         [<Priority(1)>]
         member __.``A user 1 forbidden to update domain of 2 tenant``() =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let data: PutLike =
-                    { Name = "Domain update" }
-                let! result = testFixture.HttpPutAsync u2.Token.Value
-                                  (sprintf "/api/tenant/domain-pools/%i/domains/%i" u1.Tenant.Value.DomainPoolId
-                                       u1.Tenant.Value.DomainId) data
+                let data: PutLike = { Name = "Domain update" }
+
+                let! result =
+                    testFixture.HttpPutAsync
+                        u2.Token.Value
+                        (sprintf
+                            "/api/tenant/domain-pools/%i/domains/%i"
+                             u1.Tenant.Value.DomainPoolId
+                             u1.Tenant.Value.DomainId)
+                        data
+
+                ensureForbidden result
+            }
+
+        [<Fact>]
+        [<Priority(2)>]
+        member __.``B user 1 forbidden to create domain of 2 tenant``() =
+            let u1 = users.[0]
+            let u2 = users.[1]
+            task {
+                let data: PostLike =
+                    { Name = "New Domain"
+                      Identifier = "new-dom" }
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        u2.Token.Value
+                        (sprintf "/api/tenant/domain-pools/%i/domains" u1.Tenant.Value.DomainPoolId)
+                        data
+
                 ensureForbidden result
             }
