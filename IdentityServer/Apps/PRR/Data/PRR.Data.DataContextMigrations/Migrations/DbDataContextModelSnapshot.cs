@@ -668,6 +668,11 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         new
                         {
                             RoleId = -600,
+                            PermissionId = -300
+                        },
+                        new
+                        {
+                            RoleId = -600,
                             PermissionId = -600
                         },
                         new

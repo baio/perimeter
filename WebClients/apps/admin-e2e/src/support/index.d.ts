@@ -15,7 +15,7 @@ declare namespace Cypress {
             value: string,
             index: number
         ): Chainable<JQuery<HTMLElement>>;
-        
+
         formSelectSingle(
             value: string,
             index: number

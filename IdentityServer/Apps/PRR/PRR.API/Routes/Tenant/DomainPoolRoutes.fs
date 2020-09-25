@@ -15,15 +15,6 @@ module private DomainPoolHandlers =
 
     let private dataContext = getDataContext |> ofReader
 
-    (*
-    let tenantId =
-        bindUserClaimId
-        >>= (fun id ctx ->
-            ctx
-            |> getDataContext
-            |> Helpers.getTenantIdFromUserId id)
-    *)
-
     let createHandler tenantId =
         wrap
             (create
@@ -72,9 +63,7 @@ module DomainPool =
 
     let createRoutes () =
         subRoutef "/tenants/%i/domain-pools" (fun tenantId ->
-            // TODO : Check user to manage this tenantId !!!
-            requiresAuth
-            >=> permissionGuard MANAGE_TENANT_DOMAINS
+            permissionGuard MANAGE_TENANT_DOMAINS
             >=> (choose [ POST >=> createHandler tenantId
                           routef "/%i" (fun domainPoolId ->
                               wrapAudienceGuard fromDomainPoolId domainPoolId

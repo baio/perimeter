@@ -100,13 +100,13 @@ module MultiUsers =
                                     Tenant = Some(tenant) |}
             }
 
-        // [<Fact>]
-        // TODO : Restore
+        [<Fact>]        
         [<Priority(1)>]
         member __.``A Same tenant user but with no MANAGE_TENANT_DOMAINS permission forbidden create domain pool``() =
             let u2 = users.[1]
             task {
                 let data: DomainPools.PutLike = { Name = "Domain pool 2" }
+                                
 
                 let! result =
                     testFixture.HttpPutAsync
@@ -114,7 +114,8 @@ module MultiUsers =
                         (sprintf "/api/tenants/%i/domain-pools/%i" u2.Tenant.Value.TenantId u2.Tenant.Value.DomainPoolId)
                         data
 
-                ensureForbidden result
+                // Regular domain token will give unauthorized for management domain endpoints since they use different token sign configs    
+                ensureUnauthorized result
             }
 
         [<Fact>]
@@ -184,8 +185,7 @@ module MultiUsers =
                 ()
             }
 
-        // Not valid test
-        //[<Fact>]
+        [<Fact>]
         [<Priority(4)>]
         member __.``D User 2 still can't add new admins under 1st tenant management domain``() =
             let data: PostLike =

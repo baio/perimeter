@@ -10,7 +10,7 @@ using PRR.Data.DataContext;
 namespace PRR.Data.DataContextMigrations.Migrations
 {
     [DbContext(typeof(DbDataContext))]
-    [Migration("20200918194442_Initial")]
+    [Migration("20200925090753_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -666,6 +666,11 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         {
                             RoleId = -500,
                             PermissionId = -1100
+                        },
+                        new
+                        {
+                            RoleId = -600,
+                            PermissionId = -300
                         },
                         new
                         {

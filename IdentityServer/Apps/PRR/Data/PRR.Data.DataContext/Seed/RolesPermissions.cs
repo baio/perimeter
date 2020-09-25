@@ -55,6 +55,7 @@ namespace PRR.Data.DataContext.Seed
 
         public static readonly RolePermission[] DomainAdmin = new[]
         {
+            new RolePermission {RoleId = Roles.DomainAdmin.Id, PermissionId = Permissions.ManageDomain.Id},
             new RolePermission {RoleId = Roles.DomainAdmin.Id, PermissionId = Permissions.ManageUsers.Id},
             new RolePermission {RoleId = Roles.DomainAdmin.Id, PermissionId = Permissions.ReadUsers.Id},
             new RolePermission {RoleId = Roles.DomainAdmin.Id, PermissionId = Permissions.ReadRoles.Id},

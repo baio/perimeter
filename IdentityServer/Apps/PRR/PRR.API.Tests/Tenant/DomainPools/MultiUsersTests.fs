@@ -59,6 +59,7 @@ module MultiUsers =
                 let u = users.[0]
 
                 let! userToken = createUser testContext.Value u.Data
+
                 let tenant = testContext.Value.GetTenant()
 
                 users.[0] <- {| u with
@@ -69,6 +70,7 @@ module MultiUsers =
                 let u = users.[1]
 
                 let! userToken = createUser testContext.Value u.Data
+
                 let tenant = testContext.Value.GetTenant()
 
                 users.[1] <- {| u with
@@ -88,6 +90,25 @@ module MultiUsers =
                     testFixture.HttpPutAsync
                         u2.Token.Value
                         (sprintf "/api/tenants/%i/domain-pools/%i" u1.Tenant.Value.TenantId u1.Tenant.Value.DomainPoolId)
+                        data
+
+                ensureForbidden result
+            }
+
+        [<Fact>]
+        [<Priority(2)>]
+        member __.``B user 2 forbidden to update domain pool of 1 tenant``() =
+            let u1 = users.[0]
+            let u2 = users.[1]
+            task {
+                let data: PostLike =
+                    { Name = "New domain pool"
+                      Identifier = "n dom" }
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        u2.Token.Value
+                        (sprintf "/api/tenants/%i/domain-pools" u1.Tenant.Value.TenantId)
                         data
 
                 ensureForbidden result
