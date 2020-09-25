@@ -272,6 +272,10 @@ export class AuthService {
         document.location.href = url;
     }
 
+    isRefreshTokenUrl(url: string) {
+        return url.startsWith(this.config.refreshTokenUrl);
+    }
+
     async refreshToken() {
         const refreshToken = localStorage.getItem(REFRESH_TOKEN);
         const accessToken = localStorage.getItem(ACCESS_TOKEN);

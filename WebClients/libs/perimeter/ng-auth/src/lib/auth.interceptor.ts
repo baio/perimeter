@@ -7,7 +7,7 @@ import {
 } from '@angular/common/http';
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { from, Observable, throwError } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { catchError, finalize, switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { ACCESS_TOKEN } from './constants';
 
@@ -50,7 +50,8 @@ export class AuthInterceptor implements HttpInterceptor {
                 catchError((err) => {
                     if (
                         err instanceof HttpErrorResponse &&
-                        err.status === 401
+                        err.status === 401 &&
+                        !this.authService.isRefreshTokenUrl(request.url)
                     ) {
                         return from(this.authService.refreshToken()).pipe(
                             catchError(() => throwError(err)),
