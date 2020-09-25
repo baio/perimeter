@@ -5,6 +5,7 @@
     nzType="error"
     nzCloseable
     [nzMessage]="errorMessage"
+    class="full-width"
 >
 </nz-alert>
 
@@ -15,6 +16,7 @@
     nzType="success"
     nzCloseable
     nzMessage="Email confirmed! You can login now."
+    class="full-width"
 >
 </nz-alert>
 <nz-alert
@@ -24,21 +26,22 @@
     nzType="success"
     nzCloseable
     nzMessage="Password reset! You can login now."
+    class="full-width"
 >
 </nz-alert>
 
 <div style="display: none;" id="login_form_container">
-    <h1>{{ appInfo?.title }}</h1>
-    <h2>please login</h2>
+    <ip-page-header [title]="appInfo?.title || 'Perimeter'" subTitle="Login"></ip-page-header>
     <form
         id="login_form"
+        class="center-form"
         nz-form
         [formGroup]="form"
-        class="login-form"
         method="POST"
         [attr.action]="submitAction"
         #submitForm
         (ngSubmit)="onSubmit(submitForm)"
+
     >
         <input type="hidden" name="client_id" formControlName="client_id" />
         <input
@@ -115,14 +118,22 @@
                 </nz-input-group>
             </nz-form-control>
         </nz-form-item>
+        <button
+            data-cy="submit"
+            [disabled]="form.invalid || !loginParams"
+            nz-button
+            class="login-form-button login-form-margin"
+            [nzType]="'primary'"
+        >
+            Log in
+        </button>
         <div nz-row class="login-form-margin">
-            <!--
-        <div nz-col [nzSpan]="12">
-            <label nz-checkbox formControlName="remember">
-                <span>Remember me</span>
-            </label>
-        </div>
-        -->
+            <div nz-col [nzSpan]="12">
+                <a routerLink="../register" preserveQueryParams>
+                    Register now!
+                </a>
+            </div>
+
             <div nz-col [nzSpan]="12">
                 <a
                     data-cy="forgot-password"
@@ -133,15 +144,5 @@
                 >
             </div>
         </div>
-        <button
-            data-cy="submit"
-            [disabled]="form.invalid || !loginParams"
-            nz-button
-            class="login-form-button login-form-margin"
-            [nzType]="'primary'"
-        >
-            Log in
-        </button>
-        Or <a routerLink="../register" preserveQueryParams> register now! </a>
     </form>
 </div>

@@ -16,6 +16,7 @@ import { ForgotPasswordPageComponent } from './forgot-password-page/forgot-passw
 import { ForgotPasswordResetPageComponent } from './forgot-password-reset-page/forgot-password-reset-page.component';
 import { ForgotPasswordSentPageComponent } from './forgot-password-sent-page/forgot-password-sent-page.component';
 import { LoginPageComponent } from './login-page/login-page.component';
+import { PageHeaderComponent } from './page-header/page-header.component';
 import { SignupConfirmPageComponent } from './signup-confirm-page/signup-confirm-page.component';
 import { SignupConfirmSentPageComponent } from './signup-confirm-sent-page/signup-confirm-sent-page.component';
 import { SignupPageComponent } from './signup-page/signup-page.component';
@@ -45,6 +46,7 @@ import { SignupPageComponent } from './signup-page/signup-page.component';
         SignupConfirmPageComponent,
         ForgotPasswordSentPageComponent,
         ForgotPasswordResetPageComponent,
+        PageHeaderComponent,
     ],
     exports: [
         LoginPageComponent,

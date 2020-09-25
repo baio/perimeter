@@ -7,4 +7,18 @@ input[readonly] {
     height: 90vh;
 }
 
+.center-form {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    overflow: auto;
+}
 
+.full-width {
+    width: 100%!important;
+}
+
+.full-width .ant-alert {
+    width: 100%;
+}
