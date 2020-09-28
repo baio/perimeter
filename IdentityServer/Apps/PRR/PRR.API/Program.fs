@@ -50,6 +50,7 @@ let migrateDatabase (webHost: IWebHost) =
     try
         let db =
             services.GetRequiredService<DbDataContext>()
+
         db.Database.Migrate()
     with ex -> printfn "An error occurred while migrating the database. %O" ex
 
@@ -142,7 +143,7 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
 
     // Configure DataContext
     let loggerFactory =
-        LoggerFactory.Create(fun builder -> () (* builder.AddConsole() |> ignore *))
+        LoggerFactory.Create(fun builder -> () (* builder.AddConsole() |> ignore *) )
 
     let connectionString =
         context.Configuration.GetConnectionString "PostgreSQL"
@@ -185,7 +186,8 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
 
     let systemEnv: SystemEnv =
         let serviceProvider = services.BuildServiceProvider()
-        { SendMail = createSendMail mailEnv mailSender
+        { ViewsDbConnectionString = context.Configuration.GetConnectionString("MongoViews")
+          SendMail = createSendMail mailEnv mailSender
           GetDataContextProvider =
               fun () -> new DataContextProvider(serviceProvider.CreateScope()) :> IDataContextProvider
           HashProvider = (hashProvider :> IHashProvider).GetHash

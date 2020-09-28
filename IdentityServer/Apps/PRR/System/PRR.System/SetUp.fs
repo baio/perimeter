@@ -6,6 +6,7 @@ open Akkling
 open Microsoft.Extensions.DependencyInjection
 open PRR.Data.DataContext
 open PRR.System.Models
+open PRR.System.Views
 
 [<AutoOpen>]
 module Setup =
@@ -22,7 +23,9 @@ module Setup =
             member __.QueriesRef = __.QueriesRef
 
     type DataContextProvider(serviceScope: IServiceScope) =
-        let dataContext = serviceScope.ServiceProvider.GetService<DbDataContext>()
+        let dataContext =
+            serviceScope.ServiceProvider.GetService<DbDataContext>()
+
         interface IDataContextProvider with
             member __.DataContext = dataContext
             member __.Dispose() = serviceScope.Dispose()
@@ -33,7 +36,8 @@ module Setup =
                 printf "++++Error %O" error
                 Directive.Escalate)
 
-        let confPath = sprintf "%s/%s" (System.IO.Directory.GetCurrentDirectory()) confFileName
+        let confPath =
+            sprintf "%s/%s" (System.IO.Directory.GetCurrentDirectory()) confFileName
 
         let conf = System.IO.File.ReadAllText confPath
 
@@ -42,20 +46,34 @@ module Setup =
         let sys = System.create "perimeter-sys" <| config // Configuration.defaultConfig()
 
         let rec events =
-            spawn sys "events" { props (eventsHandler env (lazy (commands))) with SupervisionStrategy = Some ss }
+            spawn
+                sys
+                "events"
+                { props (eventsHandler env (lazy (commands))) with
+                      SupervisionStrategy = Some ss }
+
         and sharedActors =
             createSharedActors sys env (lazy (events)) ss
+
         and commands =
-            spawn sys "commands"
-                { props (commandsHandler env (lazy (events)) sharedActors) with SupervisionStrategy = Some ss }
+            spawn
+                sys
+                "commands"
+                { props (commandsHandler env (lazy (events)) sharedActors) with
+                      SupervisionStrategy = Some ss }
 
         let queries =
-            spawn sys "queries" { props (queriesHandler sharedActors) with SupervisionStrategy = Some ss }
+            spawn
+                sys
+                "queries"
+                { props (queriesHandler sharedActors) with
+                      SupervisionStrategy = Some ss }
+
+        setUpViews sys events env.ViewsDbConnectionString
 
         { System = sys
           EventsRef = events
           CommandsRef = commands
           QueriesRef = queries } :> ICQRSSystem
 
-    let setUp env =
-        setUp' env "akka.hocon"
+    let setUp env = setUp' env "akka.hocon"

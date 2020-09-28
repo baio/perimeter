@@ -6,6 +6,7 @@ open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx
 open Models
+open PRR.Data.DataContext
 open PRR.System.Models
 open System
 open System.Security.Cryptography
@@ -32,6 +33,35 @@ module LogInToken =
            (validateUrl "redirect_uri" data.Redirect_Uri)
            (validateNullOrEmpty "code_verifier" data.Code_Verifier) |]
         |> Array.choose id
+
+    let private getSuccessData (dataContext: DbDataContext) clientId userId =
+        task {
+            let! (domainId, appIdentifier) =
+                query {
+                    for app in dataContext.Applications do
+                        where (app.ClientId = clientId)
+                        select (app.Domain.Id, app.Name)
+                }
+                |> toSingleExnAsync (Unexpected')
+
+
+            let! userEmail =
+                query {
+                    for user in dataContext.Users do
+                        where (user.Id = userId)
+                        select user.Email
+                }
+                |> toSingleExnAsync (Unexpected')
+
+            let successData =
+                { DomainId = domainId
+                  AppIdentifier = appIdentifier
+                  UserEmail = userEmail
+                  Date = DateTime.UtcNow }
+
+            return successData
+        }
+
 
     let logInToken: LogInToken =
         fun env item data ->
@@ -68,8 +98,10 @@ module LogInToken =
                           Scopes = item.RequestedScopes
                           IsPerimeterClient = isPerimeterClient }
 
+                    let! successData = getSuccessData dataContext clientId item.UserId
+
                     let evt =
-                        UserLogInTokenSuccessEvent(item.Code, refreshTokenItem)
+                        UserLogInTokenSuccessEvent(item.Code, refreshTokenItem, successData)
 
                     return (result, evt)
                 | None -> return! raiseTask (unAuthorized "user is not found")

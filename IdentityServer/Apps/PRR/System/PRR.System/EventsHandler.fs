@@ -11,18 +11,11 @@ module private EventsHandler =
 
     let mapEventToCommand evt =
         match evt with
-        | SignUpTokenEvent(SignUpToken.TokenAdded(data)) ->
-            data
-            |> SendConfirmEmailCommand
-            |> ofOne
-        | ResetPasswordEvent(ResetPassword.TokenAdded(data)) ->
-            data
-            |> SendResetPasswordEmailCommand
-            |> ofOne
+        | SignUpTokenEvent (SignUpToken.TokenAdded (data)) -> data |> SendConfirmEmailCommand |> ofOne
+        | ResetPasswordEvent (ResetPassword.TokenAdded (data)) -> data |> SendResetPasswordEmailCommand |> ofOne
         | UserSignUpConfirmedEvent (data, createUserTenant) ->
             seq {
-                if createUserTenant then
-                    data |> CreateUserTenantCommand
+                if createUserTenant then data |> CreateUserTenantCommand
                 data.Email
                 |> SignUpToken.RemoveTokensWithEmail
                 |> SignUpTokenCommand
@@ -37,8 +30,7 @@ module private EventsHandler =
             |> ResetPassword.RemoveTokensWithEmail
             |> ResetPasswordCommand
             |> ofOne
-        | UserTenantCreatedEvent _ ->
-            Seq.empty
+        | UserTenantCreatedEvent _ -> Seq.empty
         | RefreshTokenSuccessEvent data ->
             data
             |> RefreshToken.UpdateToken
@@ -49,33 +41,24 @@ module private EventsHandler =
             |> SignUpToken.AddToken
             |> SignUpTokenCommand
             |> ofOne
-        | UserLogInSuccessEvent(loginItem, ssoItem) ->
+        | UserLogInSuccessEvent (loginItem, ssoItem) ->
             seq {
-                loginItem
-                |> LogIn.AddCode
-                |> LogInCommand
+                loginItem |> LogIn.AddCode |> LogInCommand
 
                 match ssoItem with
-                | Some ssoItem ->
-                    ssoItem
-                    |> SSO.AddCode
-                    |> SSOCommand
+                | Some ssoItem -> ssoItem |> SSO.AddCode |> SSOCommand
             }
-        | UserLogInTokenSuccessEvent(token, item) ->
+        | UserLogInTokenSuccessEvent (token, item, _) ->
             seq {
-                token
-                |> LogIn.RemoveCode
-                |> LogInCommand
+                token |> LogIn.RemoveCode |> LogInCommand
 
                 item
                 |> RefreshToken.AddToken
                 |> RefreshTokenCommand
             }
-        | UserLogOutRequestedEvent(userId) ->
+        | UserLogOutRequestedEvent (userId) ->
             seq {
-                userId
-                |> SSO.RemoveCode
-                |> SSOCommand
+                userId |> SSO.RemoveCode |> SSOCommand
 
                 userId
                 |> RefreshToken.RemoveToken
@@ -92,12 +75,16 @@ module private EventsHandler =
             Seq.empty
 
     let eventsHandler env (commandsRef: Lazy<IActorRef<Commands>>) (sys: Actor<_>) =
-        let rec loop() =
+        let rec loop () =
             actor {
                 let! evt = sys.Receive()
                 let cmds = mapEventToCommand evt
-                cmds |> Seq.iter (fun cmd -> commandsRef.Value <! cmd)
+
+                cmds
+                |> Seq.iter (fun cmd -> commandsRef.Value <! cmd)
+
                 env.EventHandledCallback evt
-                return loop()
+                return loop ()
             }
-        loop()
+
+        loop ()

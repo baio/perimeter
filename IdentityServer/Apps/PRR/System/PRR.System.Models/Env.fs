@@ -16,16 +16,17 @@ module Env =
 
     type AuthConfig =
         { IdTokenExpiresIn: int<minutes>
-          AccessTokenSecret: string          
+          AccessTokenSecret: string
           AccessTokenExpiresIn: int<minutes>
           RefreshTokenExpiresIn: int<minutes>
           SignUpTokenExpiresIn: int<minutes>
           ResetPasswordTokenExpiresIn: int<minutes> }
-        
+
     type GetDataContextProvider = unit -> IDataContextProvider
 
     type SystemEnv =
-        { HashProvider: HashProvider
+        { ViewsDbConnectionString: string
+          HashProvider: HashProvider
           PasswordSalter: StringSalter
           AuthStringsProvider: AuthStringsProvider
           SendMail: SendMail

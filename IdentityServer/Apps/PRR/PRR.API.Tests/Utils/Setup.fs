@@ -14,23 +14,17 @@ open MongoDB.Driver
 [<AutoOpen>]
 module Setup =
 
+    let private dropDatabase (connectionString: string) =
+        let client = MongoClient(connectionString)
+        let dbName = connectionString.Split("/") |> Seq.last
+        client.DropDatabase(dbName)
+
     let recreateDataContext (context: WebHostBuilderContext) (services: IServiceCollection) =
         let psqlConnectionString =
             context.Configuration.GetConnectionString "PostgreSQL"
-
-        let mongoJournalConnectionString =
-            context.Configuration.GetConnectionString "MongoJournal"
-
-        let dbName =
-            mongoJournalConnectionString.Split("/")
-            |> Seq.last
-
         PRR.Data.DataContextMigrations.DataContextHelpers.RecreateDataContext(psqlConnectionString)
-
-        let client =
-            MongoClient(mongoJournalConnectionString)
-
-        client.DropDatabase(dbName)
+        dropDatabase (context.Configuration.GetConnectionString "MongoJournal")
+        dropDatabase (context.Configuration.GetConnectionString "MongoViews")
         ()
 
 
