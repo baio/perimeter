@@ -48,6 +48,27 @@ module private DomainHandlers =
 
     let getOne (id: DomainId) = wrap (getOne id <!> dataContext)
 
+    //
+    open PRR.System.Views.LogInView
+
+    let bindListQuery =
+        bindListQuery
+            ((function
+             | "dateTime" -> Some SortField.DateTime
+             | _ -> None),
+             (function
+             | "email" -> Some FilterField.Email
+             | "appIdentifier" -> Some FilterField.AppIdentifier
+             | "dateTime" -> Some FilterField.DateTime
+             | _ -> None))
+        |> ofReader
+
+    let getLogIns (isManagement: bool) (domainId: DomainId) =
+        wrap
+            (getList
+             <!> (ofReader getViewsReaderDb)
+             <*> (triplet domainId isManagement <!> bindListQuery))
+
 module Domain =
 
     let createRoutes () =
@@ -61,4 +82,7 @@ module Domain =
                          >=> wrapAudienceGuard fromDomainId domainId
                          >=> choose [ PUT >=> updateHandler domainId
                                       DELETE >=> removeHandler domainId
-                                      GET >=> getOne domainId ]) ])
+                                      GET >=> getOne domainId
+                                      GET
+                                      >=> route "user-activities"
+                                      >=> (getLogIns false domainId) ]) ])

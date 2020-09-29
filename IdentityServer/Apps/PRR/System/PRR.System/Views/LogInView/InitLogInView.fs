@@ -1,4 +1,4 @@
-﻿namespace PRR.System.Views
+﻿namespace PRR.System.Views.LogInView
 
 open System
 open System.Threading.Tasks
@@ -12,16 +12,7 @@ open MongoDB.Driver
 open PRR.System.Models
 
 [<AutoOpen>]
-module LogInView =
-
-    type Doc =
-        { _id: ObjectId
-          email: string
-          dateTime: DateTime
-          domainId: int
-          appIdentifier: string
-          isManagementClient: bool
-          seqNr: int64 }
+module InitLogInView =
 
     let private handleStreamedEvents col seqNr =
         function
@@ -30,7 +21,7 @@ module LogInView =
             | LogIn.CodeRemoved (_, data) ->
                 insertOne
                     col
-                    { _id = ObjectId.GenerateNewId()
+                    { _id = ObjectId.GenerateNewId().ToString()
                       isManagementClient = data.IsManagementClient
                       email = data.UserEmail
                       domainId = data.DomainId
@@ -42,7 +33,8 @@ module LogInView =
 
     let initLoginView (viewDb: IMongoDatabase) sys aref =
 
-        let col = viewDb.GetCollection<Doc>("login_view")
+        let col =
+            viewDb.GetCollection<Doc>(LOGIN_VIEW_COLLECTION_NAME)
 
         let keys =
             [| createIndexModel <@ fun x -> x.seqNr @> BsonOrderDesc

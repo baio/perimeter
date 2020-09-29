@@ -1,6 +1,7 @@
 ﻿namespace PRR.API.Infra
 
 open Common.Domain.Models
+open MongoDB.Driver
 open PRR.Domain.Auth
 
 [<AutoOpen>]
@@ -14,16 +15,19 @@ module Models =
           Jwt: JwtConfig }
 
     type IConfig =
-        abstract GetConfig: (unit -> AppConfig) with get
+        abstract GetConfig: (unit -> AppConfig)
 
     type IHashProvider =
-        abstract GetHash: (unit -> string) with get
+        abstract GetHash: (unit -> string)
 
     type IPasswordSaltProvider =
-        abstract SaltPassword: (string -> string) with get
+        abstract SaltPassword: (string -> string)
 
     type ISHA256Provider =
-        abstract GetSHA256: (string -> string) with get
+        abstract GetSHA256: (string -> string)
 
     type IAuthStringsProvider =
         abstract AuthStringsProvider: AuthStringsProvider
+
+    type IViewsReaderDbProvider =
+        abstract ViewsReaderDb: IMongoDatabase

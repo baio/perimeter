@@ -6,7 +6,7 @@ module ListResult =
     type Pager =
         { Index: int
           Size: int
-          Total: int }
+          Total: int64 }
 
     type ListResponse<'a> =
         { Items: 'a seq

@@ -9,7 +9,7 @@ open Common.Domain.Utils
 module ExecuteListQuery =
 
     let executeListQuery' q =
-       
+
         task {
             // can't run in parallel https://go.microsoft.com/fwlink/?linkid=2097913.))))"
             let! list = q |> toListAsync
@@ -18,7 +18,7 @@ module ExecuteListQuery =
         }
 
     let executeGroupByQuery' fn qcount q =
-       
+
         task {
             // can't run in parallel https://go.microsoft.com/fwlink/?linkid=2097913.))))"
             let! list = q |> groupByAsync fn
@@ -28,16 +28,13 @@ module ExecuteListQuery =
 
     let mapResponse (prms: ListQuery<_, _>) (items: 'a seq, count: int) =
         let pagination = prms.Pager
-        
-        { 
-            Items = items
-            Pager = { 
-                Total = count
+
+        { Items = items
+          Pager =
+              { Total = int64 count
                 Index = pagination.Index
-                Size = pagination.Size 
-            } 
-        }
-                
+                Size = pagination.Size } }
+
 
     let executeListQuery prms q =
         task {

@@ -50,8 +50,6 @@ module MultiUsers =
     let mutable testContext: UserTestContext option = None
 
 
-
-
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
     type ``tenant-user-roles-multi-users-api``(testFixture: TestFixture, output: ITestOutputHelper) =
         do setConsoleOutput output

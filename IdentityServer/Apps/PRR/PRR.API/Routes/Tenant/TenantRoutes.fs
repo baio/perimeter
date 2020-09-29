@@ -4,15 +4,14 @@ open Giraffe
 open PRR.API.Routes.Tenants
 
 module Tenant =
-    let createRoutes() =
-        choose
-            [
-              Tenants.createRoutes()
-              Permission.createRoutes()
-              Role.createRoutes()
-              Api.createRoutes()
-              Application.createRoutes()
-              Domain.createRoutes()
-              DomainPool.createRoutes()
-              TenantUserRole.createRoutes()
-              DomainUserRole.createRoutes() ]
+    let createRoutes () =
+        choose [ Tenants.createRoutes ()
+                 Permission.createRoutes ()
+                 Role.createRoutes ()
+                 Api.createRoutes ()
+                 Application.createRoutes ()
+                 Domain.createRoutes ()
+                 DomainPool.createRoutes ()
+                 TenantUserRole.createRoutes ()
+                 DomainUserRole.createRoutes ()
+                 UsersActivities.createRoutes () ]

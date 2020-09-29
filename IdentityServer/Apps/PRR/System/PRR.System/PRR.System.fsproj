@@ -32,7 +32,14 @@
         <Compile Include="EventsHandler.fs" />
         <Compile Include="CommandsHandler.fs" />
         <Compile Include="QueriesHandler.fs" />
-        <Compile Include="Views\LogInView.fs" />
+        <Compile Include="Views\MongoHandleListQuery\HandleFilter.fs" />
+        <Compile Include="Views\MongoHandleListQuery\HandlePagination.fs" />
+        <Compile Include="Views\MongoHandleListQuery\HandleSort.fs" />
+        <Compile Include="Views\MongoHandleListQuery\HandleListQuery.fs" />
+        <Compile Include="Views\MongoHandleListQuery\ExecuteListQuery.fs" />
+        <Compile Include="Views\LogInView\Models.fs" />
+        <Compile Include="Views\LogInView\InitLogInView.fs" />
+        <Compile Include="Views\LogInView\GetLogins.fs" />
         <Compile Include="Views\SetUpViewDb.fs" />
         <Compile Include="Views\SetUpViews.fs" />
         <Compile Include="SetUp.fs" />

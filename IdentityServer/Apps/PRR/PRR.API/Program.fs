@@ -125,9 +125,11 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     services.AddGiraffe() |> ignore
 
     // Infra
+    let mongoViewsConnectionString = context.Configuration.GetConnectionString("MongoViews");
     let sha256 = SHA256.Create()
     let hashProvider = HashProvider sha256
     let sha256Provider = SHA256Provider sha256
+    let viewsReaderDbProvider  = ViewsReaderDbProvider mongoViewsConnectionString 
 
     services.AddSingleton<IConfig, Config>() |> ignore
     services.AddSingleton<IPermissionsFromRoles, PermissionsFromRoles>()
@@ -139,6 +141,8 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     services.AddSingleton<IPasswordSaltProvider, PasswordSaltProvider>()
     |> ignore
     services.AddSingleton<IAuthStringsProvider, AuthStringsProvider>()
+    |> ignore
+    services.AddSingleton<IViewsReaderDbProvider>(viewsReaderDbProvider)
     |> ignore
 
     // Configure DataContext

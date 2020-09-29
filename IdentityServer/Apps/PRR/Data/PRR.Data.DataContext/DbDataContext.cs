@@ -59,11 +59,6 @@ namespace PRR.Data.DataContext
                 entity.HasOne(x => x.Pool).WithMany(x => x.Domains).OnDelete(DeleteBehavior.Cascade);
                 
                 entity.Property(d => d.SigningAlgorithm).HasConversion<string>();
-                    /*
-                    .HasConversion(
-                        new EnumToNumberConverter<SigningAlgorithmType, int>());
-                    */                        
-                
             });
 
             modelBuilder.Entity<Application>(entity =>

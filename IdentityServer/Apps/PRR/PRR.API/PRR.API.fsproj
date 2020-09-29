@@ -39,6 +39,7 @@
         <Compile Include="Infra\Mail\SendGridMail.fs" />
         <Compile Include="Infra\PermissionsFromRoles.fs" />
         <Compile Include="Infra\PasswordSaltProvider.fs" />
+        <Compile Include="Infra\ViewReaderDbProvider.fs" />
         <Compile Include="Infra\HashProvider.fs" />
         <Compile Include="Infra\SHA256.fs" />
         <Compile Include="Infra\Config.fs" />
@@ -68,6 +69,7 @@
         <Compile Include="Routes\Tenant\RoleRoutes.fs" />
         <Compile Include="Routes\Tenant\DomainUserRoleRoutes.fs" />
         <Compile Include="Routes\Tenant\TenantUserRoleRoutes.fs" />
+        <Compile Include="Routes\Tenant\UserActivities.fs" />
         <Compile Include="Routes\Tenant\TenantRoutes.fs" />
         <Compile Include="Routes\E2ERoutes.fs" />
         <Compile Include="Routes\PingRoutes.fs" />
