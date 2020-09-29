@@ -16,10 +16,11 @@ module LogInView =
 
     type Doc =
         { _id: ObjectId
-          email: string
+          email: stringg
           dateTime: DateTime
           domainId: int
           appIdentifier: string
+          isManagementClient: bool
           seqNr: int64 }
 
     let private handleStreamedEvents col seqNr =
@@ -30,12 +31,14 @@ module LogInView =
                 insertOne
                     col
                     { _id = ObjectId.GenerateNewId()
+                      isManagementClient = data.IsManagementClient
                       email = data.UserEmail
                       domainId = data.DomainId
                       appIdentifier = data.AppIdentifier
                       dateTime = data.Date
                       seqNr = seqNr }
             | _ -> ()
+        | _ -> ()
 
     let initLoginView (viewDb: IMongoDatabase) sys aref =
 
@@ -44,7 +47,8 @@ module LogInView =
         let keys =
             [| createIndexModel <@ fun x -> x.seqNr @> BsonOrderDesc
                createIndexModel <@ fun x -> x.dateTime @> BsonOrderDesc
-               createIndexModel <@ fun x -> x.email @> BsonOrderAsc |]
+               createIndexModel <@ fun x -> x.email @> BsonOrderAsc
+               createIndexModel <@ fun x -> x.isManagementClient @> BsonOrderAsc |]
 
         createIndexesRange col keys |> ignore
 

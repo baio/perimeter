@@ -7,7 +7,9 @@ open Common.Domain.Models
 module LogIn =
 
     type LoginSuccessData =
-        { DomainId: int
+        {
+          IsManagementClient: bool
+          DomainId: int
           AppIdentifier: string
           UserEmail: string
           Date: DateTime }

@@ -34,7 +34,7 @@ module LogInToken =
            (validateNullOrEmpty "code_verifier" data.Code_Verifier) |]
         |> Array.choose id
 
-    let private getSuccessData (dataContext: DbDataContext) clientId userId =
+    let private getSuccessData (dataContext: DbDataContext) clientId userId isPerimeterClient =
         task {
             let! (domainId, appIdentifier) =
                 query {
@@ -55,6 +55,7 @@ module LogInToken =
 
             let successData: LogIn.LoginSuccessData =
                 { DomainId = domainId
+                  IsManagementClient = isPerimeterClient
                   AppIdentifier = appIdentifier
                   UserEmail = userEmail
                   Date = DateTime.UtcNow }
@@ -98,7 +99,7 @@ module LogInToken =
                           Scopes = item.RequestedScopes
                           IsPerimeterClient = isPerimeterClient }
 
-                    let! successData = getSuccessData dataContext clientId item.UserId
+                    let! successData = getSuccessData dataContext clientId item.UserId isPerimeterClient
 
                     let evt =
                         UserLogInTokenSuccessEvent(item.Code, refreshTokenItem, successData)
