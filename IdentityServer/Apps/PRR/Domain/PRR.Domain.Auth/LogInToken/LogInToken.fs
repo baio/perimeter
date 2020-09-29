@@ -53,7 +53,7 @@ module LogInToken =
                 }
                 |> toSingleExnAsync (Unexpected')
 
-            let successData =
+            let successData: LogIn.LoginSuccessData =
                 { DomainId = domainId
                   AppIdentifier = appIdentifier
                   UserEmail = userEmail

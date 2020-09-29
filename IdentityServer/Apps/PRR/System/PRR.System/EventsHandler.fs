@@ -47,10 +47,11 @@ module private EventsHandler =
 
                 match ssoItem with
                 | Some ssoItem -> ssoItem |> SSO.AddCode |> SSOCommand
+                | _ -> ()
             }
-        | UserLogInTokenSuccessEvent (token, item, _) ->
+        | UserLogInTokenSuccessEvent (token, item, data) ->
             seq {
-                token |> LogIn.RemoveCode |> LogInCommand
+                (token, data) |> LogIn.RemoveCode |> LogInCommand
 
                 item
                 |> RefreshToken.AddToken
@@ -84,6 +85,7 @@ module private EventsHandler =
                 |> Seq.iter (fun cmd -> commandsRef.Value <! cmd)
 
                 env.EventHandledCallback evt
+
                 return loop ()
             }
 

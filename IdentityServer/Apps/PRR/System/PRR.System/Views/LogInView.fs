@@ -14,7 +14,7 @@ open PRR.System.Models
 [<AutoOpen>]
 module LogInView =
 
-    type private Doc =
+    type Doc =
         { _id: ObjectId
           email: string
           dateTime: DateTime
@@ -24,16 +24,18 @@ module LogInView =
 
     let private handleStreamedEvents col seqNr =
         function
-        | UserLogInTokenSuccessEvent (_, _, data) ->
-            insertOne
-                col
-                { _id = ObjectId.GenerateNewId()
-                  email = data.UserEmail
-                  domainId = data.DomainId
-                  appIdentifier = data.AppIdentifier
-                  dateTime = data.Date
-                  seqNr = seqNr }
-        | _ -> ()
+        | LogIn.Event evt ->
+            match evt with
+            | LogIn.CodeRemoved (_, data) ->
+                insertOne
+                    col
+                    { _id = ObjectId.GenerateNewId()
+                      email = data.UserEmail
+                      domainId = data.DomainId
+                      appIdentifier = data.AppIdentifier
+                      dateTime = data.Date
+                      seqNr = seqNr }
+            | _ -> ()
 
     let initLoginView (viewDb: IMongoDatabase) sys aref =
 

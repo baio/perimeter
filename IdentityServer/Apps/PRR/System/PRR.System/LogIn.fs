@@ -19,6 +19,7 @@ module private LogIn =
             let rec loop (state: State) =
                 actor {
                     let! msg = ctx.Receive()
+
                     match msg with
                     | Command cmd ->
                         match cmd with
@@ -27,34 +28,31 @@ module private LogIn =
                         | Restart ->
                             raise (exn "Test Restart")
                             return! loop state
-                        | AddCode(item) ->
-                            return Persist(Event(CodeAdded(item)))
-                        | RemoveCode(code) ->
-                            return Persist(Event(CodeRemoved(code)))
+                        | AddCode (item) -> return Persist(Event(CodeAdded(item)))
+                        | RemoveCode (code, data) -> return Persist(Event(CodeRemoved(code, data)))
                         | MakeSnapshot ->
                             typed ctx.SnapshotStore
                             <! SaveSnapshot(SnapshotMetadata(ctx.Pid, ctx.LastSequenceNr()), state)
                             return! loop state
                     | Event evt ->
                         match evt with
-                        | CodeAdded(item) as evt' ->
+                        | CodeAdded (item) as evt' ->
                             let state = state.Add(item.Code, item)
                             if isNotRecovering ctx then events <! (LogInEvent evt')
                             return! loop state
-                        | CodeRemoved(code) as evt' ->
+                        | CodeRemoved (code, _) as evt' ->
                             let state = state.Remove code
                             if isNotRecovering ctx then events <! (LogInEvent evt')
                             return! loop state
                     | Query q ->
                         match q with
-                        | GetCode(code, sendTo) ->
+                        | GetCode (code, sendTo) ->
                             let result =
-                                state
-                                |> Map.tryFind code
-                                |> valueResultFromOption
+                                state |> Map.tryFind code |> valueResultFromOption
+
                             sendTo <! result
                             return! loop state
-                    | SnapshotOffer snapshot ->
-                        return! loop snapshot
+                    | SnapshotOffer snapshot -> return! loop snapshot
                 }
+
             loop Map.empty)

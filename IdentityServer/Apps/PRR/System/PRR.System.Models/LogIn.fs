@@ -6,6 +6,12 @@ open Common.Domain.Models
 
 module LogIn =
 
+    type LoginSuccessData =
+        { DomainId: int
+          AppIdentifier: string
+          UserEmail: string
+          Date: DateTime }
+
     type Item =
         { Code: Token
           UserId: UserId
@@ -26,13 +32,13 @@ module LogIn =
     type Commands =
         | Restart
         | AddCode of Item
-        | RemoveCode of Token
+        | RemoveCode of Token * LoginSuccessData
         | MakeSnapshot
 
     // Events
     type Events =
         | CodeAdded of Item
-        | CodeRemoved of Token
+        | CodeRemoved of Token * LoginSuccessData
 
     // Messages
     type Message =

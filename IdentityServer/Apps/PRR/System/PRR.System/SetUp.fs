@@ -69,7 +69,7 @@ module Setup =
                 { props (queriesHandler sharedActors) with
                       SupervisionStrategy = Some ss }
 
-        setUpViews sys events env.ViewsDbConnectionString
+        setUpViews sys sharedActors.LogInActor env.ViewsDbConnectionString
 
         { System = sys
           EventsRef = events

@@ -52,6 +52,7 @@
       <PackageReference Include="Akka.Persistence.MongoDb" Version="1.4.5" />
       <PackageReference Include="Akkling" Version="0.10.0" />
       <PackageReference Include="Akkling.Persistence" Version="0.10.0" />
+      <PackageReference Include="MongoDB.Driver" Version="2.11.2" />
       <PackageReference Include="TaskBuilder.fs" Version="2.1.0" />
     </ItemGroup>
 
