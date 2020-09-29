@@ -182,7 +182,7 @@ module RefreshToken =
 
 
         // TODO : Restore
-        // [<Fact>]
+        [<Fact>]
         [<Priority(3)>]
         member __.``F After logout user could not refresh token``() =
 

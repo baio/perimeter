@@ -16,7 +16,7 @@ module LogInView =
 
     type Doc =
         { _id: ObjectId
-          email: stringg
+          email: string
           dateTime: DateTime
           domainId: int
           appIdentifier: string
