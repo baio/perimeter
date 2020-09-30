@@ -10,6 +10,7 @@ import { AdminsDataAccessService } from './admins/admins.data-access.service';
 import { TenantAdminsDataAccessService } from './tenant-admins/tenant-admins.data-access.service';
 import { ProfileDataAccessService } from './profile/profile.data-access.service';
 import { TenantsDataAccessService } from './tenants/tenants.data-access.service';
+import { UserActivitiesDataAccessService } from './user-activities/user-activities.data-access.service';
 
 @NgModule({
     imports: [HttpClientModule],
@@ -26,6 +27,7 @@ import { TenantsDataAccessService } from './tenants/tenants.data-access.service'
         TenantAdminsDataAccessService,
         ProfileDataAccessService,
         TenantsDataAccessService,
+        UserActivitiesDataAccessService,
     ],
 })
 export class DataAccessModule {}

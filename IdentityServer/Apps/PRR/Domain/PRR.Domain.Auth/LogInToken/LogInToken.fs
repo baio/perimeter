@@ -12,6 +12,7 @@ open System
 open System.Security.Cryptography
 open System.Text.Encodings.Web
 open System.Text.RegularExpressions
+open PRR.Domain.Auth
 
 [<AutoOpen>]
 module LogInToken =
@@ -36,14 +37,6 @@ module LogInToken =
 
     let private getSuccessData (dataContext: DbDataContext) clientId userId isPerimeterClient =
         task {
-            let! (domainId, appIdentifier) =
-                query {
-                    for app in dataContext.Applications do
-                        where (app.ClientId = clientId)
-                        select (app.Domain.Id, app.Name)
-                }
-                |> toSingleExnAsync (Unexpected')
-
 
             let! userEmail =
                 query {
@@ -53,14 +46,32 @@ module LogInToken =
                 }
                 |> toSingleExnAsync (Unexpected')
 
-            let successData: LogIn.LoginSuccessData =
-                { DomainId = domainId
-                  IsManagementClient = isPerimeterClient
-                  AppIdentifier = appIdentifier
-                  UserEmail = userEmail
-                  Date = DateTime.UtcNow }
+            if clientId = PERIMETER_CLIENT_ID then
+                let result: LogIn.LoginSuccessData =
+                    { DomainId = PERIMETER_DOMAIN_ID
+                      IsManagementClient = true
+                      AppIdentifier = PERIMETER_APP_IDENTIFIER
+                      UserEmail = userEmail
+                      Date = DateTime.UtcNow }
 
-            return successData
+                return result
+            else
+                let! (domainId, appIdentifier) =
+                    query {
+                        for app in dataContext.Applications do
+                            where (app.ClientId = clientId)
+                            select (app.Domain.Id, app.Name)
+                    }
+                    |> toSingleExnAsync (Unexpected')
+
+                let successData: LogIn.LoginSuccessData =
+                    { DomainId = domainId
+                      IsManagementClient = isPerimeterClient
+                      AppIdentifier = appIdentifier
+                      UserEmail = userEmail
+                      Date = DateTime.UtcNow }
+
+                return successData
         }
 
 

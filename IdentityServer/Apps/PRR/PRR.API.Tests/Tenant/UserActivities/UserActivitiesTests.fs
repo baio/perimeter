@@ -71,7 +71,7 @@ module CRUD =
                 let! result =
                     testFixture.HttpGetAsync
                         userToken
-                        (sprintf "/api/tenant/domains/%i/users-activities" tenant.DomainId)                
+                        (sprintf "/api/tenant/domains/%i/admin-activities" tenant.DomainId)                
                 do! ensureSuccessAsync result
 
                 let! resultDto = readAsJsonAsync<ListResponse> result

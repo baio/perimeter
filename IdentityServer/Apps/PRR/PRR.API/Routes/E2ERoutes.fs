@@ -6,7 +6,10 @@ open Common.Domain.Models
 open Common.Domain.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Giraffe
+open Microsoft.AspNetCore.Http
 open Microsoft.EntityFrameworkCore
+open Microsoft.Extensions.Configuration
+open MongoDB.Driver
 open PRR.Domain.Auth.SignUpConfirm
 open PRR.System.Models
 open PRR.System.Utils
@@ -20,17 +23,31 @@ type ReinitData = { LoginAsDomain: bool }
 
 module E2E =
 
-    let private recreatedDb ctx =
+    let private dropDatabase (connectionString: string) =
+        let client = MongoClient(connectionString)
+        let dbName = connectionString.Split("/") |> Seq.last
+        client.DropDatabase(dbName)
+
+    let private recreateMongoDb (ctx: HttpContext) =
+        let config = ctx.GetService<IConfiguration>()
+        dropDatabase (config.GetConnectionString "MongoJournal")
+        dropDatabase (config.GetConnectionString "MongoViews")
+
+    let private recreatedDataContextDb ctx =
         let dataContext = getDataContext ctx
         dataContext.Database.EnsureDeleted() |> ignore
         dataContext.Database.Migrate() |> ignore
+
+    let private recreatedDbs ctx =
+        recreatedDataContextDb ctx
+        recreateMongoDb ctx
 
     let createRoutes () =
         choose [ route "/e2e/reset"
                  >=> POST
                  >=> fun next ctx ->
                          // Recreate db on start
-                         recreatedDb ctx
+                         recreatedDbs ctx
                          Successful.NO_CONTENT next ctx
 
                  route "/e2e/reinit"
@@ -38,7 +55,7 @@ module E2E =
                  >=> fun next ctx ->
                          let dataContext = getDataContext ctx
                          let sys = ctx.GetService<ICQRSSystem>()
-                         recreatedDb ctx
+                         recreatedDbs ctx
                          // signup
                          let signupEnv = { DataContext = dataContext }
 

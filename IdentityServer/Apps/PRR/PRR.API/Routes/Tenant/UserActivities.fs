@@ -36,8 +36,13 @@ open UserActivitiesRoutesHandlers
 module UsersActivities =
 
     let createRoutes () =
-        GET
-        >=> routef "/tenant/domains/%i/users-activities" (fun domainId ->
-                permissionGuard MANAGE_DOMAIN
-                >=> wrapAudienceGuard fromDomainId domainId
-                >=> getLogIns false domainId)
+        choose [ GET
+                 >=> routef "/tenant/domains/%i/user-activities" (fun domainId ->
+                         permissionGuard MANAGE_DOMAIN
+                         >=> wrapAudienceGuard fromDomainId domainId
+                         >=> getLogIns false domainId)
+                 GET
+                 >=> routef "/tenant/domains/%i/admin-activities" (fun domainId ->
+                         permissionGuard MANAGE_DOMAIN
+                         >=> wrapAudienceGuard fromDomainId domainId
+                         >=> getLogIns true domainId) ]

@@ -51,7 +51,7 @@ describe('reset-password', () => {
                     });
 
                     it('should be redirected to success page', () => {
-                        cy.url().should('include', 'auth/login');
+                        cy.url().should('include', 'home');
                     });
                 });
             });

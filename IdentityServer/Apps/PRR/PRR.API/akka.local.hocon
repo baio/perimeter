@@ -13,16 +13,12 @@ actor {
   }
 }
 
-# Configure journal
-akka.persistence.journal.plugin = akka.persistence.journal.azure-table
-#akka.persistence.journal.azure-table.connection-string = "DefaultEndpointsProtocol=https;AccountName=hlc7home7app;AccountKey=UdPfh17HXy/4J9By+U/BYc/h1ECkDomoP74hg4RrEROazLdVuP+eg65NyUsC8EaweDnpS3huqtZljIZcNzusFA==;EndpointSuffix=core.windows.net"
-akka.persistence.journal.azure-table.connection-string = "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
-akka.persistence.journal.azure-table.table-name = "dev7sys7journal"
-akka.persistence.journal.azure-table.class = "Akka.Persistence.Azure.Journal.AzureTableStorageJournal, Akka.Persistence.Azure"
+akka.persistence.journal.mongodb.class = "Akka.Persistence.MongoDb.Journal.MongoDbJournal, Akka.Persistence.MongoDb"
+akka.persistence.journal.plugin = "akka.persistence.journal.mongodb"
+akka.persistence.journal.mongodb.connection-string = "mongodb://localhost/prr-local-journal"
+akka.persistence.journal.mongodb.collection = "EventsJournal"
 
-# Configure snapshots
-akka.persistence.snapshot-store.plugin = akka.persistence.snapshot-store.azure-blob-store
-akka.persistence.snapshot-store.azure-blob-store.connection-string = "AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;"
-akka.persistence.snapshot-store.azure-blob-store.container-name = "dev7sys7snapshots"
-akka.persistence.snapshot-store.azure-blob-store.class = "Akka.Persistence.Azure.Snapshot.AzureBlobSnapshotStore, Akka.Persistence.Azure"
-
+akka.persistence.snapshot-store.mongodb.class="Akka.Persistence.MongoDb.Snapshot.MongoDbSnapshotStore, Akka.Persistence.MongoDb"
+akka.persistence.snapshot-store.plugin = "akka.persistence.snapshot-store.mongodb"
+akka.persistence.snapshot-store.mongodb.connection-string = "mongodb://localhost/prr-local-journal"
+akka.persistence.snapshot-store.mongodb.collection = "SnapshotStore"

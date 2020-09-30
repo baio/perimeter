@@ -2,6 +2,7 @@ import { MainLayoutComponent, MainLayoutModule } from '@admin/shared';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router'; // CLI imports router
 import { ClientGuard } from './client.guard';
+import { AdminActivitiesListComponent } from './domain/admin-activities/list/list.component';
 import { AdminFormComponent } from './domain/admins/form/form.component';
 import { AdminsListComponent } from './domain/admins/list/list.component';
 import { ApiFormComponent } from './domain/apis/form/form.component';
@@ -14,6 +15,7 @@ import { PermFormComponent } from './domain/perms/form/form.component';
 import { PermsListComponent } from './domain/perms/list/list.component';
 import { RoleFormComponent } from './domain/roles/form/form.component';
 import { RolesListComponent } from './domain/roles/list/list.component';
+import { UserActivitiesListComponent } from './domain/user-activities/list/list.component';
 import { UserFormComponent } from './domain/users/form/form.component';
 import { UsersListComponent } from './domain/users/list/list.component';
 import { CreateTenantFormComponent } from './profile/create-tenant-form/create-tenant-form.component';
@@ -115,6 +117,14 @@ const routes: Routes = [
                                 component: AdminFormComponent,
                             },
                         ],
+                    },
+                    {
+                        path: 'user-activities',
+                        component: UserActivitiesListComponent,
+                    },
+                    {
+                        path: 'admin-activities',
+                        component: AdminActivitiesListComponent,
                     },
                 ],
             },

@@ -23,6 +23,7 @@ module private ResetPassword =
             let rec loop (state: State) =
                 actor {
                     let! msg = ctx.Receive()
+
                     match msg with
                     | Command cmd ->
                         match cmd with
@@ -31,13 +32,18 @@ module private ResetPassword =
                         | Restart ->
                             raise (exn "Test Restart")
                             return! loop state
-                        | AddToken(email) ->
+                        | AddToken (email) ->
                             let item =
                                 { Email = email
+#if E2E
+                                  Token = "HASH"
+#else
                                   Token = env.HashProvider()
+#endif
                                   ExpiredAt = DateTime.UtcNow.AddMinutes(float (int env.TokenExpiresIn)) }
+
                             return Persist(Event(TokenAdded item))
-                        | RemoveTokensWithEmail(email) ->
+                        | RemoveTokensWithEmail (email) ->
                             // TODO : Async
                             let tokens =
                                 state
@@ -45,6 +51,7 @@ module private ResetPassword =
                                 |> Seq.map snd
                                 |> Seq.filter (fun f -> f.Email = email)
                                 |> Seq.map (fun x -> x.Token)
+
                             return PersistAll(tokens |> Seq.map (TokenRemoved >> Event))
                         | MakeSnapshot ->
                             typed ctx.SnapshotStore
@@ -52,24 +59,25 @@ module private ResetPassword =
                             return! loop state
                     | Event evt ->
                         match evt with
-                        | TokenAdded(x) as evt' ->
+                        | TokenAdded (x) as evt' ->
                             let state = state.Add(x.Token, x)
                             if isNotRecovering ctx then events <! (ResetPasswordEvent evt')
                             return! loop state
-                        | TokenRemoved(token) as evt' ->
+                        | TokenRemoved (token) as evt' ->
                             let state = state.Remove(token)
                             if isNotRecovering ctx then events <! (ResetPasswordEvent evt')
                             return! loop state
                     | Query q ->
                         match q with
-                        | GetToken(token, sendTo) ->
+                        | GetToken (token, sendTo) ->
                             let result =
                                 state
                                 |> Map.tryFind token
                                 |> valueResultFromOption
+
                             sendTo <! result
                             return! loop state
-                    | SnapshotOffer snapshot ->
-                        return! loop snapshot
+                    | SnapshotOffer snapshot -> return! loop snapshot
                 }
+
             loop Map.empty)

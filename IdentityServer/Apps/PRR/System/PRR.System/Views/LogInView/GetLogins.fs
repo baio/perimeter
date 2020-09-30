@@ -43,10 +43,8 @@ module GetLogins =
                 db.GetCollection<Doc>(LOGIN_VIEW_COLLECTION_NAME)
 
             handleListQuery col getFilterFieldExpr getSortFieldExpr prms
-            (*
             |> andWhere
                 <@ fun doc ->
-                    doc.domainId = domainId
-                    && doc.isManagementClient = isManagement @>
-            *)                    
+                    doc.isManagementClient = isManagement
+                    && doc.domainId = domainId @>
             |> executeListQuery prms

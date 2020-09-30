@@ -14,3 +14,4 @@ export * from './lib/tenant-admins/tenant-admins.data-access.service';
 export * from './lib/profile/profile.data-access.service';
 export * from './lib/profile/models';
 export * from './lib/tenants/tenants.data-access.service';
+export * from './lib/user-activities/user-activities.data-access.service';

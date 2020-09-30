@@ -15,6 +15,7 @@ import {
     NzMenuModule,
 } from 'ng-zorro-antd';
 import { AdminDomainsRoutingModule } from './admin-domains-routing.module';
+import { AdminActivitiesListComponent } from './domain/admin-activities/list/list.component';
 import { AdminFormComponent } from './domain/admins/form/form.component';
 import { AdminsListComponent } from './domain/admins/list/list.component';
 import { ApiFormComponent } from './domain/apis/form/form.component';
@@ -27,6 +28,7 @@ import { PermFormComponent } from './domain/perms/form/form.component';
 import { PermsListComponent } from './domain/perms/list/list.component';
 import { RoleFormComponent } from './domain/roles/form/form.component';
 import { RolesListComponent } from './domain/roles/list/list.component';
+import { UserActivitiesListComponent } from './domain/user-activities/list/list.component';
 import { UserFormComponent } from './domain/users/form/form.component';
 import { UsersListComponent } from './domain/users/list/list.component';
 import { CreateTenantFormComponent } from './profile/create-tenant-form/create-tenant-form.component';
@@ -79,6 +81,8 @@ import { TenantLayoutComponent } from './tenant/tenant-layout/tenant-layout.comp
         ProfileHomeComponent,
         CreateTenantFormComponent,
         DomainFormComponent,
+        AdminActivitiesListComponent,
+        UserActivitiesListComponent,
     ],
 })
 export class AdminDomainsModule {}
