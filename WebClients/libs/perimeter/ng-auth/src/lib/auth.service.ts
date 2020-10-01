@@ -104,7 +104,6 @@ const validateTokenResult = (
 ): ValidateTokenResult => {
     if (token) {
         const jwtToken = parseJwt(token);
-        console.log('token', jwtToken);
         if (validateExp) {
             if (!jwtToken.exp) {
                 console.warn('token.exp is undefined');
@@ -158,8 +157,6 @@ export class AuthService {
         });
         localStorage.setItem(AUTH_CODE_VERIFIER, codeVerifier);
         localStorage.setItem(AUTH_STATE, state);
-        console.log('codeVerifier', codeVerifier);
-        console.log('codeChallenge', codeChallenge);
 
         const clientId = opts.clientId || this.config.clientId;
         // TODO : Is it ok ???
@@ -347,7 +344,6 @@ export class AuthService {
     async refreshToken() {
         const refreshToken = localStorage.getItem(REFRESH_TOKEN);
         const accessToken = localStorage.getItem(ACCESS_TOKEN);
-        console.log('+++', refreshToken, accessToken);
         if (!refreshToken || !accessToken) {
             return false;
         }
