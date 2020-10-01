@@ -46,10 +46,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\..\..\..\FSharp\FSharp.Akkling.CQRS\FSharp.Akkling.CQRS\FSharp.Akkling.CQRS.fsproj" />
-      <ProjectReference Include="..\..\..\..\..\..\FSharp\FSharp.MongoDB.Driver\FSharp.MongoDB.Driver\FSharp.MongoDB.Driver.fsproj" />
       <ProjectReference Include="..\..\..\..\Common\Common.Utils\Common.Utils.fsproj" />
       <ProjectReference Include="..\..\..\..\Common\Domain\Common.Domain.Utils\Common.Domain.Utils.fsproj" />
+      <ProjectReference Include="..\..\..\..\FSharp\FSharp.Akkling.CQRS\FSharp.Akkling.CQRS\FSharp.Akkling.CQRS.fsproj" />
+      <ProjectReference Include="..\..\..\..\FSharp\FSharp.MongoDB.Driver\FSharp.MongoDB.Driver\FSharp.MongoDB.Driver.fsproj" />
       <ProjectReference Include="..\..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
       <ProjectReference Include="..\..\Domain\PRR.Domain.Tenant\PRR.Domain.Tenant.fsproj" />
       <ProjectReference Include="..\PRR.System.Models\PRR.System.Models.fsproj" />

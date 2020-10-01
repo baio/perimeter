@@ -36,9 +36,9 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PRR.API.Tests", "Apps\PRR\P
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PRR.Domain.Tenant", "Apps\PRR\Domain\PRR.Domain.Tenant\PRR.Domain.Tenant.fsproj", "{D8987677-30CD-4CAB-9CC2-7F0306CB2237}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Akkling.CQRS", "..\..\FSharp\FSharp.Akkling.CQRS\FSharp.Akkling.CQRS\FSharp.Akkling.CQRS.fsproj", "{7C68A403-02BA-4721-9B65-30100F557143}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Akkling.CQRS", "FSharp\FSharp.Akkling.CQRS\FSharp.Akkling.CQRS\FSharp.Akkling.CQRS.fsproj", "{7C68A403-02BA-4721-9B65-30100F557143}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.MongoDB.Driver", "..\..\FSharp\FSharp.MongoDB.Driver\FSharp.MongoDB.Driver\FSharp.MongoDB.Driver.fsproj", "{BA50F119-7E37-4842-8C95-27972C2BA2B2}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.MongoDB.Driver", "FSharp\FSharp.MongoDB.Driver\FSharp.MongoDB.Driver\FSharp.MongoDB.Driver.fsproj", "{BA50F119-7E37-4842-8C95-27972C2BA2B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

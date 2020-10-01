@@ -7,7 +7,8 @@ module SetUpViewDb =
 
     let setUpViewDb (connectionString: string) =
         let mongo = MongoClient(connectionString)
-        connectionString.Split "/"
+        connectionString.Split "?"
+        |> Seq.head
+        |> (fun x -> x.Split "/")
         |> Seq.last
         |> mongo.GetDatabase
-    

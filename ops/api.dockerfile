@@ -17,6 +17,9 @@ COPY Common/Common.Test.Utils/Common.Test.Utils.fsproj Common/Common.Test.Utils/
 COPY Common/Domain/Common.Domain.Giraffe/Common.Domain.Giraffe.fsproj Common/Domain/Common.Domain.Giraffe/
 COPY Common/Domain/Common.Domain.Models/Common.Domain.Models.fsproj Common/Domain/Common.Domain.Models/
 COPY Common/Domain/Common.Domain.Utils/Common.Domain.Utils.fsproj Common/Domain/Common.Domain.Utils/
+COPY FSharp/FSharp.Akkling.CQRS/FSharp.Akkling.CQRS/FSharp.Akkling.CQRS.fsproj FSharp/FSharp.Akkling.CQRS/FSharp.Akkling.CQRS/
+COPY FSharp/FSharp.MongoDB.Driver/FSharp.MongoDB.Driver/FSharp.MongoDB.Driver.fsproj FSharp/FSharp.MongoDB.Driver/FSharp.MongoDB.Driver/
+
 
 RUN dotnet restore Perimeter.sln
 

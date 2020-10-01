@@ -16,6 +16,7 @@ const storageAccount = new azure.storage.Account('prr7storage', {
 // Export the connection string for the storage account
 export const storageConnectionString = storageAccount.primaryConnectionString;
 
+// psql
 const psqlServer = new azure.postgresql.Server('prr7psql', {
     resourceGroupName: resourceGroup.name,
     skuName: 'B_Gen5_1',
@@ -35,3 +36,12 @@ const psqlDb = new azure.postgresql.Database('prr7db', {
     charset: 'UTF8',
     collation: 'English_United States.1252',
 });
+
+// mongo
+const mongoDatabase = new azure.cosmosdb.MongoDatabase("prr7db", {
+    resourceGroupName: resourceGroup.name,
+    accountName: storageAccount.name,
+    throughput: 400,
+});
+
+export const mongoUrnString = mongoDatabase.urn;
