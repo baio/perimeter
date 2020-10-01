@@ -10,7 +10,9 @@ module ViewsReaderDbProvider =
         let client = MongoClient(connectionString)
 
         let db =
-            connectionString.Split "/"
+            connectionString.Split "?"
+            |> Seq.head
+            |> (fun x -> x.Split "/")
             |> Seq.last
             |> client.GetDatabase
 
