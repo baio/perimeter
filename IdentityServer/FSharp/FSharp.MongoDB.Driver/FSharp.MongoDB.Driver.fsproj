@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="HelperPatterns.fs" />
+        <Compile Include="QueryPatterns.fs" />
+        <Compile Include="UpdatePatterns.fs" />
+        <Compile Include="QuotableMongo.fs" />
+        <Compile Include="BsonOrder.fs" />
+        <Compile Include="ProjectionHelpers.fs" />
+        <Compile Include="FindHelpers.fs" />
+        <Compile Include="CollectionHelpers.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MongoDB.Driver" Version="2.11.2" />
+    </ItemGroup>
+
+</Project>

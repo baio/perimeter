@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="MsgReducer.fs" />
+        <Compile Include="JournalHelpers.fs" />
+        <Content Include="readme.md" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Akka.Persistence.Query" Version="1.4.10" />
+      <PackageReference Include="Akkling.Persistence" Version="0.10.0" />
+      <PackageReference Include="Akkling.Streams.TestKit" Version="0.10.0" />
+    </ItemGroup>
+
+</Project>
