@@ -47,9 +47,13 @@ module FindHelpers =
 
     let limit (i: int) (fluent: IFindFluent<'a, 'b>) = fluent.Limit(System.Nullable i)
 
-    let first (fluent: IFindFluent<'a, 'b>) = (fluent |> limit 1).First()
+    let first (fluent: IFindFluent<'a, 'b>) = (fluent).First()
 
-    let firstAsync (fluent: IFindFluent<'a, 'b>) = (fluent |> limit 1).FirstAsync()
+    let firstAsync (fluent: IFindFluent<'a, 'b>) = (fluent).FirstAsync()
+
+    let firstOrDefault (fluent: IFindFluent<'a, 'b>) = (fluent).FirstOrDefault()
+
+    let firstOrDefaultAsync (fluent: IFindFluent<'a, 'b>) = (fluent).FirstOrDefaultAsync()
 
     type SortBy<'a, 'b> =
         | SortByAsc of Expr<'a -> 'b>
@@ -62,16 +66,20 @@ module FindHelpers =
 
     let maxBy' col expr = sortBy col (SortByDesc expr)
 
-    let maxBy col expr = maxBy' col expr |> first
+    let maxBy col expr = maxBy' col expr |> firstOrDefault
 
     let maxByAsync col expr = maxBy' col expr |> firstAsync
-
+    
+    let isDocumentEmpty (doc: BsonDocument) =
+        FilterDefinition.Empty.ToBsonDocument().Equals(doc)
+       
     let andWhere (expr: Expr<'b -> bool>) (fluent: IFindFluent<'a, 'b>): IFindFluent<'a, 'b> =
-        let left = fluent.ToBsonDocument()
+        let left = fluent.Filter.ToBsonDocument()
         let right = bson expr
-        if left <> FilterDefinition.Empty.ToBsonDocument() then
+        if isDocumentEmpty left then
+            fluent.Filter <- FilterDefinition.op_Implicit right
+        else
             let doc =
                 BsonDocument("$and", BsonArray([ left; right ]))
-
-            fluent.Filter <- FilterDefinition.op_Implicit doc
+            fluent.Filter <- FilterDefinition.op_Implicit doc            
         fluent
