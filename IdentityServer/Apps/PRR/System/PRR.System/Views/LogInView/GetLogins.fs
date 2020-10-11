@@ -1,10 +1,12 @@
 ﻿namespace PRR.System.Views.LogInView
 
+open System.Text.RegularExpressions
 open System.Threading.Tasks
 open Common.Domain.Models
 open MongoDB.Driver
 open FSharp.Mongo.ListQuery
 open FSharp.MongoDB.Driver
+open MongoDB.Driver
 
 [<AutoOpen>]
 module GetLogins =
@@ -26,7 +28,9 @@ module GetLogins =
 
     let getFilterFieldExpr filterValue =
         function
-        | FilterField.Email -> <@ fun (doc: Doc) -> doc.email = filterValue @>
+        | FilterField.Email ->
+            let likeFilterValue = getILikeString filterValue
+            <@ fun (doc: Doc) -> doc.email =~ likeFilterValue @>
         | FilterField.DateTime ->
             let date = System.DateTime.Parse(filterValue)
             <@ fun (doc: Doc) -> doc.dateTime = date @>
@@ -38,10 +42,8 @@ module GetLogins =
 
     let getList: GetList =
         fun db (domainId, isManagement, prms) ->
-
             let col =
                 db.GetCollection<Doc>(LOGIN_VIEW_COLLECTION_NAME)
-
             handleListQuery col getFilterFieldExpr getSortFieldExpr prms
             |> andWhere
                 <@ fun doc ->

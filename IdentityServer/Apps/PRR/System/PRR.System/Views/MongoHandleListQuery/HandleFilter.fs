@@ -16,7 +16,7 @@ module HandleFilter =
             let fr = filterFn filter.Value filter.Key
             (match acc' with
              | Some acc -> <@ fun x -> (%fr) x && (%acc) x @>
-             | None -> <@ fun x -> (%fr) x @>)
+             | None -> fr)
             |> Some
 
         filters |> Seq.fold fn None

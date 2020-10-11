@@ -72,6 +72,10 @@ module FindHelpers =
     
     let isDocumentEmpty (doc: BsonDocument) =
         FilterDefinition.Empty.ToBsonDocument().Equals(doc)
+        
+    let getLikeString = sprintf "/%s/"
+    
+    let getILikeString = sprintf "/%s/i"
        
     let andWhere (expr: Expr<'b -> bool>) (fluent: IFindFluent<'a, 'b>): IFindFluent<'a, 'b> =
         let left = fluent.Filter.ToBsonDocument()
@@ -79,7 +83,8 @@ module FindHelpers =
         if isDocumentEmpty left then
             fluent.Filter <- FilterDefinition.op_Implicit right
         else
+            let leftFilterDoc = left.Item(1).AsBsonDocument
             let doc =
-                BsonDocument("$and", BsonArray([ left; right ]))
+                BsonDocument("$and", BsonArray([ leftFilterDoc; right ]))
             fluent.Filter <- FilterDefinition.op_Implicit doc            
         fluent

@@ -57,21 +57,64 @@ module CRUD =
                 let! userToken' = createUser' true testContext.Value userData
                 userToken <- userToken'
                 printf "%s" userToken
+                Thread.Sleep(100)
             }
 
         [<Fact>]
         [<Priority(1)>]
         member __.``A Get user activities must be success``() =
             task {
-                
-                Thread.Sleep(100)
-                
+
                 let tenant = testContext.Value.GetTenant()
-                               
+
                 let! result =
                     testFixture.HttpGetAsync
                         userToken
-                        (sprintf "/api/tenant/domains/%i/admin-activities" tenant.DomainId)                
+                        (sprintf "/api/tenant/domains/%i/admin-activities" tenant.DomainId)
+
+                do! ensureSuccessAsync result
+
+                let! resultDto = readAsJsonAsync<ListResponse> result
+
+                resultDto.Items |> should haveCount 1
+
+                ()
+            }
+
+        [<Fact>]
+        [<Priority(1)>]
+        member __.``B Get user activities with filter give correct result``() =
+            task {
+
+                let tenant = testContext.Value.GetTenant()
+
+                let! result =
+                    testFixture.HttpGetAsync
+                        userToken
+                        (sprintf "/api/tenant/domains/%i/admin-activities?filter.email=xxx" tenant.DomainId)
+
+                do! ensureSuccessAsync result
+
+                let! resultDto = readAsJsonAsync<ListResponse> result
+
+                resultDto.Items |> should haveCount 0
+
+                ()
+            }
+
+
+        [<Fact>]
+        [<Priority(1)>]
+        member __.``С Get user activities with existent filter give correct result``() =
+            task {
+
+                let tenant = testContext.Value.GetTenant()
+
+                let! result =
+                    testFixture.HttpGetAsync
+                        userToken
+                        (sprintf "/api/tenant/domains/%i/admin-activities?filter.email=user.c" tenant.DomainId)
+
                 do! ensureSuccessAsync result
 
                 let! resultDto = readAsJsonAsync<ListResponse> result
