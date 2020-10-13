@@ -49,5 +49,7 @@ namespace PRR.Data.Entities
         public string HS256SigningSecret { get; set; }
         
         public string RS256Params { get; set; }
+        
+        public virtual ICollection<SocialConnection> SocialConnections { get; set; }
     }
 }

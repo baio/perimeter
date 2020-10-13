@@ -3,6 +3,7 @@
 [<AutoOpen>]
 module StringUtils =
 
+    open System
     open System.Text.RegularExpressions
 
     let trimStart (x: string) (s: string) = s.Replace(x, "")
@@ -10,8 +11,7 @@ module StringUtils =
     let tryParseInt (x: string) = 
         match System.Int32.TryParse x with
         | true,int -> Some int
-        | _ -> None
-
+        | _ -> None               
 
     let (|Regex|_|) pattern input =
            let m = Regex.Match(input, pattern)

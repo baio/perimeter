@@ -35,6 +35,8 @@ namespace PRR.Data.DataContext
 
         public virtual DbSet<DomainUserRole> DomainUserRole { get; set; }
 
+        public virtual DbSet<SocialConnection> SocialConnections { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Tenant>(entity =>
@@ -57,7 +59,7 @@ namespace PRR.Data.DataContext
                 entity.Property(x => x.IsMain).HasDefaultValue(false);
                 entity.Property(x => x.DateCreated).HasDefaultValueSql("now()");
                 entity.HasOne(x => x.Pool).WithMany(x => x.Domains).OnDelete(DeleteBehavior.Cascade);
-                
+
                 entity.Property(d => d.SigningAlgorithm).HasConversion<string>();
             });
 
@@ -134,6 +136,12 @@ namespace PRR.Data.DataContext
             {
                 entity.HasIndex(x => x.Email).IsUnique();
                 entity.Property(x => x.DateCreated).HasDefaultValueSql("now()");
+            });
+
+            modelBuilder.Entity<SocialConnection>(entity =>
+            {
+                entity.HasKey(x => new {x.DomainId, x.Name});
+                entity.HasOne(x => x.Domain).WithMany(x => x.SocialConnections).HasForeignKey(x => x.DomainId);
             });
         }
     }

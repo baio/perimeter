@@ -5,7 +5,9 @@ open PRR.API.Routes.Tenants
 
 module Tenant =
     let createRoutes () =
-        choose [ Tenants.createRoutes ()
+        choose [
+                 SocialConnections.createRoutes ()
+                 Tenants.createRoutes ()
                  Permission.createRoutes ()
                  Role.createRoutes ()
                  Api.createRoutes ()
@@ -13,5 +15,5 @@ module Tenant =
                  Domain.createRoutes ()
                  DomainPool.createRoutes ()
                  TenantUserRole.createRoutes ()
-                 DomainUserRole.createRoutes ()
+                 DomainUserRole.createRoutes ()                 
                  UsersActivities.createRoutes () ]

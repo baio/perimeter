@@ -60,6 +60,7 @@
         <Compile Include="Routes\Tenant\PermissionConstants.fs" />
         <Compile Include="Routes\Tenant\Utils.fs" />
         <Compile Include="Routes\Tenant\TenantsRoutes.fs" />
+        <Compile Include="Routes\Tenant\SocialConnectionRoutes.fs" />
         <Compile Include="Routes\Tenant\DomainPoolRoutes.fs" />
         <Compile Include="Routes\Tenant\DomainRoutes.fs" />
         <Compile Include="Routes\Tenant\ApiRoutes.fs" />

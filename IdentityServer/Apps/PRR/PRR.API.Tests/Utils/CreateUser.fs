@@ -126,9 +126,9 @@ module CreateUser =
             return result
         }
 
-    let createUser' a b c =
+    let createUser' signInUnderSampleDomain b c =
         task {
-            let! result = createUser'' a b c
+            let! result = createUser'' signInUnderSampleDomain b c
             return result.access_token
         }
 
