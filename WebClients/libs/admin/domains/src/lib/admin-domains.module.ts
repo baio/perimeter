@@ -28,6 +28,8 @@ import { PermFormComponent } from './domain/perms/form/form.component';
 import { PermsListComponent } from './domain/perms/list/list.component';
 import { RoleFormComponent } from './domain/roles/form/form.component';
 import { RolesListComponent } from './domain/roles/list/list.component';
+import { SocialConnectionsFormComponent } from './domain/social-connections/form/form.component';
+import { SocialConnectionsListComponent } from './domain/social-connections/list/list.component';
 import { UserActivitiesListComponent } from './domain/user-activities/list/list.component';
 import { UserFormComponent } from './domain/users/form/form.component';
 import { UsersListComponent } from './domain/users/list/list.component';
@@ -83,6 +85,8 @@ import { TenantLayoutComponent } from './tenant/tenant-layout/tenant-layout.comp
         DomainFormComponent,
         AdminActivitiesListComponent,
         UserActivitiesListComponent,
+        SocialConnectionsListComponent,
+        SocialConnectionsFormComponent,
     ],
 })
 export class AdminDomainsModule {}
