@@ -79,7 +79,7 @@ module E2E =
                              let! evt = signUpConfirm true signupEnv signupItem
                              sys.EventsRef <! evt
                              //
-                             Thread.Sleep(10)
+                             Thread.Sleep(100)
 
                              let! data = ctx |> bindJsonAsync<ReinitData>
 

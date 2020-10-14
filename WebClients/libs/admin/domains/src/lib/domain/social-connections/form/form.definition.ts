@@ -1,51 +1,58 @@
-import { AdminForm } from '@admin/shared';
-import { Validators } from '@angular/forms';
-
-export const definition: AdminForm.FormDefinition = {
-    kind: 'fields',
-    fields: [
-        {
-            id: 'name',
-            kind: 'Text',
-            label: 'Name',
-            props: {
-                readonly: true,
+import { AdminForm, not$ } from '@admin/shared';
+import { FormGroup, Validators } from '@angular/forms';
+import { propChanged } from '@nz-holistic/forms';
+export const definition = (formGroup: FormGroup): AdminForm.FormDefinition => {
+    const isNotEnabled$ = formGroup.valueChanges.pipe(
+        propChanged('isEnabled'),
+        not$
+    );
+    return {
+        kind: 'fields',
+        fields: [
+            {
+                id: 'name',
+                kind: 'Display',
+                label: 'Name',
             },
-        },
-        {
-            id: 'isEnabled',
-            kind: 'Text',
-            label: 'Is Enabled',
-        },
-        {
-            id: 'clientId',
-            kind: 'Text',
-            label: 'Client ID',
-            validators: [Validators.required],
-        },
-        {
-            id: 'clientSecret',
-            kind: 'Text',
-            label: 'Client Secret',
-            validators: [Validators.required],
-        },
-        {
-            id: 'attributes',
-            kind: 'Select',
-            props: {
-                label: 'Attributes',
-                mode: 'tags',
-                items: [],
+            {
+                id: 'isEnabled',
+                kind: 'Toggle',
+                label: 'Is Enabled',
             },
-        },
-        {
-            id: 'permissions',
-            kind: 'Select',
-            props: {
-                label: 'Permissions',
-                mode: 'tags',
-                items: [],
+            {
+                id: 'clientId',
+                kind: 'Text',
+                label: 'Client ID',
+                validators: [Validators.required],
+                hidden: isNotEnabled$,
             },
-        },
-    ],
+            {
+                id: 'clientSecret',
+                kind: 'Text',
+                label: 'Client Secret',
+                validators: [Validators.required],
+                hidden: isNotEnabled$,
+            },
+            {
+                id: 'attributes',
+                kind: 'Select',
+                props: {
+                    label: 'Attributes',
+                    mode: 'tags',
+                    items: [],
+                },
+                hidden: isNotEnabled$,
+            },
+            {
+                id: 'permissions',
+                kind: 'Select',
+                props: {
+                    label: 'Permissions',
+                    mode: 'tags',
+                    items: [],
+                },
+                hidden: isNotEnabled$,
+            },
+        ],
+    };
 };

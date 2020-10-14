@@ -1,13 +1,12 @@
 import {
-    RolesDataAccessService,
-    Permission,
+    SocialConnection,
     SocialConnectionsDataAccessService,
 } from '@admin/data-access';
 import { AdminForm } from '@admin/shared';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { of } from 'rxjs';
 import { definition } from './form.definition';
-import { Observable } from 'rxjs';
 
 @Component({
     selector: 'admin-social-connections-form',
@@ -22,11 +21,19 @@ export class SocialConnectionsFormComponent {
     ) => this.dataAccess.loadItem(this.domainId, id);
 
     readonly storeValueDataAccess: AdminForm.Data.StoreValueDataAccess = (
-        item: any
-    ) =>
-        item.id
-            ? this.dataAccess.updateItem(this.domainId, item)
-            : this.dataAccess.createItem(this.domainId, item);
+        item: SocialConnection,
+        current: SocialConnection
+    ) => {
+        if (item.isEnabled && !current.isEnabled) {
+            return this.dataAccess.createItem(this.domainId, item);
+        } else if (!item.isEnabled && current.isEnabled) {
+            return this.dataAccess.removeItem(this.domainId, item.id);
+        } else if (item.isEnabled && current.isEnabled) {
+            return this.dataAccess.updateItem(this.domainId, item);
+        } else {
+            return of(null);
+        }
+    };
 
     constructor(
         private readonly activatedRoute: ActivatedRoute,

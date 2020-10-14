@@ -16,6 +16,7 @@
 /// <reference types="./index" />
 // Import commands.js using ES2015 syntax:
 import './commands';
+import 'cypress-plugin-tab';
 
 Cypress.Cookies.defaults({
     whitelist: ['sso'],

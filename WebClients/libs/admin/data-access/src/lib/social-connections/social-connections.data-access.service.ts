@@ -61,7 +61,7 @@ export class SocialConnectionsDataAccessService {
 
     updateItem(domainId: number, data: SocialConnection): Observable<any> {
         return this.http.put(
-            `/tenant/domains/${domainId}/roles/${data.name}`,
+            `/tenant/domains/${domainId}/social/${data.name}`,
             data
         );
     }

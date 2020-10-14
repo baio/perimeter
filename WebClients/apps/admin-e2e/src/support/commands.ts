@@ -47,6 +47,10 @@ Cypress.Commands.add('formSelect', (value) => {
     return cy.get(`.hlc-form-input-${value} nz-select`);
 });
 
+Cypress.Commands.add('formToggle', (value) => {
+    return cy.get(`.hlc-form-input-${value} button.ant-switch`);
+});
+
 Cypress.Commands.add('formSelectChoose', (value, index) => {
     cy.formSelect(value)
         .click()

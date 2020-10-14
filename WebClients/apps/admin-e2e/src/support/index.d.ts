@@ -11,6 +11,8 @@ declare namespace Cypress {
 
         formSelect(value: string): Chainable<JQuery<HTMLElement>>;
 
+        formToggle(value: string): Chainable<JQuery<HTMLElement>>;
+
         formSelectChoose(
             value: string,
             index: number
