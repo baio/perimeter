@@ -1,5 +1,7 @@
 ﻿namespace PRR.Sys.Social
 
+open Akkling
+
 [<AutoOpen>]
 module Messages =
 
@@ -17,6 +19,6 @@ module Messages =
     type Message =
         | SocialLoginAddCommand of SocialLogin
         | SocialLoginAddedEvent of SocialLogin
-        | SocialLoginQueryAndRemoveCommand of Token
+        | SocialLoginQueryAndRemoveCommand of (Token * IActorRef<Token * Item option>)
         | SocialLoginRemoveCommand of Token
         | SocialLoginRemovedEvent of Token

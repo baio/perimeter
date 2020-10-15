@@ -1,5 +1,7 @@
 ﻿namespace PRR.Sys.Social
 
+open Akka.Actor
+open Akkling
 open FSharp.Akkling.CQRS
 
 [<AutoOpen>]
@@ -15,11 +17,12 @@ module Reducer =
                  Type = socialLogin.Type }
         |> stateMsgNone
 
-    let handleSocialLoginQueryCommand state (token: Token) =
+    let handleSocialLoginQueryCommand state (token, (toActor: IActorRef<_>)) =
         let item = state |> Map.tryFind token
+        toActor <! (token, item)
         match item with
-        | Some _ -> queryResultMsgSome (SocialLoginRemoveCommand token) item
-        | None -> queryResultMsgNone item
+        | Some _ -> JustMsg(SocialLoginRemoveCommand token)
+        | None -> NoneMsg
 
     let handleSocialLoginRemoved state (token: Token) =
         state |> Map.remove token |> stateMsgNone
@@ -28,7 +31,7 @@ module Reducer =
         function
         | SocialLoginAddCommand socialLogin -> socialLogin |> SocialLoginAddedEvent |> PersistMsg
         | SocialLoginAddedEvent socialLogin -> handleSocialLoginAdded state socialLogin
-        | SocialLoginQueryAndRemoveCommand token -> handleSocialLoginQueryCommand state token
+        | SocialLoginQueryAndRemoveCommand q -> handleSocialLoginQueryCommand state q
         | SocialLoginRemoveCommand token -> token |> SocialLoginRemovedEvent |> PersistMsg
         | SocialLoginRemovedEvent token -> handleSocialLoginRemoved state token
 
