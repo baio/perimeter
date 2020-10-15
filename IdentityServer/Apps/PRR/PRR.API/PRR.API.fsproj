@@ -74,6 +74,7 @@
         <Compile Include="Routes\Tenant\TenantRoutes.fs" />
         <Compile Include="Routes\E2ERoutes.fs" />
         <Compile Include="Routes\PingRoutes.fs" />
+        <Compile Include="Routes\Auth\SocialAuthRoutes.fs" />
         <Compile Include="Program.fs" />
         <Content Include="akka.e2e.hocon">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>

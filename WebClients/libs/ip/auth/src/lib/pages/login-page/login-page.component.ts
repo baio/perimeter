@@ -1,17 +1,16 @@
 import {
-    Component,
-    OnInit,
+    AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
+    Component,
     Inject,
+    OnInit,
     ViewChild,
-    AfterViewInit,
 } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { AppInfo, AuthDataAccessService, LoginParams } from '@ip/data-access';
 import { FormValidators, HTTP_BASE_URL_CONFIG } from '@perimeter/common';
-import { LoginParams, AuthDataAccessService, AppInfo } from '@ip/data-access';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 @Component({
     selector: 'ip-login-page',
@@ -145,5 +144,12 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
     async onSubmit(form: HTMLFormElement) {
         // await this.dataAccess.assignSSO().toPromise();
         form.submit();
+    }
+
+    get githubUrl() {
+        const redirectUri = encodeURIComponent(
+            'http://localhost:4200/login/callback'
+        );
+        return `https://github.com/login/oauth/authorize?client_id=8de1af4393574ca685e7&redirect_uri=${redirectUri}`;
     }
 }

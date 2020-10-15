@@ -8,12 +8,14 @@
         <Compile Include="MsgReducer.fs" />
         <Compile Include="JournalHelpers.fs" />
         <Content Include="readme.md" />
+        <Compile Include="TaskOfQueryActor.fs" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Akka.Persistence.Query" Version="1.4.10" />
       <PackageReference Include="Akkling.Persistence" Version="0.10.0" />
       <PackageReference Include="Akkling.Streams.TestKit" Version="0.10.0" />
+      <PackageReference Include="TaskBuilder.fs" Version="2.1.0" />
     </ItemGroup>
 
 </Project>

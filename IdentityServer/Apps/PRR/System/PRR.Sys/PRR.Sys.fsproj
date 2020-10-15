@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Social\Messages.fs" />
+        <Compile Include="Social\Reducer.fs" />
+        <Compile Include="SetUp.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\..\FSharp\FSharp.Akkling.CQRS\FSharp.Akkling.CQRS.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Akkling" Version="0.10.0" />
+    </ItemGroup>
+
+</Project>

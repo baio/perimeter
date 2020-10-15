@@ -13,7 +13,14 @@ module MsgReducer =
         | PersistMsg of 'm
         | JustMsg of 'm
         | StateMsg of 's * ('m option)
-        | QueryMsg of 'm
+        | QueryResultMsg of obj * ('m option)
+
+    // helpers
+    let stateMsgNone state = StateMsg(state, None)
+
+    let queryResultMsgSome msg res = (res, Some msg) |> QueryResultMsg
+
+    let queryResultMsgNone res = (res, None) |> QueryResultMsg
 
     let msgReducer initState reducer =
         propsPersist (fun ctx ->
@@ -33,7 +40,11 @@ module MsgReducer =
                         | Some msg -> ctx.Self <! msg
                         | None -> ()
                         return! loop updState
-                    | QueryMsg msg -> ctx.Sender() <! msg
+                    | QueryResultMsg (res, msg) ->
+                        ctx.Sender() <! res
+                        match msg with
+                        | Some msg -> ctx.Self <! msg
+                        | None -> ()
                 }
 
             loop initState)

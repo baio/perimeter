@@ -40,6 +40,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.Akkling.CQRS", "FSha
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.MongoDB.Driver", "FSharp\FSharp.MongoDB.Driver\FSharp.MongoDB.Driver.fsproj", "{6295F578-1EA8-45E4-8588-39CF9F24E016}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PRR.Sys", "Apps\PRR\System\PRR.Sys\PRR.Sys.fsproj", "{D152710E-2AE8-4827-BB82-47ED86106916}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -209,6 +211,16 @@ Global
 		{6295F578-1EA8-45E4-8588-39CF9F24E016}.E2E|Any CPU.Build.0 = Debug|Any CPU
 		{6295F578-1EA8-45E4-8588-39CF9F24E016}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{6295F578-1EA8-45E4-8588-39CF9F24E016}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{D152710E-2AE8-4827-BB82-47ED86106916}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D152710E-2AE8-4827-BB82-47ED86106916}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D152710E-2AE8-4827-BB82-47ED86106916}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D152710E-2AE8-4827-BB82-47ED86106916}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D152710E-2AE8-4827-BB82-47ED86106916}.Test|Any CPU.ActiveCfg = Debug|Any CPU
+		{D152710E-2AE8-4827-BB82-47ED86106916}.Test|Any CPU.Build.0 = Debug|Any CPU
+		{D152710E-2AE8-4827-BB82-47ED86106916}.E2E|Any CPU.ActiveCfg = Debug|Any CPU
+		{D152710E-2AE8-4827-BB82-47ED86106916}.E2E|Any CPU.Build.0 = Debug|Any CPU
+		{D152710E-2AE8-4827-BB82-47ED86106916}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{D152710E-2AE8-4827-BB82-47ED86106916}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
