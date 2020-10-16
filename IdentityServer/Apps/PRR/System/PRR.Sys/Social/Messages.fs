@@ -7,14 +7,14 @@ module Messages =
 
     type Token = string
 
-    type SocialType = | Twitter
+    type Github = | Github
 
     type SocialLogin =
         { Token: Token
           ClientId: string
-          Type: SocialType }
+          Type: Github }
 
-    type Item = { ClientId: string; Type: SocialType }
+    type Item = { ClientId: string; Type: Github }
 
     type Message =
         | SocialLoginAddCommand of SocialLogin

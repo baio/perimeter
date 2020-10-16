@@ -1,4 +1,5 @@
-﻿namespace PRR.Sys
+﻿// TODO : Rename sys auth
+namespace PRR.Sys
 
 open Akka.Configuration
 open Akkling

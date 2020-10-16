@@ -106,6 +106,7 @@
       <ProjectReference Include="..\Domain\PRR.Domain.Tenant\PRR.Domain.Tenant.fsproj" />
       <ProjectReference Include="..\System\PRR.System.Models\PRR.System.Models.fsproj" />
       <ProjectReference Include="..\System\PRR.System\PRR.System.fsproj" />
+      <ProjectReference Include="..\System\PRR.Sys\PRR.Sys.fsproj" />
     </ItemGroup>
 
 </Project>
