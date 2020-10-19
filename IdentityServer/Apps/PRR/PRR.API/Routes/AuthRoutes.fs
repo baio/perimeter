@@ -41,7 +41,7 @@ module private Handlers =
              <!> (ofReader
                       // Create default tenant for tests only
 #if TEST
-                      (bindQueryString "skipCreateTenant"
+                      (bindQueryStringField "skipCreateTenant"
                        >> function
                        | None -> true
                        | Some _ -> false)
@@ -265,11 +265,11 @@ module private Handlers =
         ctx.Response.Cookies.Delete("sso")
         task {
             let returnUri =
-                bindQueryString "return_uri" ctx
+                bindQueryStringField "return_uri" ctx
                 |> Options.noneFails (unAuthorized "return_uri param is not found")
 
             let accessToken =
-                bindQueryString "access_token" ctx
+                bindQueryStringField "access_token" ctx
                 |> Options.noneFails (unAuthorized "access_token param is not found")
 
             let data: Data =

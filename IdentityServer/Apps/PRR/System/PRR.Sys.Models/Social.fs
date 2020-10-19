@@ -1,11 +1,8 @@
-﻿namespace PRR.Sys.Social
+﻿namespace PRR.Sys.Models
 
 open Akkling
 
-[<AutoOpen>]
-module Messages =
-
-    type Token = string
+module Social =
 
     type Github = | Github
 

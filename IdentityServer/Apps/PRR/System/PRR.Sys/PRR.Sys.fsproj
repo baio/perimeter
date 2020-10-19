@@ -5,13 +5,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Social\Messages.fs" />
         <Compile Include="Social\Reducer.fs" />
         <Compile Include="SetUp.fs" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\FSharp\FSharp.Akkling.CQRS\FSharp.Akkling.CQRS.fsproj" />
+      <ProjectReference Include="..\PRR.Sys.Models\PRR.Sys.Models.fsproj" />
     </ItemGroup>
 
     <ItemGroup>

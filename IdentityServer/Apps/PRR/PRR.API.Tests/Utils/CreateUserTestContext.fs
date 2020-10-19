@@ -1,6 +1,7 @@
 ﻿namespace PRR.API.Tests.Utils
 
 open Microsoft.Extensions.DependencyInjection
+open PRR.API.Infra
 open PRR.System.Models
 open System.Threading
 
@@ -19,13 +20,19 @@ module UserTestContext =
     let createUserTestContext (testFixture: TestFixture) =
 
         let mutable confirmToken: string = null
-        let confirmTokenWaitHandle = new System.Threading.AutoResetEvent(false)
+
+        let confirmTokenWaitHandle =
+            new System.Threading.AutoResetEvent(false)
 
         let mutable tenant: CreatedTenantInfo option = None
-        let tenantWaitHandle = new System.Threading.AutoResetEvent(false)
+
+        let tenantWaitHandle =
+            new System.Threading.AutoResetEvent(false)
 
         let mutable resetPasswordToken: string option = None
-        let resetPasswordTokenHandle = new System.Threading.AutoResetEvent(false)
+
+        let resetPasswordTokenHandle =
+            new System.Threading.AutoResetEvent(false)
 
         let systemEventHandled =
             function
@@ -41,20 +48,27 @@ module UserTestContext =
             | QueryFailureEvent _ ->
                 confirmTokenWaitHandle.Set() |> ignore
                 tenantWaitHandle.Set() |> ignore
-            | ResetPasswordEvent(ResetPassword.TokenAdded(item)) ->
+            | ResetPasswordEvent (ResetPassword.TokenAdded (item)) ->
                 resetPasswordToken <- Some item.Token
                 resetPasswordTokenHandle.Set() |> ignore
-            | _ ->
-                ()
+            | _ -> ()
 
         testFixture.OverrideServices(fun services ->
             let sp = services.BuildServiceProvider()
             let systemEnv = sp.GetService<SystemEnv>()
+
             let systemEnv =
-                { systemEnv with EventHandledCallback = systemEventHandled }
+                { systemEnv with
+                      EventHandledCallback = systemEventHandled }
+
             let sys = PRR.System.Setup.setUp systemEnv
-            services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore)
-                
+            services.AddSingleton<ICQRSSystem>(fun _ -> sys)
+            |> ignore
+            //
+            let sys1 = PRR.Sys.SetUp.setUp "akka.hocon"
+            services.AddSingleton<ISystemActorsProvider>(SystemActorsProvider sys1)
+            |> ignore)
+
 
         { TestFixture = testFixture
           ConfirmTokenWaitHandle = confirmTokenWaitHandle

@@ -69,6 +69,7 @@
         <Compile Include="Auth\RefreshTokenPersistenceTests.fs" />
         <Compile Include="Auth\ResetPasswordTests.fs" />
         <Compile Include="Auth\SignUpPasswordValidationTests.fs" />
+        <Compile Include="Auth\SocialTests.fs" />
         <Compile Include="Me\DomainsTests.fs" />
         <Compile Include="BadRequestValidatorsTest.fs" />
         <Content Include="akka.hocon">

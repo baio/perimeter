@@ -1,8 +1,9 @@
 ﻿namespace PRR.Sys.Social
 
-open Akka.Actor
 open Akkling
 open FSharp.Akkling.CQRS
+open PRR.Sys.Models
+open PRR.Sys.Models.Social
 
 [<AutoOpen>]
 module Reducer =

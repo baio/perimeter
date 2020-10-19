@@ -23,6 +23,7 @@ open PRR.API.Infra.Mail
 open PRR.API.Infra.Mail.Models
 open PRR.API.Routes
 open PRR.API.Routes.Tenant
+open PRR.API.Routes.AuthSocialAuthRoutes
 open PRR.Data.DataContext
 open PRR.System
 open PRR.System.Models
@@ -37,6 +38,7 @@ let webApp =
                   Tenant.createRoutes ()
                   PingRoutes.createRoutes ()
                   ApplicationInfo.createRoutes ()
+                  AuthSocialAuthRoutes.Routes.createRoute()
 #if E2E
                   E2E.createRoutes ()
 #endif
@@ -125,11 +127,15 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     services.AddGiraffe() |> ignore
 
     // Infra
-    let mongoViewsConnectionString = context.Configuration.GetConnectionString("MongoViews");
+    let mongoViewsConnectionString =
+        context.Configuration.GetConnectionString("MongoViews")
+
     let sha256 = SHA256.Create()
     let hashProvider = HashProvider sha256
     let sha256Provider = SHA256Provider sha256
-    let viewsReaderDbProvider  = ViewsReaderDbProvider mongoViewsConnectionString 
+
+    let viewsReaderDbProvider =
+        ViewsReaderDbProvider mongoViewsConnectionString
 
     services.AddSingleton<IConfig, Config>() |> ignore
     services.AddSingleton<IPermissionsFromRoles, PermissionsFromRoles>()
@@ -220,6 +226,10 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     printfn "Akka conf file %s" akkaConfFile
     let sys = setUp' systemEnv akkaConfFile
     services.AddSingleton<ICQRSSystem>(fun _ -> sys)
+    |> ignore
+
+    let sys1 = PRR.Sys.SetUp.setUp akkaConfFile
+    services.AddSingleton<ISystemActorsProvider>(SystemActorsProvider sys1)
     |> ignore
 #endif
 

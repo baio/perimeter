@@ -53,12 +53,15 @@
         <Compile Include="LogInSSO\LogInSSO.fs" />
         <Compile Include="LogOut\Models.fs" />
         <Compile Include="LogOut\LogOut.fs" />
+        <Compile Include="Social\Models.fs" />
+        <Compile Include="Social\Social.fs" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\Common\Domain\Common.Domain.Models\Common.Domain.Models.fsproj" />
       <ProjectReference Include="..\..\..\..\Common\Domain\Common.Domain.Utils\Common.Domain.Utils.fsproj" />
       <ProjectReference Include="..\..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
+      <ProjectReference Include="..\..\System\PRR.Sys.Models\PRR.Sys.Models.fsproj" />
       <ProjectReference Include="..\..\System\PRR.System.Models\PRR.System.Models.fsproj" />
     </ItemGroup>
 

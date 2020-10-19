@@ -5,6 +5,7 @@ open Akka.Configuration
 open Akkling
 
 open PRR.Sys
+open PRR.Sys.Models
 
 [<AutoOpen>]
 module SetUp =
@@ -18,8 +19,7 @@ module SetUp =
 
         ConfigurationFactory.ParseString conf
 
-    type SystemActors =
-        { Social: IActorRef<Social.Messages.Message> }
+    type SystemActors = { Social: IActorRef<Social.Message> }
 
     let setUp confFileName =
 

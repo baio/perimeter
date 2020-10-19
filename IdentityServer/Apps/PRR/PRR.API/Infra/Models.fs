@@ -3,6 +3,7 @@
 open Common.Domain.Models
 open MongoDB.Driver
 open PRR.Domain.Auth
+open PRR.Sys.SetUp
 
 [<AutoOpen>]
 module Models =
@@ -31,3 +32,6 @@ module Models =
 
     type IViewsReaderDbProvider =
         abstract ViewsReaderDb: IMongoDatabase
+
+    type ISystemActorsProvider =
+        abstract SystemActors: SystemActors

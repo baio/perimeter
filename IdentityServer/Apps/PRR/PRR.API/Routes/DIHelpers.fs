@@ -6,6 +6,7 @@ open Microsoft.AspNetCore.Http
 open Common.Utils
 open Common.Utils.ReaderTask
 open PRR.API.Infra.Models
+open PRR.Sys.SetUp
 
 [<AutoOpen>]
 module DIHelpers =
@@ -22,6 +23,10 @@ module DIHelpers =
         ctx.GetService<IPasswordSaltProvider>().SaltPassword
 
     let getConfig (ctx: HttpContext) = ctx.GetService<IConfig>().GetConfig()
+
+
+    let getSystemActors (ctx: HttpContext) =
+        ctx.GetService<ISystemActorsProvider>().SystemActors
 
     let getAuthStringsProvider (ctx: HttpContext) =
         ctx.GetService<IAuthStringsProvider>().AuthStringsProvider
