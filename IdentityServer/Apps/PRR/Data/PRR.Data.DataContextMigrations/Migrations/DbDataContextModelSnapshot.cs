@@ -707,7 +707,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     b.Property<int>("DomainId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("SocialName")
                         .HasColumnType("text");
 
                     b.Property<string[]>("Attributes")
@@ -722,9 +722,35 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     b.Property<string[]>("Permissions")
                         .HasColumnType("text[]");
 
-                    b.HasKey("DomainId", "Name");
+                    b.HasKey("DomainId", "SocialName");
 
                     b.ToTable("SocialConnections");
+                });
+
+            modelBuilder.Entity("PRR.Data.Entities.SocialIdentity", b =>
+                {
+                    b.Property<int>("SocialId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SocialName")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("DateCreated")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp without time zone")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("SocialId", "SocialName");
+
+                    b.ToTable("SocialIdentity");
                 });
 
             modelBuilder.Entity("PRR.Data.Entities.Tenant", b =>

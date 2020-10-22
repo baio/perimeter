@@ -8,7 +8,9 @@
         <Compile Include="MsgReducer.fs" />
         <Compile Include="JournalHelpers.fs" />
         <Content Include="readme.md" />
+        <Compile Include="TaskOfActorUtils.fs" />
         <Compile Include="TaskOfQueryActor.fs" />
+        <Compile Include="TaskOfAskActor.fs" />
     </ItemGroup>
 
     <ItemGroup>

@@ -25,6 +25,7 @@
       <Compile Include="RequestWrappers\WrapNoArgs.fs" />
       <Compile Include="RequestWrappers\Wrap.fs" />
       <Compile Include="RequestWrappers\AddArg.fs" />
+      <Compile Include="RequestWrappers\WrapHandler.fs" />
     </ItemGroup>
 
     <ItemGroup>

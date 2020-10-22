@@ -9,6 +9,21 @@ namespace PRR.Data.DataContextMigrations.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "SocialIdentity",
+                columns: table => new
+                {
+                    SocialName = table.Column<string>(nullable: false),
+                    SocialId = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    Email = table.Column<string>(nullable: false),
+                    DateCreated = table.Column<DateTime>(nullable: false, defaultValueSql: "now()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SocialIdentity", x => new { x.SocialId, x.SocialName });
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -185,7 +200,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                 columns: table => new
                 {
                     DomainId = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: false),
+                    SocialName = table.Column<string>(nullable: false),
                     ClientId = table.Column<string>(nullable: true),
                     ClientSecret = table.Column<string>(nullable: true),
                     Attributes = table.Column<string[]>(nullable: true),
@@ -193,7 +208,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SocialConnections", x => new { x.DomainId, x.Name });
+                    table.PrimaryKey("PK_SocialConnections", x => new { x.DomainId, x.SocialName });
                     table.ForeignKey(
                         name: "FK_SocialConnections_Domains_DomainId",
                         column: x => x.DomainId,
@@ -496,6 +511,9 @@ namespace PRR.Data.DataContextMigrations.Migrations
 
             migrationBuilder.DropTable(
                 name: "SocialConnections");
+
+            migrationBuilder.DropTable(
+                name: "SocialIdentity");
 
             migrationBuilder.DropTable(
                 name: "Permissions");

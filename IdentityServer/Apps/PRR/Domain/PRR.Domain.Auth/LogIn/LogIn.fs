@@ -51,86 +51,123 @@ module Authorize =
             else return! getClientAppData' dataContext clientId
         }
 
+
+    type LoginData =
+        { UserId: int
+          ClientId: ClientId
+          ResponseType: string
+          State: string
+          RedirectUri: string
+          Scope: Scope
+          Email: string
+          CodeChallenge: string
+          CodeChallengeMethod: string }
+
+    let logInUser env sso (data: LoginData) =
+        let dataContext = env.DataContext
+        task {
+
+            printfn "login:1 %s %s" data.ClientId data.Email
+            let! { ClientId = clientId; Issuer = issuer } =
+                getAppInfo env.DataContext data.ClientId data.Email 1<minutes>
+
+            printfn "login:2 %s %s" clientId issuer
+            let! (ssoEnabled, callbackUrls, poolTenantId, domainTenantId) = getClientAppData dataContext clientId
+            printfn "login:3"
+
+            let tenantId =
+                match (poolTenantId.HasValue, domainTenantId.HasValue) with
+                // Perimeter app : profile / create tenant
+                | (false, false) -> PRR.Domain.Auth.Constants.PERIMETER_TENANT_ID
+                // Domain app
+                | (true, false) -> poolTenantId.Value
+                // Tenant management app
+                | (false, true) -> domainTenantId.Value
+                | (true, true) -> raise (unexpected "Both poolTenantId, domainTenantId defined")
+
+            if (callbackUrls
+                <> "*"
+                && (callbackUrls.Split(",")
+                    |> Seq.map (fun x -> x.Trim())
+                    |> Seq.contains data.RedirectUri
+                    |> not)) then
+                return! raise (unAuthorized "return_uri mismatch")
+
+
+            let code = env.CodeGenerator()
+
+            let result: Result =
+                { RedirectUri = data.RedirectUri
+                  State = data.State
+                  Code = code }
+
+            let codeExpiresAt =
+                DateTime.UtcNow.AddMinutes(float env.CodeExpiresIn)
+
+            let scopes = data.Scope.Split " "
+
+            let! validatedScopes = validateScopes dataContext data.Email clientId scopes
+
+            printfn "login:4 %s %A %A" clientId scopes validatedScopes
+
+            let userId = data.UserId
+
+            let loginItem: LogIn.Item =
+                { Code = code
+                  ClientId = data.ClientId
+                  Issuer = issuer
+                  CodeChallenge = data.CodeChallenge
+                  RequestedScopes = scopes
+                  ValidatedScopes = validatedScopes
+                  UserId = userId
+                  ExpiresAt = codeExpiresAt
+                  RedirectUri = data.RedirectUri }
+
+            let ssoExpiresAt =
+                DateTime.UtcNow.AddMinutes(float env.SSOExpiresIn)
+
+            let ssoItem =
+                match ssoEnabled, sso with
+                | (true, Some sso) ->
+                    Some
+                        ({ Code = sso
+                           UserId = userId
+                           // Used only in SSO login, user without tenant should not be able to sso login somewhere anyway
+                           TenantId = tenantId
+                           ExpiresAt = ssoExpiresAt
+                           Email = data.Email }: SSO.Item)
+                // TODO : Handle case SSO enabled but sso token not found
+                | _ -> None
+
+            let evt =
+                UserLogInSuccessEvent(loginItem, ssoItem)
+
+            return (result, evt)
+        }
+
+
     let logIn: LogIn =
         fun sso env data ->
             let dataContext = env.DataContext
             task {
 
-                printfn "login:1 %s %s" data.Client_Id data.Email
-                let! { ClientId = clientId; Issuer = issuer } = getAppInfo env.DataContext data.Client_Id data.Email 1<minutes>
-                printfn "login:2 %s %s" clientId issuer
-                let! (ssoEnabled, callbackUrls, poolTenantId, domainTenantId) = getClientAppData dataContext clientId
-                printfn "login:3"
-
-                let tenantId =
-                    match (poolTenantId.HasValue, domainTenantId.HasValue) with
-                    // Perimeter app : profile / create tenant
-                    | (false, false) -> PRR.Domain.Auth.Constants.PERIMETER_TENANT_ID
-                    // Domain app
-                    | (true, false) -> poolTenantId.Value
-                    // Tenant management app
-                    | (false, true) -> domainTenantId.Value
-                    | (true, true) -> raise (unexpected "Both poolTenantId, domainTenantId defined")
-
-                if (callbackUrls
-                    <> "*"
-                    && (callbackUrls.Split(",")
-                        |> Seq.map (fun x -> x.Trim())
-                        |> Seq.contains data.Redirect_Uri
-                        |> not)) then
-                    return! raise (unAuthorized "return_uri mismatch")
-
                 let saltedPassword = env.PasswordSalter data.Password
 
                 match! getUserId dataContext (data.Email, saltedPassword) with
                 | Some userId ->
-                    let code = env.CodeGenerator()
 
-                    let result: Result =
-                        { RedirectUri = data.Redirect_Uri
-                          State = data.State
-                          Code = code }
-
-                    let codeExpiresAt =
-                        DateTime.UtcNow.AddMinutes(float env.CodeExpiresIn)
-
-                    let scopes = data.Scope.Split " "
-
-                    let! validatedScopes = validateScopes dataContext data.Email clientId scopes
-                    
-                    printfn "login:4 %s %A %A" clientId scopes validatedScopes
-
-                    let loginItem: LogIn.Item =
-                        { Code = code
+                    let loginData: LoginData =
+                        { UserId = userId
                           ClientId = data.Client_Id
-                          Issuer = issuer
+                          ResponseType = data.Response_Type
+                          State = data.State
+                          RedirectUri = data.Redirect_Uri
+                          Scope = data.Scope
+                          Email = data.Email
                           CodeChallenge = data.Code_Challenge
-                          RequestedScopes = scopes
-                          ValidatedScopes = validatedScopes
-                          UserId = userId
-                          ExpiresAt = codeExpiresAt
-                          RedirectUri = data.Redirect_Uri }
+                          CodeChallengeMethod = data.Code_Challenge_Method }
 
-                    let ssoExpiresAt =
-                        DateTime.UtcNow.AddMinutes(float env.SSOExpiresIn)
-
-                    let ssoItem =
-                        match ssoEnabled, sso with
-                        | (true, Some sso) ->
-                            Some
-                                ({ Code = sso
-                                   UserId = userId
-                                   // Used only in SSO login, user without tenant should not be able to sso login somewhere anyway
-                                   TenantId = tenantId
-                                   ExpiresAt = ssoExpiresAt
-                                   Email = data.Email }: SSO.Item)
-                        // TODO : Handle case SSO enabled but sso token not found
-                        | _ -> None
-
-                    let evt =
-                        UserLogInSuccessEvent(loginItem, ssoItem)
-
-                    return (result, evt)
+                    return! logInUser env sso loginData
 
                 | None -> return! raise (unAuthorized "Wrong email or password")
             }

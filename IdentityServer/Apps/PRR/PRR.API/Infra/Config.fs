@@ -13,6 +13,7 @@ module Config =
           ResetPasswordTokenExpiresIn = configuration.GetValue<int<minutes>>("Auth:ResetPasswordTokenExpiresInMinutes")
           PasswordSecret = configuration.GetValue<string>("Auth:PasswordSecret")
           SSOCookieExpiresIn = configuration.GetValue<int<minutes>>("Auth:SSOCookieExpiresInMinutes")
+          Social = { CallbackUrl = configuration.GetValue<string>("Auth:Social:CallbackUrl") }
           Jwt =
               { IdTokenSecret = configuration.GetValue<string>("Auth:Jwt:AccessTokenSecret")
                 AccessTokenSecret = configuration.GetValue<string>("Auth:Jwt:AccessTokenSecret")

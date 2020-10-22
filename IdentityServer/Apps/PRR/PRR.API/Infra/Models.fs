@@ -8,11 +8,14 @@ open PRR.Sys.SetUp
 [<AutoOpen>]
 module Models =
 
+    type SocialConfig = { CallbackUrl: string }
+
     type AppConfig =
         { SignUpTokenExpiresIn: int<minutes>
           ResetPasswordTokenExpiresIn: int<minutes>
           SSOCookieExpiresIn: int<minutes>
           PasswordSecret: string
+          Social: SocialConfig
           Jwt: JwtConfig }
 
     type IConfig =
@@ -35,3 +38,6 @@ module Models =
 
     type ISystemActorsProvider =
         abstract SystemActors: SystemActors
+
+    type IHttpRequestFunProvider =
+        abstract HttpRequestFun: HttpRequestFun

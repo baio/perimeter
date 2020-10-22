@@ -33,3 +33,6 @@ module DIHelpers =
 
     let getViewsReaderDb (ctx: HttpContext) =
         ctx.GetService<IViewsReaderDbProvider>().ViewsReaderDb
+
+    let getHttpRequestFun (ctx: HttpContext) =
+        ctx.GetService<IHttpRequestFunProvider>().HttpRequestFun

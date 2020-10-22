@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PRR.Data.Entities
 {
+    
     public class User
     {
         public User()

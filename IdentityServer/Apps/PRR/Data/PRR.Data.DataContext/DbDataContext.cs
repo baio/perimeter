@@ -140,9 +140,16 @@ namespace PRR.Data.DataContext
 
             modelBuilder.Entity<SocialConnection>(entity =>
             {
-                entity.HasKey(x => new {x.DomainId, x.Name});
+                entity.HasKey(x => new {x.DomainId, x.SocialName});
                 entity.HasOne(x => x.Domain).WithMany(x => x.SocialConnections).HasForeignKey(x => x.DomainId);
             });
+            
+            modelBuilder.Entity<SocialIdentity>(entity =>
+            {
+                entity.HasKey(x => new {x.SocialId, x.SocialName});
+                entity.Property(x => x.DateCreated).HasDefaultValueSql("now()");
+            });
+
         }
     }
 }

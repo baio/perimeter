@@ -8,7 +8,7 @@ namespace PRR.Data.Entities
 
         public Domain Domain { get; set; }
 
-        [Required] public string Name { get; set; }
+        [Required] public string SocialName { get; set; }
 
         public string ClientId { get; set; }
 

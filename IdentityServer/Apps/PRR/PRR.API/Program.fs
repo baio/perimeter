@@ -23,7 +23,7 @@ open PRR.API.Infra.Mail
 open PRR.API.Infra.Mail.Models
 open PRR.API.Routes
 open PRR.API.Routes.Tenant
-open PRR.API.Routes.AuthSocialAuthRoutes
+open PRR.API.Routes.AuthSocial
 open PRR.Data.DataContext
 open PRR.System
 open PRR.System.Models
@@ -38,7 +38,7 @@ let webApp =
                   Tenant.createRoutes ()
                   PingRoutes.createRoutes ()
                   ApplicationInfo.createRoutes ()
-                  AuthSocialAuthRoutes.Routes.createRoute()
+                  SocialRoutes.createRoutes ()
 #if E2E
                   E2E.createRoutes ()
 #endif
@@ -149,6 +149,8 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     services.AddSingleton<IAuthStringsProvider, AuthStringsProvider>()
     |> ignore
     services.AddSingleton<IViewsReaderDbProvider>(viewsReaderDbProvider)
+    |> ignore
+    services.AddSingleton<IHttpRequestFunProvider>(HttpRequestFunProvider httpFsRequestFun)
     |> ignore
 
     // Configure DataContext

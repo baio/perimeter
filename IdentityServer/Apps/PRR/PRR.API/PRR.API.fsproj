@@ -45,6 +45,7 @@
         <Compile Include="Infra\Config.fs" />
         <Compile Include="Infra\AuthStringsProvider.fs" />
         <Compile Include="Infra\SystemActorsProvider.fs" />
+        <Compile Include="Infra\HttpRequestFun.fs" />
         <Compile Include="ErrorHandler.fs" />
         <Content Include="appsettings.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -75,7 +76,9 @@
         <Compile Include="Routes\Tenant\TenantRoutes.fs" />
         <Compile Include="Routes\E2ERoutes.fs" />
         <Compile Include="Routes\PingRoutes.fs" />
-        <Compile Include="Routes\Auth\SocialAuthRoutes.fs" />
+        <Compile Include="Routes\Auth\Social\PostAuthSocial.fs" />
+        <Compile Include="Routes\Auth\Social\GetAuthSocialCallback.fs" />
+        <Compile Include="Routes\Auth\Social\SocialRoutes.fs" />
         <Compile Include="Program.fs" />
         <Content Include="akka.e2e.hocon">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -92,6 +95,7 @@
       <PackageReference Include="Akka.Persistence.MongoDb" Version="1.4.5" />
       <PackageReference Include="Akkling" Version="0.10.0" />
       <PackageReference Include="Giraffe" Version="4.1.0" />
+      <PackageReference Include="Http.fs" Version="5.4.0" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.5" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.4" />
       <PackageReference Include="SendGrid" Version="9.19.0" />

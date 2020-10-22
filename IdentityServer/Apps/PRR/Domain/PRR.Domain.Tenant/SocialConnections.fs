@@ -44,9 +44,9 @@ module SocialConnections =
 
     let create x =
         x
-        |> createCatch catch (fun (domainId, name, data: PostLike) ->
+        |> createCatch catch (fun (domainId, socialName, data: PostLike) ->
                SocialConnection
-                   (Name = name,
+                   (SocialName = socialName,
                     DomainId = domainId,
                     ClientId = data.ClientId,
                     ClientSecret = data.ClientSecret,
@@ -55,7 +55,8 @@ module SocialConnections =
 
     let update x =
         x
-        |> updateCatch catch (fun (domainId, name) -> SocialConnection(Name = name, DomainId = domainId)) (fun (dto: PostLike) entity ->
+        |> updateCatch catch (fun (domainId, socialName) ->
+               SocialConnection(SocialName = socialName, DomainId = domainId)) (fun (dto: PostLike) entity ->
                entity.ClientId <- dto.ClientId
                entity.ClientSecret <- dto.ClientSecret
                entity.Attributes <- dto.Attributes
@@ -63,7 +64,7 @@ module SocialConnections =
 
     let delete x =
         x
-        |> remove (fun (domainId, name) -> SocialConnection(Name = name, DomainId = domainId))
+        |> remove (fun (domainId, socialName) -> SocialConnection(SocialName = socialName, DomainId = domainId))
 
     let getAll (domainId: DomainId) (dataContext: DbDataContext) =
         query {
@@ -74,7 +75,7 @@ module SocialConnections =
         |> toListAsync
         |> TaskUtils.map
             (Seq.map (fun x ->
-                { Name = x.Name
+                { Name = x.SocialName
                   ClientId = x.ClientId
                   ClientSecret = x.ClientSecret
                   Attributes = x.Attributes

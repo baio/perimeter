@@ -1,6 +1,8 @@
 ﻿// TODO : Rename sys auth
 namespace PRR.Sys
 
+open System.Runtime.InteropServices.WindowsRuntime
+open Akka.Actor
 open Akka.Configuration
 open Akkling
 
@@ -19,7 +21,9 @@ module SetUp =
 
         ConfigurationFactory.ParseString conf
 
-    type SystemActors = { Social: IActorRef<Social.Message> }
+    type SystemActors =
+        { System: IActorRefFactory
+          Social: IActorRef<Social.Message> }
 
     let setUp confFileName =
 
@@ -31,4 +35,4 @@ module SetUp =
         let socialActor =
             spawn sys "social" (Social.Reducer.createReducer ())
 
-        { Social = socialActor }
+        { System = sys; Social = socialActor }

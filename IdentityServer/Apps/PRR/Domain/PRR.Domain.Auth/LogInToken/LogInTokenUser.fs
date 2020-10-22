@@ -162,13 +162,6 @@ module internal SignInUser =
 
             printfn "signInUser:2 %A" validatedScopes
 
-            // TODO !
-            // We can create single access token for various apis only if they had exactly same config
-            // Should move access token config data to the domain
-            // And then override them if necessary for each config, this case when there
-            // is requested scopes from different apis and some otf them overriden, we should
-            // throw authorization request unsupported (think of message) exception
-
             let audiences =
                 validatedScopes |> Seq.map (fun x -> x.Audience)
 
