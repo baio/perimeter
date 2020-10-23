@@ -1,6 +1,7 @@
 ﻿namespace PRR.API.Routes.AuthSocial
 
 open Akkling
+open FSharpx
 open PRR.System.Models
 open Common.Domain.Models
 open Microsoft.AspNetCore.Http
@@ -8,7 +9,6 @@ open Giraffe
 open PRR.API.Routes
 open Common.Domain.Giraffe
 open Common.Utils
-open ReaderTask
 open FSharp.Akkling.CQRS
 open PRR.Domain.Auth.SocialCallback
 open PRR.Sys.Models.Social
@@ -32,10 +32,10 @@ module private Handler =
           GetSocialLoginItem = getSocialLoginItem ctx
           HttpRequestFun = getHttpRequestFun ctx }
 
+    open Reader
+
     let getParams =
-        doublet
-        <!> ofReader (getContext)
-        <*> bindFormAsync
+        doublet <!> getContext <*> bindQueryString
 
     let socialAuthResult (result: Result) =
         fun ctx next ->
@@ -52,7 +52,7 @@ module private Handler =
 
     let handle =
         (getParams
-         >> TaskUtils.bind socialCallback
+         >> socialCallback
          >> TaskUtils.map socialAuthResult)
         |> wrapHandler
 

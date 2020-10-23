@@ -84,9 +84,26 @@ module Social =
         SocialIdentity
             (Name = userResponse.name, Email = userResponse.email, SocialName = socialName, SocialId = userResponse.id)
 
-    let private createSocialIdentity (dataContext: DbDataContext) (ident: SocialIdentity) =
-        ident |> add dataContext
-        dataContext |> saveChangesAsync
+    let private splitName (name: string) =
+        match name.Split " " with
+        | [| a; b |] -> (a, b)
+        | [| a |] -> (a, null)
+        | [||] -> (null, null)
+        | x -> (x.[0], x.[1..] |> String.concat " ")
+
+    let private identityToUser (ident: SocialIdentity) =
+        let (firstName, lastName) = splitName ident.Name
+        User(FirstName = firstName, LastName = lastName, Email = ident.Email, Password = "test")
+
+
+    let private createUserAndSocialIdentity (dataContext: DbDataContext) (ident: SocialIdentity) =
+        task {
+            let user = identityToUser ident
+            user |> add dataContext
+            ident |> add dataContext
+            do! dataContext |> saveChangesAsync
+            return user.Id
+        }
 
     let private getSuccessRedirectUrl (loginResult: PRR.Domain.Auth.LogIn.Models.Result) =
         sprintf "%s?code=%s&state=%s" loginResult.RedirectUri loginResult.Code loginResult.State
@@ -109,23 +126,23 @@ module Social =
             let socialName = socialType2Name item.Type
 
             // get social connection secret
-            let! secret = getSocialConnectionSecret env.DataContext item.ClientId socialName
+            let! secret = getSocialConnectionSecret env.DataContext item.DomainClientId socialName
 
             // request social access token by clientId, secret and code from callback
-            let! codeResponse = getGithubCodeResponse env.HttpRequestFun item.ClientId secret data.Code
+            let! codeResponse = getGithubCodeResponse env.HttpRequestFun item.SocialClientId secret data.Code
 
             // get github user by received access token
             let! userResponse = getGithubUserResponse env.HttpRequestFun codeResponse.access_token
 
-            // create user social identity (if not created)
+            // create user and social identity (if still not created)
             let ident = mapSocialUserResponse userResponse
 
-            do! createSocialIdentity env.DataContext ident
+            let! userId = createUserAndSocialIdentity env.DataContext ident
 
             // login user as usual with data from social provider
             let loginData: LoginData =
-                { UserId = ident.SocialId
-                  ClientId = item.ClientId
+                { UserId = userId
+                  ClientId = item.DomainClientId
                   ResponseType = item.ResponseType
                   State = item.State
                   RedirectUri = item.RedirectUri

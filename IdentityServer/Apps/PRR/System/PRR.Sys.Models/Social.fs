@@ -2,20 +2,20 @@
 
 open Akkling
 open Common.Domain.Models
-open Common.Domain.Models.SocialType
 
 module Social =
 
     type Item =
         { Token: Token
-          ClientId: string
+          SocialClientId: string
           Type: SocialType
           ResponseType: string
           State: string
           RedirectUri: Uri
           Scope: Scope
           CodeChallenge: string
-          CodeChallengeMethod: string }
+          CodeChallengeMethod: string
+          DomainClientId: ClientId }
 
     type Message =
         | SocialLoginAddCommand of Item

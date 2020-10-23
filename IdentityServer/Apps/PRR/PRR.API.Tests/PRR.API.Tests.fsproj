@@ -87,6 +87,7 @@
         <PackageReference Include="EntityFramework" Version="6.4.4" />
         <PackageReference Include="FsUnit" Version="3.9.0" />
         <PackageReference Include="Json.Net" Version="1.0.23" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.9" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
         <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="16.6.1" />
         <PackageReference Include="MongoDB.Driver" Version="2.11.2" />

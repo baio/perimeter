@@ -17,7 +17,7 @@ module UserTestContext =
           GetResetPasswordToken: unit -> string
           ResetPasswordTokenHandle: AutoResetEvent }
 
-    let createUserTestContext (testFixture: TestFixture) =
+    let createUserTestContextWithServicesOverrides servicesOverridesFun (testFixture: TestFixture) =
 
         let mutable confirmToken: string = null
 
@@ -67,7 +67,9 @@ module UserTestContext =
             //
             let sys1 = PRR.Sys.SetUp.setUp "akka.hocon"
             services.AddSingleton<ISystemActorsProvider>(SystemActorsProvider sys1)
-            |> ignore)
+            |> ignore
+
+            servicesOverridesFun services)
 
 
         { TestFixture = testFixture
@@ -77,3 +79,8 @@ module UserTestContext =
           GetTenant = fun () -> tenant.Value
           GetResetPasswordToken = fun () -> resetPasswordToken.Value
           ResetPasswordTokenHandle = resetPasswordTokenHandle }
+
+
+    let createUserTestContext x =
+        x
+        |> createUserTestContextWithServicesOverrides (fun _ -> ())

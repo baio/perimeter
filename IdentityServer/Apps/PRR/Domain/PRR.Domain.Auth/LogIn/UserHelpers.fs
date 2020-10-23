@@ -43,17 +43,6 @@ module internal UserHelpers =
         | (false, false) -> Regular
         | _ -> raise (unexpected "App both domain and tenant management")
 
-    (*
-    // Fallback in case current getDefaultClientId fails
-    let __getDefaultClientId (dataContext: DbDataContext) email =
-        query {
-            for app in dataContext.Applications do
-                where (app.Domain.Tenant.User.Email = email)
-                select app.ClientId
-        }
-        |> toSingleOptionAsync
-    *)
-
     let getDefaultClientId (dataContext: DbDataContext) email =
         task {
 

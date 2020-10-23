@@ -23,13 +23,13 @@ module ClientFixture =
             if _Server <> null then
                 _Server
             else
-                let builder = fn()
-                let builder = 
+                let builder = fn ()
+
+                let builder =
                     match _OverrideServices with
-                    | Some f ->
-                        builder.ConfigureServices f
-                    | None ->
-                        builder                                        
+                    | Some f -> builder.ConfigureServices(f)
+                    | None -> builder
+
                 _Server <- new TestServer(builder)
                 _Server
 
@@ -66,13 +66,13 @@ module ClientFixture =
                 use client = __.Server.CreateClient()
                 return! httpPostAsync client bearer path payload
             }
-            
+
         member __.HttpPostFormJsonAsync bearer path payload =
             task {
                 use client = __.Server.CreateClient()
                 return! httpPostFormJsonAsync client bearer path payload
             }
-            
+
 
         member __.HttpPutAsync' path payload =
             task {

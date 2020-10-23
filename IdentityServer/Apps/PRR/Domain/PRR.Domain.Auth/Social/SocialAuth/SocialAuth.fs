@@ -55,18 +55,19 @@ module Social =
             let socialType = socialName2Type data.Social_Name
 
             // Collect info for social redirect url such as social client id, attributes and scopes
-            let! info = getSocialConnectionInfo env.DataContext data.Client_Id data.Social_Name
+            let! socialInfo = getSocialConnectionInfo env.DataContext data.Client_Id data.Social_Name
 
             // Generate token it will be used as state for redirect url
             let token = env.HashProvider()
 
             let redirectUrl =
-                getRedirectUrl token env.SocialCallbackUrl info socialType
+                getRedirectUrl token env.SocialCallbackUrl socialInfo socialType
 
             // Store login data they will be used when callback hit back
             let cmd =
                 { Token = token
-                  ClientId = info.ClientId
+                  SocialClientId = socialInfo.ClientId
+                  DomainClientId = data.Client_Id
                   Type = socialType
                   ResponseType = data.Response_Type
                   State = data.State
