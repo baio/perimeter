@@ -188,8 +188,6 @@ module SocialTests =
 
                 location |> should not' Empty
 
-                printfn "Location +++ %s" location
-
                 match location with
                 | Regex "code=(\w+)" [ code ] -> authCode <- code
                 | x -> x |> should be Empty
@@ -206,7 +204,6 @@ module SocialTests =
 
             task {
 
-                
                 let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
                     { Grant_Type = "code"
                       Code = authCode
