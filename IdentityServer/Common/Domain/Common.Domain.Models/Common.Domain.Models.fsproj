@@ -21,7 +21,7 @@
         <Compile Include="ListResult.fs" />
         <Compile Include="Models.fs" />
         <Compile Include="Claims.fs" />
-        <Compile Include="SocialType.fs" />
+        <Compile Include="Social.fs" />
         <Compile Include="HttRequest.fs" />
     </ItemGroup>
 

@@ -96,8 +96,12 @@ module LogInToken =
             printfn "****"
             if codeChallenge <> itemCodeChallenge
             then raise (unAuthorized "code_verifier code_challenge mismatch")
+
+            let socialType =
+                item.Social |> Option.map (fun f -> f.Type)
+
             task {
-                match! getUserDataForToken dataContext item.UserId with
+                match! getUserDataForToken dataContext item.UserId socialType with
                 | Some tokenData ->
                     let! (result, clientId, isPerimeterClient) =
                         signInUser env tokenData data.Client_Id (ValidatedScopes item.ValidatedScopes)
@@ -108,7 +112,8 @@ module LogInToken =
                           UserId = item.UserId
                           ExpiresAt = DateTime.UtcNow.AddMinutes(float env.SSOCookieExpiresIn)
                           Scopes = item.RequestedScopes
-                          IsPerimeterClient = isPerimeterClient }
+                          IsPerimeterClient = isPerimeterClient
+                          SocialType = socialType }
 
                     let! successData = getSuccessData dataContext clientId item.UserId isPerimeterClient
 

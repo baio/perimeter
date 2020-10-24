@@ -7,8 +7,7 @@ open Common.Domain.Models
 module LogIn =
 
     type LoginSuccessData =
-        {
-          IsManagementClient: bool
+        { IsManagementClient: bool
           DomainId: int
           AppIdentifier: string
           UserEmail: string
@@ -17,6 +16,7 @@ module LogIn =
     type Item =
         { Code: Token
           UserId: UserId
+          Social: Social option
           RequestedScopes: string seq
           ValidatedScopes: AudienceScopes seq
           RedirectUri: string

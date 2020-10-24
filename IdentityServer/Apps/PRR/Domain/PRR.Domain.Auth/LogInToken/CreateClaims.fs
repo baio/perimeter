@@ -8,6 +8,18 @@ module private CreateClaims =
 
     let strJoin (s: string seq) = System.String.Join(" ", s).Trim()
 
+    let getSocialSubPrefix =
+        function
+        | Github -> "github"
+
+    let getSubPrefix =
+        function
+        | Some socialType -> getSocialSubPrefix socialType
+        | None -> "prr"
+
+    let getSub tokenData =
+        sprintf "%s|%s" (getSubPrefix tokenData.SocialType) tokenData.Email
+
     let createAccessTokenClaims clientId issuer tokenData (scopes: string seq) (audiences: string seq) =
 
         let auds =
@@ -16,7 +28,7 @@ module private CreateClaims =
 
         let permissions = scopes |> strJoin
         // TODO : RBA + Include permissions flag
-        [| Claim(CLAIM_TYPE_SUB, (sprintf "prr|%s" tokenData.Email))
+        [| Claim(CLAIM_TYPE_SUB, getSub tokenData)
            Claim(ClaimTypes.Email, tokenData.Email)
            Claim(CLAIM_TYPE_UID, tokenData.Id.ToString())
            Claim(CLAIM_TYPE_SCOPE, permissions)
@@ -28,7 +40,7 @@ module private CreateClaims =
 
         let permissions = scopes |> strJoin
         // TODO : RBA + Include permissions flag
-        [| Claim(CLAIM_TYPE_SUB, (sprintf "prr|%s" tokenData.Email))
+        [| Claim(CLAIM_TYPE_SUB, getSub tokenData)
            Claim(ClaimTypes.Email, tokenData.Email)
            // TODO : Separate claims for access and id
            Claim(ClaimTypes.GivenName, tokenData.FirstName)

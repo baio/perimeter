@@ -11,10 +11,11 @@ module RefreshToken =
     type Item =
         { Token: Token
           ClientId: ClientId
-          UserId: UserId          
+          UserId: UserId
           ExpiresAt: DateTime
           Scopes: string seq
-          IsPerimeterClient: bool }
+          IsPerimeterClient: bool
+          SocialType: SocialType option }
 
     type GetRefreshTokenQueryResult = ValueResult<Item>
 

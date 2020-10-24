@@ -9,21 +9,6 @@ namespace PRR.Data.DataContextMigrations.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "SocialIdentity",
-                columns: table => new
-                {
-                    SocialName = table.Column<string>(nullable: false),
-                    SocialId = table.Column<int>(nullable: false),
-                    Name = table.Column<string>(nullable: false),
-                    Email = table.Column<string>(nullable: false),
-                    DateCreated = table.Column<DateTime>(nullable: false, defaultValueSql: "now()")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SocialIdentity", x => new { x.SocialId, x.SocialName });
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -32,12 +17,34 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     FirstName = table.Column<string>(nullable: false),
                     LastName = table.Column<string>(nullable: false),
                     Email = table.Column<string>(nullable: true),
-                    Password = table.Column<string>(nullable: false),
+                    Password = table.Column<string>(nullable: true),
                     DateCreated = table.Column<DateTime>(nullable: false, defaultValueSql: "now()")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SocialIdentities",
+                columns: table => new
+                {
+                    SocialName = table.Column<string>(nullable: false),
+                    SocialId = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
+                    Email = table.Column<string>(nullable: false),
+                    DateCreated = table.Column<DateTime>(nullable: false, defaultValueSql: "now()"),
+                    UserId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SocialIdentities", x => new { x.SocialId, x.SocialName });
+                    table.ForeignKey(
+                        name: "FK_SocialIdentities_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -481,6 +488,17 @@ namespace PRR.Data.DataContextMigrations.Migrations
                 column: "PermissionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SocialIdentities_UserId",
+                table: "SocialIdentities",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SocialIdentities_Email_SocialName",
+                table: "SocialIdentities",
+                columns: new[] { "Email", "SocialName" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tenants_Name",
                 table: "Tenants",
                 column: "Name",
@@ -513,7 +531,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                 name: "SocialConnections");
 
             migrationBuilder.DropTable(
-                name: "SocialIdentity");
+                name: "SocialIdentities");
 
             migrationBuilder.DropTable(
                 name: "Permissions");

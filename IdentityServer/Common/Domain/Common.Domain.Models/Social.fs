@@ -1,6 +1,8 @@
 ﻿namespace Common.Domain.Models
 
 [<AutoOpen>]
-module SocialType =
+module Social =
 
     type SocialType = | Github
+
+    type Social = { Id: string; Type: SocialType }

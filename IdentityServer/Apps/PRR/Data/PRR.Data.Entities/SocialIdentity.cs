@@ -15,8 +15,12 @@ namespace PRR.Data.Entities
 
         [Required] public string SocialName { get; set; }
 
-        [Required] public int SocialId { get; set; }
+        [Required] public string SocialId { get; set; }
 
         [Required] public DateTime DateCreated { get; set; }
+
+        public int UserId { get; set; }
+
+        public User User { get; set; }
     }
 }

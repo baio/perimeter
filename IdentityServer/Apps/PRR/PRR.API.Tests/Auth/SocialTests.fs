@@ -224,4 +224,6 @@ module SocialTests =
                 result.id_token |> should be (not' Empty)
 
                 result.refresh_token |> should be (not' Empty)
+                
+                printfn "%s" result.access_token
             }

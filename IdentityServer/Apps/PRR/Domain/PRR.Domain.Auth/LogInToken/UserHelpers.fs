@@ -2,6 +2,7 @@
 
 open Common.Domain.Models
 open Common.Domain.Utils
+open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx
 open Microsoft.FSharp.Linq
@@ -19,10 +20,11 @@ module internal UserHelpers =
         { Id: int
           FirstName: string
           LastName: string
-          Email: string }
+          Email: string
+          SocialType: SocialType option }
 
 
-    let getUserDataForToken' (dataContext: DbDataContext) filterUser =
+    let private getUserDataForTokenNotSocial (dataContext: DbDataContext) filterUser =
         query {
             for user in dataContext.Users do
                 where ((%filterUser) user)
@@ -30,10 +32,31 @@ module internal UserHelpers =
                     { Id = user.Id
                       FirstName = user.FirstName
                       LastName = user.LastName
-                      Email = user.Email }
+                      Email = user.Email
+                      SocialType = None }
         }
         |> toSingleOptionAsync
 
+    let private getUserDataForTokenSocial (dataContext: DbDataContext) filterUser socialType =
+        query {
+            for si in dataContext.SocialIdentities do
+                where ((%filterUser) si.User)
+                select (si.Name, si.Email, si.UserId)
+        }
+        |> toSingleOptionAsync
+        |> TaskUtils.map
+            (Option.map (fun (name, email, userId) ->
+                let (firstName, lastName) = splitName name
+                { Id = userId
+                  FirstName = firstName
+                  LastName = lastName
+                  Email = email
+                  SocialType = Some socialType }: TokenData))
+
+    let getUserDataForToken' (dataContext: DbDataContext) filterUser socialType =
+        match socialType with
+        | Some socialType -> getUserDataForTokenSocial dataContext filterUser socialType
+        | None -> getUserDataForTokenNotSocial dataContext filterUser
 
     let getUserDataForToken (dataContext: DbDataContext) userId =
         getUserDataForToken' dataContext <@ fun (user: User) -> (user.Id = userId) @>
@@ -45,7 +68,9 @@ module internal UserHelpers =
     let getUserDomainRolesPermissions (dataContext: DbDataContext) (domainId, userEmail) =
         query {
             for dur in dataContext.DomainUserRole do
-                where (dur.DomainId = domainId && dur.UserEmail = userEmail)
+                where
+                    (dur.DomainId = domainId
+                     && dur.UserEmail = userEmail)
                 select
                     { Role = dur.Role.Name
                       Permissions = dur.Role.RolesPermissions.Select(fun x -> x.Permission.Name) }

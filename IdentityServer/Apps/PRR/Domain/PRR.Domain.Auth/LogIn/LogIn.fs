@@ -121,7 +121,8 @@ module Authorize =
                   ValidatedScopes = validatedScopes
                   UserId = userId
                   ExpiresAt = codeExpiresAt
-                  RedirectUri = data.RedirectUri }
+                  RedirectUri = data.RedirectUri
+                  Social = None }
 
             let ssoExpiresAt =
                 DateTime.UtcNow.AddMinutes(float env.SSOExpiresIn)
@@ -135,7 +136,8 @@ module Authorize =
                            // Used only in SSO login, user without tenant should not be able to sso login somewhere anyway
                            TenantId = tenantId
                            ExpiresAt = ssoExpiresAt
-                           Email = data.Email }: SSO.Item)
+                           Email = data.Email
+                           Social = None }: SSO.Item)
                 // TODO : Handle case SSO enabled but sso token not found
                 | _ -> None
 

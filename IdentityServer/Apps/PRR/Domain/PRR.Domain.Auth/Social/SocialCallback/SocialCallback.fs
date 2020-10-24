@@ -80,25 +80,20 @@ module Social =
 
     let private mapSocialUserResponse userResponse =
         let socialName = socialType2Name SocialType.Github
-
         SocialIdentity
-            (Name = userResponse.name, Email = userResponse.email, SocialName = socialName, SocialId = userResponse.id)
-
-    let private splitName (name: string) =
-        match name.Split " " with
-        | [| a; b |] -> (a, b)
-        | [| a |] -> (a, null)
-        | [||] -> (null, null)
-        | x -> (x.[0], x.[1..] |> String.concat " ")
+            (Name = userResponse.name,
+             Email = userResponse.email,
+             SocialName = socialName,
+             SocialId = userResponse.id.ToString())
 
     let private identityToUser (ident: SocialIdentity) =
         let (firstName, lastName) = splitName ident.Name
         User(FirstName = firstName, LastName = lastName, Email = ident.Email, Password = "test")
 
-
     let private createUserAndSocialIdentity (dataContext: DbDataContext) (ident: SocialIdentity) =
         task {
             let user = identityToUser ident
+            ident.User <- user
             user |> add dataContext
             ident |> add dataContext
             do! dataContext |> saveChangesAsync
@@ -169,11 +164,17 @@ module Social =
                 | UserLogInSuccessEvent (loginItem, ssoItem) -> (loginItem, ssoItem)
                 | _ -> raise Unexpected'
 
+            let social: Social =
+                { Id = ident.SocialId
+                  Type = item.Type }
+
             let result: Result =
                 { RedirectUrl = redirectUrl
                   SocialLoginToken = item.Token
-                  LoginItem = loginItem
-                  SSOItem = ssoItem }
+                  LoginItem = { loginItem with Social = Some social }
+                  SSOItem =
+                      ssoItem
+                      |> Option.map (fun ssoItem -> { ssoItem with Social = Some social }) }
 
             return result
         }

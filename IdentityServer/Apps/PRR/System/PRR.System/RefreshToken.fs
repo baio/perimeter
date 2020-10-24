@@ -43,7 +43,8 @@ module private RefreshToken =
                                   UserId = x.UserId
                                   Token = x.RefreshToken
                                   ExpiresAt = DateTime.UtcNow.AddMinutes(float (int tokenExpiresIs))
-                                  Scopes = x.Scopes }
+                                  Scopes = x.Scopes
+                                  SocialType = x.SocialType }
 
                             return Persist(Event(TokenUpdated(item, x.OldRefreshToken)))
                         | MakeSnapshot ->

@@ -27,7 +27,7 @@ module RefreshToken =
 
                 match validate env accessToken (item.ExpiresAt, item.UserId, domainSecret.SigningCredentials.Key) with
                 | Success ->
-                    match! getUserDataForToken env.DataContext item.UserId with
+                    match! getUserDataForToken env.DataContext item.UserId item.SocialType with
                     | Some tokenData ->
                         // TODO : When available scopes changed while refreshing tokens what to do ?
                         // Now just silently change scopes
@@ -42,7 +42,8 @@ module RefreshToken =
                                       UserId = tokenData.Id
                                       RefreshToken = res.refresh_token
                                       OldRefreshToken = item.Token
-                                      Scopes = item.Scopes })
+                                      Scopes = item.Scopes
+                                      SocialType = item.SocialType })
                     | None -> return! raise (UnAuthorized None)
                 | _ -> return! raise (UnAuthorized None)
             }

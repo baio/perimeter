@@ -10,7 +10,7 @@ using PRR.Data.DataContext;
 namespace PRR.Data.DataContextMigrations.Migrations
 {
     [DbContext(typeof(DbDataContext))]
-    [Migration("20201022164319_Initial")]
+    [Migration("20201024142000_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -731,8 +731,8 @@ namespace PRR.Data.DataContextMigrations.Migrations
 
             modelBuilder.Entity("PRR.Data.Entities.SocialIdentity", b =>
                 {
-                    b.Property<int>("SocialId")
-                        .HasColumnType("integer");
+                    b.Property<string>("SocialId")
+                        .HasColumnType("text");
 
                     b.Property<string>("SocialName")
                         .HasColumnType("text");
@@ -750,9 +750,17 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("SocialId", "SocialName");
 
-                    b.ToTable("SocialIdentity");
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("Email", "SocialName")
+                        .IsUnique();
+
+                    b.ToTable("SocialIdentities");
                 });
 
             modelBuilder.Entity("PRR.Data.Entities.Tenant", b =>
@@ -808,7 +816,6 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -911,6 +918,15 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     b.HasOne("PRR.Data.Entities.Domain", "Domain")
                         .WithMany("SocialConnections")
                         .HasForeignKey("DomainId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PRR.Data.Entities.SocialIdentity", b =>
+                {
+                    b.HasOne("PRR.Data.Entities.User", "User")
+                        .WithMany("SocialIdentities")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -21,3 +21,10 @@ module StringUtils =
         else None
 
     let (|Int|_|) = tryParseInt
+
+    let splitName (name: string) =
+        match name.Split " " with
+        | [| a; b |] -> (a, b)
+        | [| a |] -> (a, null)
+        | [||] -> (null, null)
+        | x -> (x.[0], x.[1..] |> String.concat " ")

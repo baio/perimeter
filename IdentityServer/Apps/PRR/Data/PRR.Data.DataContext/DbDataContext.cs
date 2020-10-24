@@ -37,6 +37,8 @@ namespace PRR.Data.DataContext
 
         public virtual DbSet<SocialConnection> SocialConnections { get; set; }
 
+        public virtual DbSet<SocialIdentity> SocialIdentities { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Tenant>(entity =>
@@ -143,13 +145,14 @@ namespace PRR.Data.DataContext
                 entity.HasKey(x => new {x.DomainId, x.SocialName});
                 entity.HasOne(x => x.Domain).WithMany(x => x.SocialConnections).HasForeignKey(x => x.DomainId);
             });
-            
+
             modelBuilder.Entity<SocialIdentity>(entity =>
             {
                 entity.HasKey(x => new {x.SocialId, x.SocialName});
+                entity.HasIndex(x => new {x.Email, x.SocialName}).IsUnique();
                 entity.Property(x => x.DateCreated).HasDefaultValueSql("now()");
+                entity.HasOne(x => x.User).WithMany(x => x.SocialIdentities).HasForeignKey(x => x.UserId);
             });
-
         }
     }
 }

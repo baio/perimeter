@@ -11,4 +11,5 @@ module RefreshTokenSuccess =
           UserId: UserId
           RefreshToken: string
           OldRefreshToken: string
-          Scopes: string seq }
+          Scopes: string seq
+          SocialType: SocialType option}

@@ -101,7 +101,8 @@ module Authorize =
                           ValidatedScopes = validatedScopes
                           UserId = userId
                           ExpiresAt = expiresAt
-                          RedirectUri = data.Redirect_Uri }
+                          RedirectUri = data.Redirect_Uri
+                          Social = None }
 
                     let evt = UserLogInSuccessEvent(loginItem, None)
 

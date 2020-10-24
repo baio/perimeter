@@ -11,6 +11,7 @@ module SSO =
           TenantId: TenantId
           UserId: UserId
           Email: string
+          Social: Social option
           ExpiresAt: DateTime }
 
     // Queries
