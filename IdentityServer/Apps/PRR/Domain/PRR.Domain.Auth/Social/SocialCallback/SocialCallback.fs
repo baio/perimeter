@@ -13,7 +13,7 @@ open PRR.Domain.Auth.LogIn.Authorize
 open PRR.Sys.Models.Social
 open Hopac
 open PRR.System.Models
-
+open System.Linq
 
 [<AutoOpen>]
 module Social =
@@ -88,16 +88,34 @@ module Social =
 
     let private identityToUser (ident: SocialIdentity) =
         let (firstName, lastName) = splitName ident.Name
-        User(FirstName = firstName, LastName = lastName, Email = ident.Email, Password = "test")
+        User(FirstName = firstName, LastName = lastName, Email = ident.Email)
+
+    let private getExistentUserWithSocials (dataContext: DbDataContext) email =
+        query {
+            for user in dataContext.Users do
+                where (user.Email = email)
+                select (user.Id, user.SocialIdentities.Select(fun x -> x.SocialName))
+        }
+        |> toSingleOptionAsync
 
     let private createUserAndSocialIdentity (dataContext: DbDataContext) (ident: SocialIdentity) =
         task {
-            let user = identityToUser ident
-            ident.User <- user
-            user |> add dataContext
-            ident |> add dataContext
-            do! dataContext |> saveChangesAsync
-            return user.Id
+            match! getExistentUserWithSocials dataContext ident.Email with
+            | Some (userId, socialTypes) ->
+                match socialTypes.Contains ident.SocialName with
+                | true -> return userId
+                | false ->
+                    ident.UserId <- userId
+                    ident |> add dataContext
+                    do! dataContext |> saveChangesAsync
+                    return userId
+            | None ->
+                let user = identityToUser ident
+                ident.User <- user
+                user |> add dataContext
+                ident |> add dataContext
+                do! dataContext |> saveChangesAsync
+                return user.Id
         }
 
     let private getSuccessRedirectUrl (loginResult: PRR.Domain.Auth.LogIn.Models.Result) =
