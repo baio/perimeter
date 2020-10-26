@@ -19,7 +19,7 @@ module private Handler =
         let sysActors = getSystemActors ctx
         let sys = sysActors.System
         let socialActor = sysActors.Social
-        taskOfQueryActor 300 sys socialActor (fun tellTo -> SocialLoginQueryCommand(token, tellTo))
+        taskOfQueryActor sys socialActor (fun sendResultTo -> SocialLoginQueryCommand(token, sendResultTo))
         |> TaskUtils.map (snd)
 
     let getContext (ctx: HttpContext): Env =

@@ -20,4 +20,5 @@ module Models =
     type Env =
         { DataContext: DbDataContext
           HashProvider: HashProvider
-          SocialCallbackUrl: string }
+          SocialCallbackUrl: string
+          SocialCallbackExpiresIn: int<milliseconds> }

@@ -66,6 +66,7 @@ module Social =
             // Store login data they will be used when callback hit back
             let cmd =
                 { Token = token
+                  ExpiresIn = env.SocialCallbackExpiresIn
                   SocialClientId = socialInfo.ClientId
                   DomainClientId = data.Client_Id
                   Type = socialType

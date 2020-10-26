@@ -7,6 +7,7 @@ module Social =
 
     type Item =
         { Token: Token
+          ExpiresIn: int<milliseconds>
           SocialClientId: string
           Type: SocialType
           ResponseType: string

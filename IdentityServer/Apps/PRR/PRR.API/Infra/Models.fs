@@ -8,7 +8,9 @@ open PRR.Sys.SetUp
 [<AutoOpen>]
 module Models =
 
-    type SocialConfig = { CallbackUrl: string }
+    type SocialConfig =
+        { CallbackUrl: string
+          CallbackExpiresIn: int<milliseconds> }
 
     type AppConfig =
         { SignUpTokenExpiresIn: int<minutes>

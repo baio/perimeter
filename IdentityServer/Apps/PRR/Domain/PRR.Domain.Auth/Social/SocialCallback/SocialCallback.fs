@@ -78,7 +78,7 @@ module Social =
             return JsonConvert.DeserializeObject<GithubUserResponse> content
         }
 
-    let private mapSocialUserResponse userResponse =
+    let private mapSocialUserResponseToIdentity userResponse =
         let socialName = socialType2Name SocialType.Github
         SocialIdentity
             (Name = userResponse.name,
@@ -103,13 +103,18 @@ module Social =
             match! getExistentUserWithSocials dataContext ident.Email with
             | Some (userId, socialTypes) ->
                 match socialTypes.Contains ident.SocialName with
+                // user and social type already exists
                 | true -> return userId
                 | false ->
+                    // user exist but social type is new
+                    // add social type
                     ident.UserId <- userId
                     ident |> add dataContext
                     do! dataContext |> saveChangesAsync
                     return userId
             | None ->
+                // user and social type is not exists, new user
+                // create user and social type
                 let user = identityToUser ident
                 ident.User <- user
                 user |> add dataContext
@@ -148,7 +153,7 @@ module Social =
             let! userResponse = getGithubUserResponse env.HttpRequestFun codeResponse.access_token
 
             // create user and social identity (if still not created)
-            let ident = mapSocialUserResponse userResponse
+            let ident = mapSocialUserResponseToIdentity userResponse
 
             let! userId = createUserAndSocialIdentity env.DataContext ident
 

@@ -13,9 +13,11 @@ open PRR.Domain.Auth.Social
 module PostAuthSocial =
 
     let getContext (ctx: HttpContext): Env =
+        let config = getConfig ctx
         { DataContext = getDataContext ctx
           HashProvider = getHash ctx
-          SocialCallbackUrl = (getConfig ctx).Social.CallbackUrl }
+          SocialCallbackUrl = config.Social.CallbackUrl
+          SocialCallbackExpiresIn = config.Social.CallbackExpiresIn }
 
     let getParams =
         doublet

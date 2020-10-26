@@ -11,7 +11,9 @@ module Reducer =
     type State = Map<Token, Item>
 
     let handleSocialLoginAdded state item =
-        state |> Map.add item.Token item |> stateMsgNone
+        let updState = state |> Map.add item.Token item
+        let delayCmd = item.Token |> SocialLoginRemoveCommand
+        StateDelayMsg(updState, (float item.ExpiresIn, delayCmd))
 
     let handleSocialLoginQueryCommand state (token, (toActor: IActorRef<_>)) =
         let item = state |> Map.tryFind token
