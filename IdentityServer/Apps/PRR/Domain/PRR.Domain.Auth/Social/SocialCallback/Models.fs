@@ -12,6 +12,10 @@ module Models =
     [<CLIMutable>]
     type Data = { Code: string; State: string }
 
+    // Since there is no app to manage perimeter admin data itself,
+    // setup social providers for perimeter runtime through the environment configuration
+    type PerimeterSocialClientSecretKeys = { Github: string }
+
     type Env =
         { DataContext: DbDataContext
           CodeGenerator: HashProvider
@@ -19,7 +23,8 @@ module Models =
           CodeExpiresIn: int<minutes>
           SSOExpiresIn: int<minutes>
           GetSocialLoginItem: Token -> Task<Item option>
-          HttpRequestFun: HttpRequestFun }
+          HttpRequestFun: HttpRequestFun
+          PerimeterSocialClientSecretKeys: PerimeterSocialClientSecretKeys }
 
     type Result =
         { RedirectUrl: Uri

@@ -17,8 +17,14 @@ module Models =
           Code_Challenge: string
           Code_Challenge_Method: string }
 
+
+    // Since there is no app to manage perimeter admin data itself,
+    // setup social providers for perimeter runtime through the environment configuration
+    type PerimeterSocialClientIds = { Github: string }
+
     type Env =
         { DataContext: DbDataContext
           HashProvider: HashProvider
           SocialCallbackUrl: string
-          SocialCallbackExpiresIn: int<milliseconds> }
+          SocialCallbackExpiresIn: int<milliseconds>
+          PerimeterSocialClientIds: PerimeterSocialClientIds }

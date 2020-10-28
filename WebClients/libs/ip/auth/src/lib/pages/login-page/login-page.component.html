@@ -35,7 +35,11 @@
         [title]="appInfo?.title || 'Perimeter'"
         subTitle="Login"
     ></ip-page-header>
-    <a data-cy="login-github-button" nz-button (click)="onSubmitSocial('github')">
+    <a
+        data-cy="submit-github"
+        nz-button
+        (click)="onSubmitSocial('github')"
+    >
         github
     </a>
     <form
@@ -72,6 +76,7 @@
             formControlName="code_challenge_method"
         />
         <input type="hidden" name="prompt" formControlName="prompt" />
+        <input type="hidden" name="social_name" formControlName="social_name" />
 
         <nz-form-item>
             <nz-form-control [nzErrorTip]="emailErrorTpl">

@@ -17,7 +17,8 @@ module PostAuthSocial =
         { DataContext = getDataContext ctx
           HashProvider = getHash ctx
           SocialCallbackUrl = config.Social.CallbackUrl
-          SocialCallbackExpiresIn = config.Social.CallbackExpiresIn }
+          SocialCallbackExpiresIn = config.Social.CallbackExpiresIn
+          PerimeterSocialClientIds = { Github = config.PerimeterSocialProviders.Github.ClientId } }
 
     let getParams =
         doublet

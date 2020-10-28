@@ -13,6 +13,7 @@ module Config =
           ResetPasswordTokenExpiresIn = configuration.GetValue<int<minutes>>("Auth:ResetPasswordTokenExpiresInMinutes")
           PasswordSecret = configuration.GetValue<string>("Auth:PasswordSecret")
           SSOCookieExpiresIn = configuration.GetValue<int<minutes>>("Auth:SSOCookieExpiresInMinutes")
+          PerimeterSocialProviders = configuration.GetValue<PerimeterSocialProviders>("Auth:PerimeterSocialProviders")
           Social =
               { CallbackUrl = configuration.GetValue<string>("Auth:Social:CallbackUrl")
                 CallbackExpiresIn =
@@ -24,6 +25,7 @@ module Config =
                 AccessTokenExpiresIn = configuration.GetValue<int<minutes>>("Auth:Jwt:IdTokenExpiresInMinutes")
                 RefreshTokenExpiresIn = configuration.GetValue<int<minutes>>("Auth:Jwt:RefreshTokenExpiresInMinutes")
                 CodeExpiresIn = configuration.GetValue<int<minutes>>("Auth:Jwt:CodeExpiresInMinutes") } }
+
 
     type Config(configuration: IConfiguration) =
         interface IConfig with

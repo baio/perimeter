@@ -12,13 +12,19 @@ module Models =
         { CallbackUrl: string
           CallbackExpiresIn: int<milliseconds> }
 
+    type PerimeterSocialProviderClientSecret = { ClientId: string; SecretKey: string }
+
+    type PerimeterSocialProviders =
+        { Github: PerimeterSocialProviderClientSecret }
+
     type AppConfig =
         { SignUpTokenExpiresIn: int<minutes>
           ResetPasswordTokenExpiresIn: int<minutes>
           SSOCookieExpiresIn: int<minutes>
           PasswordSecret: string
           Social: SocialConfig
-          Jwt: JwtConfig }
+          Jwt: JwtConfig
+          PerimeterSocialProviders: PerimeterSocialProviders }
 
     type IConfig =
         abstract GetConfig: (unit -> AppConfig)

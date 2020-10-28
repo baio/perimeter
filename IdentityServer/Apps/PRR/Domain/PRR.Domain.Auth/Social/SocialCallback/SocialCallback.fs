@@ -1,6 +1,7 @@
 ﻿namespace PRR.Domain.Auth.SocialCallback
 
 open System.Net.Http
+open System.Threading.Tasks
 open Common.Domain.Models
 open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
@@ -26,20 +27,31 @@ module Social =
           email: string
           name: string }
 
-    let private getSocialConnectionSecret (dataContext: DbDataContext) clientId socialName =
+    let private getCommonSocialConnectionSecret (dataContext: DbDataContext) clientId socialType =
+        let socialTypeName = socialType2Name socialType
         query {
             for app in dataContext.Applications do
                 join sc in dataContext.SocialConnections on (app.DomainId = sc.DomainId)
                 where
                     (app.ClientId = clientId
-                     && sc.SocialName = socialName)
+                     && sc.SocialName = socialTypeName)
                 select sc.ClientSecret
         }
         |> toSingleAsync
 
-    let private socialType2Name socialType =
-        match socialType with
-        | Github -> "github"
+    let private getPerimeterSocialConnectionSecret keys =
+        function
+        | Github -> keys.Github
+
+
+    let private getSocialConnectionSecret keys (dataContext: DbDataContext) clientId socialType =
+        // Since there is no app to manage perimeter admin data itself,
+        // setup social providers for perimeter runtime through the environment configuration
+        match clientId with
+        | "__DEFAULT_CLIENT_ID__" ->
+            getPerimeterSocialConnectionSecret keys socialType
+            |> Task.FromResult
+        | _ -> getCommonSocialConnectionSecret dataContext clientId socialType
 
     let private getGithubCodeResponse (httpRequestFun: HttpRequestFun) clientId secret code =
         task {
@@ -140,11 +152,13 @@ module Social =
             // Get stored before social login item
             let! item = getSocialLoginItem env data.State
 
-            // social type to social name
-            let socialName = socialType2Name item.Type
-
             // get social connection secret
-            let! secret = getSocialConnectionSecret env.DataContext item.DomainClientId socialName
+            let! secret =
+                getSocialConnectionSecret
+                    env.PerimeterSocialClientSecretKeys
+                    env.DataContext
+                    item.DomainClientId
+                    item.Type
 
             // request social access token by clientId, secret and code from callback
             let! codeResponse = getGithubCodeResponse env.HttpRequestFun item.SocialClientId secret data.Code
@@ -153,7 +167,8 @@ module Social =
             let! userResponse = getGithubUserResponse env.HttpRequestFun codeResponse.access_token
 
             // create user and social identity (if still not created)
-            let ident = mapSocialUserResponseToIdentity userResponse
+            let ident =
+                mapSocialUserResponseToIdentity userResponse
 
             let! userId = createUserAndSocialIdentity env.DataContext ident
 

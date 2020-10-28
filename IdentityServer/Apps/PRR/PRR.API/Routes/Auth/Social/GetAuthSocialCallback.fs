@@ -30,7 +30,8 @@ module private Handler =
           CodeExpiresIn = config.Jwt.CodeExpiresIn
           SSOExpiresIn = config.SSOCookieExpiresIn
           GetSocialLoginItem = getSocialLoginItem ctx
-          HttpRequestFun = getHttpRequestFun ctx }
+          HttpRequestFun = getHttpRequestFun ctx
+          PerimeterSocialClientSecretKeys = { Github = config.PerimeterSocialProviders.Github.SecretKey } }
 
     open Reader
 

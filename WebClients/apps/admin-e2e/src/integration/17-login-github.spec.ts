@@ -13,7 +13,10 @@ describe('login-github', () => {
     });
 
     describe('when login with github button', () => {
-        before(() => cy.dataCy('login-github-button').click());
+        before(() => {
+            cy.dataCy('login-button').click();
+            cy.dataCy('submit-github').click();
+        });
 
         it('must be redirected to github auth page', () => {
             cy.url().should('include', 'auth/login');

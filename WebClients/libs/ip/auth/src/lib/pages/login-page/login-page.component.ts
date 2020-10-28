@@ -50,7 +50,7 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
             code_challenge: urlQueryParams['code_challenge'],
             code_challenge_method: urlQueryParams[
                 'code_challenge_method'
-            ] as any,
+            ],
         };
 
         const errors = [];
@@ -113,6 +113,7 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
             code_challenge: [this.loginParams.code_challenge],
             code_challenge_method: [this.loginParams.code_challenge_method],
             prompt: [urlQueryParams['prompt']],
+            social_name: [null]
         });
     }
 
@@ -145,7 +146,7 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
 
     onSubmitSocial(socialName: string) {
         const form = document.getElementById('login_form') as HTMLFormElement;
-        form.action = `${this.baseUrl}/auth/login/social`;
+        form.action = `${this.baseUrl}/auth/social`;
         this.form.patchValue({
             social_name: socialName,
         });
