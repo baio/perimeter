@@ -31,8 +31,11 @@
 </nz-alert>
 
 <div style="display: none;" id="login_form_container">
-    <ip-page-header [title]="appInfo?.title || 'Perimeter'" subTitle="Login"></ip-page-header>
-    <a nz-button [href]="githubUrl">
+    <ip-page-header
+        [title]="appInfo?.title || 'Perimeter'"
+        subTitle="Login"
+    ></ip-page-header>
+    <a data-cy="login-github-button" nz-button (click)="onSubmitSocial('github')">
         github
     </a>
     <form
@@ -44,7 +47,6 @@
         [attr.action]="submitAction"
         #submitForm
         (ngSubmit)="onSubmit(submitForm)"
-
     >
         <input type="hidden" name="client_id" formControlName="client_id" />
         <input

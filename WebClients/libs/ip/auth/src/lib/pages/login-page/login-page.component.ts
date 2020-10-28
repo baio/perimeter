@@ -5,7 +5,6 @@ import {
     Component,
     Inject,
     OnInit,
-    ViewChild,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -25,8 +24,6 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
     queryEvent: string;
     readonly form: FormGroup;
     appInfo: AppInfo;
-
-    @ViewChild('submitForm') formElement: HTMLFormElement;
 
     get submitAction() {
         return `${this.baseUrl}/auth/login`;
@@ -146,10 +143,12 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
         form.submit();
     }
 
-    get githubUrl() {
-        const redirectUri = encodeURIComponent(
-            'http://localhost:4200/login/callback'
-        );
-        return `https://github.com/login/oauth/authorize?client_id=8de1af4393574ca685e7&redirect_uri=${redirectUri}`;
+    onSubmitSocial(socialName: string) {
+        const form = document.getElementById('login_form') as HTMLFormElement;
+        form.action = `${this.baseUrl}/auth/login/social`;
+        this.form.patchValue({
+            social_name: socialName,
+        });
+        form.submit();
     }
 }
