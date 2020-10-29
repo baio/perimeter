@@ -67,7 +67,6 @@ module private Helpers =
              Email = userResponse.email,
              SocialName = socialName,
              SocialId = userResponse.id.ToString())
-
 module internal Handler =
 
     open Helpers

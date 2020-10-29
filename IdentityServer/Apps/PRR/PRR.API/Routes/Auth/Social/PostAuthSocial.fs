@@ -9,6 +9,7 @@ open Common.Utils
 open ReaderTask
 
 open PRR.Domain.Auth.Social.SocialAuth
+open PRR.Sys.Models.Social
 
 module PostAuthSocial =
 
@@ -25,10 +26,10 @@ module PostAuthSocial =
         <!> ofReader (getContext)
         <*> bindFormAsync
 
-    let socialAuthResult (url, msg) =
+    let socialAuthResult (url, item) =
         fun ctx next ->
             let socialActor = (getSystemActors ctx).Social
-            socialActor <! msg
+            socialActor <! (SocialLoginAddCommand item)
             redirectTo false url next ctx
 
     let handle =

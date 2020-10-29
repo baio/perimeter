@@ -63,11 +63,11 @@ module SocialAuth =
             // Generate token it will be used as state for redirect url
             let token = env.HashProvider()
 
-            let redirectUrl =
-                getRedirectUrl token env.SocialCallbackUrl socialInfo socialType
+            let socialRedirectUrl =
+                getSocialRedirectUrl token env.SocialCallbackUrl socialInfo.ClientId socialType
 
             // Store login data they will be used when callback hit back
-            let cmd =
+            let item =
                 { Token = token
                   ExpiresIn = env.SocialCallbackExpiresIn
                   SocialClientId = socialInfo.ClientId
@@ -80,7 +80,6 @@ module SocialAuth =
                   Scope = data.Scope
                   CodeChallenge = data.Code_Challenge
                   CodeChallengeMethod = data.Code_Challenge_Method }
-                |> SocialLoginAddCommand
 
-            return (redirectUrl, cmd)
+            return (socialRedirectUrl, item)
         }

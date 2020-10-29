@@ -3,12 +3,12 @@
 [<AutoOpen>]
 module internal GetRedirectUrl =
 
-    let getRedirectUrl token callbackUri (info: SocialInfo) =
+    let getSocialRedirectUrl token callbackUri clientId =
         function
         | Github ->
             // https://docs.github.com/en/free-pro-team@latest/developers/apps/authorizing-oauth-apps
             sprintf
                 "https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s&state=%s"
-                info.ClientId
+                clientId
                 callbackUri
                 token
