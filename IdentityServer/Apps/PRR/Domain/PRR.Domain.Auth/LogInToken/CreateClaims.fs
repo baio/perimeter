@@ -38,7 +38,6 @@ module private CreateClaims =
 
     let createIdTokenClaims clientId issuer tokenData (scopes: string seq) =
 
-        printfn "+++ %O" tokenData
         let permissions = scopes |> strJoin
         // TODO : RBA + Include permissions flag
         [| Claim(CLAIM_TYPE_SUB, getSub tokenData)

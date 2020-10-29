@@ -95,8 +95,7 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     // auth
     let config =
         Infra.Config.getConfig context.Configuration ()
-        
-    printf "+++ %O" config        
+                
     // Authentication
     let issuerSigningKey =
         config.Jwt.AccessTokenSecret

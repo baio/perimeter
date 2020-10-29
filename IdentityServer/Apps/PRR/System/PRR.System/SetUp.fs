@@ -32,9 +32,7 @@ module Setup =
 
     let setUp' env confFileName =
         let ss =
-            Strategy.OneForOne(fun error ->
-                printf "++++Error %O" error
-                Directive.Escalate)
+            Strategy.OneForOne(fun _ -> Directive.Escalate)
 
         let confPath =
             sprintf "%s/%s" (System.IO.Directory.GetCurrentDirectory()) confFileName

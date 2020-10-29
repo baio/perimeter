@@ -126,8 +126,6 @@ module MultiTenantAdminTests =
                     { Name = "domain 1"
                       Identifier = "domain-1" }
 
-                printfn "+++ %s" users.[1].Token.Value
-
                 let info: CreatedTenantInfo = users.[0].Tenant.Value
 
                 let! result =
@@ -173,9 +171,7 @@ module MultiTenantAdminTests =
                 let data: PostLike =
                     { UserEmail = users.[1].Data.Email
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
-
-                printfn "+++ %s" loginResult.access_token
-
+                
                 let! result =
                     testFixture.HttpPostAsync
                         loginResult.access_token
