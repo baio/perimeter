@@ -36,7 +36,10 @@ module private Handler =
     open Reader
 
     let getParams =
-        doublet <!> getContext <*> bindQueryString
+        triplet
+        <!> getContext
+        <*> bindQueryString
+        <*> bindCookie "sso"
 
     let socialAuthResult (result: Result) =
         fun ctx next ->

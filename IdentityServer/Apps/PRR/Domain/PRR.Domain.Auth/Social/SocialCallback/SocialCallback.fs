@@ -146,7 +146,7 @@ module Social =
             | None -> return raise NotFound
         }
 
-    let socialCallback (env: Env, data: Data) =
+    let socialCallback (env: Env, data: Data, ssoToken: string option) =
 
         task {
 
@@ -160,7 +160,7 @@ module Social =
                     env.DataContext
                     item.DomainClientId
                     item.Type
-                                       
+
             // request social access token by clientId, secret and code from callback
             let! codeResponse = getGithubCodeResponse env.HttpRequestFun item.SocialClientId secret data.Code
 
@@ -192,7 +192,7 @@ module Social =
                   CodeExpiresIn = env.CodeExpiresIn
                   SSOExpiresIn = env.SSOExpiresIn }
 
-            let! (res, evt) = logInUser env' None loginData
+            let! (res, evt) = logInUser env' ssoToken loginData
 
             // get redirect url
             let redirectUrl = getSuccessRedirectUrl res
