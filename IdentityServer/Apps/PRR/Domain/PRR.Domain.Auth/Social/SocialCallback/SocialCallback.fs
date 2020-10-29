@@ -83,6 +83,7 @@ module Social =
                       seq {
                           ("Accept", "application/json")
                           ("Authorization", (sprintf "token %s" token))
+                          ("User-Agent", "Perimeter-API")
                       } }
 
             let! content = httpRequestFun request
@@ -159,7 +160,7 @@ module Social =
                     env.DataContext
                     item.DomainClientId
                     item.Type
-
+                                       
             // request social access token by clientId, secret and code from callback
             let! codeResponse = getGithubCodeResponse env.HttpRequestFun item.SocialClientId secret data.Code
 

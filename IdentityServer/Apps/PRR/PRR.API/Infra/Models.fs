@@ -12,6 +12,7 @@ module Models =
         { CallbackUrl: string
           CallbackExpiresIn: int<milliseconds> }
 
+    [<CLIMutable>]
     type PerimeterSocialProviderClientSecret = { ClientId: string; SecretKey: string }
 
     type PerimeterSocialProviders =

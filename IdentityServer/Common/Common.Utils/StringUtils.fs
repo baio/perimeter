@@ -25,6 +25,6 @@ module StringUtils =
     let splitName (name: string) =
         match name.Split " " with
         | [| a; b |] -> (a, b)
-        | [| a |] -> (a, null)
+        | [| a |] -> (a, "")
         | [||] -> (null, null)
         | x -> (x.[0], x.[1..] |> String.concat " ")

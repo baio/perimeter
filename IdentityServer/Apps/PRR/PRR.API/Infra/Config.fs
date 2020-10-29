@@ -13,7 +13,11 @@ module Config =
           ResetPasswordTokenExpiresIn = configuration.GetValue<int<minutes>>("Auth:ResetPasswordTokenExpiresInMinutes")
           PasswordSecret = configuration.GetValue<string>("Auth:PasswordSecret")
           SSOCookieExpiresIn = configuration.GetValue<int<minutes>>("Auth:SSOCookieExpiresInMinutes")
-          PerimeterSocialProviders = configuration.GetValue<PerimeterSocialProviders>("Auth:PerimeterSocialProviders")
+          PerimeterSocialProviders =
+              // TODO : How to read record types with GetValue
+              { Github =
+                    { ClientId = configuration.GetValue<string>("Auth:PerimeterSocialProviders:Github:ClientId")
+                      SecretKey = configuration.GetValue<string>("Auth:PerimeterSocialProviders:Github:SecretKey") } }
           Social =
               { CallbackUrl = configuration.GetValue<string>("Auth:Social:CallbackUrl")
                 CallbackExpiresIn =

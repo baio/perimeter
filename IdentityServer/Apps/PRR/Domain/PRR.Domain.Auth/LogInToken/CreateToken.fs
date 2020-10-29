@@ -22,12 +22,6 @@ module private CreateToken =
         let expires =
             issuedAt.AddMinutes(float expireInMinutes)
 
-        (*
-        let signingCredentials =
-            SigningCredentials(securityKey, securityAlgorithm)
-        *)
-        //SigningCredentials(SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-
         SecurityTokenDescriptor
             (Subject = subject,
              Expires = Nullable(expires),

@@ -45,7 +45,7 @@ module internal SignInUser =
         let accessToken =
             createAccessTokenClaims data.ClientId data.Issuer data.TokenData rolesPermissions audiences
             |> (createSignedToken data.AccessTokenCredentials data.AccessTokenExpiresIn)
-
+           
         let idToken =
             createIdTokenClaims data.ClientId data.Issuer data.TokenData rolesPermissions
             |> (createUnsignedToken data.IdTokenExpiresIn)
