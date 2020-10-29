@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.Social
+﻿namespace PRR.Domain.Auth.Social.SocialAuth
 
 open System.Threading.Tasks
 open Common.Domain.Models
@@ -10,12 +10,7 @@ open PRR.Sys.Models.Social
 open PRR.Domain.Auth.Constants
 
 [<AutoOpen>]
-module Social =
-
-    type private SocialInfo =
-        { ClientId: string
-          Attributes: string seq
-          Permissions: string seq }
+module SocialAuth =
 
     let private getCommonSocialConnectionInfo (dataContext: DbDataContext) clientId socialType =
 
@@ -54,17 +49,6 @@ module Social =
             |> Task.FromResult
         | _ -> getCommonSocialConnectionInfo dataContext clientId socialType
 
-
-
-    let private getRedirectUrl token callbackUri (info: SocialInfo) =
-        function
-        | Github ->
-            // https://docs.github.com/en/free-pro-team@latest/developers/apps/authorizing-oauth-apps
-            sprintf
-                "https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s&state=%s"
-                info.ClientId
-                callbackUri
-                token
 
     let socialAuth (env: Env, data: Data) =
         task {

@@ -8,7 +8,7 @@ open Common.Domain.Giraffe
 open Common.Utils
 open ReaderTask
 
-open PRR.Domain.Auth.Social
+open PRR.Domain.Auth.Social.SocialAuth
 
 module PostAuthSocial =
 

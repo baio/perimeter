@@ -8,7 +8,7 @@ open Newtonsoft.Json
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.LogInToken
 open PRR.Domain.Auth.SignUp
-open PRR.Domain.Auth.SocialCallback
+open PRR.Domain.Auth.Social.SocialCallback
 open PRR.Domain.Tenant
 open Xunit
 open Xunit.Abstractions
@@ -69,14 +69,14 @@ module SocialTests =
             fun req ->
                 match req.Uri with
                 | Regex @"https:\/\/github\.com\/login\/oauth\/access_token" _ ->
-                    ({ access_token = "xxx" }: GithubCodeResponse)
+                    ({| access_token = "xxx" |})
                     |> JsonConvert.SerializeObject
                     |> Task.FromResult
                 | Regex @"https:\/\/api\.github\.com\/user" _ ->
-                    ({ id = 100
-                       avatar_url = "http://avatar"
-                       email = "max@gmail.com"
-                       name = "max p" }: GithubUserResponse)
+                    ({| id = 100
+                        avatar_url = "http://avatar"
+                        email = "max@gmail.com"
+                        name = "max p" |})
                     |> JsonConvert.SerializeObject
                     |> Task.FromResult
                 | _ -> raise (exn "unknown request")
@@ -126,7 +126,7 @@ module SocialTests =
 
                 let url = "/api/auth/social"
 
-                let data: PRR.Domain.Auth.Social.Models.Data =
+                let data: PRR.Domain.Auth.Social.SocialAuth.Models.Data =
                     { Social_Name = "github"
                       Client_Id = clientId
                       Response_Type = "code"
@@ -224,6 +224,6 @@ module SocialTests =
                 result.id_token |> should be (not' Empty)
 
                 result.refresh_token |> should be (not' Empty)
-                
+
                 printfn "%s" result.access_token
             }

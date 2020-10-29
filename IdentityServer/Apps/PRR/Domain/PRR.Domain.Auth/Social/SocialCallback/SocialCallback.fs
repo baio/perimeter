@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.SocialCallback
+﻿namespace PRR.Domain.Auth.Social.SocialCallback
 
 open System.Net.Http
 open System.Threading.Tasks
@@ -18,14 +18,6 @@ open System.Linq
 
 [<AutoOpen>]
 module Social =
-
-    type GithubCodeResponse = { access_token: string }
-
-    type GithubUserResponse =
-        { id: int
-          avatar_url: string
-          email: string
-          name: string }
 
     let private getCommonSocialConnectionSecret (dataContext: DbDataContext) clientId socialType =
         let socialTypeName = socialType2Name socialType
@@ -53,51 +45,6 @@ module Social =
             |> Task.FromResult
         | _ -> getCommonSocialConnectionSecret dataContext clientId socialType
 
-    let private getGithubCodeResponse (httpRequestFun: HttpRequestFun) clientId secret code =
-        task {
-            let request: HttpRequest =
-                { Uri = "https://github.com/login/oauth/access_token"
-                  Method = HttpRequestMethodPOST
-                  QueryStringParams =
-                      seq {
-                          ("client_id", clientId.ToString())
-                          ("client_secret", secret)
-                          ("code", code)
-                      }
-                  Headers = seq { ("Accept", "application/json") } }
-
-            let! content = httpRequestFun request
-
-            return JsonConvert.DeserializeObject<GithubCodeResponse> content
-        }
-
-
-    let private getGithubUserResponse (httpRequestFun: HttpRequestFun) token =
-        task {
-
-            let request: HttpRequest =
-                { Uri = "https://api.github.com/user"
-                  Method = HttpRequestMethodGET
-                  QueryStringParams = Seq.empty
-                  Headers =
-                      seq {
-                          ("Accept", "application/json")
-                          ("Authorization", (sprintf "token %s" token))
-                          ("User-Agent", "Perimeter-API")
-                      } }
-
-            let! content = httpRequestFun request
-
-            return JsonConvert.DeserializeObject<GithubUserResponse> content
-        }
-
-    let private mapSocialUserResponseToIdentity userResponse =
-        let socialName = socialType2Name SocialType.Github
-        SocialIdentity
-            (Name = userResponse.name,
-             Email = userResponse.email,
-             SocialName = socialName,
-             SocialId = userResponse.id.ToString())
 
     let private identityToUser (ident: SocialIdentity) =
         let (firstName, lastName) = splitName ident.Name
@@ -161,16 +108,9 @@ module Social =
                     item.DomainClientId
                     item.Type
 
-            // request social access token by clientId, secret and code from callback
-            let! codeResponse = getGithubCodeResponse env.HttpRequestFun item.SocialClientId secret data.Code
-
-            // get github user by received access token
-            let! userResponse = getGithubUserResponse env.HttpRequestFun codeResponse.access_token
+            let! ident = getSocialIdentity item.Type env.HttpRequestFun item.SocialClientId secret data.Code
 
             // create user and social identity (if still not created)
-            let ident =
-                mapSocialUserResponseToIdentity userResponse
-
             let! userId = createUserAndSocialIdentity env.DataContext ident
 
             // login user as usual with data from social provider

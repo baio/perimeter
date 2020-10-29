@@ -10,7 +10,7 @@ open PRR.API.Routes
 open Common.Domain.Giraffe
 open Common.Utils
 open FSharp.Akkling.CQRS
-open PRR.Domain.Auth.SocialCallback
+open PRR.Domain.Auth.Social.SocialCallback
 open PRR.Sys.Models.Social
 
 module private Handler =

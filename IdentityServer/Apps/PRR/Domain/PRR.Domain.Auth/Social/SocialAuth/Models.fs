@@ -1,11 +1,16 @@
-﻿namespace PRR.Domain.Auth.Social
+﻿namespace PRR.Domain.Auth.Social.SocialAuth
 
 open Common.Domain.Models
 open PRR.Data.DataContext
 
 [<AutoOpen>]
 module Models =
-
+    
+    type internal SocialInfo =
+        { ClientId: string
+          Attributes: string seq
+          Permissions: string seq }
+    
     [<CLIMutable>]
     type Data =
         { Social_Name: string

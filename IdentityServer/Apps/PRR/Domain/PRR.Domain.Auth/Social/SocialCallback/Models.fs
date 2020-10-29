@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.SocialCallback
+﻿namespace PRR.Domain.Auth.Social.SocialCallback
 
 open System.Threading.Tasks
 open Common.Domain.Models
