@@ -17,7 +17,13 @@ module Config =
               // TODO : How to read record types with GetValue
               { Github =
                     { ClientId = configuration.GetValue<string>("Auth:PerimeterSocialProviders:Github:ClientId")
-                      SecretKey = configuration.GetValue<string>("Auth:PerimeterSocialProviders:Github:SecretKey") } }
+                      SecretKey = configuration.GetValue<string>("Auth:PerimeterSocialProviders:Github:SecretKey") }
+                Google =
+                    { ClientId = configuration.GetValue<string>("Auth:PerimeterSocialProviders:Google:ClientId")
+                      SecretKey = configuration.GetValue<string>("Auth:PerimeterSocialProviders:Google:SecretKey") }
+                Twitter =
+                    { ClientId = configuration.GetValue<string>("Auth:PerimeterSocialProviders:Twitter:ClientId")
+                      SecretKey = configuration.GetValue<string>("Auth:PerimeterSocialProviders:Twitter:SecretKey") } }
           Social =
               { CallbackUrl = configuration.GetValue<string>("Auth:Social:CallbackUrl")
                 CallbackExpiresIn =

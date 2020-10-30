@@ -13,6 +13,7 @@ module HttRequest =
         { Uri: string
           Method: HttpRequestMethod
           Headers: (string * string) seq
-          QueryStringParams: (string * string) seq }
+          QueryStringParams: (string * string) seq
+          FormBody: (string * string) seq }
 
     type HttpRequestFun = HttpRequest -> Task<string>

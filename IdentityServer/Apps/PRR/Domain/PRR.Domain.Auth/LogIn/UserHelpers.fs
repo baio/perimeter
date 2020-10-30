@@ -8,6 +8,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
 open PRR.Domain.Auth
 open System.Linq
+open PRR.Domain.Auth.Common
 
 [<AutoOpen>]
 module internal UserHelpers =

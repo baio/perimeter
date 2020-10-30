@@ -7,6 +7,7 @@ open System
 open System.IdentityModel.Tokens.Jwt
 open System.Security.Claims
 open System.Text
+open PRR.Domain.Auth.Common
 
 [<AutoOpen>]
 module internal ValidateAccessToken =
@@ -30,14 +31,6 @@ module internal ValidateAccessToken =
             printfn "Validate token fails %O" ex
             None
 
-    let readToken (token: string) =
-        let tokenHandler = JwtSecurityTokenHandler()
-        try
-            let securityToken = tokenHandler.ReadToken(token)
-            if (securityToken = null) then None else Some securityToken
-        with :? Exception as ex ->
-            printfn "Read token fails %O" ex
-            None
 
     let private principalClaims (principal: ClaimsPrincipal) = principal.Claims
 

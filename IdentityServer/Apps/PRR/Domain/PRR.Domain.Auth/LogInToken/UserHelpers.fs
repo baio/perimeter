@@ -38,9 +38,12 @@ module internal UserHelpers =
         |> toSingleOptionAsync
 
     let private getUserDataForTokenSocial (dataContext: DbDataContext) filterUser socialType =
+        let socialTypeName = socialType2Name socialType
         query {
             for si in dataContext.SocialIdentities do
-                where ((%filterUser) si.User)
+                where
+                    (((%filterUser) si.User)
+                     && si.SocialName = socialTypeName)
                 select (si.Name, si.Email, si.UserId)
         }
         |> toSingleOptionAsync

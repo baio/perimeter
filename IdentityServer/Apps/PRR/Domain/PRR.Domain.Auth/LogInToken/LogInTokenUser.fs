@@ -14,6 +14,7 @@ open PRR.Domain.Auth
 open PRR.Domain.Auth.LogIn.UserHelpers
 open PRR.Domain.Auth.LogInToken
 open Common.Domain.Utils.LinqHelpers
+open PRR.Domain.Auth.Common
 
 [<AutoOpen>]
 module internal SignInUser =
@@ -74,13 +75,13 @@ module internal SignInUser =
         |> Array.toSeq
 
     let private perimeterAudiences =
-        [| PRR.Domain.Auth.Constants.PERIMETER_USERS_AUDIENCE |]
+        [| PERIMETER_USERS_AUDIENCE |]
         |> Array.toSeq
 
     let private getClientAudiencesRolePermissions (dataContext: DbDataContext) clientId email =
 
         task {
-            if clientId = PRR.Domain.Auth.Constants.PERIMETER_CLIENT_ID then
+            if clientId = PERIMETER_CLIENT_ID then
                 return (perimeterAudiences, perimeterUserRolePermissions)
             else
                 let! (audiences, rolesPermissions) = getClientAudiencesRolePermissions' dataContext clientId email

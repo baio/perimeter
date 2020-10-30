@@ -11,6 +11,7 @@ actor {
       event-stream = on
       unhandled = on
   }
+   ask-timeout = 1s
 }
 
 # Configure journal

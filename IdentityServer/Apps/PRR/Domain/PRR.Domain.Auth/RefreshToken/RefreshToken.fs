@@ -5,7 +5,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.Entities
 open PRR.Domain.Auth.LogInToken
 open PRR.System.Models
-open PRR.Domain.Auth.ValidateScopes
+open PRR.Domain.Auth.Common
 
 [<AutoOpen>]
 module RefreshToken =

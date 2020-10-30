@@ -31,7 +31,11 @@ module private Handler =
           SSOExpiresIn = config.SSOCookieExpiresIn
           GetSocialLoginItem = getSocialLoginItem ctx
           HttpRequestFun = getHttpRequestFun ctx
-          PerimeterSocialClientSecretKeys = { Github = config.PerimeterSocialProviders.Github.SecretKey } }
+          SocialCallbackUrl = config.Social.CallbackUrl
+          PerimeterSocialClientSecretKeys =
+              { Github = config.PerimeterSocialProviders.Github.SecretKey
+                Google = config.PerimeterSocialProviders.Google.SecretKey
+                Twitter = config.PerimeterSocialProviders.Twitter.SecretKey } }
 
     open Reader
 

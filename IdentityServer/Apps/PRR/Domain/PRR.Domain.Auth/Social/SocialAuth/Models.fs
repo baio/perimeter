@@ -5,12 +5,12 @@ open PRR.Data.DataContext
 
 [<AutoOpen>]
 module Models =
-    
+
     type internal SocialInfo =
         { ClientId: string
           Attributes: string seq
           Permissions: string seq }
-    
+
     [<CLIMutable>]
     type Data =
         { Social_Name: string
@@ -25,7 +25,10 @@ module Models =
 
     // Since there is no app to manage perimeter admin data itself,
     // setup social providers for perimeter runtime through the environment configuration
-    type PerimeterSocialClientIds = { Github: string }
+    type PerimeterSocialClientIds =
+        { Github: string
+          Google: string
+          Twitter: string }
 
     type Env =
         { DataContext: DbDataContext

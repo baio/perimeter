@@ -14,6 +14,17 @@ module HttpRequestFun =
         | HttpRequestMethodPOST -> Post
         | HttpRequestMethodGET -> Get
 
+    let private addFormBody formBody request =
+        match Seq.isEmpty formBody with
+        | true -> request
+        | false ->
+            formBody
+            |> Seq.map (NameValue)
+            |> Seq.toList
+            |> BodyForm
+            |> Request.body
+            |> (fun fn -> fn request)
+
     let httpFsRequestFun: HttpRequestFun =
         fun req ->
             let method = mapMethod req.Method
@@ -27,6 +38,8 @@ module HttpRequestFun =
                 let request =
                     req.QueryStringParams
                     |> Seq.fold (fun acc (k, v) -> (Request.queryStringItem k v) acc) request
+
+                let request = addFormBody req.FormBody request
 
                 let! response = getResponse request
 

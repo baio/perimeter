@@ -11,6 +11,8 @@ module private CreateClaims =
     let getSocialSubPrefix =
         function
         | Github -> "github"
+        | Twitter -> "twitter"
+        | Google -> "google"
 
     let getSubPrefix =
         function

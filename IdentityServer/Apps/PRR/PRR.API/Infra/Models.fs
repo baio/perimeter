@@ -16,7 +16,11 @@ module Models =
     type PerimeterSocialProviderClientSecret = { ClientId: string; SecretKey: string }
 
     type PerimeterSocialProviders =
-        { Github: PerimeterSocialProviderClientSecret }
+        {
+            Github: PerimeterSocialProviderClientSecret
+            Google: PerimeterSocialProviderClientSecret
+            Twitter: PerimeterSocialProviderClientSecret
+        }
 
     type AppConfig =
         { SignUpTokenExpiresIn: int<minutes>

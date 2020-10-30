@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.Social.SocialCallback.Identities.Twitter
+﻿namespace PRR.Domain.Auth.Social.SocialCallback.Identities.Github
 
 open Common.Domain.Models
 open Newtonsoft.Json
@@ -9,9 +9,9 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 
 module public Models =
 
-    type GithubCodeResponse = { access_token: string }
+    type CodeResponse = { access_token: string }
 
-    type GithubUserResponse =
+    type UserResponse =
         { id: int
           avatar_url: string
           email: string
@@ -22,11 +22,12 @@ module private Helpers =
 
     open Models
 
-    let getGithubCodeResponse (httpRequestFun: HttpRequestFun) clientId secret code =
+    let getCodeResponse (httpRequestFun: HttpRequestFun) clientId secret code =
         task {
             let request: HttpRequest =
                 { Uri = "https://github.com/login/oauth/access_token"
                   Method = HttpRequestMethodPOST
+                  FormBody = Seq.empty
                   QueryStringParams =
                       seq {
                           ("client_id", clientId)
@@ -36,18 +37,21 @@ module private Helpers =
                   Headers = seq { ("Accept", "application/json") } }
 
             let! content = httpRequestFun request
+            
+            printfn "1111 %s" content
 
-            return JsonConvert.DeserializeObject<GithubCodeResponse> content
+            return JsonConvert.DeserializeObject<CodeResponse> content
         }
 
 
-    let getGithubUserResponse (httpRequestFun: HttpRequestFun) token =
+    let getUserResponse (httpRequestFun: HttpRequestFun) token =
         task {
 
             let request: HttpRequest =
                 { Uri = "https://api.github.com/user"
                   Method = HttpRequestMethodGET
                   QueryStringParams = Seq.empty
+                  FormBody = Seq.empty
                   Headers =
                       seq {
                           ("Accept", "application/json")
@@ -57,7 +61,7 @@ module private Helpers =
 
             let! content = httpRequestFun request
 
-            return JsonConvert.DeserializeObject<GithubUserResponse> content
+            return JsonConvert.DeserializeObject<UserResponse> content
         }
 
     let mapSocialUserResponseToIdentity userResponse =
@@ -67,6 +71,7 @@ module private Helpers =
              Email = userResponse.email,
              SocialName = socialName,
              SocialId = userResponse.id.ToString())
+
 module internal Handler =
 
     open Helpers
@@ -74,10 +79,10 @@ module internal Handler =
     let getSocialIdentity httpRequestFun socialClientId socialSecretKey code =
         task {
             // request social access token by clientId, secret and code from callback
-            let! codeResponse = getGithubCodeResponse httpRequestFun socialClientId socialSecretKey code
+            let! codeResponse = getCodeResponse httpRequestFun socialClientId socialSecretKey code
 
             // get github user by received access token
-            let! userResponse = getGithubUserResponse httpRequestFun codeResponse.access_token
+            let! userResponse = getUserResponse httpRequestFun codeResponse.access_token
 
             return mapSocialUserResponseToIdentity userResponse
         }

@@ -19,7 +19,10 @@ module PostAuthSocial =
           HashProvider = getHash ctx
           SocialCallbackUrl = config.Social.CallbackUrl
           SocialCallbackExpiresIn = config.Social.CallbackExpiresIn
-          PerimeterSocialClientIds = { Github = config.PerimeterSocialProviders.Github.ClientId } }
+          PerimeterSocialClientIds =
+              { Github = config.PerimeterSocialProviders.Github.ClientId
+                Google = config.PerimeterSocialProviders.Google.ClientId
+                Twitter = config.PerimeterSocialProviders.Twitter.ClientId } }
 
     let getParams =
         doublet

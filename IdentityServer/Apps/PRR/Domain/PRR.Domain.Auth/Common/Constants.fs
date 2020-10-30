@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth
+﻿namespace PRR.Domain.Auth.Common
 
 [<AutoOpen>]
 module Constants =

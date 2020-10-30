@@ -7,7 +7,7 @@ open PRR.Data.DataContext
 open Common.Domain.Utils
 open PRR.Data.Entities
 open PRR.Sys.Models.Social
-open PRR.Domain.Auth.Constants
+open PRR.Domain.Auth.Common
 
 [<AutoOpen>]
 module SocialAuth =
@@ -32,6 +32,8 @@ module SocialAuth =
     let private getPerimeterSocialClientId (ids: PerimeterSocialClientIds) =
         function
         | Github -> ids.Github
+        | Google -> ids.Google
+        | Twitter -> ids.Twitter
 
     let private getPerimeterSocialConnection ids =
         getPerimeterSocialClientId ids
@@ -60,7 +62,7 @@ module SocialAuth =
             let! socialInfo =
                 getSocialConnectionInfo env.PerimeterSocialClientIds env.DataContext data.Client_Id socialType
 
-            // Generate token it will be used as state for redirect url
+            // Generate token it will be used as state for social redirect url
             let token = env.HashProvider()
 
             let socialRedirectUrl =

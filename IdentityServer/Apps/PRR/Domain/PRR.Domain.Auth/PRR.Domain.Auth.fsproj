@@ -18,9 +18,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Constants.fs" />
-        <Compile Include="JwtConfig.fs" />
-        <Compile Include="ValidateScopes.fs" />
+        <Compile Include="Common\Constants.fs" />
+        <Compile Include="Common\ReadToken.fs" />
+        <Compile Include="Common\ValidateScopes.fs" />
+        <Compile Include="Common\JwtConfig.fs" />
         <Compile Include="LogIn\Models.fs" />
         <Compile Include="LogIn\UserHelpers.fs" />
         <Compile Include="LogIn\LogIn.fs" />
@@ -57,7 +58,8 @@
         <Compile Include="Social\SocialAuth\GetSocialRedirectUrl.fs" />
         <Compile Include="Social\SocialAuth\SocialAuth.fs" />
         <Compile Include="Social\SocialCallback\Models.fs" />
-        <Compile Include="Social\SocialCallback\Identities\Twitter.fs" />
+        <Compile Include="Social\SocialCallback\Identities\Github.fs" />
+        <Compile Include="Social\SocialCallback\Identities\Google.fs" />
         <Compile Include="Social\SocialCallback\GetSocialIdentity.fs" />
         <Compile Include="Social\SocialCallback\SocialCallback.fs" />
     </ItemGroup>

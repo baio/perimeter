@@ -7,7 +7,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
 open PRR.System.Models
 open System
-open PRR.Domain.Auth.ValidateScopes
+open PRR.Domain.Auth.Common
 
 [<AutoOpen>]
 module Authorize =
@@ -46,7 +46,7 @@ module Authorize =
 
     let private getClientAppData (dataContext: DbDataContext) clientId =
         task {
-            if clientId = PRR.Domain.Auth.Constants.PERIMETER_CLIENT_ID
+            if clientId = PERIMETER_CLIENT_ID
             then return (true, "*", Nullable(), Nullable())
             else return! getClientAppData' dataContext clientId
         }
@@ -72,13 +72,15 @@ module Authorize =
                 getAppInfo env.DataContext data.ClientId data.Email 1<minutes>
 
             printfn "login:2 %s %s" clientId issuer
+
             let! (ssoEnabled, callbackUrls, poolTenantId, domainTenantId) = getClientAppData dataContext clientId
+
             printfn "login:3"
 
             let tenantId =
                 match (poolTenantId.HasValue, domainTenantId.HasValue) with
                 // Perimeter app : profile / create tenant
-                | (false, false) -> PRR.Domain.Auth.Constants.PERIMETER_TENANT_ID
+                | (false, false) -> PERIMETER_TENANT_ID
                 // Domain app
                 | (true, false) -> poolTenantId.Value
                 // Tenant management app

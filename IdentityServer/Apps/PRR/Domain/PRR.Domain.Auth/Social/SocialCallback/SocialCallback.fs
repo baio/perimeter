@@ -34,7 +34,8 @@ module Social =
     let private getPerimeterSocialConnectionSecret keys =
         function
         | Github -> keys.Github
-
+        | Twitter -> keys.Twitter
+        | Google -> keys.Google
 
     let private getSocialConnectionSecret keys (dataContext: DbDataContext) clientId socialType =
         // Since there is no app to manage perimeter admin data itself,
@@ -108,7 +109,14 @@ module Social =
                     item.DomainClientId
                     item.Type
 
-            let! ident = getSocialIdentity item.Type env.HttpRequestFun item.SocialClientId secret data.Code
+            let! ident =
+                getSocialIdentity
+                    env.SocialCallbackUrl
+                    item.Type
+                    env.HttpRequestFun
+                    item.SocialClientId
+                    secret
+                    data.Code
 
             // create user and social identity (if still not created)
             let! userId = createUserAndSocialIdentity env.DataContext ident

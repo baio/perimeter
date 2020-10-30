@@ -35,12 +35,11 @@
         [title]="appInfo?.title || 'Perimeter'"
         subTitle="Login"
     ></ip-page-header>
-    <a
-        data-cy="submit-github"
-        nz-button
-        (click)="onSubmitSocial('github')"
-    >
+    <a data-cy="submit-github" nz-button (click)="onSubmitSocial('github')">
         github
+    </a>
+    <a data-cy="submit-google" nz-button (click)="onSubmitSocial('google')">
+        google
     </a>
     <form
         id="login_form"

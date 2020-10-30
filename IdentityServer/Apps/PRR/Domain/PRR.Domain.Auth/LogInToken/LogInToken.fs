@@ -13,6 +13,7 @@ open System.Security.Cryptography
 open System.Text.Encodings.Web
 open System.Text.RegularExpressions
 open PRR.Domain.Auth
+open PRR.Domain.Auth.Common
 
 [<AutoOpen>]
 module LogInToken =
