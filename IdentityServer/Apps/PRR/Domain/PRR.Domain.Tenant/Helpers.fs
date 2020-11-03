@@ -33,6 +33,7 @@ module Helpers =
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
              RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
              SSOEnabled = true,
+             // TODO : It should be false !
              IsDomainManagement = true)
 
     let createTenantManagementApi authConfig (domain: Domain) =

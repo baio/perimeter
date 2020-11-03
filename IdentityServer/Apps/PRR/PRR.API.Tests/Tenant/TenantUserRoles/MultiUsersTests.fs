@@ -98,13 +98,13 @@ module MultiUsers =
                                     Tenant = Some(tenant) |}
             }
 
-        [<Fact>]        
+        [<Fact>]
         [<Priority(1)>]
         member __.``A Same tenant user but with no MANAGE_TENANT_DOMAINS permission forbidden create domain pool``() =
             let u2 = users.[1]
             task {
                 let data: DomainPools.PutLike = { Name = "Domain pool 2" }
-                                
+
 
                 let! result =
                     testFixture.HttpPutAsync
@@ -112,7 +112,7 @@ module MultiUsers =
                         (sprintf "/api/tenants/%i/domain-pools/%i" u2.Tenant.Value.TenantId u2.Tenant.Value.DomainPoolId)
                         data
 
-                // Regular domain token will give unauthorized for management domain endpoints since they use different token sign configs    
+                // Regular domain token will give unauthorized for management domain endpoints since they use different token sign configs
                 ensureUnauthorized result
             }
 
@@ -146,6 +146,20 @@ module MultiUsers =
                     testFixture.HttpPostAsync token (sprintf "/api/tenants/%i/admins" u1.Tenant.Value.TenantId) data
 
                 do! ensureSuccessAsync res
+
+                let u2 = users.[1]
+
+                let! res =
+                    logInUser
+                        testFixture
+                        u1.Tenant.Value.TenantManagementApplicationClientId
+                        u2.Data.Email
+                        u2.Data.Password
+                        
+                printfn "+++ %s" res.access_token                        
+
+                users.[1] <- {| u2 with
+                                    Token = Some(res.access_token) |}
             }
 
         [<Fact>]
@@ -157,18 +171,6 @@ module MultiUsers =
 
 
             task {
-
-                let! res =
-                    logInUser
-                        testFixture
-                        u1.Tenant.Value.TenantManagementApplicationClientId
-                        u2.Data.Email
-                        u2.Data.Password
-
-                users.[1] <- {| u2 with
-                                    Token = Some(res.access_token) |}
-
-                let u2 = users.[1]
                 //
                 let data: DomainPools.PutLike = { Name = "Domain pool 2" }
 

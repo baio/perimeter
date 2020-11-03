@@ -12,6 +12,11 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 [<AutoOpen>]
 module ValidateScopes =
 
+    type private AppDomainType =
+        | TenantManagement
+        | DomainManagement
+        | Generic
+
     let private getTenantManagementAudiencePermissions (dataContext: DbDataContext) domainId =
         task {
 
@@ -31,10 +36,11 @@ module ValidateScopes =
                 }
                 |> toListAsync
 
-            return seq { { Audience = aud; Scopes = perms } }
+            return { Audience = aud; Scopes = perms }
         }
 
     let private getDomainManagementAudiencePermissions (dataContext: DbDataContext) domainId =
+        printfn "getDomainManagementAudiencePermissions %i" domainId
         task {
             let! aud =
                 query {
@@ -55,20 +61,40 @@ module ValidateScopes =
                 |> toListAsync
 
 
-            return seq { { Audience = aud; Scopes = perms } }
+            return { Audience = aud; Scopes = perms }
         }
 
-    let getDefaultScopes (dataContext: DbDataContext) domainId isTenantManagement isDomainManagement =
-        task {
-            if isTenantManagement
-            then return! getTenantManagementAudiencePermissions dataContext domainId
-            else if isDomainManagement
-            then return! getDomainManagementAudiencePermissions dataContext domainId
-            else return Seq.empty
+    /// For domain and tenant management apis returns audience and shared permissions (scopes)
+    let private getDefaultManagementScopes (dataContext: DbDataContext) domainId =
+        function
+        | TenantManagement -> getTenantManagementAudiencePermissions dataContext domainId
+        | DomainManagement -> getDomainManagementAudiencePermissions dataContext domainId
+
+
+    let private userHasAssignedRole (dataContext: DbDataContext) userEmail domainId =
+        query {
+            for dur in dataContext.DomainUserRole do
+                where
+                    (dur.UserEmail = userEmail
+                     && dur.DomainId = domainId)
+                select dur.RoleId
         }
+        |> toCountAsync
+        |> TaskUtils.map (fun i -> i > 0)
 
+    let private getDefaultDomainAudiencePermissions (dataContext: DbDataContext) domainId scopes =
+        query {
+            for dur in dataContext.DomainUserRole do
+                join rp in dataContext.RolesPermissions on (dur.RoleId = rp.RoleId)
+                where
+                    (rp.Permission.IsDefault = true
+                     && dur.DomainId = domainId
+                     && (%in' scopes) rp.Permission.Name)
+                select (Tuple.Create(rp.Permission.Api.Identifier, rp.Permission.Name))
+        }
+        |> groupByAsync (fun (aud, perms) -> { Audience = aud; Scopes = perms })
 
-    let private getDomainAudiencePermissions (dataContext: DbDataContext) userEmail domainId scopes =
+    let private getGenericDomainAudiencePermissions (dataContext: DbDataContext) userEmail domainId scopes =
         query {
             for dur in dataContext.DomainUserRole do
                 join rp in dataContext.RolesPermissions on (dur.RoleId = rp.RoleId)
@@ -80,6 +106,22 @@ module ValidateScopes =
         }
         |> groupByAsync (fun (aud, perms) -> { Audience = aud; Scopes = perms })
 
+    let private getManagementDomainPermissions (dataContext: DbDataContext) userEmail domainId scopes appDomainType =
+        let isDomainManagement = appDomainType = DomainManagement
+        let isTenantManagement = appDomainType = TenantManagement
+        query {
+            for dur in dataContext.DomainUserRole do
+                join rp in dataContext.RolesPermissions on (dur.RoleId = rp.RoleId)
+                where
+                    (dur.UserEmail = userEmail
+                     && dur.DomainId = domainId
+                     && rp.Permission.IsDomainManagement = isDomainManagement
+                     && rp.Permission.IsTenantManagement = isTenantManagement
+                     && (%in' scopes) rp.Permission.Name)
+                select rp.Permission.Name
+        }
+        |> toListAsync
+
     let private getScopeAudience (scopeAudiences: AudienceScopes seq) scope =
         let res =
             scopeAudiences
@@ -89,9 +131,16 @@ module ValidateScopes =
         | Some x -> x.Audience
         | None -> raise (unexpected "Audience not found by scope")
 
-    let private validateScopes'' (dataContext: DbDataContext) userEmail clientId scopes =
-        task {
+    let private getAppDomainType isTenantManagement isDomainManagement =
+        match (isTenantManagement, isDomainManagement) with
+        | (false, false) -> Generic
+        | (true, true) -> TenantManagement
+        | (false, true) -> DomainManagement
+        | (true, false) -> raise (unexpected "TODO: Domain couldn't be both tenant and domain management")
 
+    let private getAppDomainInfo (dataContext: DbDataContext) clientId =
+        task {
+            printfn "getAppDomainInfo:1"
             let! (domainId, isDomainManagement, isTenantManagement) =
                 query {
                     for app in dataContext.Applications do
@@ -100,56 +149,67 @@ module ValidateScopes =
                 }
                 |> toSingleAsync
 
-            let! defaultAudienceScopes = getDefaultScopes dataContext domainId isTenantManagement isDomainManagement
+            printfn "getAppDomainInfo:2 %i %b %b" domainId isDomainManagement isTenantManagement
 
-            let defaultScopes =
-                defaultAudienceScopes
-                |> Seq.collect (fun x -> x.Scopes)
+            let appDomainType =
+                getAppDomainType isTenantManagement isDomainManagement
 
-            let requestedScopes = Seq.append scopes defaultScopes
-
-            let! audScopes = getDomainAudiencePermissions dataContext userEmail domainId requestedScopes
-
-            let audScopesWithAudiences =
-                audScopes
-                |> Seq.filter (fun x -> x.Audience <> null)
-            // Management scopes don't have linked audiences
-            // Restore managements scope audiences manually
-            let audScopesNoAudiences =
-                audScopes
-                |> Seq.filter (fun x -> x.Audience = null)
-                |> Seq.collect (fun x -> x.Scopes)
-                |> Seq.map (fun x -> (getScopeAudience defaultAudienceScopes x), x)
-                |> Seq.groupBy (fst)
-                |> Seq.map (fun (x, y) ->
-                    { Audience = x
-                      Scopes = y |> Seq.map snd })
-
-            return Seq.append audScopesWithAudiences audScopesNoAudiences
+            return (domainId, appDomainType)
         }
 
-    let validateScopes' (dataContext: DbDataContext) userEmail clientId scopes =
+    let getGenericAudienceScopes (dataContext: DbDataContext) userEmail domainId scopes =
         task {
-            if clientId = PERIMETER_CLIENT_ID then
+            let! hasAssignedRole = userHasAssignedRole dataContext userEmail domainId
+
+            match hasAssignedRole with
+            // Given scopes returns these which assigned for particular user (intersection)
+            | true -> return! getGenericDomainAudiencePermissions dataContext userEmail domainId scopes
+            // Since user doesn't have any assigned role, return intersection of default and requested scopes
+            | false -> return! getDefaultDomainAudiencePermissions dataContext domainId scopes
+        }
+
+    /// There is 2 type odf scopes in system
+    /// 1. Management scopes shared between apis - used for management apis, every domain has single management api
+    /// these scopes not expected be presented in request (TODO) and always fixes
+    /// 2. Generic scopes - every scope belongs to particular api, function will return intersection of the requested scopes
+    /// and scopes assigned for particular user, if no scope assigned to user, then all `default` scopes are considered assigned to him
+    let private validateScopes' (dataContext: DbDataContext) userEmail clientId scopes =
+        task {
+            printfn "validateScopes':1"
+            let! (domainId, appDomainType) = getAppDomainInfo dataContext clientId
+            printfn "validateScopes':2 %i %O" domainId appDomainType
+
+            match appDomainType with
+            // for generic app return intersection of requested scopes with assigned (or default)
+            | Generic -> return! getGenericAudienceScopes dataContext userEmail domainId scopes
+            // for managements app domain return default management scopes only
+            // TODO : fix
+            | _ ->
+                // TODO : Management client does not request management scopes add these here manually
+                let! audScope = getDefaultManagementScopes dataContext domainId appDomainType
+                printfn "1111 %O" audScope
+                // Validate them for particular user
+                let! validatedScopes =
+                    getManagementDomainPermissions dataContext userEmail domainId audScope.Scopes appDomainType
+
+                printfn "2222 %A" (validatedScopes |> Seq.toList)
+
                 return seq {
-                           { Audience = PERIMETER_USERS_AUDIENCE
-                             Scopes = [] }
+                           { Audience = audScope.Audience
+                             Scopes = validatedScopes }
                        }
-            else
-                return! validateScopes'' dataContext userEmail clientId scopes
         }
 
     let defaultAudienceScopes =
         { Audience = PERIMETER_USERS_AUDIENCE
-          Scopes = [ "openid"; "profile" ] }
+          Scopes = [ "openid"; "profile"; "email" ] }
 
     let validateScopes (dataContext: DbDataContext) userEmail clientId scopes =
         task {
             if clientId = PERIMETER_CLIENT_ID then
-                return seq {
-                           { Audience = PERIMETER_USERS_AUDIENCE
-                             Scopes = [ "openid"; "profile" ] }
-                       }
+                // For perimeter client we don't pay attention to requested scopes and always return predefined set
+                // TODO : Fix
+                return seq { defaultAudienceScopes }
             else
                 let! audScopes = validateScopes' dataContext userEmail clientId scopes
                 return Seq.append [ defaultAudienceScopes ] audScopes

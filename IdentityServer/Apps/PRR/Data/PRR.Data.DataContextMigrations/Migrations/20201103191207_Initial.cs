@@ -235,6 +235,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     IsTenantManagement = table.Column<bool>(nullable: false, defaultValue: false),
                     IsDomainManagement = table.Column<bool>(nullable: false, defaultValue: false),
                     IsCompanyFriendly = table.Column<bool>(nullable: false, defaultValue: false),
+                    IsDefault = table.Column<bool>(nullable: false, defaultValue: false),
                     DateCreated = table.Column<DateTime>(nullable: false, defaultValueSql: "now()"),
                     ApiId = table.Column<int>(nullable: true)
                 },

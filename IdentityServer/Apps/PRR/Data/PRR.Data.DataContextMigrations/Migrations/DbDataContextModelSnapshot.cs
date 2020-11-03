@@ -259,6 +259,11 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
+                    b.Property<bool>("IsDefault")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
                     b.Property<bool>("IsDomainManagement")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -289,6 +294,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                             DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Allow archive tenant",
                             IsCompanyFriendly = false,
+                            IsDefault = false,
                             IsDomainManagement = false,
                             IsTenantManagement = true,
                             Name = "archive:tenant"
@@ -299,6 +305,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                             DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Allow manage tenant admins",
                             IsCompanyFriendly = false,
+                            IsDefault = false,
                             IsDomainManagement = false,
                             IsTenantManagement = true,
                             Name = "manage:tenant-admins"
@@ -309,6 +316,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                             DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Allow manage tenant domains",
                             IsCompanyFriendly = false,
+                            IsDefault = false,
                             IsDomainManagement = false,
                             IsTenantManagement = true,
                             Name = "manage:tenant-domains"
@@ -319,6 +327,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                             DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Archive domain",
                             IsCompanyFriendly = false,
+                            IsDefault = false,
                             IsDomainManagement = true,
                             IsTenantManagement = false,
                             Name = "archive:domain"
@@ -329,6 +338,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                             DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Manage domain properties",
                             IsCompanyFriendly = false,
+                            IsDefault = false,
                             IsDomainManagement = true,
                             IsTenantManagement = false,
                             Name = "manage:domain"
@@ -339,6 +349,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                             DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Allow manage domain super admins",
                             IsCompanyFriendly = false,
+                            IsDefault = false,
                             IsDomainManagement = true,
                             IsTenantManagement = false,
                             Name = "manage:domain-super-admins"
@@ -349,6 +360,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                             DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Allow manage domain admins",
                             IsCompanyFriendly = false,
+                            IsDefault = false,
                             IsDomainManagement = true,
                             IsTenantManagement = false,
                             Name = "manage:domain-admins"
@@ -359,6 +371,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                             DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Manage users except admins, super-admins and owners",
                             IsCompanyFriendly = false,
+                            IsDefault = false,
                             IsDomainManagement = true,
                             IsTenantManagement = false,
                             Name = "manage:users"
@@ -369,6 +382,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                             DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Read users",
                             IsCompanyFriendly = false,
+                            IsDefault = false,
                             IsDomainManagement = true,
                             IsTenantManagement = false,
                             Name = "read:users"
@@ -379,6 +393,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                             DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Read roles",
                             IsCompanyFriendly = false,
+                            IsDefault = false,
                             IsDomainManagement = true,
                             IsTenantManagement = false,
                             Name = "read:roles"
@@ -389,6 +404,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                             DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Manage roles",
                             IsCompanyFriendly = false,
+                            IsDefault = false,
                             IsDomainManagement = true,
                             IsTenantManagement = false,
                             Name = "manage:roles"
@@ -399,6 +415,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                             DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Read permissions",
                             IsCompanyFriendly = false,
+                            IsDefault = false,
                             IsDomainManagement = true,
                             IsTenantManagement = false,
                             Name = "read:permissions"
@@ -409,6 +426,7 @@ namespace PRR.Data.DataContextMigrations.Migrations
                             DateCreated = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Manage permissions",
                             IsCompanyFriendly = false,
+                            IsDefault = false,
                             IsDomainManagement = true,
                             IsTenantManagement = false,
                             Name = "manage:permissions"

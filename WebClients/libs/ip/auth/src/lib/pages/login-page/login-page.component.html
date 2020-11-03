@@ -35,12 +35,6 @@
         [title]="appInfo?.title || 'Perimeter'"
         subTitle="Login"
     ></ip-page-header>
-    <a data-cy="submit-github" nz-button (click)="onSubmitSocial('github')">
-        github
-    </a>
-    <a data-cy="submit-google" nz-button (click)="onSubmitSocial('google')">
-        google
-    </a>
     <form
         id="login_form"
         class="center-form"
@@ -51,6 +45,25 @@
         #submitForm
         (ngSubmit)="onSubmit(submitForm)"
     >
+        <a
+            data-cy="submit-github"
+            class="full-width-button login-form-margin"
+            nz-button
+            (click)="onSubmitSocial('github')"
+        >
+            <i nz-icon nzType="github" nzTheme="outline"></i>
+            Github
+        </a>
+        <a
+            data-cy="submit-google"
+            class="full-width-button login-form-margin"
+            nz-button
+            (click)="onSubmitSocial('google')"
+        >
+            <i nz-icon nzType="google" nzTheme="outline"></i>
+            Google
+        </a>
+
         <input type="hidden" name="client_id" formControlName="client_id" />
         <input
             type="hidden"
@@ -131,7 +144,7 @@
             data-cy="submit"
             [disabled]="form.invalid || !loginParams"
             nz-button
-            class="login-form-button login-form-margin"
+            class="full-width-button login-form-margin"
             [nzType]="'primary'"
         >
             Log in

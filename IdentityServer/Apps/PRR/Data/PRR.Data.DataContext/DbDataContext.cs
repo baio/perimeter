@@ -114,6 +114,7 @@ namespace PRR.Data.DataContext
                 entity.Property(x => x.IsTenantManagement).HasDefaultValue(false);
                 entity.Property(x => x.IsCompanyFriendly).HasDefaultValue(false);
                 entity.Property(x => x.DateCreated).HasDefaultValueSql("now()");
+                entity.Property(x => x.IsDefault).HasDefaultValue(false);
 
                 entity.HasData(Seed.Permissions.GetAll());
             });
