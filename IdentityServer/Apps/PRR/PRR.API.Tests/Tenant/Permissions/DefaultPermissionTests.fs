@@ -7,9 +7,11 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx
 open FsUnit
 open PRR.API.Tests.Utils
+open PRR.Data.DataContext.Seed
 open PRR.Data.Entities
 open PRR.Domain.Auth.Common
 open PRR.Domain.Auth.SignUp
+open PRR.Domain.Tenant
 open PRR.Domain.Tenant.Permissions
 open Xunit
 open Xunit.Abstractions
@@ -37,11 +39,11 @@ module DefaultPermissions =
             [ {| Data = user1Data
                  Token = None
                  Tenant = None
-                 PermissionId = None |}
+                 PermissionIds = Seq.empty<int> |}
               {| Data = user2Data
                  Token = None
                  Tenant = None
-                 PermissionId = None |} ]
+                 PermissionIds = Seq.empty<int> |} ]
 
     let mutable testContext: UserTestContext option = None
 
@@ -54,6 +56,7 @@ module DefaultPermissions =
 
 
     let permissionName1 = "test:permission:1"
+    let permissionNameA = "test:permission:a"
     let permissionName2 = "test:permission:2"
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
@@ -78,7 +81,7 @@ module DefaultPermissions =
 
                 let tenant = testContext.Value.GetTenant()
 
-                let! permissionId =
+                let! permissionId1 =
                     (testFixture.HttpPostAsync
                         userToken
                          (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
@@ -86,10 +89,22 @@ module DefaultPermissions =
                                Name = permissionName1 })
                     >>= (readAsJsonAsync<int>)
 
+                let! permissionId2 =
+                    (testFixture.HttpPostAsync
+                        userToken
+                         (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
+                         { testPermission with
+                               Name = permissionNameA })
+                    >>= (readAsJsonAsync<int>)
+
                 users.[0] <- {| u with
                                     Token = Some(userToken)
                                     Tenant = Some(tenant)
-                                    PermissionId = Some(permissionId) |}
+                                    PermissionIds =
+                                        seq {
+                                            permissionId1
+                                            permissionId2
+                                        } |}
 
                 // create user 2 + tenant + permission
                 let u = users.[1]
@@ -109,7 +124,7 @@ module DefaultPermissions =
                 users.[1] <- {| u with
                                     Token = Some(userToken)
                                     Tenant = Some(tenant)
-                                    PermissionId = Some(permissionId) |}
+                                    PermissionIds = seq { permissionId } |}
             }
 
         [<Fact>]
@@ -142,53 +157,109 @@ module DefaultPermissions =
                 scope.Value
                 |> String.split ' '
                 |> should contain permissionName1
+
+                scope.Value
+                |> String.split ' '
+                |> should not' (contain permissionNameA)
             }
 
-(*
         [<Fact>]
-        [<Priority(1)>]
-        member __.``user 1 forbidden to update permission in user 2 tenant``() =
+        [<Priority(2)>]
+        member __.``when user 2 assigned some role in user's 1 domain it must be assigned requested scope explicitly``()
+                                                                                                                      =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let data: PostLike =
-                    { Name = "test:permissions"
-                      Description = "test description" }
+
+                // create new role for user's 1 domain
+                let data: Roles.PostLike =
+                    { Name = "role"
+                      Description = "role description"
+                      PermissionIds = [ u1.PermissionIds |> Seq.item 1 ] }
 
                 let! result =
-                    testFixture.HttpPutAsync
+                    testFixture.HttpPostAsync
                         u1.Token.Value
-                        (sprintf "/api/tenant/apis/%i/permissions/%i" u2.Tenant.Value.SampleApiId u2.PermissionId.Value)
+                        (sprintf "/api/tenant/domains/%i/roles" u1.Tenant.Value.DomainId)
                         data
 
-                ensureForbidden result
+                do! ensureSuccessAsync result
+
+                let! roleId = readAsJsonAsync<int> result
+
+                // assign new role to user 2
+                let data: DomainUserRoles.PostLike =
+                    { UserEmail = u2.Data.Email
+                      RolesIds = [ roleId ] }
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        u1.Token.Value
+                        (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
+                        data
+
+                do! ensureSuccessAsync result
+
+                //login with request permissionName1
+
+                let! result =
+                    logInUser'
+                        [ permissionName1 ]
+                        testFixture
+                        u1.Tenant.Value.SampleApplicationClientId
+                        u2.Data.Email
+                        u2.Data.Password
+
+                result.access_token |> should be (not' Empty)
+
+                let jwtToken = ReadToken.readToken result.access_token
+
+                jwtToken.IsSome |> should be True
+
+                let scope =
+                    jwtToken.Value.Claims
+                    |> Seq.find (fun f -> f.Type = "scope")
+
+                scope |> should be (not' Null)
+
+                scope.Value
+                |> String.split ' '
+                |> should not' (contain permissionName1)
             }
 
         [<Fact>]
-        [<Priority(1)>]
-        member __.``user 1 forbidden to get permission in user 2 tenant``() =
+        [<Priority(3)>]
+        member __.``when user 2 assigned some role in user's 1 domain it should return requested scope for scopes in the role``()
+                                                                                                                               =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
+
                 let! result =
-                    testFixture.HttpGetAsync
-                        u1.Token.Value
-                        (sprintf "/api/tenant/apis/%i/permissions/%i" u2.Tenant.Value.SampleApiId u2.PermissionId.Value)
+                    logInUser'
+                        [ permissionNameA ]
+                        testFixture
+                        u1.Tenant.Value.SampleApplicationClientId
+                        u2.Data.Email
+                        u2.Data.Password
 
-                ensureForbidden result
+                result.access_token |> should be (not' Empty)
+
+                let jwtToken = ReadToken.readToken result.access_token
+
+                jwtToken.IsSome |> should be True
+
+                let scope =
+                    jwtToken.Value.Claims
+                    |> Seq.find (fun f -> f.Type = "scope")
+
+                scope |> should be (not' Null)
+
+                scope.Value
+                |> String.split ' '
+                |> should not' (contain permissionName1)
+
+                scope.Value
+                |> String.split ' '
+                |> should contain permissionNameA
             }
-
-        [<Fact>]
-        [<Priority(1)>]
-        member __.``user 1 forbidden to delete permission in user 2 tenant``() =
-            let u1 = users.[0]
-            let u2 = users.[1]
-            task {
-                let! result =
-                    testFixture.HttpDeleteAsync
-                        u1.Token.Value
-                        (sprintf "/api/tenant/apis/%i/permissions/%i" u2.Tenant.Value.SampleApiId u2.PermissionId.Value)
-
-                ensureForbidden result
-            }
-    *)
