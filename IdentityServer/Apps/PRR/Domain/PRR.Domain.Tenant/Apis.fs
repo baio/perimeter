@@ -22,7 +22,10 @@ module Apis =
     type PutLike = { Name: string }
 
     [<CLIMutable>]
-    type PermissionGetLike = { Id: int; Name: string }
+    type PermissionGetLike =
+        { Id: int
+          Name: string
+          IsDefault: bool }
 
     [<CLIMutable>]
     type GetLike =
@@ -93,7 +96,11 @@ module Apis =
               Name = p.Name
               IdentifierUri = p.Identifier
               DateCreated = p.DateCreated
-              Permissions = p.Permissions.Select(fun x -> { Id = x.Id; Name = x.Name }) } @>
+              Permissions =
+                  p.Permissions.Select(fun x ->
+                      { Id = x.Id
+                        Name = x.Name
+                        IsDefault = x.IsDefault }) } @>
 
 
     let getOne: GetOne<int, GetLike, DbDataContext> =

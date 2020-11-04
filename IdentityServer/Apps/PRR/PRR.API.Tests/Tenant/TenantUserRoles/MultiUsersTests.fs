@@ -155,8 +155,7 @@ module MultiUsers =
                         u1.Tenant.Value.TenantManagementApplicationClientId
                         u2.Data.Email
                         u2.Data.Password
-                        
-                printfn "+++ %s" res.access_token                        
+                                               
 
                 users.[1] <- {| u2 with
                                     Token = Some(res.access_token) |}

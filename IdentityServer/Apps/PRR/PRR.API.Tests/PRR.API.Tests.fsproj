@@ -47,6 +47,7 @@
         <Compile Include="Tenant\Permissions\CRUDTests.fs" />
         <Compile Include="Tenant\Permissions\MultiUsersTests.fs" />
         <Compile Include="Tenant\Permissions\NotFoundTests.fs" />
+        <Compile Include="Tenant\Permissions\DefaultPermissionTests.fs" />
         <Compile Include="Tenant\Roles\CRUDTests.fs" />
         <Compile Include="Tenant\Roles\MultiUsersTests.fs" />
         <Compile Include="Tenant\DomainUserRoles\MultiUsersTests.fs" />

@@ -5,7 +5,7 @@ open Common.Test.Utils
 open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
-open PRR.API.Tests.Tenant.Permssions.CRUD
+open PRR.API.Tests.Tenant.Permissions.CRUD
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.SignUp
 open PRR.Domain.Tenant
@@ -58,7 +58,7 @@ module CRUD =
                 testContext <- Some(createUserTestContext testFixture)
                 let! userToken' = createUser testContext.Value userData
                 userToken' |> should be (not' null)
-                userToken <- userToken'               
+                userToken <- userToken'
             }
 
         [<Fact>]
@@ -72,6 +72,7 @@ module CRUD =
                     testFixture.HttpPostAsync userToken (sprintf "/api/tenant/domains/%i/applications" domainId) data
 
                 do! ensureSuccessAsync result
+
                 let! result = readAsJsonAsync<int> result
                 applicationId <- Some(result)
             }
@@ -87,6 +88,7 @@ module CRUD =
                         (sprintf "/api/tenant/domains/%i/applications/%i" domainId applicationId.Value)
 
                 do! ensureSuccessAsync result
+
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
                 result.id |> should equal applicationId.Value
@@ -94,6 +96,7 @@ module CRUD =
                 result.name |> should equal "App 1"
 
                 result.clientId |> should be (not' null)
+
                 result.clientSecret |> should be (not' null)
                 result.dateCreated |> should be (not' null)
                 result.idTokenExpiresIn |> should be (not' null)
@@ -135,6 +138,7 @@ module CRUD =
                         (sprintf "/api/tenant/domains/%i/applications/%i" domainId applicationId.Value)
 
                 do! ensureSuccessAsync result
+
                 let! result = readAsJsonAsync<GetLikeDto> result
                 result |> should be (not' null)
                 result.id |> should equal applicationId.Value

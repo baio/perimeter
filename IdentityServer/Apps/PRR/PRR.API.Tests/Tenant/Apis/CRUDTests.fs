@@ -5,7 +5,7 @@ open Common.Test.Utils
 open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
-open PRR.API.Tests.Tenant.Permssions.CRUD
+open PRR.API.Tests.Tenant.Permissions.CRUD
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.SignUp
 open PRR.Domain.Tenant
@@ -62,7 +62,8 @@ module CRUD =
 
                 let data: Permissions.PostLike =
                     { Name = "read:test1"
-                      Description = "test description" }
+                      Description = "test description"
+                      IsDefault = false }
 
                 let! permissionId' =
                     testFixture.HttpPostAsync
@@ -75,7 +76,8 @@ module CRUD =
 
                 let data: Permissions.PostLike =
                     { Name = "read:test2"
-                      Description = "test description" }
+                      Description = "test description"
+                      IsDefault = false }
 
                 let! permissionId' =
                     testFixture.HttpPostAsync
@@ -98,6 +100,7 @@ module CRUD =
                 let! result = testFixture.HttpPostAsync userToken (sprintf "/api/tenant/domains/%i/apis" domainId) data
 
                 do! ensureSuccessAsync result
+
                 let! result = readAsJsonAsync<int> result
                 apiId <- Some(result)
             }
@@ -113,6 +116,7 @@ module CRUD =
                 do! ensureSuccessAsync result
 
                 let! result = readAsJsonAsync<GetLikeDto> result
+
                 result |> should be (not' null)
                 result.id |> should equal apiId.Value
                 result.name |> should equal "Api 1"
@@ -150,6 +154,7 @@ module CRUD =
                 do! ensureSuccessAsync result
 
                 let! result = readAsJsonAsync<GetLikeDto> result
+
                 result |> should be (not' null)
                 result.id |> should equal apiId.Value
                 result.name |> should equal "Api 1 Updated"

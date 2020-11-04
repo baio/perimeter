@@ -61,13 +61,13 @@ module CreateUser =
 
     let private createCodeChallenge () =
 
-        let codeVerfier = randomString 128
+        let codeVerifier = randomString 128
 
-        (codeVerfier,
-         (SHA256.getSha256Base64Hash sha256 codeVerfier)
+        (codeVerifier,
+         (SHA256.getSha256Base64Hash sha256 codeVerifier)
          |> LogInToken.LogInToken.cleanupCodeChallenge)
 
-    let logInUser (fixture: TestFixture) (clientId: string) (email: string) (password: string) =
+    let logInUser' scopes (fixture: TestFixture) (clientId: string) (email: string) (password: string) =
         task {
             let redirectUri = "http://localhost:4200"
 
@@ -75,12 +75,19 @@ module CreateUser =
 
             let clientId = clientId
 
+            let scope =
+                [ "openid"; "profile"; "email" ]
+                |> Seq.append scopes
+                |> String.concat " "
+                
+            printfn "111 %s %s %s %s %s %s" clientId scope redirectUri scope email password
+
             let logInData: PRR.Domain.Auth.LogIn.Models.Data =
                 { Client_Id = clientId
                   Response_Type = "code"
                   State = "state"
                   Redirect_Uri = redirectUri
-                  Scope = "openid profile"
+                  Scope = scope
                   Email = email
                   Password = password
                   Code_Challenge = codeChallenge
@@ -103,6 +110,8 @@ module CreateUser =
 
             return result
         }
+
+    let logInUser = logInUser' Seq.empty
 
     let createUser'' signInUnderSampleDomain (env: UserTestContext) (userData: SignUp.Models.Data) =
         task {

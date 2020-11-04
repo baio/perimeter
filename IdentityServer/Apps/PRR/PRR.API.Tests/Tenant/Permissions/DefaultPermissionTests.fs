@@ -8,15 +8,15 @@ open FSharpx
 open FsUnit
 open PRR.API.Tests.Utils
 open PRR.Data.Entities
+open PRR.Domain.Auth.Common
 open PRR.Domain.Auth.SignUp
 open PRR.Domain.Tenant.Permissions
-open PRR.System.Models
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
 open TaskUtils
 
-module MultiUsers =
+module DefaultPermissions =
 
     let user1Data: Data =
         { FirstName = "First"
@@ -31,7 +31,7 @@ module MultiUsers =
           Email = "user2@user.com"
           Password = "#6VvR&^"
           QueryString = null }
-    
+
     let private users =
         System.Collections.Generic.List<_>
             [ {| Data = user1Data
@@ -52,8 +52,12 @@ module MultiUsers =
           description: string
           dateCreated: System.DateTime }
 
+
+    let permissionName1 = "test:permission:1"
+    let permissionName2 = "test:permission:2"
+
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
-    type ``permissions-multi-users-api``(testFixture: TestFixture, output: ITestOutputHelper) =
+    type ``permissions-default-api``(testFixture: TestFixture, output: ITestOutputHelper) =
         do setConsoleOutput output
         interface IClassFixture<TestFixture>
 
@@ -64,47 +68,83 @@ module MultiUsers =
                 let testPermission: PostLike =
                     { Name = "test:permissions"
                       Description = "test description"
-                      IsDefault = false }
+                      IsDefault = true }
+
                 testContext <- Some(createUserTestContext testFixture)
                 // create user 1 + tenant + permission
                 let u = users.[0]
+
                 let! userToken = createUser testContext.Value u.Data
+
                 let tenant = testContext.Value.GetTenant()
-                let! permissionId = (testFixture.HttpPostAsync userToken
-                                        (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
-                                        { testPermission with Name = "test:permission:1" }) >>= (readAsJsonAsync<int>)
+
+                let! permissionId =
+                    (testFixture.HttpPostAsync
+                        userToken
+                         (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
+                         { testPermission with
+                               Name = permissionName1 })
+                    >>= (readAsJsonAsync<int>)
+
                 users.[0] <- {| u with
                                     Token = Some(userToken)
                                     Tenant = Some(tenant)
                                     PermissionId = Some(permissionId) |}
-                                                                        
+
                 // create user 2 + tenant + permission
                 let u = users.[1]
+
                 let! userToken = createUser testContext.Value u.Data
+
                 let tenant = testContext.Value.GetTenant()
-                let! permissionId = testFixture.HttpPostAsync userToken
-                                        (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
-                                        { testPermission with Name = "test:permission:2" } >>= (readAsJsonAsync<int>)
+
+                let! permissionId =
+                    testFixture.HttpPostAsync
+                        userToken
+                        (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
+                        { testPermission with
+                              Name = permissionName2 }
+                    >>= (readAsJsonAsync<int>)
+
                 users.[1] <- {| u with
                                     Token = Some(userToken)
                                     Tenant = Some(tenant)
-                                    PermissionId = Some(permissionId) |}                                    
+                                    PermissionId = Some(permissionId) |}
             }
 
         [<Fact>]
         [<Priority(1)>]
-        member __.``user 1 forbidden to create permission in user 2 tenant``() =
+        member __.``user 2 can access default scope of user's 1 domain``() =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let data: PostLike =
-                    { Name = "test:permissions"
-                      Description = "test description"
-                      IsDefault = false }
-                let! result = testFixture.HttpPostAsync u1.Token.Value (sprintf "/api/tenant/apis/%i/permissions" u2.Tenant.Value.SampleApiId) data
-                ensureForbidden result
+
+                let! result =
+                    logInUser'
+                        [ permissionName1 ]
+                        testFixture
+                        u1.Tenant.Value.SampleApplicationClientId
+                        u2.Data.Email
+                        u2.Data.Password
+
+                result.access_token |> should be (not' Empty)
+
+                let jwtToken = ReadToken.readToken result.access_token
+
+                jwtToken.IsSome |> should be True
+
+                let scope =
+                    jwtToken.Value.Claims
+                    |> Seq.find (fun f -> f.Type = "scope")
+
+                scope |> should be (not' Null)
+
+                scope.Value
+                |> String.split ' '
+                |> should contain permissionName1
             }
 
+(*
         [<Fact>]
         [<Priority(1)>]
         member __.``user 1 forbidden to update permission in user 2 tenant``() =
@@ -113,9 +153,14 @@ module MultiUsers =
             task {
                 let data: PostLike =
                     { Name = "test:permissions"
-                      Description = "test description"
-                      IsDefault = false }
-                let! result = testFixture.HttpPutAsync u1.Token.Value (sprintf "/api/tenant/apis/%i/permissions/%i" u2.Tenant.Value.SampleApiId u2.PermissionId.Value) data
+                      Description = "test description" }
+
+                let! result =
+                    testFixture.HttpPutAsync
+                        u1.Token.Value
+                        (sprintf "/api/tenant/apis/%i/permissions/%i" u2.Tenant.Value.SampleApiId u2.PermissionId.Value)
+                        data
+
                 ensureForbidden result
             }
 
@@ -125,7 +170,11 @@ module MultiUsers =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let! result = testFixture.HttpGetAsync u1.Token.Value (sprintf "/api/tenant/apis/%i/permissions/%i" u2.Tenant.Value.SampleApiId u2.PermissionId.Value)
+                let! result =
+                    testFixture.HttpGetAsync
+                        u1.Token.Value
+                        (sprintf "/api/tenant/apis/%i/permissions/%i" u2.Tenant.Value.SampleApiId u2.PermissionId.Value)
+
                 ensureForbidden result
             }
 
@@ -135,6 +184,11 @@ module MultiUsers =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let! result = testFixture.HttpDeleteAsync u1.Token.Value (sprintf "/api/tenant/apis/%i/permissions/%i" u2.Tenant.Value.SampleApiId u2.PermissionId.Value)
+                let! result =
+                    testFixture.HttpDeleteAsync
+                        u1.Token.Value
+                        (sprintf "/api/tenant/apis/%i/permissions/%i" u2.Tenant.Value.SampleApiId u2.PermissionId.Value)
+
                 ensureForbidden result
             }
+    *)

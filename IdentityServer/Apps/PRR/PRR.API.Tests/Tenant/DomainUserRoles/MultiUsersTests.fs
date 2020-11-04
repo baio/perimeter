@@ -66,7 +66,8 @@ module MultiUsers =
             task {
                 let testPermission: PRR.Domain.Tenant.Permissions.PostLike =
                     { Name = "test:permission"
-                      Description = "test description" }
+                      Description = "test description"
+                      IsDefault = false }
 
                 let testRole: PRR.Domain.Tenant.Roles.PostLike =
                     { Name = "test:role"
@@ -76,17 +77,26 @@ module MultiUsers =
                 testContext <- Some(createUserTestContext testFixture)
                 // create user 1 + tenant + permission
                 let u = users.[0]
+
                 let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
-                let! permissionId = (testFixture.HttpPostAsync userToken
-                                         (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
-                                         { testPermission with Name = "test:permission:1" }) >>= (readAsJsonAsync<int>)
-                let! roleId = testFixture.HttpPostAsync userToken
-                                  (sprintf "/api/tenant/domains/%i/roles" tenant.DomainId)
-                                  { testRole with
-                                        Name = "test:role:1"
-                                        PermissionIds = [ permissionId ] }
-                              >>= (readAsJsonAsync<int>)
+
+                let! permissionId =
+                    (testFixture.HttpPostAsync
+                        userToken
+                         (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
+                         { testPermission with
+                               Name = "test:permission:1" })
+                    >>= (readAsJsonAsync<int>)
+
+                let! roleId =
+                    testFixture.HttpPostAsync
+                        userToken
+                        (sprintf "/api/tenant/domains/%i/roles" tenant.DomainId)
+                        { testRole with
+                              Name = "test:role:1"
+                              PermissionIds = [ permissionId ] }
+                    >>= (readAsJsonAsync<int>)
 
                 users.[0] <- {| u with
                                     Token = Some(userToken)
@@ -96,13 +106,15 @@ module MultiUsers =
 
                 // create user 2 + tenant + permission
                 let u = users.[1]
+
                 let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
+
                 users.[1] <- {| u with
                                     Token = Some(userToken)
                                     Tenant = Some(tenant)
                                     PermissionId = Some(permissionId)
-                                    RoleId = Some(roleId) |}                                    
+                                    RoleId = Some(roleId) |}
             }
 
 
@@ -114,8 +126,13 @@ module MultiUsers =
                 let data: PostLike =
                     { UserEmail = newUserEmail
                       RolesIds = [ u1.RoleId.Value ] }
-                let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        u1.Token.Value
+                        (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
+                        data
+
                 do! ensureSuccessAsync result
             }
 
@@ -128,8 +145,13 @@ module MultiUsers =
                 let data: PostLike =
                     { UserEmail = u2.Data.Email
                       RolesIds = [ u1.RoleId.Value ] }
-                let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        u1.Token.Value
+                        (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
+                        data
+
                 do! ensureSuccessAsync result
             }
 
@@ -140,14 +162,15 @@ module MultiUsers =
             let u2 = users.[1]
             task {
 
-                let! res = logInUser testFixture u1.Tenant.Value.SampleApplicationClientId u2.Data.Email
-                               u2.Data.Password
+                let! res =
+                    logInUser testFixture u1.Tenant.Value.SampleApplicationClientId u2.Data.Email u2.Data.Password
 
                 res |> should be (not' null)
 
                 res.access_token |> should be (not' null)
 
-                users.[1] <- {| u2 with Token = Some res.access_token |}
+                users.[1] <- {| u2 with
+                                    Token = Some res.access_token |}
             }
 
         [<Fact>]
@@ -159,8 +182,13 @@ module MultiUsers =
                 let data: PostLike =
                     { UserEmail = "other@mail.com"
                       RolesIds = [ u1.RoleId.Value ] }
-                let! result = testFixture.HttpPostAsync u2.Token.Value
-                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        u2.Token.Value
+                        (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
+                        data
+
                 ensureForbidden result
             }
 
@@ -174,8 +202,13 @@ module MultiUsers =
                 let data: PostLike =
                     { UserEmail = u2.Data.Email
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
-                let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        u1.Token.Value
+                        (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
+                        data
+
                 do! ensureSuccessAsync result
             }
 
@@ -185,14 +218,19 @@ module MultiUsers =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let! res = logInUser testFixture u1.Tenant.Value.DomainManagementApplicationClientId u2.Data.Email
-                               u2.Data.Password
+                let! res =
+                    logInUser
+                        testFixture
+                        u1.Tenant.Value.DomainManagementApplicationClientId
+                        u2.Data.Email
+                        u2.Data.Password
 
                 res |> should be (not' null)
 
                 res.access_token |> should be (not' null)
 
-                users.[1] <- {| u2 with Token = Some res.access_token |}
+                users.[1] <- {| u2 with
+                                    Token = Some res.access_token |}
             }
 
 
@@ -204,9 +242,14 @@ module MultiUsers =
             task {
                 let data: PostLike =
                     { UserEmail = "other@mail.com"
-                      RolesIds = [ u1.RoleId.Value ] }                    
-                let! result = testFixture.HttpPostAsync u2.Token.Value
-                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+                      RolesIds = [ u1.RoleId.Value ] }
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        u2.Token.Value
+                        (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
+                        data
+
                 do! ensureSuccessAsync result
             }
 
@@ -219,8 +262,13 @@ module MultiUsers =
                 let data: PostLike =
                     { UserEmail = "other1@mail.com"
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
-                let! result = testFixture.HttpPostAsync u2.Token.Value
-                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        u2.Token.Value
+                        (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
+                        data
+
                 do ensureForbidden result
             }
 
@@ -234,8 +282,13 @@ module MultiUsers =
                 let data: PostLike =
                     { UserEmail = u2.Data.Email
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainSuperAdmin.Id ] }
-                let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        u1.Token.Value
+                        (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
+                        data
+
                 do! ensureSuccessAsync result
             }
 
@@ -245,8 +298,12 @@ module MultiUsers =
             let u1 = users.[0]
             let u2 = users.[1]
             task {
-                let! res = logInUser testFixture u1.Tenant.Value.DomainManagementApplicationClientId u2.Data.Email
-                               u2.Data.Password
+                let! res =
+                    logInUser
+                        testFixture
+                        u1.Tenant.Value.DomainManagementApplicationClientId
+                        u2.Data.Email
+                        u2.Data.Password
 
                 // re-signin 2nd tenant under 1st client
 
@@ -254,7 +311,8 @@ module MultiUsers =
 
                 res.access_token |> should be (not' null)
 
-                users.[1] <- {| u2 with Token = Some res.access_token |}
+                users.[1] <- {| u2 with
+                                    Token = Some res.access_token |}
             }
 
 
@@ -267,8 +325,13 @@ module MultiUsers =
                 let data: PostLike =
                     { UserEmail = "other-admin@mail.com"
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
-                let! result = testFixture.HttpPostAsync u2.Token.Value
-                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        u2.Token.Value
+                        (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
+                        data
+
                 do! ensureSuccessAsync result
             }
 
@@ -278,9 +341,13 @@ module MultiUsers =
         member __.``L remove domain owner should give error``() =
             let u1 = users.[0]
             task {
-                let! result = testFixture.HttpDeleteAsync u1.Token.Value
-                                  (sprintf "/api/tenant/domains/%i/users/%s" u1.Tenant.Value.DomainId u1.Data.Email)
-                do ensureForbidden result }
+                let! result =
+                    testFixture.HttpDeleteAsync
+                        u1.Token.Value
+                        (sprintf "/api/tenant/domains/%i/users/%s" u1.Tenant.Value.DomainId u1.Data.Email)
+
+                do ensureForbidden result
+            }
 
         [<Fact>]
         [<Priority(12)>]
@@ -290,8 +357,13 @@ module MultiUsers =
                 let data: PostLike =
                     { UserEmail = u1.Data.Email
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
-                let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        u1.Token.Value
+                        (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
+                        data
+
                 do ensureForbidden result
             }
 
@@ -303,14 +375,19 @@ module MultiUsers =
                 let data: PostLike =
                     { UserEmail = "test"
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
-                let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId) data
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        u1.Token.Value
+                        (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
+                        data
+
                 do ensureBadRequest result
                 let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
 
                 let expected =
-                    [ ("userEmail", [| "CUSTOM:The UserEmail field is not a valid e-mail address." |]) ] |> Map
-                    
-                result'.Data |> should equal expected                                
-                
+                    [ ("userEmail", [| "CUSTOM:The UserEmail field is not a valid e-mail address." |]) ]
+                    |> Map
+
+                result'.Data |> should equal expected
             }

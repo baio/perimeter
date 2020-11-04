@@ -17,41 +17,47 @@ module Permissions =
     [<CLIMutable>]
     type PostLike =
         { Name: string
-          Description: string }
+          Description: string
+          IsDefault: bool }
 
     [<CLIMutable>]
     type GetLike =
         { Id: int
           Name: string
           Description: string
-          DateCreated: System.DateTime }
+          DateCreated: DateTime
+          IsDefault: bool }
 
     let create: Create<int * PostLike, int, DbDataContext> =
         fun (apiId, dto) dbContext ->
             let permission =
-                Permission(Name = dto.Name, Description = dto.Description, ApiId = Nullable(apiId)) |> add' dbContext
+                Permission
+                    (Name = dto.Name, Description = dto.Description, ApiId = Nullable(apiId), IsDefault = dto.IsDefault)
+                |> add' dbContext
+
             task {
 
                 // permission name must be unique in domain context
-                let! sameNameCount = query {
-                                         for perm in dbContext.Permissions do
-                                             where
-                                                 (perm.Name = dto.Name
-                                                  && perm.Api.Domain.Apis.Any(fun f -> f.Id = apiId))
-                                             select perm.Id
-                                     }
-                                     |> toCountAsync
+                let! sameNameCount =
+                    query {
+                        for perm in dbContext.Permissions do
+                            where
+                                (perm.Name = dto.Name
+                                 && perm.Api.Domain.Apis.Any(fun f -> f.Id = apiId))
+                            select perm.Id
+                    }
+                    |> toCountAsync
 
-                if sameNameCount > 0 then raise (Conflict(ConflictErrorField("name", UNIQUE)))
+                if sameNameCount > 0
+                then raise (Conflict(ConflictErrorField("name", UNIQUE)))
 
                 try
                     do! saveChangesAsync dbContext
                 with
                 // This is duplicate checking the case covered before with sameNameCount
-                | UniqueConstraintException "IX_Permissions_Name_ApiId" (ConflictErrorField("name", UNIQUE)) ex ->
+                | UniqueConstraintException "IX_Permissions_Name_ApiId" (ConflictErrorField ("name", UNIQUE)) ex ->
                     return raise ex
-                | ex ->
-                    return raise ex
+                | ex -> return raise ex
 
                 return permission.Id
             }
@@ -60,18 +66,20 @@ module Permissions =
     let update: Update<int, PostLike, DbDataContext> =
         update<Permission, _, _, _> (fun id -> Permission(Id = id)) (fun dto entity ->
             entity.Name <- dto.Name
-            entity.Description <- dto.Description)
+            entity.Description <- dto.Description
+            entity.IsDefault <- dto.IsDefault)
 
-    let remove: Remove<int, DbDataContext> =
-        remove (fun id -> Permission(Id = id))
+    let remove: Remove<int, DbDataContext> = remove (fun id -> Permission(Id = id))
 
     let getOne: GetOne<int, GetLike, DbDataContext> =
-        getOne<Permission, _, _, _> (<@ fun p id -> p.Id = id @>)
+        getOne<Permission, _, _, _>
+            (<@ fun p id -> p.Id = id @>)
             (<@ fun p ->
-                { Id = p.Id
-                  Name = p.Name
-                  Description = p.Description
-                  DateCreated = p.DateCreated } @>)
+                    { Id = p.Id
+                      Name = p.Name
+                      Description = p.Description
+                      DateCreated = p.DateCreated
+                      IsDefault = p.IsDefault } @>)
 
     //
     type SortField =
@@ -112,7 +120,8 @@ module Permissions =
                         { Id = p.Id
                           Name = p.Name
                           Description = p.Description
-                          DateCreated = p.DateCreated }
+                          DateCreated = p.DateCreated
+                          IsDefault = p.IsDefault }
             }
             |> executeListQuery prms
 
@@ -124,6 +133,7 @@ module Permissions =
                     { Id = p.Id
                       Name = p.Name
                       Description = p.Description
-                      DateCreated = p.DateCreated }
+                      DateCreated = p.DateCreated
+                      IsDefault = p.IsDefault }
         }
         |> toListAsync

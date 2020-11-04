@@ -58,15 +58,24 @@ module MultiUsers =
             task {
                 let testPermission: PRR.Domain.Tenant.Permissions.PostLike =
                     { Name = "test:permissions"
-                      Description = "test description" }
+                      Description = "test description"
+                      IsDefault = false }
+
                 testContext <- Some(createUserTestContext testFixture)
                 // create user 1 + tenant + permission
                 let u = users.[0]
+
                 let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
-                let! permissionId = (testFixture.HttpPostAsync userToken
-                                         (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
-                                         { testPermission with Name = "test:permission:1" }) >>= (readAsJsonAsync<int>)
+
+                let! permissionId =
+                    (testFixture.HttpPostAsync
+                        userToken
+                         (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
+                         { testPermission with
+                               Name = "test:permission:1" })
+                    >>= (readAsJsonAsync<int>)
+
                 users.[0] <- {| u with
                                     Token = Some(userToken)
                                     Tenant = Some(tenant)
@@ -74,11 +83,18 @@ module MultiUsers =
 
                 // create user 2 + tenant + permission
                 let u = users.[1]
-                let! userToken = createUser testContext.Value u.Data  
+
+                let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
-                let! permissionId = testFixture.HttpPostAsync userToken
-                                        (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
-                                        { testPermission with Name = "test:permission:2" } >>= (readAsJsonAsync<int>)
+
+                let! permissionId =
+                    testFixture.HttpPostAsync
+                        userToken
+                        (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
+                        { testPermission with
+                              Name = "test:permission:2" }
+                    >>= (readAsJsonAsync<int>)
+
                 users.[1] <- {| u with
                                     Token = Some(userToken)
                                     Tenant = Some(tenant)
@@ -95,7 +111,12 @@ module MultiUsers =
                     { Name = "test:permissions"
                       Description = "test description"
                       PermissionIds = [ u2.PermissionId.Value ] }
-                let! result = testFixture.HttpPostAsync u1.Token.Value
-                                  (sprintf "/api/tenant/domains/%i/roles" u1.Tenant.Value.DomainId) data
+
+                let! result =
+                    testFixture.HttpPostAsync
+                        u1.Token.Value
+                        (sprintf "/api/tenant/domains/%i/roles" u1.Tenant.Value.DomainId)
+                        data
+
                 ensureForbidden result
             }

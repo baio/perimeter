@@ -53,14 +53,14 @@ module ValidateScopes =
         |> TaskUtils.map (fun i -> i > 0)
 
     let private getDefaultDomainAudiencePermissions (dataContext: DbDataContext) domainId scopes =
+        printfn "77777777"
         query {
-            for dur in dataContext.DomainUserRole do
-                join rp in dataContext.RolesPermissions on (dur.RoleId = rp.RoleId)
+            for p in dataContext.Permissions do
                 where
-                    (rp.Permission.IsDefault = true
-                     && dur.DomainId = domainId
-                     && (%in' scopes) rp.Permission.Name)
-                select (Tuple.Create(rp.Permission.Api.Identifier, rp.Permission.Name))
+                    (p.IsDefault = true
+                     && p.Api.DomainId = domainId
+                     && (%in' scopes) p.Name)
+                select (Tuple.Create(p.Api.Identifier, p.Name))
         }
         |> groupByAsync (fun (aud, perms) -> { Audience = aud; Scopes = perms })
 
@@ -90,7 +90,7 @@ module ValidateScopes =
                 select rp.Permission.Name
         }
         |> toListAsync
-        
+
     let private getAppDomainType isTenantManagement isDomainManagement =
         match (isTenantManagement, isDomainManagement) with
         | (false, false) -> Generic

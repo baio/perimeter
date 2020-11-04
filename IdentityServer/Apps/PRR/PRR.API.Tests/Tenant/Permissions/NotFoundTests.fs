@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Tests.Tenant.Permssions
+﻿namespace PRR.API.Tests.Tenant.Permissions
 
 open Akkling
 open Common.Test.Utils
@@ -33,9 +33,6 @@ module NotFound =
 
     let mutable testContext: UserTestContext option = None
 
-
-
-
     [<CLIMutable>]
     type GetLikeDto =
         { id: int
@@ -54,12 +51,16 @@ module NotFound =
             task {
                 let testPermission: PostLike =
                     { Name = "test:permissions"
-                      Description = "test description" }
+                      Description = "test description"
+                      IsDefault = false }
+
                 testContext <- Some(createUserTestContext testFixture)
                 // create user 1 + tenant + permission
                 let u = users.[0]
+
                 let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
+
                 users.[0] <- {| u with
                                     Token = Some(userToken)
                                     Tenant = Some(tenant) |}
@@ -71,7 +72,9 @@ module NotFound =
             task {
                 let data: PostLike =
                     { Name = "test:permissions"
-                      Description = "test description" }
+                      Description = "test description"
+                      IsDefault = false }
+
                 let! result = testFixture.HttpPostAsync u1.Token.Value (sprintf "/api/tenant/apis/100/permissions") data
                 ensureNotFound result
             }
@@ -82,9 +85,15 @@ module NotFound =
             task {
                 let data: PostLike =
                     { Name = "test:permissions"
-                      Description = "test description" }
-                let! result = testFixture.HttpPutAsync u1.Token.Value
-                                  (sprintf "/api/tenant/apis/%i/permissions/%i" u1.Tenant.Value.SampleApiId 100) data
+                      Description = "test description"
+                      IsDefault = false }
+
+                let! result =
+                    testFixture.HttpPutAsync
+                        u1.Token.Value
+                        (sprintf "/api/tenant/apis/%i/permissions/%i" u1.Tenant.Value.SampleApiId 100)
+                        data
+
                 ensureNotFound result
             }
 
@@ -92,15 +101,23 @@ module NotFound =
         member __.``GET NotFound for unexistent permissions``() =
             let u1 = users.[0]
             task {
-                let! result = testFixture.HttpGetAsync u1.Token.Value
-                                  (sprintf "/api/tenant/apis/%i/permissions/%i" u1.Tenant.Value.SampleApiId 100)
-                ensureNotFound result }
+                let! result =
+                    testFixture.HttpGetAsync
+                        u1.Token.Value
+                        (sprintf "/api/tenant/apis/%i/permissions/%i" u1.Tenant.Value.SampleApiId 100)
+
+                ensureNotFound result
+            }
 
 
         [<Fact>]
         member __.``DELETE NotFound for unexistent permissions``() =
             let u1 = users.[0]
             task {
-                let! result = testFixture.HttpDeleteAsync u1.Token.Value
-                                  (sprintf "/api/tenant/apis/%i/permissions/%i" u1.Tenant.Value.SampleApiId 100)
-                ensureNotFound result }
+                let! result =
+                    testFixture.HttpDeleteAsync
+                        u1.Token.Value
+                        (sprintf "/api/tenant/apis/%i/permissions/%i" u1.Tenant.Value.SampleApiId 100)
+
+                ensureNotFound result
+            }
