@@ -1,10 +1,10 @@
 import { TenantsDataAccessService } from '@admin/data-access';
 import { AdminForm } from '@admin/shared';
 import { Component } from '@angular/core';
-import { tap } from 'rxjs/operators';
-import { definition } from './create-tenant-form.definition';
-import { AuthService } from '@perimeter/ngx-auth';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '@perimeter/ngx-auth';
+import { switchMap } from 'rxjs/operators';
+import { definition } from './create-tenant-form.definition';
 
 @Component({
     selector: 'admin-create-tenant-form',
@@ -18,9 +18,13 @@ export class CreateTenantFormComponent {
         item: any
     ) =>
         this.dataAccess.createItem(item).pipe(
-            tap(() => {
+            switchMap((tenantId) => {
                 // authorize under created tenant
-                this.authService.authorize();
+                return this.authService.authorize({
+                    useSSO: true,
+                    clientId: '__DEFAULT_CLIENT_ID__',
+                    redirectPath: `/tenants/${tenantId}/domains`,
+                });
             })
         );
 

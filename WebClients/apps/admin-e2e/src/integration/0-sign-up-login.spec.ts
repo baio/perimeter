@@ -85,7 +85,7 @@ describe('signup flow', () => {
         });
     });
 
-    it('create tenant could be closed', () => {
+    it('user can close create tenant closed', () => {
         cy.dataCy('create-tenant').click().get('.ant-drawer-close').click();
         cy.url().should('not.include', 'create-tenant');
     });
@@ -98,21 +98,7 @@ describe('signup flow', () => {
             .submitButton()
             .click();
 
-        cy.url().should('include', 'auth/login');
-    });
-
-    it('login', () => {
-        cy.dataCy('email')
-            .type(EMAIL)
-            .dataCy('password')
-            .type(PASSWORD)
-            .dataCy('submit')
-            .click();
-
+        //cy.url().should('include', 'auth/login');
         cy.url().should('match', /\/tenants\/\d+\/domains/);
-
-        cy.rows(0, 2).dataCy('env-btn').eq(0).click();
-
-        cy.url().should('match', /\/domains\/\d+\/apps/);
     });
 });

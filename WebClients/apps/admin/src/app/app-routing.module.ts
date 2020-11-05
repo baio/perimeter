@@ -29,7 +29,7 @@ const routes: Routes = [
     imports: [
         AdminPagesModule,
         RouterModule.forRoot(routes, {
-            enableTracing: false,
+            enableTracing: true,
             initialNavigation: true,
         }),
     ],
