@@ -13,6 +13,11 @@ export const listDefinition: AdminList.TableDefinition = {
             title: 'Description',
         },
         {
+            id: 'isDefault',
+            title: 'Is Default',
+            format: (f) => (f ? 'Yes' : 'No'),
+        },
+        {
             id: 'dateCreated',
             title: 'Created',
             format: 'dateTime',

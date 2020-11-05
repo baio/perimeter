@@ -9,6 +9,9 @@
     "videosFolder": "../../dist/cypress/apps/admin-e2e/videos",
     "screenshotsFolder": "../../dist/cypress/apps/admin-e2e/screenshots",
     "chromeWebSecurity": false,
+    "execTimeout": 100000,
+    "taskTimeout": 100000,
+    "pageLoadTimeout": 100000,
     "env": {
         "apiBaseUrl": "https://localhost:5001",
         "authBaseUrl": "http://localhost:4201",

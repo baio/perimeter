@@ -1,7 +1,7 @@
 import { clearLocalStorage } from './_setup';
 
 // tslint:disable: no-unused-expression
-describe('login-github', () => {
+describe.skip('login-github', () => {
     before(() => cy.reinitDb());
 
     before(() => clearLocalStorage());

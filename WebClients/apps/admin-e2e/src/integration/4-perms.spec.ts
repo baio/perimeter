@@ -88,6 +88,8 @@ describe('perms', () => {
             cy.formField('name')
                 .clear()
                 .type(UPDATED_NAME)
+                .formToggle('isDefault')
+                .click()
                 .submitButton()
                 .click();
             cy.url().should(
@@ -109,7 +111,7 @@ describe('perms', () => {
         });
 
         it('sort by created change rows positions', () => {
-            cy.get('table thead th').eq(2).click().click();
+            cy.get('table thead th').eq(3).click().click();
             cy.rows(0, 0).should('contain.text', 'read:all');
             cy.rows(1, 0).should('contain.text', 'write:all');
         });
