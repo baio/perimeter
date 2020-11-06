@@ -665,5 +665,5 @@
       "unitTestRunner": "jest"
     }
   },
-  "defaultProject": "ip"
+  "defaultProject": "admin"
 }

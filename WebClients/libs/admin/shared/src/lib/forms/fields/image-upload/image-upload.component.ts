@@ -1,9 +1,23 @@
-import { Component, EventEmitter, forwardRef, Input, OnInit, Output } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    forwardRef,
+    Input,
+    OnInit,
+    Output,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { HlcNzFileUploadDataAccess, HlcNzFileUploadMode } from '@nz-holistic/nz-controls';
-import { NzModalService, UploadFile } from 'ng-zorro-antd';
+import {
+    HlcNzFileUploadDataAccess,
+    HlcNzFileUploadMode,
+} from '@nz-holistic/nz-controls';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { NzUploadFile } from 'ng-zorro-antd/upload';
 import { Observable } from 'rxjs';
-import { bazaImageDefaultEditorConfig, AdminImageEditorComponent } from './image-editor/image-editor.component';
+import {
+    AdminImageEditorComponent,
+    bazaImageDefaultEditorConfig,
+} from './image-editor/image-editor.component';
 
 @Component({
     selector: 'admin-image-upload',
@@ -18,7 +32,7 @@ import { bazaImageDefaultEditorConfig, AdminImageEditorComponent } from './image
     ],
 })
 export class AdminImageUploadComponent implements OnInit, ControlValueAccessor {
-    beforeUpload: (file: UploadFile) => Observable<UploadFile | false>;
+    beforeUpload: (file: NzUploadFile) => Observable<NzUploadFile | false>;
 
     @Input() value: string | string[];
 
@@ -39,7 +53,7 @@ export class AdminImageUploadComponent implements OnInit, ControlValueAccessor {
 
     ngOnInit() {
         if (this.editorConfig) {
-            this.beforeUpload = (file: UploadFile) =>
+            this.beforeUpload = (file: NzUploadFile) =>
                 new Observable((resolver) => {
                     this.modalService.create({
                         nzTitle: 'Edit Image',
@@ -50,7 +64,7 @@ export class AdminImageUploadComponent implements OnInit, ControlValueAccessor {
                         },
                         nzOnOk: (inst) => {
                             const croppedImage = inst.croppedImage;
-                            const updFile: UploadFile = {
+                            const updFile: NzUploadFile = {
                                 ...file,
                                 originFileObj: croppedImage.file,
                                 thumbUrl: croppedImage.base64,

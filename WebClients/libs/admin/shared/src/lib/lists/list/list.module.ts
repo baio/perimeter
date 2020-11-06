@@ -2,19 +2,19 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import {
-    HlcNzTableModule,
-    HLC_NZ_TABLE_CELL_MAP,
-    HLC_NZ_IMG_COLUMN_CONFIG,
-    HlcNzImgColumnConfig,
     HlcNzCustomCellDirective,
+    HlcNzImgColumnConfig,
+    HlcNzTableModule,
+    HLC_NZ_IMG_COLUMN_CONFIG,
+    HLC_NZ_TABLE_CELL_MAP,
 } from '@nz-holistic/nz-list';
+import { NzAlertModule } from 'ng-zorro-antd/alert';
 import { AdminListComponent } from './list.component';
 import {
     tableCellMap,
     tableCellMapComponents,
     tableCellMapModules,
 } from './table-cell-map';
-import { NzAlertModule } from 'ng-zorro-antd';
 
 @NgModule({
     declarations: [AdminListComponent],

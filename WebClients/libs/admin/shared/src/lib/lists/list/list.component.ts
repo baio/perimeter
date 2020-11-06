@@ -31,7 +31,7 @@ import {
     HlcNzCustomCellDirective,
     CellClickEvent,
 } from '@nz-holistic/nz-list';
-import { NzModalService } from 'ng-zorro-antd';
+import { NzModalService } from 'ng-zorro-antd/modal';
 import { merge, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 

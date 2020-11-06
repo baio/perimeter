@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { HlcNzDisplayModule } from '@nz-holistic/nz-controls';
-import { NzTypographyModule } from 'ng-zorro-antd';
+import { NzTypographyModule } from 'ng-zorro-antd/typography';
 
 import { AdminDateTimeDisplayComponent } from './date-time-display.component';
 

@@ -11,13 +11,10 @@ import {
     HlcNzInputErrorDisplayStrategy,
     HLC_NZ_VALIDATION_ERRORS_MAP_CONFIG,
 } from '@nz-holistic/nz-forms';
-import {
-    NzAlertModule,
-    NzButtonModule,
-    NzDrawerModule,
-    NzSpinModule,
-} from 'ng-zorro-antd';
-
+import { NzAlertModule } from 'ng-zorro-antd/alert';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 import {
     adminFieldContainersComponents,
     adminFieldContainersMap,

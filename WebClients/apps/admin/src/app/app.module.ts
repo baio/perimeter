@@ -15,8 +15,9 @@ import {
     HttpErrorMessageInterceptorModule,
 } from '@perimeter/common';
 import { AuthModule } from '@perimeter/ngx-auth';
-import { en_US, NZ_I18N } from 'ng-zorro-antd';
+import { en_US, NZ_I18N } from 'ng-zorro-antd/i18n';
 import { NZ_ICONS } from 'ng-zorro-antd/icon';
+import { NzNotificationModule } from 'ng-zorro-antd/notification';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -39,7 +40,7 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(
         AdminDomainsModule,
         HlcNzFormModule.forRoot(),
         RouterModule,
-        AuthModule.forRoot(environment.baseUrl, environment.auth),        
+        AuthModule.forRoot(environment.baseUrl, environment.auth),
         HttpBaseUrlInterceptorModule.forRoot({ baseUrl: environment.baseUrl }),
         AdminProfileModule,
         StoreModule.forRoot({}),
@@ -49,6 +50,7 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(
         }),
         // Important ! Always last in order to not mess with other interceptors !
         HttpErrorMessageInterceptorModule,
+        NzNotificationModule,
     ],
     providers: [
         { provide: NZ_ICONS, useValue: icons },

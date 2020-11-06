@@ -12,7 +12,8 @@ import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HlcNzFormComponent } from '@nz-holistic/nz-forms';
 import { mapServerError } from '@perimeter/common';
-import { NzModalService, NzNotificationService } from 'ng-zorro-antd';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import {
     catchError,

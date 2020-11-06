@@ -6,14 +6,12 @@ import {
 } from '@admin/shared';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import {
-    NzBreadCrumbModule,
-    NzButtonModule,
-    NzDividerModule,
-    NzIconModule,
-    NzLayoutModule,
-    NzMenuModule,
-} from 'ng-zorro-antd';
+import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzLayoutModule } from 'ng-zorro-antd/layout';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { AdminDomainsRoutingModule } from './admin-domains-routing.module';
 import { AdminActivitiesListComponent } from './domain/admin-activities/list/list.component';
 import { AdminFormComponent } from './domain/admins/form/form.component';

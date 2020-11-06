@@ -1,7 +1,10 @@
 import { HlcFormFields } from '@nz-holistic/forms';
-import { HlcNzFileUploadDataAccess, HlcNzFileUploadMode } from '@nz-holistic/nz-controls';
+import {
+    HlcNzFileUploadDataAccess,
+    HlcNzFileUploadMode,
+} from '@nz-holistic/nz-controls';
 import { HlcNzFormFields } from '@nz-holistic/nz-forms';
-import { NzTreeNodeOptions } from 'ng-zorro-antd';
+import { NzTreeNodeOptions } from 'ng-zorro-antd/tree';
 import { AdminImageEditorConfig } from '../../fields/image-upload/image-editor/image-editor.component';
 
 export namespace AdminFormFields {
@@ -11,15 +14,16 @@ export namespace AdminFormFields {
     }
     export type FieldWrapper = 'default' | LengthCounterFieldWrapper;
 
-    export type BaseField<TKind extends string, TVal = any, TExtProps = {}> = HlcNzFormFields.BaseField<
-        TKind,
-        TVal,
-        TExtProps,
-        FieldWrapper
-    >;
+    export type BaseField<
+        TKind extends string,
+        TVal = any,
+        TExtProps = {}
+    > = HlcNzFormFields.BaseField<TKind, TVal, TExtProps, FieldWrapper>;
 
-    export interface StateSelector extends BaseField<'AdminStateSelector', string> {}
-    export interface DateTimeDisplay extends BaseField<'AdminDateTimeDisplay', string> {}
+    export interface StateSelector
+        extends BaseField<'AdminStateSelector', string> {}
+    export interface DateTimeDisplay
+        extends BaseField<'AdminDateTimeDisplay', string> {}
     export interface RichText extends BaseField<'AdminRichText', string> {}
     export interface CategoriesSelector
         extends BaseField<
@@ -43,7 +47,11 @@ export namespace AdminFormFields {
 
     // TODO : This one from level above
     export interface ItemCategoriesSelector
-        extends BaseField<'AdminItemCategoriesSelector', number[], { category: string }> {}
+        extends BaseField<
+            'AdminItemCategoriesSelector',
+            number[],
+            { category: string }
+        > {}
 
     export type FormField =
         | StateSelector
