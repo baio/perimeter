@@ -5,7 +5,7 @@
     .remove-action-button {
         color: red;
     }
-    th:last-of-type {
+    th:last-of-type.actions-column {
         width: 10px;
     }
 }
