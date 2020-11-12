@@ -2,39 +2,39 @@ import {
     AfterViewInit,
     Component,
     ContentChild,
+    ContentChildren,
     EventEmitter,
+    forwardRef,
+    Inject,
     Input,
     OnDestroy,
     OnInit,
-    Output,
-    ViewChild,
     Optional,
-    SkipSelf,
-    Inject,
-    ContentChildren,
+    Output,
     QueryList,
-    forwardRef,
-    ChangeDetectorRef,
+    SkipSelf,
+    ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdminListService } from '../../common';
 import {
     ActionClickEvent,
+    CellClickEvent,
+    FilterValue,
+    HlcNzCustomCellDirective,
     HlcNzTable,
     HlcNzTableComponent,
+    HlcNzTableCustomCellsProvider,
     HlcNzTableFilterService,
+    HLC_NZ_TABLE_CUSTOM_CELLS_PROVIDER,
     HLC_NZ_TABLE_FILTER_VALUE_CHANGE_DELAY,
     RowClickEvent,
     RowDropEvent,
-    HlcNzTableCustomCellsProvider,
-    HLC_NZ_TABLE_CUSTOM_CELLS_PROVIDER,
-    HlcNzCustomCellDirective,
-    CellClickEvent,
 } from '@nz-holistic/nz-list';
+import { concat } from 'lodash/fp';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { merge, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-
+import { AdminListService } from '../../common';
 import { AdminListHeaderComponent } from '../list-header/list-header.component';
 import { AdminList } from './list.models';
 import {
@@ -42,7 +42,6 @@ import {
     addDefinitionLinkButtonAction,
     DELETE_ACTION_ID,
 } from './utils';
-import { concat } from 'lodash/fp';
 
 @Component({
     selector: 'admin-list',
@@ -78,8 +77,15 @@ export class AdminListComponent
 
     @Input() canRemoveRow: AdminList.CheckRowFun;
 
+    @Input() useDragDrop = false;
+
     @Input()
     rowClickMode: 'navigate' | 'none' = 'navigate';
+
+    @Input() viewOptions: HlcNzTable.ViewOptions = {
+        hidePager: false,
+        hideSort: false,
+    };
 
     @Input()
     removeItemDataAccess: AdminList.Data.RemoveItemDataAccess | undefined;
@@ -93,6 +99,9 @@ export class AdminListComponent
     @Output()
     cellClick = new EventEmitter<CellClickEvent>();
 
+    @Output()
+    rowDrop = new EventEmitter<RowDropEvent>();
+
     @ContentChild(AdminListHeaderComponent, { static: false })
     header: AdminListHeaderComponent;
 
@@ -101,11 +110,6 @@ export class AdminListComponent
 
     private readonly destroy$ = new Subject();
     hlcDefinition: HlcNzTable.TableDefinition;
-
-    viewOptions: HlcNzTable.ViewOptions = {
-        hidePager: false,
-        hideSort: false,
-    };
 
     /**
      * Custom cells
@@ -119,6 +123,7 @@ export class AdminListComponent
         private readonly activatedRoute: ActivatedRoute,
         private readonly listService: AdminListService,
         private readonly router: Router,
+        private readonly filterService: HlcNzTableFilterService,
         @Optional()
         @SkipSelf()
         @Inject(HLC_NZ_TABLE_CUSTOM_CELLS_PROVIDER)
@@ -207,6 +212,10 @@ export class AdminListComponent
 
     private reload() {
         this.hlcList.reload();
+    }
+
+    setFilter(filter: FilterValue) {
+        this.filterService.setValue(filter);
     }
 
     get customCells() {

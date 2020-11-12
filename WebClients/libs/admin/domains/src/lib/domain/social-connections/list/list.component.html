@@ -1,9 +1,21 @@
 <admin-list
+    *ngIf="view$ | async as view"
     [definition]="listDefinition"
     [dataProvider]="dataProvider"
+    [viewOptions]="view.viewOptions"
+    [useDragDrop]="view.sortMode"
 >
     <admin-list-header
-        title="Roles"
+        title="Social"
         searchPlaceholder="Search by name"
-    ></admin-list-header>
+        [canAdd]="false"
+        [useSearch]="!view.sortMode"
+    >
+        <nz-switch
+            [ngModel]="view.sortMode"
+            (ngModelChange)="onSortModeChanged($event)"
+            nzCheckedChildren="Ordering On"
+            nzUnCheckedChildren="Ordering Off"
+        ></nz-switch>
+    </admin-list-header>
 </admin-list>

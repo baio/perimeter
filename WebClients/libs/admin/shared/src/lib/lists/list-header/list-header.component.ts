@@ -13,6 +13,9 @@ export class AdminListHeaderComponent implements OnInit {
     canAdd = true;
 
     @Input()
+    useSearch = true;
+
+    @Input()
     hasBackButton = false;
 
     @Input()

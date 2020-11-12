@@ -9,7 +9,7 @@
     }}</nz-page-header-subtitle>
 
     <nz-page-header-extra *ngIf="canAdd">
-        <button            
+        <button
             data-cy="create-item"
             nz-button
             nzShape="circle"
@@ -24,7 +24,8 @@
     <nz-page-header-content>
         <ng-container [formGroup]="filterForm">
             <div nz-row [nzGutter]="16">
-                <div nz-col class="gutter-row" [nzSpan]="9">
+                <ng-content></ng-content>
+                <div *ngIf="useSearch" nz-col class="gutter-row" [nzSpan]="9">
                     <nz-input-group [nzSuffix]="suffixIconSearch">
                         <input
                             data-cy="text-search"

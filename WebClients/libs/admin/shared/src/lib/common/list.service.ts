@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HlcNzTable } from '@nz-holistic/nz-list';
+import { FilterValue, HlcNzTable } from '@nz-holistic/nz-list';
 import { Subject } from 'rxjs';
 
 @Injectable()
@@ -7,6 +7,7 @@ export class AdminListService {
     private readonly _rowAdded = new Subject<HlcNzTable.Row>();
     private readonly _rowUpdated = new Subject<HlcNzTable.Row>();
     private readonly _rowRemoved = new Subject<HlcNzTable.Row>();
+    private readonly _filterValue = new Subject<FilterValue>();
 
     get rowUpdated() {
         return this._rowUpdated.asObservable();
@@ -20,6 +21,10 @@ export class AdminListService {
         return this._rowRemoved.asObservable();
     }
 
+    get filterValue() {
+        return this._filterValue.asObservable();
+    }
+
     onRowUpdated(row: HlcNzTable.Row) {
         this._rowUpdated.next(row);
     }
@@ -30,6 +35,10 @@ export class AdminListService {
 
     onRowRemoved(row: HlcNzTable.Row) {
         this._rowRemoved.next(row);
+    }
+
+    setFilterValue(val: FilterValue) {
+        this._filterValue.next(val);
     }
 
 }

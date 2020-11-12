@@ -11,6 +11,7 @@ export const listDefinition: AdminList.TableDefinition = {
         {
             id: 'isEnabled',
             title: 'Is Enabled',
+            sort: true,
             format: (val) => (val ? 'Yes' : 'No'),
         },
     ],

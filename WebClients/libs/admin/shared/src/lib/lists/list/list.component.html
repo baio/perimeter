@@ -12,11 +12,13 @@
     [dataProvider]="dataProvider"
     [definition]="hlcDefinition"
     [viewOptions]="viewOptions"
+    [useDragDrop]="useDragDrop"
     (actionClick)="onActionClick($event)"
     (rowClick)="onRowClick($event)"
     (cellClick)="onCellClick($event)"
     (rowDrop)="onRowDrop($event)"
     (dataProviderError)="onDataProviderError($event)"
+    (rowDrop)="rowDrop.emit($event)"
 >
 </hlc-nz-table>
 

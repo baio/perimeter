@@ -8,8 +8,17 @@ import { map } from 'rxjs/operators';
 
 const socialConnections: SocialConnection[] = [
     {
-        id: 'twitter',
-        name: 'twitter',
+        id: 'github',
+        name: 'github',
+        isEnabled: false,
+        clientId: null,
+        clientSecret: null,
+        attributes: null,
+        permissions: null,
+    },
+    {
+        id: 'google',
+        name: 'google',
         isEnabled: false,
         clientId: null,
         clientSecret: null,

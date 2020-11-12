@@ -33,26 +33,6 @@ export const definition = (formGroup: FormGroup): AdminForm.FormDefinition => {
                 validators: [Validators.required],
                 hidden: isNotEnabled$,
             },
-            {
-                id: 'attributes',
-                kind: 'Select',
-                props: {
-                    label: 'Attributes',
-                    mode: 'tags',
-                    items: [],
-                },
-                hidden: isNotEnabled$,
-            },
-            {
-                id: 'permissions',
-                kind: 'Select',
-                props: {
-                    label: 'Permissions',
-                    mode: 'tags',
-                    items: [],
-                },
-                hidden: isNotEnabled$,
-            },
         ],
     };
 };

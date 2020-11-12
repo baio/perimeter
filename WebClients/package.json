@@ -51,7 +51,7 @@
     "@nz-holistic/forms": "^11.0.0",
     "@nz-holistic/nz-controls": "^11.0.0",
     "@nz-holistic/nz-forms": "^11.0.0",
-    "@nz-holistic/nz-list": "^11.0.1",
+    "@nz-holistic/nz-list": "^11.0.2",
     "@types/jwt-simple": "^0.5.33",
     "add": "^2.0.6",
     "jwt-simple": "^0.5.6",
