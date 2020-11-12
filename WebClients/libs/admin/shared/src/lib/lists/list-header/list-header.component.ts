@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, TemplateRef } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HlcNzTableFilterService } from '@nz-holistic/nz-list';
@@ -26,6 +26,9 @@ export class AdminListHeaderComponent implements OnInit {
 
     @Input()
     title: string;
+
+    @Input()
+    titleTemplate: TemplateRef<any>;
 
     readonly filterForm: FormGroup;
 

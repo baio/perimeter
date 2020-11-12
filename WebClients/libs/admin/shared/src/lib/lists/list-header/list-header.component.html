@@ -2,8 +2,10 @@
     [nzBackIcon]="hasBackButton ? 'arrow-left' : null"
     (nzBack)="onBack()"
 >
-    <nz-page-header-title *ngIf="title">{{ title }}</nz-page-header-title>
-
+    <nz-page-header-title>
+        {{ title }}
+        <ng-content select="[title]"> </ng-content>
+    </nz-page-header-title>
     <nz-page-header-subtitle *ngIf="subTitle">{{
         subTitle
     }}</nz-page-header-subtitle>
@@ -24,7 +26,6 @@
     <nz-page-header-content>
         <ng-container [formGroup]="filterForm">
             <div nz-row [nzGutter]="16">
-                <ng-content></ng-content>
                 <div *ngIf="useSearch" nz-col class="gutter-row" [nzSpan]="9">
                     <nz-input-group [nzSuffix]="suffixIconSearch">
                         <input

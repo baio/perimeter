@@ -6,16 +6,18 @@
     [useDragDrop]="view.sortMode"
 >
     <admin-list-header
-        title="Social"
         searchPlaceholder="Search by name"
         [canAdd]="false"
         [useSearch]="!view.sortMode"
     >
-        <nz-switch
-            [ngModel]="view.sortMode"
-            (ngModelChange)="onSortModeChanged($event)"
-            nzCheckedChildren="Ordering On"
-            nzUnCheckedChildren="Ordering Off"
-        ></nz-switch>
+        <div title>
+            Social
+            <nz-switch
+                [ngModel]="view.sortMode"
+                (ngModelChange)="onSortModeChanged($event)"
+                nzCheckedChildren="Ordering On"
+                nzUnCheckedChildren="Ordering Off"
+            ></nz-switch>
+        </div>
     </admin-list-header>
 </admin-list>

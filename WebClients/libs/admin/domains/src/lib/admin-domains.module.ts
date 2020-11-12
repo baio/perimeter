@@ -13,6 +13,7 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
+import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { AdminDomainsRoutingModule } from './admin-domains-routing.module';
 import { AdminActivitiesListComponent } from './domain/admin-activities/list/list.component';
@@ -60,6 +61,7 @@ import { TenantLayoutComponent } from './tenant/tenant-layout/tenant-layout.comp
         NzDividerModule,
         NzSwitchModule,
         FormsModule,
+        NzPageHeaderModule,
     ],
     declarations: [
         DomainLayoutComponent,
