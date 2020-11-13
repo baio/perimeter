@@ -32,6 +32,12 @@ module private SocialConnectionHandlers =
     let getHandler domainId =
         wrap (getAll domainId <!> getDataContext')
 
+    let reorderHandler domainId =
+        wrap
+            (reorder domainId
+             <!> (bindJsonAsync)
+             <*> getDataContext')
+
     module SocialConnections =
 
         let createRoutes () =
@@ -40,6 +46,10 @@ module private SocialConnectionHandlers =
                          permissionGuard MANAGE_DOMAIN
                          >=> GET
                          >=> getHandler domainId)
+                     routef "/tenant/domains/%i/social/order" (fun domainId ->
+                         permissionGuard MANAGE_DOMAIN
+                         >=> PUT
+                         >=> reorderHandler domainId)
                      routef "/tenant/domains/%i/social/%s" (fun (domainId, name) ->
                          permissionGuard MANAGE_DOMAIN
                          >=> choose [ POST >=> (createHandler domainId name)

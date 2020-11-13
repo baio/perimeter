@@ -17,5 +17,7 @@ namespace PRR.Data.Entities
         public string[] Attributes { get; set; }
 
         public string[] Permissions { get; set; }
+
+        public int Order { get; set; }
     }
 }

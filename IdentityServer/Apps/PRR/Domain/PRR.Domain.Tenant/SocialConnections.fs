@@ -21,6 +21,7 @@ module SocialConnections =
     let catch =
         function
         | UniqueConstraintException "IX_SocialConnections_DomainId_Name" (ConflictErrorField ("name", UNIQUE)) ex ->
+            printfn "3333"
             raise ex
         | ex -> raise ex
 
@@ -35,23 +36,38 @@ module SocialConnections =
           ClientId: string
           ClientSecret: string
           Attributes: string []
-          Permissions: string [] }
+          Permissions: string []
+          Order: int }
 
     let validateData (data: PostLike) =
         [| (validateNullOrEmpty "clientId" data.ClientId)
            (validateNullOrEmpty "clientSecret" data.ClientSecret) |]
         |> Array.choose id
 
-    let create x =
-        x
-        |> createCatch catch (fun (domainId, socialName, data: PostLike) ->
-               SocialConnection
-                   (SocialName = socialName,
-                    DomainId = domainId,
-                    ClientId = data.ClientId,
-                    ClientSecret = data.ClientSecret,
-                    Attributes = data.Attributes,
-                    Permissions = data.Permissions)) (fun _ -> ())
+    let create dto (dataContext: DbDataContext) =
+        task {
+            let (domainId, _, _) = dto
+
+            let! orders =
+                query {
+                    for sc in dataContext.SocialConnections do
+                        where (sc.DomainId = domainId)
+                        select sc.Order
+                }
+                |> toListAsync
+
+            let maxOrder = orders |> Seq.append [ -1 ] |> Seq.max
+
+            return! createCatch catch (fun (domainId, socialName, data: PostLike) ->
+                        SocialConnection
+                            (SocialName = socialName,
+                             DomainId = domainId,
+                             ClientId = data.ClientId,
+                             ClientSecret = data.ClientSecret,
+                             Attributes = data.Attributes,
+                             Permissions = data.Permissions,
+                             Order = maxOrder + 1)) (fun _ -> ()) dto dataContext
+        }
 
     let update x =
         x
@@ -79,4 +95,14 @@ module SocialConnections =
                   ClientId = x.ClientId
                   ClientSecret = x.ClientSecret
                   Attributes = x.Attributes
-                  Permissions = x.Permissions }: GetLike))
+                  Permissions = x.Permissions
+                  Order = x.Order }: GetLike))
+
+    let reorder (domainId: DomainId) (data: Map<string, int>) (dataContext: DbDataContext) =
+        data
+        |> Map.toSeq
+        |> Seq.map (fun (k, _) -> SocialConnection(SocialName = k, DomainId = domainId))
+        |> updateRange dataContext (fun sc ->
+               sc.Order <- data.Item(sc.SocialName)
+               dataContext.Entry(sc).Property("Order").IsModified <- true)
+        saveChangesAsync dataContext

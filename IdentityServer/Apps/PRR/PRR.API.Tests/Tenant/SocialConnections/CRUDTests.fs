@@ -86,7 +86,7 @@ module CRUD =
         member __.``B Update social connection must be success``() =
             task {
                 let data: PostLike =
-                    { ClientId = "zzz"
+                    { ClientId = "zzz1"
                       ClientSecret = "yyy"
                       Attributes = [| "aaa"; "ggg" |]
                       Permissions = [||] }
@@ -117,10 +117,11 @@ module CRUD =
 
                 let expected: GetLike array =
                     [| { Name = "github"
-                         ClientId = "zzz"
+                         ClientId = "zzz1"
                          ClientSecret = "yyy"
                          Attributes = [| "aaa"; "ggg" |]
-                         Permissions = [||] } |]
+                         Permissions = [||]
+                         Order = 0 } |]
 
                 actual |> should equal expected
 
@@ -129,7 +130,42 @@ module CRUD =
 
         [<Fact>]
         [<Priority(4)>]
-        member __.``D Delete social connections must be success``() =
+        member __.``D Reorder social connection must be success``() =
+            task {
+                let data: PostLike =
+                    { ClientId = "xxx1"
+                      ClientSecret = "yyy"
+                      Attributes = [| "aaa" |]
+                      Permissions = [| "bbb" |] }
+g
+                let! result =
+                    testFixture.HttpPostAsync
+                        userToken
+                        (sprintf "/api/tenant/domains/%i/social/google" domainId.Value)
+                        data
+
+                do! ensureSuccessAsync result
+
+
+                let data = System.Collections.Generic.Dictionary()
+
+                data.Add("google", 1)
+
+                data.Add("github", 0)
+
+                let! result =
+                    testFixture.HttpPutAsync
+                        userToken
+                        (sprintf "/api/tenant/domains/%i/social/order" domainId.Value)
+                        data
+
+                do! ensureSuccessAsync result
+            }
+
+
+        [<Fact>]
+        [<Priority(5)>]
+        member __.``E Delete social connections must be success``() =
             task {
 
                 let! result =
