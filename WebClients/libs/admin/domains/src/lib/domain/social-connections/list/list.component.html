@@ -4,6 +4,7 @@
     [dataProvider]="dataProvider"
     [viewOptions]="view.viewOptions"
     [useDragDrop]="view.sortMode"
+    (rowDrop)="onRowDrop($event)"
 >
     <admin-list-header
         searchPlaceholder="Search by name"
@@ -13,6 +14,7 @@
         <div title>
             Social
             <nz-switch
+                data-cy="ordering-mode-switch"
                 [ngModel]="view.sortMode"
                 (ngModelChange)="onSortModeChanged($event)"
                 nzCheckedChildren="Ordering On"

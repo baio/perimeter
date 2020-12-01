@@ -8,4 +8,5 @@ export interface SocialConnection {
     clientSecret: string;
     attributes: string[];
     permissions: string[];
+    order?: number;
 }

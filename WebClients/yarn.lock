@@ -1934,10 +1934,10 @@
   resolved "https://registry.yarnpkg.com/@nz-holistic/nz-forms/-/nz-forms-11.0.0.tgz#1bc5ae7359ca0910d89a670f5d26a44558f57d7d"
   integrity sha512-1njW2g+jQR8rqlm74p51EOOROk80Zi82eS2ydHsERcTc9fh3ikKjilIpTAwYP19hb7yRv2qJwdpkemIZkWavfw==
 
-"@nz-holistic/nz-list@^11.0.2":
-  version "11.0.2"
-  resolved "https://registry.yarnpkg.com/@nz-holistic/nz-list/-/nz-list-11.0.2.tgz#b4ed7f5de430228ef9b1c7dbbba2cf29012ba850"
-  integrity sha512-yBAxjPKPsQ83AUr+m+eeZzwoZeFk9AfHJJ/6nGeUUKFar6QCZ3GpDYI9TWADreqet6ehNMzFSQVoWc5yQwc1Tw==
+"@nz-holistic/nz-list@^11.0.3":
+  version "11.0.3"
+  resolved "https://registry.yarnpkg.com/@nz-holistic/nz-list/-/nz-list-11.0.3.tgz#ca52276061874f548a7af01686d8cc46e22f6bf2"
+  integrity sha512-5VjI5BFWuTXE8Ev154aliLIYXWC0J+xauv6BqPjtUgIoBBpDQi9HWIh/ICxA64qPKUE/SYJIJsP38EfmI94W6g==
 
 "@rollup/plugin-commonjs@^14.0.0":
   version "14.0.0"

@@ -1,10 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HlcNzTable } from '@nz-holistic/nz-list';
-import { Observable, of } from 'rxjs';
-import { SocialConnection } from './models';
-import { mapListRequestParams, mapListResponse } from '../utils';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { SocialConnection } from './models';
 
 const socialConnections: SocialConnection[] = [
     {
@@ -73,5 +72,9 @@ export class SocialConnectionsDataAccessService {
             `/tenant/domains/${domainId}/social/${data.name}`,
             data
         );
+    }
+
+    order(domainId: number, order: { [key: string]: number }): Observable<any> {
+        return this.http.put(`/tenant/domains/${domainId}/social/order`, order);
     }
 }

@@ -27,9 +27,7 @@ describe('social', () => {
                 .formField('clientId')
                 .type('abcd')
                 .formField('clientSecret')
-                .type('123')
-                .formSelect('attributes')
-                .type('some{enter}');
+                .type('123');
 
             cy.submitButton().click({ force: true });
 
@@ -50,6 +48,56 @@ describe('social', () => {
             cy.submitButton().click();
 
             cy.get('.ant-drawer').should('not.exist');
+        });
+    });
+
+    describe.skip('change order', () => {
+        before(() => {
+            cy.rows(0)
+                .click()
+                .formToggle('isEnabled')
+                .click()
+                .formField('clientId')
+                .type('abcd')
+                .formField('clientSecret')
+                .type('123');
+            cy.submitButton().click({ force: true });
+            cy.rows(1)
+                .click()
+                .formToggle('isEnabled')
+                .click()
+                .formField('clientId')
+                .type('abcd')
+                .formField('clientSecret')
+                .type('123');
+            cy.submitButton().click({ force: true });
+        });
+
+        it('drag 1st row to 2nd ', () => {
+            cy.get('tr.ant-table-row:eq(1) td').should(
+                'contain.text',
+                'google'
+            );
+            cy.get('tr.ant-table-row:eq(2) td').should(
+                'contain.text',
+                'github'
+            );
+
+            cy.dataCy('ordering-mode-switch').click();
+
+            cy.get(`tr.ant-table-row:eq(1)`)
+                .trigger('mousedown', { which: 1 })
+                .trigger('mousemove', { clientX: 0, clientY: 250 })
+                .trigger('mouseup', { force: true });
+
+            cy.get('tr.ant-table-row:eq(2) td').should(
+                'contain.text',
+                'google'
+            );
+            cy.get('tr.ant-table-row:eq(1) td').should(
+                'contain.text',
+                'github'
+            );
         });
     });
 });

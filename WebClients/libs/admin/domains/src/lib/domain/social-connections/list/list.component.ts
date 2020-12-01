@@ -5,10 +5,10 @@ import {
 import { AdminListComponent } from '@admin/shared';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { HlcNzTable } from '@nz-holistic/nz-list';
-import { orderBy, pipe } from 'lodash/fp';
+import { HlcNzTable, RowDropEvent } from '@nz-holistic/nz-list';
+import { fromPairs, orderBy, pipe } from 'lodash/fp';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, withLatestFrom } from 'rxjs/operators';
 import { listDefinition } from './list.definition';
 
 const filterData = (state: HlcNzTable.Data.DataProviderState) => (
@@ -24,10 +24,13 @@ const filterData = (state: HlcNzTable.Data.DataProviderState) => (
     return data;
 };
 
-const sortData = (state: HlcNzTable.Data.DataProviderState) => (
-    data: SocialConnection[]
-) => {
-    if (state.sort) {
+const sortData = (
+    isOrderMode: boolean,
+    state: HlcNzTable.Data.DataProviderState
+) => (data: SocialConnection[]) => {
+    if (isOrderMode) {
+        return orderBy('order', 'asc', data);
+    } else if (state.sort) {
         return orderBy(
             state.sort.key,
             state.sort.order === 'ascend' ? 'asc' : 'desc',
@@ -39,9 +42,10 @@ const sortData = (state: HlcNzTable.Data.DataProviderState) => (
 };
 
 const sortAndFilterData = (
+    isOrderMode,
     data: SocialConnection[],
     state: HlcNzTable.Data.DataProviderState
-) => pipe(filterData(state), sortData(state))(data);
+) => pipe(filterData(state), sortData(isOrderMode, state))(data);
 
 export interface View {
     sortMode: boolean;
@@ -64,8 +68,9 @@ export class SocialConnectionsListComponent implements OnInit {
     readonly dataProvider: HlcNzTable.Data.DataProvider = (state) => {
         // load data only initially, then reuse them
         return this.dataAccess.loadList(this.domainId, state).pipe(
-            map((data) => ({
-                data: sortAndFilterData(data, state),
+            withLatestFrom(this.sortMode),
+            map(([data, sortMode]) => ({
+                data: sortAndFilterData(sortMode, data, state),
                 pager: {
                     size: data.length,
                     total: data.length,
@@ -100,5 +105,13 @@ export class SocialConnectionsListComponent implements OnInit {
         } else {
             this.listComponent.setFilter({ onlyEnabled: false });
         }
+    }
+
+    async onRowDrop(event: RowDropEvent) {
+        const order = fromPairs(
+            event.currentRows.map((m: SocialConnection, i) => [m.name, i])
+        );
+
+        await this.dataAccess.order(this.domainId, order).toPromise();
     }
 }
