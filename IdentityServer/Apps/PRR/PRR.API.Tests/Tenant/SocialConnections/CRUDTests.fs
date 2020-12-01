@@ -137,7 +137,7 @@ module CRUD =
                       ClientSecret = "yyy"
                       Attributes = [| "aaa" |]
                       Permissions = [| "bbb" |] }
-g
+
                 let! result =
                     testFixture.HttpPostAsync
                         userToken
@@ -145,7 +145,6 @@ g
                         data
 
                 do! ensureSuccessAsync result
-
 
                 let data = System.Collections.Generic.Dictionary()
 
