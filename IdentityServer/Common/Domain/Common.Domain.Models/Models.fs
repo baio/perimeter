@@ -62,3 +62,10 @@ module Models =
     type AudienceScopes =
         { Audience: string
           Scopes: string seq }
+
+    type PerimeterSocialProviderClientSecret = { ClientId: string; SecretKey: string }
+
+    type PerimeterSocialProviders =
+        { Github: PerimeterSocialProviderClientSecret
+          Google: PerimeterSocialProviderClientSecret
+          Twitter: PerimeterSocialProviderClientSecret }

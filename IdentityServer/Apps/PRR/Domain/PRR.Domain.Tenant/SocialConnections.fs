@@ -1,6 +1,7 @@
 ﻿namespace PRR.Domain.Tenant
 
 open System
+open System.Threading.Tasks
 open Common.Domain.Utils
 open Common.Domain.Models
 open Common.Utils
@@ -21,7 +22,6 @@ module SocialConnections =
     let catch =
         function
         | UniqueConstraintException "IX_SocialConnections_DomainId_Name" (ConflictErrorField ("name", UNIQUE)) ex ->
-            printfn "3333"
             raise ex
         | ex -> raise ex
 
@@ -110,11 +110,35 @@ module SocialConnections =
                dataContext.Entry(sc).Property("Order").IsModified <- true)
         saveChangesAsync dataContext
 
-    let getAllByClientId (clientId: ClientId) (dataContext: DbDataContext) =
+    let private getAllByClientIdCommon (clientId: ClientId) (dataContext: DbDataContext) =
         query {
             for sc in dataContext.SocialConnections do
                 join app in dataContext.Applications on (sc.DomainId = app.DomainId)
                 where (app.ClientId = clientId)
                 select ((%getItem) sc)
         }
-        |> toListAsync
+        |> toListAsync'
+
+    let private getAllByClientIdPerimeter (perimeterSocialProviders: PerimeterSocialProviders) =
+        [ { Name = (socialType2Name SocialType.Github)
+            ClientId = perimeterSocialProviders.Github.ClientId
+            ClientSecret = perimeterSocialProviders.Github.SecretKey
+            Attributes = [||]
+            Permissions = [||]
+            Order = 0 }
+          { Name = (socialType2Name SocialType.Google)
+            ClientId = perimeterSocialProviders.Google.ClientId
+            ClientSecret = perimeterSocialProviders.Google.SecretKey
+            Attributes = [||]
+            Permissions = [||]
+            Order = 1 } ]
+        |> Task.FromResult
+
+    type Env =
+        { DataContext: DbDataContext
+          PerimeterSocialProviders: PerimeterSocialProviders }
+
+    let getAllByClientId (clientId: ClientId) (env: Env) =
+        if clientId = DEFAULT_CLIENT_ID
+        then getAllByClientIdPerimeter env.PerimeterSocialProviders
+        else getAllByClientIdCommon clientId env.DataContext

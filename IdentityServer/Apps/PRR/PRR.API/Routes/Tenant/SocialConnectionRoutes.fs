@@ -5,6 +5,7 @@ open Common.Utils
 open Common.Utils.ReaderTask
 open Giraffe
 open PRR.API.Routes
+open PRR.Data.DataContext
 open PRR.Domain.Auth
 open PRR.Domain.Tenant.SocialConnections
 
@@ -32,8 +33,12 @@ module private SocialConnectionHandlers =
     let getByDomainIdHandler domainId =
         wrap (getAll domainId <!> getDataContext')
 
+    let getEnv ctx =
+        { DataContext = (getDataContext ctx)
+          PerimeterSocialProviders = (getConfig ctx).PerimeterSocialProviders }
+
     let getByClientIdHandler clientId =
-        wrap (getAllByClientId clientId <!> getDataContext')
+        wrap (getAllByClientId clientId <!> (ofReader getEnv))
 
     let reorderHandler domainId =
         wrap

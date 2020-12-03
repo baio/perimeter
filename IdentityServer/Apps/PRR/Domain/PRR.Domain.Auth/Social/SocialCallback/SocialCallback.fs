@@ -1,8 +1,8 @@
 ﻿namespace PRR.Domain.Auth.Social.SocialCallback
 
+open Common.Domain.Models
 open System.Net.Http
 open System.Threading.Tasks
-open Common.Domain.Models
 open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open HttpFs.Client
@@ -31,7 +31,7 @@ module Social =
         }
         |> toSingleAsync
 
-    let private getPerimeterSocialConnectionSecret keys =
+    let private getPerimeterSocialConnectionSecret (keys: PerimeterSocialClientSecretKeys) =
         function
         | Github -> keys.Github
         | Twitter -> keys.Twitter
@@ -40,11 +40,11 @@ module Social =
     let private getSocialConnectionSecret keys (dataContext: DbDataContext) clientId socialType =
         // Since there is no app to manage perimeter admin data itself,
         // setup social providers for perimeter runtime through the environment configuration
-        match clientId with
-        | "__DEFAULT_CLIENT_ID__" ->
+        if clientId = DEFAULT_CLIENT_ID then
             getPerimeterSocialConnectionSecret keys socialType
             |> Task.FromResult
-        | _ -> getCommonSocialConnectionSecret dataContext clientId socialType
+        else
+            getCommonSocialConnectionSecret dataContext clientId socialType
 
 
     let private identityToUser (ident: SocialIdentity) =
