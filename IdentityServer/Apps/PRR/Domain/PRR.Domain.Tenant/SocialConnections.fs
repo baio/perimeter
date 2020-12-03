@@ -31,6 +31,7 @@ module SocialConnections =
           Attributes: string []
           Permissions: string [] }
 
+    [<CLIMutable>]
     type GetLike =
         { Name: string
           ClientId: string
@@ -43,6 +44,16 @@ module SocialConnections =
         [| (validateNullOrEmpty "clientId" data.ClientId)
            (validateNullOrEmpty "clientSecret" data.ClientSecret) |]
         |> Array.choose id
+
+    let private getItem =
+        <@ fun (x: SocialConnection) ->
+            { Name = x.SocialName
+              ClientId = x.ClientId
+              ClientSecret = x.ClientSecret
+              Attributes = x.Attributes
+              Permissions = x.Permissions
+              Order = x.Order }: GetLike @>
+
 
     let create dto (dataContext: DbDataContext) =
         task {
@@ -86,17 +97,9 @@ module SocialConnections =
         query {
             for sc in dataContext.SocialConnections do
                 where (sc.DomainId = domainId)
-                select sc
+                select ((%getItem) sc)
         }
         |> toListAsync
-        |> TaskUtils.map
-            (Seq.map (fun x ->
-                { Name = x.SocialName
-                  ClientId = x.ClientId
-                  ClientSecret = x.ClientSecret
-                  Attributes = x.Attributes
-                  Permissions = x.Permissions
-                  Order = x.Order }: GetLike))
 
     let reorder (domainId: DomainId) (data: Map<string, int>) (dataContext: DbDataContext) =
         data
@@ -106,3 +109,12 @@ module SocialConnections =
                sc.Order <- data.Item(sc.SocialName)
                dataContext.Entry(sc).Property("Order").IsModified <- true)
         saveChangesAsync dataContext
+
+    let getAllByClientId (clientId: ClientId) (dataContext: DbDataContext) =
+        query {
+            for sc in dataContext.SocialConnections do
+                join app in dataContext.Applications on (sc.DomainId = app.DomainId)
+                where (app.ClientId = clientId)
+                select ((%getItem) sc)
+        }
+        |> toListAsync

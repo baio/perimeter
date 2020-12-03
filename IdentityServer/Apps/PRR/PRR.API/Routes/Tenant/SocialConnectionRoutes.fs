@@ -29,8 +29,11 @@ module private SocialConnectionHandlers =
     let deleteHandler (domainId: int) (name: string) =
         wrap (delete (domainId, name) <!> getDataContext')
 
-    let getHandler domainId =
+    let getByDomainIdHandler domainId =
         wrap (getAll domainId <!> getDataContext')
+
+    let getByClientIdHandler clientId =
+        wrap (getAllByClientId clientId <!> getDataContext')
 
     let reorderHandler domainId =
         wrap
@@ -42,10 +45,11 @@ module private SocialConnectionHandlers =
 
         let createRoutes () =
 
-            choose [ routef "/tenant/domains/%i/social" (fun domainId ->
+            choose [ routef "/tenant/apps/%s/social" (fun clientId -> GET >=> getByClientIdHandler clientId)
+                     routef "/tenant/domains/%i/social" (fun domainId ->
                          permissionGuard MANAGE_DOMAIN
                          >=> GET
-                         >=> getHandler domainId)
+                         >=> getByDomainIdHandler domainId)
                      routef "/tenant/domains/%i/social/order" (fun domainId ->
                          permissionGuard MANAGE_DOMAIN
                          >=> PUT

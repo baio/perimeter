@@ -129,6 +129,34 @@ module CRUD =
             }
 
         [<Fact>]
+        [<Priority(3)>]
+        member __.``C.1 Get social connections by clientId must be success``() =
+            task {
+
+                let! result =
+                    testFixture.HttpGetAsync
+                        userToken
+                        (sprintf "/api/tenant/apps/%s/social" (testContext.Value.GetTenant().SampleApplicationClientId))
+
+                do! ensureSuccessAsync result
+
+                let! actual = readAsJsonAsync<GetLike array> result
+
+                let expected: GetLike array =
+                    [| { Name = "github"
+                         ClientId = "zzz1"
+                         ClientSecret = "yyy"
+                         Attributes = [| "aaa"; "ggg" |]
+                         Permissions = [||]
+                         Order = 0 } |]
+
+                actual |> should equal expected
+
+                ()
+            }
+
+
+        [<Fact>]
         [<Priority(4)>]
         member __.``D Reorder social connection must be success``() =
             task {
