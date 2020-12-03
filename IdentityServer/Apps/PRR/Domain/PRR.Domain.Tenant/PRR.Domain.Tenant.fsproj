@@ -28,13 +28,13 @@
       <Compile Include="Domains.fs" />
       <Compile Include="Apis.fs" />
       <Compile Include="Applications.fs" />
+      <Compile Include="SocialConnections.fs" />
       <Compile Include="ApplicationInfo.fs" />
       <Compile Include="Roles.fs" />
       <Compile Include="Permssions.fs" />
       <Compile Include="DomainUserRoles.fs" />
       <Compile Include="TenantUserRoles.fs" />
       <Compile Include="UserDomains.fs" />
-      <Compile Include="SocialConnections.fs" />
       <Compile Include="Tenants.fs" />
     </ItemGroup>
 

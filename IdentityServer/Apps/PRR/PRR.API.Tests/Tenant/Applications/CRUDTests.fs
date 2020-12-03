@@ -74,6 +74,7 @@ module CRUD =
                 do! ensureSuccessAsync result
 
                 let! result = readAsJsonAsync<int> result
+
                 applicationId <- Some(result)
             }
 
@@ -90,6 +91,7 @@ module CRUD =
                 do! ensureSuccessAsync result
 
                 let! result = readAsJsonAsync<GetLikeDto> result
+
                 result |> should be (not' null)
                 result.id |> should equal applicationId.Value
 
@@ -98,6 +100,7 @@ module CRUD =
                 result.clientId |> should be (not' null)
 
                 result.clientSecret |> should be (not' null)
+
                 result.dateCreated |> should be (not' null)
                 result.idTokenExpiresIn |> should be (not' null)
 
@@ -140,6 +143,7 @@ module CRUD =
                 do! ensureSuccessAsync result
 
                 let! result = readAsJsonAsync<GetLikeDto> result
+
                 result |> should be (not' null)
                 result.id |> should equal applicationId.Value
                 result.name |> should equal "App 1 Updated"

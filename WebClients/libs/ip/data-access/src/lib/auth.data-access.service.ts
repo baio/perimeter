@@ -35,6 +35,7 @@ export interface LoginPassword {
 
 export interface AppInfo {
     title: string;
+    socialConnections: string[];
 }
 
 @Injectable()

@@ -11,9 +11,7 @@ open Common.Utils.ReaderTask
 module private ApplicationInfoHandlers =
 
     let getApplicationInfo (clientId: ClientId) =
-        wrap
-            ((fun dataContext -> getApplicationInfo dataContext clientId)
-             <!> getDataContext')
+        wrap ((getApplicationInfo clientId) <!> getDataContext')
 
 module ApplicationInfo =
 

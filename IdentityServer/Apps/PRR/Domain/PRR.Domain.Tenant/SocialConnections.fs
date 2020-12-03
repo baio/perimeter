@@ -45,7 +45,7 @@ module SocialConnections =
            (validateNullOrEmpty "clientSecret" data.ClientSecret) |]
         |> Array.choose id
 
-    let private getItem =
+    let internal getItem =
         <@ fun (x: SocialConnection) ->
             { Name = x.SocialName
               ClientId = x.ClientId
@@ -53,7 +53,6 @@ module SocialConnections =
               Attributes = x.Attributes
               Permissions = x.Permissions
               Order = x.Order }: GetLike @>
-
 
     let create dto (dataContext: DbDataContext) =
         task {
@@ -110,35 +109,3 @@ module SocialConnections =
                dataContext.Entry(sc).Property("Order").IsModified <- true)
         saveChangesAsync dataContext
 
-    let private getAllByClientIdCommon (clientId: ClientId) (dataContext: DbDataContext) =
-        query {
-            for sc in dataContext.SocialConnections do
-                join app in dataContext.Applications on (sc.DomainId = app.DomainId)
-                where (app.ClientId = clientId)
-                select ((%getItem) sc)
-        }
-        |> toListAsync'
-
-    let private getAllByClientIdPerimeter (perimeterSocialProviders: PerimeterSocialProviders) =
-        [ { Name = (socialType2Name SocialType.Github)
-            ClientId = perimeterSocialProviders.Github.ClientId
-            ClientSecret = perimeterSocialProviders.Github.SecretKey
-            Attributes = [||]
-            Permissions = [||]
-            Order = 0 }
-          { Name = (socialType2Name SocialType.Google)
-            ClientId = perimeterSocialProviders.Google.ClientId
-            ClientSecret = perimeterSocialProviders.Google.SecretKey
-            Attributes = [||]
-            Permissions = [||]
-            Order = 1 } ]
-        |> Task.FromResult
-
-    type Env =
-        { DataContext: DbDataContext
-          PerimeterSocialProviders: PerimeterSocialProviders }
-
-    let getAllByClientId (clientId: ClientId) (env: Env) =
-        if clientId = DEFAULT_CLIENT_ID
-        then getAllByClientIdPerimeter env.PerimeterSocialProviders
-        else getAllByClientIdCommon clientId env.DataContext

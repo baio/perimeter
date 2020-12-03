@@ -48,9 +48,7 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
             redirect_uri: urlQueryParams['redirect_uri'],
             scope: urlQueryParams['scope'],
             code_challenge: urlQueryParams['code_challenge'],
-            code_challenge_method: urlQueryParams[
-                'code_challenge_method'
-            ],
+            code_challenge_method: urlQueryParams['code_challenge_method'],
         };
 
         const errors = [];
@@ -85,21 +83,13 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
 
             const clientId = urlQueryParams['client_id'];
 
-            if (!!clientId) {
-                if (clientId === '__DEFAULT_CLIENT_ID__') {
-                    this.appInfo = {
-                        title: 'Perimeter',
-                    };
-                } else {
-                    dataAccess
-                        .getAppInfo(clientId)
-                        .toPromise()
-                        .then((res) => {
-                            this.appInfo = res;
-                            cdr.markForCheck();
-                        });
-                }
-            }
+            dataAccess
+                .getAppInfo(clientId)
+                .toPromise()
+                .then((res) => {
+                    this.appInfo = res;
+                    cdr.markForCheck();
+                });
         }
 
         this.form = fb.group({
@@ -113,7 +103,7 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
             code_challenge: [this.loginParams.code_challenge],
             code_challenge_method: [this.loginParams.code_challenge_method],
             prompt: [urlQueryParams['prompt']],
-            social_name: [null]
+            social_name: [null],
         });
     }
 

@@ -46,22 +46,14 @@
         (ngSubmit)="onSubmit(submitForm)"
     >
         <a
+            *ngFor="let socialConnection of appInfo.socialConnections"
             data-cy="submit-github"
             class="full-width-button login-form-margin"
             nz-button
-            (click)="onSubmitSocial('github')"
+            (click)="onSubmitSocial(socialConnection)"
         >
-            <i nz-icon nzType="github" nzTheme="outline"></i>
-            Github
-        </a>
-        <a
-            data-cy="submit-google"
-            class="full-width-button login-form-margin"
-            nz-button
-            (click)="onSubmitSocial('google')"
-        >
-            <i nz-icon nzType="google" nzTheme="outline"></i>
-            Google
+            <i nz-icon [nzType]="socialConnection" nzTheme="outline"></i>
+            {{ socialConnection }}
         </a>
 
         <input type="hidden" name="client_id" formControlName="client_id" />
