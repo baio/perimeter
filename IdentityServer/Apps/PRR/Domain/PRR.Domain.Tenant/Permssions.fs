@@ -64,10 +64,12 @@ module Permissions =
 
 
     let update: Update<int, PostLike, DbDataContext> =
-        update<Permission, _, _, _> (fun id -> Permission(Id = id)) (fun dto entity ->
-            entity.Name <- dto.Name
-            entity.Description <- dto.Description
-            entity.IsDefault <- dto.IsDefault)
+        fun data dbContext ->
+            update<Permission, _, PostLike, _> (fun id -> Permission(Id = id)) (fun dto entity ->
+                entity.Name <- dto.Name
+                entity.Description <- dto.Description
+                entity.IsDefault <- dto.IsDefault
+                dbContext.Entry(entity).Property("IsDefault").IsModified <- true) data dbContext
 
     let remove: Remove<int, DbDataContext> = remove (fun id -> Permission(Id = id))
 
