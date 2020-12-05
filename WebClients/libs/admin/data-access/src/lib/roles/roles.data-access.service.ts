@@ -14,7 +14,7 @@ const mapItem = (x) => {
 };
 
 const mapPayload = (x) => {
-    const m = { ...x };
+    const m = { ...x, permissionIds: x.permissionIds || [] };
     delete m.permissions;
     return m;
 };

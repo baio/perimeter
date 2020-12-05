@@ -46,7 +46,7 @@
         (ngSubmit)="onSubmit(submitForm)"
     >
         <a
-            *ngFor="let socialConnection of appInfo.socialConnections"
+            *ngFor="let socialConnection of appInfo?.socialConnections"
             data-cy="submit-github"
             class="full-width-button login-form-margin"
             nz-button
