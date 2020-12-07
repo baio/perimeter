@@ -1,0 +1,4 @@
+config:
+  k8s:registryPassword: prodigy123
+  k8s:registryServer: docker.io
+  k8s:registryUsername: baio
