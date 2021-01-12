@@ -1,5 +1,6 @@
 import * as docker from '@pulumi/docker';
 import * as pulumi from '@pulumi/pulumi';
+import { PsqlConfig } from './psql';
 import { ApiConfig } from './api';
 
 const pulumiConfig = new pulumi.Config();
@@ -49,13 +50,23 @@ const apiConfig: ApiConfig = {
     },
 };
 
+const psqlConfig: PsqlConfig = {
+    POSTGRES_DB: pulumiConfig.require('psql_POSTGRES_DB'),
+    POSTGRES_USER: pulumiConfig.require('psql_POSTGRES_USER'),
+    POSTGRES_PASSWORD: pulumiConfig.requireSecret('psql_POSTGRES_PASSWORD'),
+    storageSize: pulumiConfig.requireNumber('psql_storageSize'),
+    dataPath: pulumiConfig.require('psql_dataPath'),
+};
+
 //
 export interface AppConfig {
     registry: docker.ImageRegistry;
     api: ApiConfig;
+    psql: PsqlConfig;
 }
 //
 export const appConfig: AppConfig = {
     registry,
     api: apiConfig,
+    psql: psqlConfig,
 };

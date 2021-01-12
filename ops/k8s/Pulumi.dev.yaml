@@ -36,6 +36,13 @@ config:
     secure: AAABAHVBV4jdHYEVFX5Gqsi9iSr/lIIHH4DvLqKPutGuLC/pr50H5seMc728CpfmaORmCiwYI/Ib0b0YohUX0XSLcNlwP/9NP4lruPLQ4kqz0DjDV5bncdKjcWChF1pN8P1T2Fw=
   k8s:apiPort: "80"
   k8s:apiTargetPort: "80"
+  k8s:psql_POSTGRES_DB: prr-dev
+  k8s:psql_POSTGRES_PASSWORD:
+    secure: AAABAGfmv5Eat4mbH4l7g/NTTydJd7oWEtRCaTTpTpjkgIM=
+  k8s:psql_POSTGRES_USER: postgres
+  k8s:psql_dataPath: /C/dev/data/prr/psql
+  k8s:psql_storageSize: "1"
+  k8s:psql_storgeSize: "1"
   k8s:registryPassword:
     secure: AAABAEPa888sKixalz/NSAXF0Zn6GzUoKsI0TNFP+yEq2mtQJN/CiKfr
   k8s:registryServer: docker.io
