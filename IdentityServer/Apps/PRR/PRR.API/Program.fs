@@ -162,7 +162,6 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
         context.Configuration.GetConnectionString "PostgreSQL"
 
     printfn "ENV %s" context.HostingEnvironment.EnvironmentName
-    printfn "Connection string: %s" connectionString
 
     services.AddDbContext<DbDataContext>
         ((fun o ->

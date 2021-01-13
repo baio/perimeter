@@ -72,7 +72,6 @@ module Payload =
                 | errors ->
                     return raise (BadRequest errors)
             with ex ->
-                printfn "--- %O" ex
                 return raise (BadRequest [| (BadRequestCommonError ex.Message) |])
         }
 
