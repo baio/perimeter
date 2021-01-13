@@ -1,8 +1,11 @@
-## Migrations
+## Run env
 
 ```
 docker run --name local-mongo -v c:/dev/data/mongo:/data/db -d --rm -p 27017:27017 mongo
 ```
+
+## Migrations
+
 
 ```
 dotnet ef migrations remove --project Apps/PRR/Data/PRR.Data.DataContextMigrations

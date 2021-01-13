@@ -16,18 +16,12 @@ config:
     secure: AAABAAgc0nc00wbTRL/sbDN7KzxwMA6h3+CBWzZ7xvZFab5w6ViBQ0T1n3fAjYT0WFLFRbP6WWqzOaKViJwV4PPfZQMWR2GVKBVDW2MZAhKJ7YX3BEYTOfZOjCsQh/icZk2c6P3lgTY=
   k8s:api_ENV_Auth__PerimeterSocialProviders__Google__SecretKey:
     secure: AAABAHoHkbIHp5H/7gOvb8jABjoryv/Od+rIWdieAeDk9te1fcZkaAvz6+8EWb4xlVYE0/gwyIA=
-  k8s:api_ENV_ConnectionString__MongoJournal:
-    secure: AAABADPSFERJvY9K95QOk4DpCJVJi22Afs5AVovrCaIrxDPPK3Hj2UhTzdin6l5S2QXB1PfhUujOiQ4Uocmy6e1nvg==
-  k8s:api_ENV_ConnectionString__MongoViews:
-    secure: AAABAH87dLDn+J4ZwHNu7Zo5tb944FO96pHSqgEI9gNkUOjXSN+Sqcyg4zBkUinE3bc6Q4HxK54gTcPvqwVV7Uo=
-  k8s:api_ENV_ConnectionString__PostgreSQL:
-    secure: AAABAKhbrdLQA8QuPHvYfGhrYKE3PMYqe08DKLbOoEGTl0xmnRbTwoJSZ7icooJFYPRwtC+GCuVZxBsSKsqCmFKEzf+DfRsdo8J5N+wGE3lML+WlL3ERvvQmy0fg690=
   k8s:api_ENV_ConnectionStrings__MongoJournal:
-    secure: AAABACJOZGemGaFP6xD1E1n+h4CbYn8S0r81cCr5rrgCYp12JGVwjxYLJu3u8+9BB0EFT3GK+l2ZiNW6c+iktf0+RQ==
+    secure: AAABAGRb0oGQY8i6fm6d2ODXPu+CD/NnYDEezKSM+vkVgeP1S+4JiX30u/Lt9XfduF2yqif5iUKU4i0VYgDA4TiaNgSLZSD/n1mwOdvAjK7IfI1zhtIgVVY=
   k8s:api_ENV_ConnectionStrings__MongoViews:
-    secure: AAABABTO1X8L0qyhp5/vqTGAJic6b7qB2WCyxkgaIpOimPIT8Q3srxDtemaXHbCXJqAh1ilQYdJ5NcHMYp/UWw8=
+    secure: AAABABY7yrcgX5A0owieU64tn7a9IUVSPK1L3C8164kP0qSK7m/zChPLTrmRz62kun6gsDULFaBjmdVocm7uCbmgrk3raeP7a6aEeQ+EqA/rbvfQbpQw
   k8s:api_ENV_ConnectionStrings__PostgreSQL:
-    secure: AAABAHerog1OrTU/fjhWtis1OHPDRgTf6RzRIaRZ1b4k8rvuUy8hya6TmsZ1ZcHOJyyBPzemc9R19wnFIHollksqvDBBYN7gkCGldqmIPOP/4l3HpzQX5mChluNJ71A=
+    secure: AAABAOudSklUw/84buENhDs2nFNsWD15wE0q2l4LGm3OxLdXn4ZFvV9mjm9f9DJQCa/rhSxcTHQ9ttjDAJyvisP9g0IfIrayrLYYsteC43Bng58camU1nxlM
   k8s:api_ENV_MailSender__FromEmail: Perimeter (stage)
   k8s:api_ENV_MailSender__FromName: Perimeter (stage)
   k8s:api_ENV_MailSender__Project__BaseUrl: https://perimeter.azurefd.net
@@ -36,13 +30,17 @@ config:
     secure: AAABAHVBV4jdHYEVFX5Gqsi9iSr/lIIHH4DvLqKPutGuLC/pr50H5seMc728CpfmaORmCiwYI/Ib0b0YohUX0XSLcNlwP/9NP4lruPLQ4kqz0DjDV5bncdKjcWChF1pN8P1T2Fw=
   k8s:apiPort: "80"
   k8s:apiTargetPort: "80"
+  k8s:mongo_MONGODB_ROOT_PASSWORD:
+    secure: AAABAKq66ryt8oG7cfW/MDft2lvL6nLzSJ7lmYdOcPi2nmM=
+  k8s:mongo_MONGODB_ROOT_USER: root
+  k8s:mongo_dataPath: /C/dev/data/prr/mongo
+  k8s:mongo_storageSize: "1"
   k8s:psql_POSTGRES_DB: prr-dev
   k8s:psql_POSTGRES_PASSWORD:
     secure: AAABAGfmv5Eat4mbH4l7g/NTTydJd7oWEtRCaTTpTpjkgIM=
   k8s:psql_POSTGRES_USER: postgres
   k8s:psql_dataPath: /C/dev/data/prr/psql
   k8s:psql_storageSize: "1"
-  k8s:psql_storgeSize: "1"
   k8s:registryPassword:
     secure: AAABAEPa888sKixalz/NSAXF0Zn6GzUoKsI0TNFP+yEq2mtQJN/CiKfr
   k8s:registryServer: docker.io

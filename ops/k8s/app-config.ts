@@ -1,7 +1,8 @@
 import * as docker from '@pulumi/docker';
 import * as pulumi from '@pulumi/pulumi';
-import { PsqlConfig } from './psql';
 import { ApiConfig } from './api';
+import { MongoConfig } from './mongo';
+import { PsqlConfig } from './psql';
 
 const pulumiConfig = new pulumi.Config();
 
@@ -58,15 +59,24 @@ const psqlConfig: PsqlConfig = {
     dataPath: pulumiConfig.require('psql_dataPath'),
 };
 
+const mongoConfig: MongoConfig = {
+    MONGO_USER: pulumiConfig.require('mongo_MONGODB_ROOT_USER'),
+    MONGO_PASSWORD: pulumiConfig.requireSecret('mongo_MONGODB_ROOT_PASSWORD'),
+    storageSize: pulumiConfig.requireNumber('mongo_storageSize'),
+    dataPath: pulumiConfig.require('mongo_dataPath'),
+};
+
 //
 export interface AppConfig {
     registry: docker.ImageRegistry;
     api: ApiConfig;
     psql: PsqlConfig;
+    mongo: MongoConfig;
 }
 //
 export const appConfig: AppConfig = {
     registry,
     api: apiConfig,
     psql: psqlConfig,
+    mongo: mongoConfig,
 };

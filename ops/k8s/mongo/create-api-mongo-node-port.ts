@@ -1,6 +1,6 @@
 import * as k8s from '@pulumi/kubernetes';
 
-export const createApiPsqlNodePort = (appName: string) => {
+export const createApiMongoNodePort = (appName: string) => {
     const volume = new k8s.core.v1.Service(appName, {
         metadata: {
             name: appName,
@@ -13,7 +13,7 @@ export const createApiPsqlNodePort = (appName: string) => {
             type: 'NodePort',
             ports: [
                 {
-                    port: 5432,
+                    port: 27017,
                 },
             ],
             selector: {
