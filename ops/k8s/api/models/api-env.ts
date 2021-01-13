@@ -5,6 +5,7 @@ export interface ApiEnv {
     ConnectionStrings__PostgreSQL: Output<string>;
     ConnectionStrings__MongoJournal: Output<string>;
     ConnectionStrings__MongoViews: Output<string>;
+    ConnectionStrings__MongoSnapshot: Output<string>;
     Auth__PasswordSecret: Output<string>;
     Auth__Jwt__IdTokenSecret: Output<string>;
     Auth__Jwt__AccessTokenSecret: Output<string>;

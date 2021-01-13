@@ -224,11 +224,19 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
 
     printfn "Akka conf file %s" akkaConfFile
 
-    let sys = setUp systemEnv systemConfig akkaConfFile
+    let sys =
+        setUp systemEnv systemConfig akkaConfFile
+
     services.AddSingleton<ICQRSSystem>(fun _ -> sys)
     |> ignore
 
-    let sys1 = PRR.Sys.SetUp.setUp akkaConfFile
+    let sysConfig: PRR.Sys.SetUp.Config =
+        { JournalConnectionString = context.Configuration.GetConnectionString("MongoJournal")
+          SnapshotConnectionString = context.Configuration.GetConnectionString("MongoSnapshot") }
+
+    let sys1 =
+        PRR.Sys.SetUp.setUp sysConfig akkaConfFile
+
     services.AddSingleton<ISystemActorsProvider>(SystemActorsProvider sys1)
     |> ignore
 #endif

@@ -32,6 +32,9 @@ const apiConfig: ApiConfig = {
         ConnectionStrings__PostgreSQL: rs('ConnectionStrings__PostgreSQL'),
         ConnectionStrings__MongoJournal: rs('ConnectionStrings__MongoJournal'),
         ConnectionStrings__MongoViews: rs('ConnectionStrings__MongoViews'),
+        ConnectionStrings__MongoSnapshot: rs(
+            'ConnectionStrings__MongoSnapshot',
+        ),
         Auth__PasswordSecret: rs('Auth__PasswordSecret'),
         Auth__Jwt__IdTokenSecret: rs('Auth__Jwt__IdTokenSecret'),
         Auth__Jwt__AccessTokenSecret: rs('Auth__Jwt__IdTokenSecret'),

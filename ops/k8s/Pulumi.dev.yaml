@@ -18,6 +18,8 @@ config:
     secure: AAABAHoHkbIHp5H/7gOvb8jABjoryv/Od+rIWdieAeDk9te1fcZkaAvz6+8EWb4xlVYE0/gwyIA=
   k8s:api_ENV_ConnectionStrings__MongoJournal:
     secure: AAABAGRb0oGQY8i6fm6d2ODXPu+CD/NnYDEezKSM+vkVgeP1S+4JiX30u/Lt9XfduF2yqif5iUKU4i0VYgDA4TiaNgSLZSD/n1mwOdvAjK7IfI1zhtIgVVY=
+  k8s:api_ENV_ConnectionStrings__MongoSnapshot:
+    secure: AAABAIkSLf6JlqpnGIl2gFnGZQo8dCEQ3hVlshUhVggheQtR8yYuSGPrU/LKEY9vTm+c/U1j06L7TxkUxJ0+qrYp0yRnWKjIlmcX3omMo7kRvnuaniIJbPiu
   k8s:api_ENV_ConnectionStrings__MongoViews:
     secure: AAABABY7yrcgX5A0owieU64tn7a9IUVSPK1L3C8164kP0qSK7m/zChPLTrmRz62kun6gsDULFaBjmdVocm7uCbmgrk3raeP7a6aEeQ+EqA/rbvfQbpQw
   k8s:api_ENV_ConnectionStrings__PostgreSQL:
