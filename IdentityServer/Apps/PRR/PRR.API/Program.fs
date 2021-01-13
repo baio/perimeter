@@ -82,15 +82,6 @@ let configureApp (app: IApplicationBuilder) =
         .UseGiraffe(webApp)
 
 let configureServices (context: WebHostBuilderContext) (services: IServiceCollection) =
-    // Json
-
-    (*
-    let customSettings =
-        JsonSerializerSettings(ContractResolver = CamelCasePropertyNamesContractResolver())
-    customSettings.Converters.Add(StringEnumConverter())
-    services.AddSingleton<IJsonSerializer>(NewtonsoftJsonSerializer(customSettings))
-    |> ignore
-    *)
 
     // auth
     let config =
