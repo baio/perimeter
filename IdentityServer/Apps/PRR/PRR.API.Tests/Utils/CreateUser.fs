@@ -78,9 +78,7 @@ module CreateUser =
             let scope =
                 [ "openid"; "profile"; "email" ]
                 |> Seq.append scopes
-                |> String.concat " "
-                
-            printfn "111 %s %s %s %s %s %s" clientId scope redirectUri scope email password
+                |> String.concat " "               
 
             let logInData: PRR.Domain.Auth.LogIn.Models.Data =
                 { Client_Id = clientId

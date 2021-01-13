@@ -75,12 +75,13 @@ module RefreshTokenPersistence =
             testFixture.OverrideServices(fun services ->
                 let sp = services.BuildServiceProvider()
                 let systemEnv = sp.GetService<SystemEnv>()
+                let systemConfig = sp.GetService<SystemConfig>()
 
                 let systemEnv =
                     { systemEnv with
                           EventHandledCallback = systemEventHandled }
 
-                let sys = PRR.System.Setup.setUp systemEnv
+                let sys = PRR.System.Setup.setUp systemEnv systemConfig "akka.hocon"
                 services.AddSingleton<ICQRSSystem>(fun _ -> sys)
                 |> ignore)
 

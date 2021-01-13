@@ -24,6 +24,7 @@ module Setup =
             context.Configuration.GetConnectionString "PostgreSQL"
         PRR.Data.DataContextMigrations.DataContextHelpers.RecreateDataContext(psqlConnectionString)
         dropDatabase (context.Configuration.GetConnectionString "MongoJournal")
+        dropDatabase (context.Configuration.GetConnectionString "MongoSnapshot")
         dropDatabase (context.Configuration.GetConnectionString "MongoViews")
         ()
 

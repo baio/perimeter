@@ -189,8 +189,7 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
 
     let systemEnv: SystemEnv =
         let serviceProvider = services.BuildServiceProvider()
-        { ViewsDbConnectionString = context.Configuration.GetConnectionString("MongoViews")
-          SendMail = createSendMail mailEnv mailSender
+        { SendMail = createSendMail mailEnv mailSender
           GetDataContextProvider =
               fun () -> new DataContextProvider(serviceProvider.CreateScope()) :> IDataContextProvider
           HashProvider = (hashProvider :> IHashProvider).GetHash
@@ -205,19 +204,27 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
                 ResetPasswordTokenExpiresIn = config.ResetPasswordTokenExpiresIn }
           EventHandledCallback = fun _ -> () }
 
+    let systemConfig =
+        { JournalConnectionString = context.Configuration.GetConnectionString("MongoJournal")
+          SnapshotConnectionString = context.Configuration.GetConnectionString("MongoSnapshot")
+          ViewsConnectionString = context.Configuration.GetConnectionString("MongoViews") }
 
 #if TEST
     // Tests must initialize sys by themselves
     //For tests
     services.AddSingleton<SystemEnv>(fun _ -> systemEnv)
     |> ignore
+    services.AddSingleton<SystemConfig>(fun _ -> systemConfig)
+    |> ignore
 #else
     let env =
         (context.HostingEnvironment.EnvironmentName.ToLower())
 
     let akkaConfFile = sprintf "akka.%s.hocon" env
+
     printfn "Akka conf file %s" akkaConfFile
-    let sys = setUp' systemEnv akkaConfFile
+
+    let sys = setUp systemEnv systemConfig akkaConfFile
     services.AddSingleton<ICQRSSystem>(fun _ -> sys)
     |> ignore
 

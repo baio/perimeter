@@ -24,9 +24,13 @@ module Env =
 
     type GetDataContextProvider = unit -> IDataContextProvider
 
+    type SystemConfig =
+        { JournalConnectionString: string
+          SnapshotConnectionString: string
+          ViewsConnectionString: string }
+
     type SystemEnv =
-        { ViewsDbConnectionString: string
-          HashProvider: HashProvider
+        { HashProvider: HashProvider
           PasswordSalter: StringSalter
           AuthStringsProvider: AuthStringsProvider
           SendMail: SendMail

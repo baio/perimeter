@@ -56,16 +56,25 @@ module UserTestContext =
         testFixture.OverrideServices(fun services ->
             let sp = services.BuildServiceProvider()
             let systemEnv = sp.GetService<SystemEnv>()
+            let systemConfig = sp.GetService<SystemConfig>()
 
             let systemEnv =
                 { systemEnv with
                       EventHandledCallback = systemEventHandled }
 
-            let sys = PRR.System.Setup.setUp systemEnv
+            let sys =
+                PRR.System.Setup.setUp systemEnv systemConfig "akka.hocon"
+
             services.AddSingleton<ICQRSSystem>(fun _ -> sys)
             |> ignore
             //
-            let sys1 = PRR.Sys.SetUp.setUp "akka.hocon"
+            let sysConfig: PRR.Sys.SetUp.Config =
+                { JournalConnectionString = systemConfig.JournalConnectionString
+                  SnapshotConnectionString = systemConfig.SnapshotConnectionString }
+
+            let sys1 =
+                PRR.Sys.SetUp.setUp sysConfig "akka.hocon"
+
             services.AddSingleton<ISystemActorsProvider>(SystemActorsProvider sys1)
             |> ignore
 
