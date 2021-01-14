@@ -38,6 +38,10 @@ export const createApiDeployment = (
                                     value: apiEnv.ConnectionStrings__MongoViews,
                                 },
                                 {
+                                    name: 'ConnectionStrings__MongoSnapshot',
+                                    value: apiEnv.ConnectionStrings__MongoSnapshot,
+                                },
+                                {
                                     name: 'Auth__PasswordSecret',
                                     value: apiEnv.Auth__PasswordSecret,
                                 },

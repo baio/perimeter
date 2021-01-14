@@ -30,8 +30,10 @@ config:
   k8s:api_ENV_MailSender__Project__Name: Perimeter (stage)
   k8s:api_ENV_SendGridApiKey:
     secure: AAABAHVBV4jdHYEVFX5Gqsi9iSr/lIIHH4DvLqKPutGuLC/pr50H5seMc728CpfmaORmCiwYI/Ib0b0YohUX0XSLcNlwP/9NP4lruPLQ4kqz0DjDV5bncdKjcWChF1pN8P1T2Fw=
-  k8s:apiPort: "80"
-  k8s:apiTargetPort: "80"
+  k8s:api_Port: "81"
+  k8s:api_TargetPort: "80"
+  k8s:adminApp_Port: "80"
+  k8s:adminApp_TargetPort: "80"
   k8s:mongo_MONGODB_ROOT_PASSWORD:
     secure: AAABAKq66ryt8oG7cfW/MDft2lvL6nLzSJ7lmYdOcPi2nmM=
   k8s:mongo_MONGODB_ROOT_USER: root

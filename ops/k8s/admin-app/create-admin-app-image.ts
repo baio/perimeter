@@ -1,6 +1,7 @@
 import * as docker from '@pulumi/docker';
 
-export const createApiImage = (
+export const createAdminAppImage = (
+    dockerFilePath: string,
     customImageFolder: string,
     imageName: string,
     version: string,
@@ -9,6 +10,7 @@ export const createApiImage = (
     const myImage = new docker.Image(imageName, {
         imageName: `${imageName}:${version}`,
         build: {
+            dockerfile: dockerFilePath,
             context: `./${customImageFolder}`,
         },
         registry,

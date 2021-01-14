@@ -1,14 +1,16 @@
+import { createAdminApp } from './admin-app';
 import {
     createApiDeployment,
     createApiImage,
     createApiLoadBalancer,
+    createApiNodePort,
 } from './api';
 import { AppConfig } from './app-config';
 import {
     createApiMongoClaim,
     createApiMongoDeployment,
-    createApiMongoVolume,
     createApiMongoNodePort,
+    createApiMongoVolume,
     MongoConfig,
 } from './mongo';
 import {
@@ -30,6 +32,7 @@ const createApi = (version: string, config: AppConfig) => {
         config.registry,
     );
 
+    const apiAppExtName = 'prr-api-ext';
     const apiAppName = 'prr-api';
 
     const apiDeployment = createApiDeployment(
@@ -37,12 +40,17 @@ const createApi = (version: string, config: AppConfig) => {
         config.api.env,
         apiImage.imageName,
     );
-    const apiLoadBalancer = createApiLoadBalancer(apiAppName, config.api.ports);
-
+    const apiLoadBalancer = createApiLoadBalancer(
+        apiAppExtName,
+        apiAppName,
+        config.api.ports,
+    );
+    const nodePort = createApiNodePort(apiAppName, apiAppName);
     return {
         apiImageName: apiImage.imageName,
         apiDeploymentName: apiDeployment.metadata.name,
         apiLoadBalancerUrn: apiLoadBalancer.urn,
+        apiNodePortUrn: nodePort.urn,
     };
 };
 
@@ -92,9 +100,11 @@ export const createK8sCluster = (version: string, config: AppConfig) => {
     const api = createApi(version, config);
     const psql = createPsql(config.psql);
     const mongo = createMongo(config.mongo);
+    const adminApp = createAdminApp(version, config.adminApp, config.registry);
     return {
         api,
         psql,
         mongo,
+        adminApp,
     };
 };

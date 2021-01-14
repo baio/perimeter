@@ -51,6 +51,8 @@ module Setup =
               // configs from parameter wins
               configContent ]
             |> String.concat "\n"
+            
+        printfn "System config \n %s" configStr            
 
         let parsedConfig =
             ConfigurationFactory.ParseString configStr

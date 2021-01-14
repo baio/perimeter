@@ -1,5 +1,6 @@
 import * as docker from '@pulumi/docker';
 import * as pulumi from '@pulumi/pulumi';
+import { Config as AdminAppConfig } from './admin-app';
 import { ApiConfig } from './api';
 import { MongoConfig } from './mongo';
 import { PsqlConfig } from './psql';
@@ -24,8 +25,8 @@ const rs = (x: string) => pulumiConfig.requireSecret('api_ENV_' + x);
 
 const apiConfig: ApiConfig = {
     ports: {
-        port: pulumiConfig.requireNumber('apiPort'),
-        targetPort: pulumiConfig.requireNumber('apiTargetPort'),
+        port: pulumiConfig.requireNumber('api_Port'),
+        targetPort: pulumiConfig.requireNumber('api_TargetPort'),
     },
     env: {
         ASPNETCORE_ENVIRONMENT: rq('ASPNETCORE_ENVIRONMENT'),
@@ -69,12 +70,20 @@ const mongoConfig: MongoConfig = {
     dataPath: pulumiConfig.require('mongo_dataPath'),
 };
 
+const adminAppConfig: AdminAppConfig = {
+    ports: {
+        port: pulumiConfig.requireNumber('adminApp_Port'),
+        targetPort: pulumiConfig.requireNumber('adminApp_TargetPort'),
+    },
+};
+
 //
 export interface AppConfig {
     registry: docker.ImageRegistry;
     api: ApiConfig;
     psql: PsqlConfig;
     mongo: MongoConfig;
+    adminApp: AdminAppConfig;
 }
 //
 export const appConfig: AppConfig = {
@@ -82,4 +91,5 @@ export const appConfig: AppConfig = {
     api: apiConfig,
     psql: psqlConfig,
     mongo: mongoConfig,
+    adminApp: adminAppConfig,
 };

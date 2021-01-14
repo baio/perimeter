@@ -1,10 +1,10 @@
 import * as k8s from '@pulumi/kubernetes';
-import { ApiConfigPorts } from './models';
+import { ConfigPorts } from './models';
 
-export const createApiLoadBalancer = (
+export const createAdminAppLoadBalancer = (
     name: string,
     appName: string,
-    config: ApiConfigPorts,
+    config: ConfigPorts,
 ) => {
     const prrApiLabels = { app: appName };
     const prrIpLoadBalancer = new k8s.core.v1.Service(name, {
@@ -12,7 +12,6 @@ export const createApiLoadBalancer = (
             name: name,
             labels: {
                 name: name,
-                app: appName,
             },
         },
         spec: {
