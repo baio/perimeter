@@ -10,6 +10,7 @@ import {
     REFRESH_TOKEN,
     AUTH_CLIENT_ID,
 } from './constants';
+import { trimCharsStart, trimCharsEnd } from 'lodash/fp';
 
 export interface IAuthConfig {
     loginUrl: string;
@@ -136,6 +137,15 @@ const validateToken = (token: string, validateExp = true): JWTToken | null => {
     return result.kind === 'VALIDATE_TOKEN_SUCCESS' ? result.jwtToken : null;
 };
 
+const appendHost = (url: string) => {
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+        return url;
+    } else {
+        const host = window.location.protocol + '//' + window.location.host;
+        return [trimCharsEnd('/', host), trimCharsStart('/', url)].join('/');
+    }
+};
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     constructor(
@@ -164,7 +174,7 @@ export class AuthService {
         return `client_id=${clientId}&response_type=code&state=${encodeURIComponent(
             state
         )}&redirect_uri=${encodeURI(
-            this.config.returnLoginUri
+            appendHost(this.config.returnLoginUri)
         )}&scope=${encodeURI(
             this.config.scope
         )}&code_challenge=${codeChallenge}&code_challenge_method=S256${
@@ -174,12 +184,12 @@ export class AuthService {
 
     async createLoginUrl(opts: AuthOptions = {}) {
         const q = await this.createPKCEAuthQuery(opts);
-        return `${this.config.loginUrl}?${q}`;
+        return `${appendHost(this.config.loginUrl)}?${q}`;
     }
 
     async createSignUpUrl(opts: AuthOptions = {}) {
         const q = await this.createPKCEAuthQuery(opts);
-        return `${this.config.signupUrl}?${q}`;
+        return `${appendHost(this.config.signupUrl)}?${q}`;
     }
 
     async token(code: string, state: string) {
@@ -201,7 +211,7 @@ export class AuthService {
         const payload = {
             grant_type: 'code',
             code,
-            redirect_uri: this.config.returnLoginUri,
+            redirect_uri: appendHost(this.config.returnLoginUri),
             client_id: clientId,
             code_verifier: sessionCodeVerifier,
         };
@@ -331,7 +341,7 @@ export class AuthService {
     logout() {
         const accessToken = this.accessToken;
         const url = `${this.config.logoutUrl}?return_uri=${encodeURI(
-            this.config.returnLogoutUri
+            appendHost(this.config.returnLogoutUri)
         )}&access_token=${accessToken}`;
         this.resetTokens();
         document.location.href = url;

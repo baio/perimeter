@@ -70,6 +70,7 @@ module Payload =
                 match validator model with
                 | [||] -> return model
                 | errors ->
+                    printfn "bindValidateFormAsync: Validation errors %O" errors
                     return raise (BadRequest errors)
             with ex ->
                 return raise (BadRequest [| (BadRequestCommonError ex.Message) |])

@@ -8,8 +8,8 @@ export const environment = {
     auth: {
         loginUrl: '/auth/login',
         signupUrl: '/auth/register',
-        tokenUrl: '/api/auth/token',
-        logoutUrl: '/api/auth/logout',
+        tokenUrl: '/auth/token',
+        logoutUrl: '/auth/logout',
         returnLoginUri: '/login-cb',
         returnLoginPath: '/',
         returnLogoutUri: '/',
@@ -17,7 +17,7 @@ export const environment = {
         scope: 'openid profile',
         stateStringLength: 64,
         pkceCodeVerifierLength: 128,
-        refreshTokenUrl: '/api/auth/refresh-token',
+        refreshTokenUrl: '/auth/refresh-token',
     },
 };
 
