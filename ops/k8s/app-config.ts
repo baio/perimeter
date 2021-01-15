@@ -38,7 +38,7 @@ const apiConfig: ApiConfig = {
         ),
         Auth__PasswordSecret: rs('Auth__PasswordSecret'),
         Auth__Jwt__IdTokenSecret: rs('Auth__Jwt__IdTokenSecret'),
-        Auth__Jwt__AccessTokenSecret: rs('Auth__Jwt__IdTokenSecret'),
+        Auth__Jwt__AccessTokenSecret: rs('Auth__Jwt__AccessTokenSecret'),
         Auth__PerimeterSocialProviders__Github__ClientId: rs(
             'Auth__PerimeterSocialProviders__Github__ClientId',
         ),

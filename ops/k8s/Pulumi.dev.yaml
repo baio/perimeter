@@ -1,9 +1,11 @@
 config:
   k8s:Auth__Jwt__AccessTokenSecret:
     secure: AAABAKrewPUh1zDvTZhwRLeYqG+MzNS7iX94YoLvS0LRA4/C5exXv6ePWWq83BMUdmFFBL6T
+  k8s:adminApp_Port: "80"
+  k8s:adminApp_TargetPort: "80"
   k8s:api_ENV_ASPNETCORE_ENVIRONMENT: STAGE
   k8s:api_ENV_Auth__Jwt__AccessTokenSecret:
-    secure: AAABAPH1aJ9aE5Dz6gVWjsefeKSgkfEY6IOvqNwhpkFrhcaRy/9RD4DWiAqztIVmYZt49Dbn
+    secure: AAABAMYgGhzoHq2N6Bwimt1gr2EeWW/qZF666vryctA+yLNZkrplhau909nSiYrZpsb2RttA
   k8s:api_ENV_Auth__Jwt__IdTokenSecret:
     secure: AAABANfBn33w2HZTuJ5E7iN4XnZlMCbyU9bEg2wnJ0WLOK0=
   k8s:api_ENV_Auth__PasswordSecret:
@@ -32,8 +34,6 @@ config:
     secure: AAABAHVBV4jdHYEVFX5Gqsi9iSr/lIIHH4DvLqKPutGuLC/pr50H5seMc728CpfmaORmCiwYI/Ib0b0YohUX0XSLcNlwP/9NP4lruPLQ4kqz0DjDV5bncdKjcWChF1pN8P1T2Fw=
   k8s:api_Port: "81"
   k8s:api_TargetPort: "80"
-  k8s:adminApp_Port: "80"
-  k8s:adminApp_TargetPort: "80"
   k8s:mongo_MONGODB_ROOT_PASSWORD:
     secure: AAABAKq66ryt8oG7cfW/MDft2lvL6nLzSJ7lmYdOcPi2nmM=
   k8s:mongo_MONGODB_ROOT_USER: root
