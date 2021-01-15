@@ -1,5 +1,6 @@
 module PRR.API.App
 
+open System.Diagnostics
 open Akka.Actor
 open Akka.Configuration
 open Akkling
@@ -29,6 +30,7 @@ open PRR.System
 open PRR.System.Models
 open System
 open System.Security.Cryptography
+open PRR.API.Configuration
 
 let webApp =
     subRoute
@@ -241,6 +243,8 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     |> ignore
 #endif
 
+    configureServices' services
+
 
 let configureLogging (builder: ILoggingBuilder) =
     builder.AddFilter(fun l -> l.Equals LogLevel.Error).AddConsole().AddDebug()
@@ -256,6 +260,9 @@ let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigu
 
 [<EntryPoint>]
 let main _ =
+    Activity.DefaultIdFormat <- ActivityIdFormat.W3C
+    Activity.ForceDefaultIdFormat <- true
+
     let app =
         WebHostBuilder().UseKestrel()
             // .UseWebRoot(Directory.GetCurrentDirectory())
