@@ -21,8 +21,10 @@ module SignUp =
         |> Array.append (Utils.validatePassword data.Password)
         |> Array.choose id
 
-    let signUp: SignUp =
+    let signUp : SignUp =
         fun env data ->
+            
+            env.Logger.LogInformation("Signup with data {@data}", { data with Password = "***"} )
             
             Activity.Current.AddTag("user.email", data.Email)
 

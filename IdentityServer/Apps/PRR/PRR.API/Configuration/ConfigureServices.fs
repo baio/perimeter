@@ -6,5 +6,6 @@ open Microsoft.Extensions.DependencyInjection
 module ConfigureServices =
 
     let configureServices' (services: IServiceCollection) =
+            configureLogging services
             configureOpenTelemetry services
 

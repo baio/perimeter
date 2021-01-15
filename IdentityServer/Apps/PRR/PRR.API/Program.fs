@@ -246,9 +246,11 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     configureServices' services
 
 
+(*
 let configureLogging (builder: ILoggingBuilder) =
-    builder.AddFilter(fun l -> l.Equals LogLevel.Error).AddConsole().AddDebug()
+    builder.AddFilter(fun l -> l.Equals LogLevel.Information).AddConsole().AddDebug()
     |> ignore
+*)
 
 let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigurationBuilder) =
     let env =
@@ -267,8 +269,8 @@ let main _ =
         WebHostBuilder().UseKestrel()
             // .UseWebRoot(Directory.GetCurrentDirectory())
             .UseIISIntegration().ConfigureAppConfiguration(configureAppConfiguration)
-            .Configure(Action<IApplicationBuilder> configureApp).ConfigureServices(configureServices)
-            .ConfigureLogging(configureLogging).Build()
+            .Configure(Action<IApplicationBuilder> configureApp).ConfigureServices(configureServices).Build()
+    // .ConfigureLogging(configureLogging)
 
     // TODO : Prod migrations ?
     // https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli#apply-migrations-at-runtime

@@ -1,6 +1,7 @@
 ﻿namespace PRR.API.Configuration
 
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
 open OpenTelemetry.Trace
 
 [<AutoOpen>]
@@ -16,4 +17,4 @@ module private OpenTelemetry =
                    .AddEntityFrameworkCoreInstrumentation(fun ops ->
                        ops.SetTextCommandContent <- true)
             |> ignore)
-        |> ignore
+        |> ignore              

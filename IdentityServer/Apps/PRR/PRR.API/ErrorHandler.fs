@@ -1,5 +1,6 @@
 ﻿namespace PRR.API
 
+open System.Diagnostics
 open Common.Domain.Models
 open Giraffe
 open Microsoft.Extensions.Logging
@@ -13,17 +14,16 @@ module ErrorHandler =
           Field: string
           Code: string }
 
-    type ErrorDataDTO<'a> =
-        { Message: string
-          Data: 'a }
+    type ErrorDataDTO<'a> = { Message: string; Data: 'a }
 
     let mapBadRequestError =
         function
-        | BadRequestFieldError(field, err) ->
+        | BadRequestFieldError (field, err) ->
             let errMessage =
                 match err with
                 | CUSTOM msg -> (sprintf "CUSTOM:%s" msg)
                 | _ -> (sprintf "%O" err).Replace(" ", ":").Replace("\"", "")
+
             (field, errMessage)
         | BadRequestCommonError x -> ("__", x)
 
@@ -35,17 +35,21 @@ module ErrorHandler =
         |> Map.ofArray
 
     let rec findLeafInnerException (ex: Exception) =
-        if (ex.InnerException = null) then ex
+        if (ex.InnerException = null)
+        then ex
         else findLeafInnerException ex.InnerException
 
-    let matchException (ex: Exception) =
-        printf "Error : %O" ex
+    let matchException (logger: ILogger) (ex: Exception) =
+        logger.LogWarning("Handle exception {@exception}", ex)
+        Activity.Current.AddTag("exception.happens", true)
+        Activity.Current.AddTag("exception.data", ex)
         match ex with
         | :? Unexpected as e ->
             let msg =
                 match e.Data0 with
                 | Some x -> x
                 | None -> "Unexpected error"
+
             RequestErrors.NOT_ACCEPTABLE
                 { Message = msg
                   Field = null
@@ -60,7 +64,10 @@ module ErrorHandler =
                 match e.Data0 with
                 | Some x -> x
                 | None -> "Not Authorized"
-            RequestErrors.UNAUTHORIZED "Bearer" "App"
+
+            RequestErrors.UNAUTHORIZED
+                "Bearer"
+                "App"
                 { Message = msg
                   Field = null
                   Code = null }
@@ -69,13 +76,14 @@ module ErrorHandler =
                 match e.Data0 with
                 | Some x -> x
                 | None -> "Forbidden"
+
             RequestErrors.FORBIDDEN
                 { Message = msg
                   Field = null
                   Code = null }
         | :? Conflict as e ->
             match e.Data0 with
-            | ConflictErrorField(field, code) ->
+            | ConflictErrorField (field, code) ->
                 RequestErrors.CONFLICT
                     { Message = null
                       Field = field
@@ -92,11 +100,10 @@ module ErrorHandler =
                 { Message = "Some data is not valid"
                   Data = errs }
             |> RequestErrors.BAD_REQUEST
-        | _ ->
-            ServerErrors.INTERNAL_ERROR ex
+        | _ -> ServerErrors.INTERNAL_ERROR ex
 
-    let mapException =
-        findLeafInnerException >> matchException
+    let mapException logger =
+        findLeafInnerException >> matchException logger
 
     let errorHandler (ex: Exception) (logger: ILogger) =
-        clearResponse >=> (mapException ex)
+        clearResponse >=> (mapException logger ex)

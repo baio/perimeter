@@ -71,6 +71,7 @@
         <Compile Include="Routes\Auth\Social\GetAuthSocialCallback.fs" />
         <Compile Include="Routes\Auth\Social\SocialRoutes.fs" />
         <Compile Include="Configuration\OpenTelemetry.fs" />
+        <Compile Include="Configuration\Logging.fs" />
         <Compile Include="Configuration\ConfigureServices.fs" />
         <Compile Include="Program.fs" />
         <Content Include="appsettings.json">
@@ -99,12 +100,15 @@
       <PackageReference Include="Giraffe" Version="4.1.0" />
       <PackageReference Include="Http.fs" Version="5.4.0" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.5" />
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.11" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.4" />
       <PackageReference Include="OpenTelemetry.Contrib.Instrumentation.EntityFrameworkCore" Version="0.6.0-beta" />
+      <PackageReference Include="OpenTelemetry.Exporter.Console" Version="0.6.0-beta.1" />
       <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="0.6.0-beta.1" />
       <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="0.6.0-beta.1" />
       <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="0.6.0-beta.1" />
       <PackageReference Include="SendGrid" Version="9.19.0" />
+      <PackageReference Include="Serilog.AspNetCore" Version="3.4.1-dev-00188" />
       <PackageReference Include="TaskBuilder.fs" Version="2.1.0" />
     </ItemGroup>
 
@@ -118,6 +122,12 @@
       <ProjectReference Include="..\System\PRR.System.Models\PRR.System.Models.fsproj" />
       <ProjectReference Include="..\System\PRR.System\PRR.System.fsproj" />
       <ProjectReference Include="..\System\PRR.Sys\PRR.Sys.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=3.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+        <HintPath>..\..\..\..\..\..\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref\3.1.10\ref\netcoreapp3.1\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

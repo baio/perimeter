@@ -9,6 +9,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open Giraffe
 open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Identity
+open Microsoft.Extensions.Logging
 open Microsoft.Extensions.Primitives
 open PRR.API
 open PRR.Domain.Auth.LogInSSO
@@ -24,7 +25,8 @@ module private Handlers =
             (signUp
              <!> ((fun ctx ->
                       { DataContext = getDataContext ctx
-                        HashProvider = getHash ctx })
+                        HashProvider = getHash ctx
+                        Logger = ctx.GetLogger() })
                   |> ofReader)
              <*> bindValidateJsonAsync validateData)
 
