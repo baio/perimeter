@@ -24,7 +24,7 @@ module SignUp =
     let signUp: SignUp =
         fun env data ->
             
-            Activity.Current.AddBaggage("user-email", data.Email)
+            Activity.Current.AddTag("user.email", data.Email)
 
             let dataContext = env.DataContext
 
