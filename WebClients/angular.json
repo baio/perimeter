@@ -40,6 +40,14 @@
                 }
               ]
             },
+            "k8s": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/admin/src/environments/environment.ts",
+                  "with": "apps/admin/src/environments/environment.k8s.ts"
+                }
+              ]
+            },
             "production": {
               "fileReplacements": [
                 {

@@ -52,8 +52,7 @@ module ValidateScopes =
         |> toCountAsync
         |> TaskUtils.map (fun i -> i > 0)
 
-    let private getDefaultDomainAudiencePermissions (dataContext: DbDataContext) domainId scopes =
-        printfn "77777777"
+    let private getDefaultDomainAudiencePermissions (dataContext: DbDataContext) domainId scopes =        
         query {
             for p in dataContext.Permissions do
                 where

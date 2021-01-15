@@ -11,7 +11,6 @@ module private QueriesHandler =
         let rec loop() =
             actor {
                 let! q = ctx.Receive()
-                printfn "#### %O" q
                 match q with
                 | RefreshToken q ->
                     sharedActors.RefreshTokenActor <! RefreshToken.Query(q)

@@ -12,25 +12,43 @@ open PRR.Sys.Models
 [<AutoOpen>]
 module SetUp =
 
+    type Config =
+        { JournalConnectionString: string
+          SnapshotConnectionString: string }
+
     let readConfig confFileName =
 
         let confPath =
             sprintf "%s/%s" (System.IO.Directory.GetCurrentDirectory()) confFileName
 
-        let conf = System.IO.File.ReadAllText confPath
-
-        ConfigurationFactory.ParseString conf
+        System.IO.File.ReadAllText confPath
 
     type SystemActors =
         { System: IActorRefFactory
           Social: IActorRef<Social.Message> }
 
-    let setUp confFileName =
+    let setUp config confFileName =
 
-        let sys =
-            confFileName
-            |> readConfig
-            |> System.create "prr-sys-new"
+        let configFileContent = confFileName |> readConfig
+
+        let configContent =
+            [ sprintf "akka.persistence.journal.mongodb.connection-string = \"%s\"" config.JournalConnectionString
+              sprintf
+                  "akka.persistence.snapshot-store.mongodb.connection-string = \"%s\""
+                  config.SnapshotConnectionString ]
+            |> String.concat "\n"
+
+
+        let configStr =
+            [ configFileContent
+              // configs from parameter wins
+              configContent ]
+            |> String.concat "\n"
+
+        let parsedConfig =
+            ConfigurationFactory.ParseString configStr
+
+        let sys = System.create "prr-sys-new" parsedConfig
 
         let socialActor =
             spawn sys "social" (Social.Reducer.createReducer ())

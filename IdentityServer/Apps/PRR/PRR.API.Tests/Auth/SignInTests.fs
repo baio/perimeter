@@ -68,7 +68,8 @@ module SignIn =
                 let systemEnv = sp.GetService<SystemEnv>()
                 let systemEnv =
                     { systemEnv with EventHandledCallback = systemEventHandled }
-                let sys = PRR.System.Setup.setUp systemEnv
+                let systemConfig = sp.GetService<SystemConfig>()
+                let sys = PRR.System.Setup.setUp systemEnv systemConfig "akka.hocon"
                 services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore)
 
             task {

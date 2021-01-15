@@ -30,18 +30,35 @@ module Setup =
             member __.DataContext = dataContext
             member __.Dispose() = serviceScope.Dispose()
 
-    let setUp' env confFileName =
+    let setUp env config configFileName =
         let ss =
             Strategy.OneForOne(fun _ -> Directive.Escalate)
 
         let confPath =
-            sprintf "%s/%s" (System.IO.Directory.GetCurrentDirectory()) confFileName
+            sprintf "%s/%s" (System.IO.Directory.GetCurrentDirectory()) configFileName
 
-        let conf = System.IO.File.ReadAllText confPath
+        let configFileContent = System.IO.File.ReadAllText confPath
 
-        let config = ConfigurationFactory.ParseString conf
+        let configContent =
+            [ sprintf "akka.persistence.journal.mongodb.connection-string = \"%s\"" config.JournalConnectionString
+              sprintf
+                  "akka.persistence.snapshot-store.mongodb.connection-string = \"%s\""
+                  config.SnapshotConnectionString ]
+            |> String.concat "\n"
 
-        let sys = System.create "perimeter-sys" <| config // Configuration.defaultConfig()
+        let configStr =
+            [ configFileContent
+              // configs from parameter wins
+              configContent ]
+            |> String.concat "\n"
+            
+        printfn "System config \n %s" configStr            
+
+        let parsedConfig =
+            ConfigurationFactory.ParseString configStr
+
+        let sys =
+            System.create "perimeter-sys" parsedConfig
 
         let rec events =
             spawn
@@ -67,11 +84,9 @@ module Setup =
                 { props (queriesHandler sharedActors) with
                       SupervisionStrategy = Some ss }
 
-        setUpViews sys sharedActors.LogInActor env.ViewsDbConnectionString
+        setUpViews sys sharedActors.LogInActor config.ViewsConnectionString
 
         { System = sys
           EventsRef = events
           CommandsRef = commands
           QueriesRef = queries } :> ICQRSSystem
-
-    let setUp env = setUp' env "akka.hocon"

@@ -141,7 +141,7 @@ module internal SignInUser =
                                  domain.RS256Params)
                     }
                     |> toSingleAsync
-
+                
                 return { AccessTokenExpiresIn = expiresIn
                          SigningCredentials =
                              if algo = SigningAlgorithmType.HS256 then
@@ -172,6 +172,8 @@ module internal SignInUser =
             let isPerimeterClient = clientType <> Regular
 
             let! secretData = getDomainSecretAndExpire env issuer isPerimeterClient
+            
+            printfn "signInUser:3"
 
             let data =
                 { TokenData = tokenData
@@ -184,6 +186,8 @@ module internal SignInUser =
                   IdTokenExpiresIn = idTokenExpiresIn }
 
             let result = signInUser' data
+            
+            printfn "signInUser:4"
 
             return (result, clientId, isPerimeterClient)
         }

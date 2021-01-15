@@ -31,6 +31,7 @@ module E2E =
     let private recreateMongoDb (ctx: HttpContext) =
         let config = ctx.GetService<IConfiguration>()
         dropDatabase (config.GetConnectionString "MongoJournal")
+        dropDatabase (config.GetConnectionString "MongoSnapshot")
         dropDatabase (config.GetConnectionString "MongoViews")
 
     let private recreatedDataContextDb ctx =
