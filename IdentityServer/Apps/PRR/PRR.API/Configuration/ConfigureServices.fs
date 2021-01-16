@@ -7,5 +7,5 @@ module ConfigureServices =
 
     let configureServices' (services: IServiceCollection) =
             configureLogging services
-            configureOpenTelemetry services
+            configureTracing services
 

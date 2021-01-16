@@ -32,6 +32,7 @@ open System
 open System.Security.Cryptography
 open PRR.API.Configuration
 open Serilog
+open Prometheus
 
 let webApp =
     subRoute
@@ -82,7 +83,7 @@ let configureApp (app: IApplicationBuilder) =
      | true -> app.UseDeveloperExceptionPage()
      //| false -> app.UseGiraffeErrorHandler errorHandler).UseHttpsRedirection().UseAuthentication().UseAuthorization()
      | false -> app.UseGiraffeErrorHandler errorHandler).UseAuthentication().UseAuthorization().UseCors(configureCors)
-        .UseGiraffe(webApp)
+        .UseMetricServer().UseHttpMetrics().UseGiraffe(webApp)
 
 let configureServices (context: WebHostBuilderContext) (services: IServiceCollection) =
 
@@ -171,7 +172,7 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
             |> ignore))
     |> ignore
 
-    // Actors system     
+    // Actors system
 
     // TODO : Why not working like so https://stackoverflow.com/questions/56442871/is-there-a-way-to-use-f-record-types-to-extract-the-appsettings-json-configurat
 
@@ -267,7 +268,7 @@ let main _ =
     Activity.ForceDefaultIdFormat <- true
 
     let app =
-        WebHostBuilder().UseKestrel()
+        WebHostBuilder().UseKestrel().UseUrls("http://*:5000", "https://*:5001")
             // .UseWebRoot(Directory.GetCurrentDirectory())
             .UseIISIntegration().ConfigureAppConfiguration(configureAppConfiguration)
             .Configure(Action<IApplicationBuilder> configureApp).ConfigureServices(configureServices).Build()

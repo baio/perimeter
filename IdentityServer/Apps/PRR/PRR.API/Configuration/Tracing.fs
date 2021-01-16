@@ -5,9 +5,9 @@ open Microsoft.Extensions.Logging
 open OpenTelemetry.Trace
 
 [<AutoOpen>]
-module private OpenTelemetry =
+module private Tracing =
 
-    let configureOpenTelemetry (services: IServiceCollection) =
+    let configureTracing (services: IServiceCollection) =
         services.AddOpenTelemetryTracing(fun (builder: TracerProviderBuilder) ->
             builder.AddAspNetCoreInstrumentation()
                    .AddJaegerExporter(fun c ->
