@@ -9,7 +9,7 @@ open Serilog.Events
 [<AutoOpen>]
 module private Logging =
 
-    let private ignoredEndpoints =
+    let private filterIgnoredEndpoints =
         System.Func<_, _>(fun (logEvent: LogEvent) ->
             let (f, path) =
                 logEvent.Properties.TryGetValue("RequestPath")
@@ -29,4 +29,4 @@ module private Logging =
 
         Log.Logger <-
             LoggerConfiguration().Enrich.FromLogContext().WriteTo.Console().WriteTo.Seq("http://localhost:5341")
-                .Filter.ByExcluding(ignoredEndpoints).CreateLogger()
+                .Filter.ByExcluding(filterIgnoredEndpoints).CreateLogger()
