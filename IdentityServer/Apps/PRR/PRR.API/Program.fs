@@ -31,6 +31,7 @@ open PRR.System.Models
 open System
 open System.Security.Cryptography
 open PRR.API.Configuration
+open Serilog
 
 let webApp =
     subRoute
@@ -149,7 +150,7 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
 
     // Configure DataContext
     let loggerFactory =
-        LoggerFactory.Create(fun builder -> (*builder.AddConsole() |> ignore*) ())
+        LoggerFactory.Create(fun builder -> builder.AddSerilog() |> ignore)
 
     let connectionString =
         context.Configuration.GetConnectionString "PostgreSQL"
@@ -170,7 +171,7 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
             |> ignore))
     |> ignore
 
-    // Actors system
+    // Actors system     
 
     // TODO : Why not working like so https://stackoverflow.com/questions/56442871/is-there-a-way-to-use-f-record-types-to-extract-the-appsettings-json-configurat
 

@@ -41,8 +41,6 @@ module ErrorHandler =
 
     let matchException (logger: ILogger) (ex: Exception) =
         logger.LogWarning("Handle exception {@exception}", ex)
-        Activity.Current.AddTag("exception.happens", true)
-        Activity.Current.AddTag("exception.data", ex)
         match ex with
         | :? Unexpected as e ->
             let msg =

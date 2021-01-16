@@ -24,3 +24,12 @@ Run tests with Test configuration !
 ```
 dotnet test --filter "FullyQualifiedName~sign-in-api" -c Test
 ```
+
+# Observability
+
+```
+docker run --name jaeger -d --restart unless-stopped -p 6831:6831/udp -p 6832:6832/udp -p 16686:16686 jaegertracing/all-in-one:1.7 --log-level=debug
+docker run --name seq -d --restart unless-stopped -e ACCEPT_EULA=Y -p 5341:80 datalust/seq:latest
+
+```
+
