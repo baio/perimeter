@@ -73,6 +73,7 @@
         <Compile Include="Configuration\Tracing.fs" />
         <Compile Include="Configuration\Logging.fs" />
         <Compile Include="Configuration\ConfigureServices.fs" />
+        <Compile Include="Configuration\CreateEnv.fs" />
         <Compile Include="Program.fs" />
         <Content Include="appsettings.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>

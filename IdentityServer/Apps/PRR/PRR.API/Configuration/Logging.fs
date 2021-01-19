@@ -6,10 +6,16 @@ open Microsoft.Extensions.Logging
 open Serilog
 open Serilog.Events
 
+type LoggingConfig = { ServiceUrl: string }
+
+type LoggingEnv =
+    { Config: LoggingConfig
+      IgnoreApiPaths: string seq }
+
 [<AutoOpen>]
 module private Logging =
 
-    let private filterIgnoredEndpoints =
+    let private filterIgnoredEndpoints ignorePaths =
         System.Func<_, _>(fun (logEvent: LogEvent) ->
             let (f, path) =
                 logEvent.Properties.TryGetValue("RequestPath")
@@ -17,16 +23,13 @@ module private Logging =
             match f with
             | true ->
                 let path' = path.ToString().Trim('"')
-                path' = "/metrics"
+                Seq.contains path' ignorePaths
             | false -> false)
 
-    let configureLogging (services: IServiceCollection) =
-        printfn "configureLogging"
-        services.AddLogging(fun (builder: ILoggingBuilder) ->
-            builder.ClearProviders().AddFilter("Microsoft", LogLevel.None).AddSerilog()
-            |> ignore)
+    let configureLogging (env: LoggingEnv) (services: IServiceCollection) =
+        services.AddLogging(fun (builder: ILoggingBuilder) -> builder.ClearProviders().AddSerilog() |> ignore)
         |> ignore
 
         Log.Logger <-
-            LoggerConfiguration().Enrich.FromLogContext().WriteTo.Console().WriteTo.Seq("http://localhost:5341")
-                .Filter.ByExcluding(filterIgnoredEndpoints).CreateLogger()
+            LoggerConfiguration().Enrich.FromLogContext().WriteTo.Console().WriteTo.Seq(env.Config.ServiceUrl)
+                .Filter.ByExcluding(filterIgnoredEndpoints env.IgnoreApiPaths).CreateLogger()

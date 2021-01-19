@@ -71,7 +71,6 @@ let createDbContext (connectionString: string) =
     DbDataContext(optionsBuilder.Options)
 
 let configureCors (builder: CorsPolicyBuilder) =
-    // builder.WithOrigins([| "http://localhost:4200" |]).AllowAnyMethod().AllowAnyHeader().WithHeaders([|"Access-Control-Allow-Credentials"|]) |> ignore
     builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
     |> ignore
 
@@ -81,8 +80,8 @@ let configureApp (app: IApplicationBuilder) =
 
     (match env.IsDevelopment() with
      | true -> app.UseDeveloperExceptionPage()
-     //| false -> app.UseGiraffeErrorHandler errorHandler).UseHttpsRedirection().UseAuthentication().UseAuthorization()
      | false -> app.UseGiraffeErrorHandler errorHandler).UseAuthentication().UseAuthorization().UseCors(configureCors)
+        // Configure metrics from prometheus
         .UseMetricServer().UseHttpMetrics().UseGiraffe(webApp)
 
 let configureServices (context: WebHostBuilderContext) (services: IServiceCollection) =
@@ -245,7 +244,9 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     |> ignore
 #endif
 
-    configureServices' services
+    let env = createEnv context.Configuration
+
+    configureServices' env services
 
 
 (*
@@ -264,15 +265,12 @@ let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigu
 
 [<EntryPoint>]
 let main _ =
-    Activity.DefaultIdFormat <- ActivityIdFormat.W3C
-    Activity.ForceDefaultIdFormat <- true
 
     let app =
-        WebHostBuilder().UseKestrel().UseUrls("http://*:5000", "https://*:5001")
-            // .UseWebRoot(Directory.GetCurrentDirectory())
-            .UseIISIntegration().ConfigureAppConfiguration(configureAppConfiguration)
-            .Configure(Action<IApplicationBuilder> configureApp).ConfigureServices(configureServices).Build()
-    // .ConfigureLogging(configureLogging)
+        WebHostBuilder().UseKestrel().UseUrls("http://*:5000", "https://*:5001").UseIISIntegration()
+            .ConfigureAppConfiguration(configureAppConfiguration).Configure(Action<IApplicationBuilder> configureApp)
+            .ConfigureServices(configureServices).Build()
+
 
     // TODO : Prod migrations ?
     // https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli#apply-migrations-at-runtime

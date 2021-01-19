@@ -5,7 +5,10 @@ open Microsoft.Extensions.DependencyInjection
 [<AutoOpen>]
 module ConfigureServices =
 
-    let configureServices' (services: IServiceCollection) =
-            configureLogging services
-            configureTracing services
+    type Env =
+        { Logging: LoggingEnv
+          Tracing: TracingEnv }
 
+    let configureServices' (env: Env) (services: IServiceCollection) =
+        configureLogging env.Logging services
+        configureTracing env.Tracing services
