@@ -8,6 +8,7 @@ open Microsoft.AspNetCore.Hosting
 open Microsoft.EntityFrameworkCore
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
 open PRR.API
 open PRR.API.Routes
 open PRR.API.Routes.Tenant
@@ -41,7 +42,11 @@ let migrateDatabase (webHost: IWebHost) =
             services.GetRequiredService<DbDataContext>()
 
         db.Database.Migrate()
-    with ex -> printfn "An error occurred while migrating the database. %O" ex
+    with ex ->
+        let logger =
+            webHost.Services.GetRequiredService<ILogger<_>>()
+
+        logger.LogCritical("An error occurred while migrating the database. {ex}", ex)
 
 
 let configureCors (builder: CorsPolicyBuilder) =
@@ -51,7 +56,10 @@ let configureCors (builder: CorsPolicyBuilder) =
 let configureApp (app: IApplicationBuilder) =
     app.UseGiraffeErrorHandler(errorHandler).UseAuthentication().UseAuthorization().UseCors(configureCors)
        // Configure metrics from prometheus
-       .UseMetricServer().UseHttpMetrics().UseGiraffe(webApp)
+#if !TEST
+       .UseMetricServer().UseHttpMetrics()
+#endif
+       .UseGiraffe(webApp)
 
 let configureServices (context: WebHostBuilderContext) (services: IServiceCollection) =
 
@@ -69,7 +77,7 @@ let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigu
 
     let envName =
         (context.HostingEnvironment.EnvironmentName.ToLower())
-
+        
     config.AddJsonFile("appsettings.json", false, true).AddJsonFile(sprintf "appsettings.%s.json" envName, true)
           .AddEnvironmentVariables()
     |> ignore
@@ -78,7 +86,7 @@ let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigu
 let main _ =
 
     let app =
-        WebHostBuilder().UseKestrel().UseUrls("http://*:5000", "https://*:5001").UseIISIntegration()
+        WebHostBuilder().UseKestrel()(*.UseUrls("http://*:5000", "https://*:5001")*).UseIISIntegration()
             .ConfigureAppConfiguration(configureAppConfiguration).Configure(Action<IApplicationBuilder> configureApp)
             .ConfigureServices(configureServices).Build()
 

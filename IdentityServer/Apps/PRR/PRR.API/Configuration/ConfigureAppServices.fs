@@ -31,11 +31,14 @@ module ConfigureServices =
             member __.GetConfig = fun () -> appConfig
 
     let configureAppServices (config: AppConfig) (services: IServiceCollection) =
+        
         configureAuthorization config.Auth.Jwt services
         configureDataContext config.DataContext services
         configureInfra config.Infra services
+#if !TEST        
         configureLogging config.Logging services
         configureTracing config.Tracing services
+#endif        
         configureActors config.Actors services
         services.AddSingleton<IConfigProvider>(ConfigProvider config)
         |> ignore
