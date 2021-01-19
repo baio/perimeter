@@ -12,13 +12,9 @@ type DataContextConfig = { ConnectionString: string }
 module private ConfigureDataContext =
 
     let configureDataContext (config: DataContextConfig) (services: IServiceCollection) =
-#if !TEST
+
         let loggerFactory =
             LoggerFactory.Create(fun builder -> builder.AddSerilog() |> ignore)
-#else
-        let loggerFactory =
-            LoggerFactory.Create(fun builder -> builder.AddConsole() |> ignore)
-#endif
 
         let connectionString = config.ConnectionString
 

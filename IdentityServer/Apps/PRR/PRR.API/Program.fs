@@ -77,7 +77,7 @@ let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigu
 
     let envName =
         (context.HostingEnvironment.EnvironmentName.ToLower())
-        
+
     config.AddJsonFile("appsettings.json", false, true).AddJsonFile(sprintf "appsettings.%s.json" envName, true)
           .AddEnvironmentVariables()
     |> ignore
@@ -86,7 +86,7 @@ let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigu
 let main _ =
 
     let app =
-        WebHostBuilder().UseKestrel()(*.UseUrls("http://*:5000", "https://*:5001")*).UseIISIntegration()
+        WebHostBuilder().UseKestrel().UseUrls("http://*:5000", "https://*:5001").UseIISIntegration()
             .ConfigureAppConfiguration(configureAppConfiguration).Configure(Action<IApplicationBuilder> configureApp)
             .ConfigureServices(configureServices).Build()
 

@@ -27,9 +27,13 @@ module private Logging =
             | false -> false)
 
     let configureLogging (env: LoggingEnv) (services: IServiceCollection) =
+
         services.AddLogging(fun (builder: ILoggingBuilder) -> builder.ClearProviders().AddSerilog() |> ignore)
         |> ignore
 
         Log.Logger <-
-            LoggerConfiguration().Enrich.FromLogContext().WriteTo.Console().WriteTo.Seq(env.Config.ServiceUrl)
+            LoggerConfiguration().Enrich.FromLogContext().WriteTo.Console()
+                #if !TEST
+                .WriteTo.Seq(env.Config.ServiceUrl)
+                #endif
                 .Filter.ByExcluding(filterIgnoredEndpoints env.IgnoreApiPaths).CreateLogger()

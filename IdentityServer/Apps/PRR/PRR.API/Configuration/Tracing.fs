@@ -26,6 +26,7 @@ module private Tracing =
 
     let configureTracing (env: TracingEnv) (services: IServiceCollection) =
 
+#if !TEST
         // Change default activity format to OpenTelemetry
         Activity.DefaultIdFormat <- ActivityIdFormat.W3C
         Activity.ForceDefaultIdFormat <- true
@@ -39,3 +40,5 @@ module private Tracing =
                    .AddEntityFrameworkCoreInstrumentation(fun ops -> ops.SetTextCommandContent <- true)
             |> ignore)
         |> ignore
+#endif
+        ()
