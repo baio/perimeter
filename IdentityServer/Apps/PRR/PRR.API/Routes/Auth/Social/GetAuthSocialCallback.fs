@@ -22,26 +22,26 @@ module private Handler =
         taskOfQueryActor sys socialActor (fun sendResultTo -> SocialLoginQueryCommand(token, sendResultTo))
         |> TaskUtils.map (snd)
 
-    let getContext (ctx: HttpContext): Env =
+    let getEnv (ctx: HttpContext): Env =
         let config = getConfig ctx
         { DataContext = getDataContext ctx
           PasswordSalter = getPasswordSalter ctx
           CodeGenerator = getHash ctx
-          CodeExpiresIn = config.Jwt.CodeExpiresIn
-          SSOExpiresIn = config.SSOCookieExpiresIn
+          CodeExpiresIn = config.Auth.Jwt.CodeExpiresIn
+          SSOExpiresIn = config.Auth.SSOCookieExpiresIn
           GetSocialLoginItem = getSocialLoginItem ctx
           HttpRequestFun = getHttpRequestFun ctx
-          SocialCallbackUrl = config.Social.CallbackUrl
+          SocialCallbackUrl = config.Auth.Social.CallbackUrl
           PerimeterSocialClientSecretKeys =
-              { Github = config.PerimeterSocialProviders.Github.SecretKey
-                Google = config.PerimeterSocialProviders.Google.SecretKey
-                Twitter = config.PerimeterSocialProviders.Twitter.SecretKey } }
+              { Github = config.Auth.PerimeterSocialProviders.Github.SecretKey
+                Google = config.Auth.PerimeterSocialProviders.Google.SecretKey
+                Twitter = config.Auth.PerimeterSocialProviders.Twitter.SecretKey } }
 
     open Reader
 
     let getParams =
         triplet
-        <!> getContext
+        <!> getEnv
         <*> bindQueryString
         <*> bindCookie "sso"
 

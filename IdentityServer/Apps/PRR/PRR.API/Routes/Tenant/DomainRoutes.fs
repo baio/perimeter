@@ -23,10 +23,10 @@ module private DomainHandlers =
         let dataContext = getDataContext ctx
         { DataContext = dataContext
           AuthConfig =
-              { AccessTokenSecret = config.Jwt.AccessTokenSecret
-                IdTokenExpiresIn = config.Jwt.IdTokenExpiresIn
-                AccessTokenExpiresIn = config.Jwt.AccessTokenExpiresIn
-                RefreshTokenExpiresIn = config.Jwt.RefreshTokenExpiresIn }
+              { AccessTokenSecret = config.Auth.Jwt.AccessTokenSecret
+                IdTokenExpiresIn = config.Auth.Jwt.IdTokenExpiresIn
+                AccessTokenExpiresIn = config.Auth.Jwt.AccessTokenExpiresIn
+                RefreshTokenExpiresIn = config.Auth.Jwt.RefreshTokenExpiresIn }
           AuthStringsProvider = authStringsProvider }
 
     let createHandler domainPoolId =

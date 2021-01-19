@@ -12,18 +12,6 @@ module Models =
         { CallbackUrl: string
           CallbackExpiresIn: int<milliseconds> }
 
-    type AppConfig =
-        { SignUpTokenExpiresIn: int<minutes>
-          ResetPasswordTokenExpiresIn: int<minutes>
-          SSOCookieExpiresIn: int<minutes>
-          PasswordSecret: string
-          Social: SocialConfig
-          Jwt: JwtConfig
-          PerimeterSocialProviders: PerimeterSocialProviders }
-
-    type IConfig =
-        abstract GetConfig: (unit -> AppConfig)
-
     type IHashProvider =
         abstract GetHash: (unit -> string)
 

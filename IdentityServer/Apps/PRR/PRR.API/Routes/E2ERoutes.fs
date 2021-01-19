@@ -70,11 +70,12 @@ module E2E =
                                QueryString = None }
                          // login
                          let loginEnv: PRR.Domain.Auth.LogInToken.Models.Env =
+                             let config = getConfig ctx
                              { DataContext = getDataContext ctx
                                HashProvider = getHash ctx
                                Sha256Provider = getSHA256 ctx
-                               SSOCookieExpiresIn = (getConfig ctx).SSOCookieExpiresIn
-                               JwtConfig = (getConfig ctx).Jwt }
+                               SSOCookieExpiresIn = config.Auth.SSOCookieExpiresIn
+                               JwtConfig = config.Auth.Jwt }
 
                          task {
                              let! evt = signUpConfirm true signupEnv signupItem

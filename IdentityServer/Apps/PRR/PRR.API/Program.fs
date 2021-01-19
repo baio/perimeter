@@ -1,37 +1,20 @@
 module PRR.API.App
 
-open System.Diagnostics
-open Akka.Actor
-open Akka.Configuration
 open Akkling
 open Giraffe
-open Giraffe.Serialization
-open Microsoft.AspNetCore.Authentication.JwtBearer
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.AspNetCore.Hosting
 open Microsoft.EntityFrameworkCore
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
-open Microsoft.Extensions.Logging
-open Microsoft.IdentityModel.Tokens
-open Newtonsoft.Json
-open Newtonsoft.Json.Converters
-open Newtonsoft.Json.Serialization
 open PRR.API
-open PRR.API.Infra
-open PRR.API.Infra.Mail
-open PRR.API.Infra.Mail.Models
 open PRR.API.Routes
 open PRR.API.Routes.Tenant
 open PRR.API.Routes.AuthSocial
 open PRR.Data.DataContext
-open PRR.System
-open PRR.System.Models
 open System
-open System.Security.Cryptography
 open PRR.API.Configuration
-open Serilog
 open Prometheus
 
 let webApp =
@@ -61,205 +44,33 @@ let migrateDatabase (webHost: IWebHost) =
     with ex -> printfn "An error occurred while migrating the database. %O" ex
 
 
-let createDbContext (connectionString: string) =
-    let optionsBuilder = DbContextOptionsBuilder<DbDataContext>()
-    optionsBuilder.UseNpgsql
-        (connectionString,
-         (fun b ->
-             b.MigrationsAssembly("PRR.Data.DataContextMigrations")
-             |> ignore))
-    DbDataContext(optionsBuilder.Options)
-
 let configureCors (builder: CorsPolicyBuilder) =
     builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
     |> ignore
 
 let configureApp (app: IApplicationBuilder) =
-    let env =
-        app.ApplicationServices.GetService<IHostingEnvironment>()
-
-    (match env.IsDevelopment() with
-     | true -> app.UseDeveloperExceptionPage()
-     | false -> app.UseGiraffeErrorHandler errorHandler).UseAuthentication().UseAuthorization().UseCors(configureCors)
-        // Configure metrics from prometheus
-        .UseMetricServer().UseHttpMetrics().UseGiraffe(webApp)
+    app.UseGiraffeErrorHandler(errorHandler).UseAuthentication().UseAuthorization().UseCors(configureCors)
+       // Configure metrics from prometheus
+       .UseMetricServer().UseHttpMetrics().UseGiraffe(webApp)
 
 let configureServices (context: WebHostBuilderContext) (services: IServiceCollection) =
 
-    // auth
-    let config =
-        Infra.Config.getConfig context.Configuration ()
+    services.AddCors().AddGiraffe() |> ignore
 
-    // Authentication
-    let issuerSigningKey =
-        config.Jwt.AccessTokenSecret
-        |> System.Text.Encoding.ASCII.GetBytes
-        |> SymmetricSecurityKey
-
-    services.AddAuthorization() |> ignore
-    services.AddAuthentication(fun options ->
-            // https://stackoverflow.com/questions/45763149/asp-net-core-jwt-in-uri-query-parameter/53295042#53295042
-            options.DefaultAuthenticateScheme <- JwtBearerDefaults.AuthenticationScheme
-            options.DefaultChallengeScheme <- JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(fun x ->
-            x.RequireHttpsMetadata <- false
-            x.SaveToken <- true
-            x.TokenValidationParameters <-
-                TokenValidationParameters
-                    (ValidateIssuerSigningKey = true,
-                     IssuerSigningKey = issuerSigningKey,
-                     ValidateIssuer = false,
-                     ValidateAudience = false,
-#if E2E
-                     ValidateLifetime = false
-#else
-                     ValidateLifetime = true
-#endif
-                    ))
-    |> ignore
-
-    services.AddCors() |> ignore
-    services.AddGiraffe() |> ignore
-
-    // Infra
-    let mongoViewsConnectionString =
-        context.Configuration.GetConnectionString("MongoViews")
-
-    let sha256 = SHA256.Create()
-    let hashProvider = HashProvider sha256
-    let sha256Provider = SHA256Provider sha256
-
-    let viewsReaderDbProvider =
-        ViewsReaderDbProvider mongoViewsConnectionString
-
-    services.AddSingleton<IConfig, Config>() |> ignore
-    services.AddSingleton<IPermissionsFromRoles, PermissionsFromRoles>()
-    |> ignore
-    services.AddSingleton<IHashProvider>(hashProvider)
-    |> ignore
-    services.AddSingleton<ISHA256Provider>(sha256Provider)
-    |> ignore
-    services.AddSingleton<IPasswordSaltProvider, PasswordSaltProvider>()
-    |> ignore
-    services.AddSingleton<IAuthStringsProvider, AuthStringsProvider>()
-    |> ignore
-    services.AddSingleton<IViewsReaderDbProvider>(viewsReaderDbProvider)
-    |> ignore
-    services.AddSingleton<IHttpRequestFunProvider>(HttpRequestFunProvider httpFsRequestFun)
-    |> ignore
-
-    // Configure DataContext
-    let loggerFactory =
-        LoggerFactory.Create(fun builder -> builder.AddSerilog() |> ignore)
-
-    let connectionString =
-        context.Configuration.GetConnectionString "PostgreSQL"
-
-    printfn "ENV %s" context.HostingEnvironment.EnvironmentName
-
-    services.AddDbContext<DbDataContext>
-        ((fun o ->
-            let o' =
-                o.UseLoggerFactory(loggerFactory).EnableSensitiveDataLogging true
-
-            NpgsqlDbContextOptionsExtensions.UseNpgsql
-                (o',
-                 connectionString,
-                 (fun b ->
-                     b.MigrationsAssembly("PRR.Data.DataContextMigrations")
-                     |> ignore))
-            |> ignore))
-    |> ignore
-
-    // Actors system
-
-    // TODO : Why not working like so https://stackoverflow.com/questions/56442871/is-there-a-way-to-use-f-record-types-to-extract-the-appsettings-json-configurat
-
-    let mailEnv: MailEnv =
-        { FromEmail = context.Configuration.GetValue("MailSender:FromEmail")
-          FromName = context.Configuration.GetValue("MailSender:FromName")
-          Project =
-              { Name = context.Configuration.GetValue("MailSender:Project:Name")
-                BaseUrl = context.Configuration.GetValue("MailSender:Project:BaseUrl")
-                ConfirmSignUpUrl = context.Configuration.GetValue("MailSender:Project:ConfirmSignUpUrl")
-                ResetPasswordUrl = context.Configuration.GetValue("MailSender:Project:ResetPasswordUrl") } }
-
-    let sendGridApiKey =
-        context.Configuration.GetValue("SendGridApiKey")
-
-    let mailSender =
-        PRR.API.Infra.Mail.SendGridMail.createSendMail sendGridApiKey
-
-    let systemEnv: SystemEnv =
-        let serviceProvider = services.BuildServiceProvider()
-        { SendMail = createSendMail mailEnv mailSender
-          GetDataContextProvider =
-              fun () -> new DataContextProvider(serviceProvider.CreateScope()) :> IDataContextProvider
-          HashProvider = (hashProvider :> IHashProvider).GetHash
-          PasswordSalter = serviceProvider.GetService<IPasswordSaltProvider>().SaltPassword
-          AuthStringsProvider = serviceProvider.GetService<IAuthStringsProvider>().AuthStringsProvider
-          AuthConfig =
-              { AccessTokenSecret = config.Jwt.AccessTokenSecret
-                IdTokenExpiresIn = config.Jwt.IdTokenExpiresIn
-                AccessTokenExpiresIn = config.Jwt.AccessTokenExpiresIn
-                RefreshTokenExpiresIn = config.Jwt.RefreshTokenExpiresIn
-                SignUpTokenExpiresIn = config.SignUpTokenExpiresIn
-                ResetPasswordTokenExpiresIn = config.ResetPasswordTokenExpiresIn }
-          EventHandledCallback = fun _ -> () }
-
-    let systemConfig =
-        { JournalConnectionString = context.Configuration.GetConnectionString("MongoJournal")
-          SnapshotConnectionString = context.Configuration.GetConnectionString("MongoSnapshot")
-          ViewsConnectionString = context.Configuration.GetConnectionString("MongoViews") }
-
-#if TEST
-    // Tests must initialize sys by themselves
-    //For tests
-    services.AddSingleton<SystemEnv>(fun _ -> systemEnv)
-    |> ignore
-    services.AddSingleton<SystemConfig>(fun _ -> systemConfig)
-    |> ignore
-#else
-    let env =
+    let envName =
         (context.HostingEnvironment.EnvironmentName.ToLower())
 
-    let akkaConfFile = sprintf "akka.%s.hocon" env
+    let env =
+        createAppConfig envName context.Configuration
 
-    printfn "Akka conf file %s" akkaConfFile
-
-    let sys =
-        setUp systemEnv systemConfig akkaConfFile
-
-    services.AddSingleton<ICQRSSystem>(fun _ -> sys)
-    |> ignore
-
-    let sysConfig: PRR.Sys.SetUp.Config =
-        { JournalConnectionString = context.Configuration.GetConnectionString("MongoJournal")
-          SnapshotConnectionString = context.Configuration.GetConnectionString("MongoSnapshot") }
-
-    let sys1 =
-        PRR.Sys.SetUp.setUp sysConfig akkaConfFile
-
-    services.AddSingleton<ISystemActorsProvider>(SystemActorsProvider sys1)
-    |> ignore
-#endif
-
-    let env = createEnv context.Configuration
-
-    configureServices' env services
-
-
-(*
-let configureLogging (builder: ILoggingBuilder) =
-    builder.AddFilter(fun l -> l.Equals LogLevel.Information).AddConsole().AddDebug()
-    |> ignore
-*)
+    configureAppServices env services
 
 let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigurationBuilder) =
-    let env =
+
+    let envName =
         (context.HostingEnvironment.EnvironmentName.ToLower())
 
-    config.AddJsonFile("appsettings.json", false, true).AddJsonFile(sprintf "appsettings.%s.json" env, true)
+    config.AddJsonFile("appsettings.json", false, true).AddJsonFile(sprintf "appsettings.%s.json" envName, true)
           .AddEnvironmentVariables()
     |> ignore
 
@@ -271,9 +82,6 @@ let main _ =
             .ConfigureAppConfiguration(configureAppConfiguration).Configure(Action<IApplicationBuilder> configureApp)
             .ConfigureServices(configureServices).Build()
 
-
-    // TODO : Prod migrations ?
-    // https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/applying?tabs=dotnet-core-cli#apply-migrations-at-runtime
 #if !TEST
     // test will apply migrations by itself
     migrateDatabase app

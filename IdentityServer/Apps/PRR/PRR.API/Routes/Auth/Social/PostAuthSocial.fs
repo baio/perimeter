@@ -17,12 +17,12 @@ module PostAuthSocial =
         let config = getConfig ctx
         { DataContext = getDataContext ctx
           HashProvider = getHash ctx
-          SocialCallbackUrl = config.Social.CallbackUrl
-          SocialCallbackExpiresIn = config.Social.CallbackExpiresIn
+          SocialCallbackUrl = config.Auth.Social.CallbackUrl
+          SocialCallbackExpiresIn = config.Auth.Social.CallbackExpiresIn
           PerimeterSocialClientIds =
-              { Github = config.PerimeterSocialProviders.Github.ClientId
-                Google = config.PerimeterSocialProviders.Google.ClientId
-                Twitter = config.PerimeterSocialProviders.Twitter.ClientId } }
+              { Github = config.Auth.PerimeterSocialProviders.Github.ClientId
+                Google = config.Auth.PerimeterSocialProviders.Google.ClientId
+                Twitter = config.Auth.PerimeterSocialProviders.Twitter.ClientId } }
 
     let getParams =
         doublet

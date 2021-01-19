@@ -42,11 +42,18 @@
         <Compile Include="Infra\ViewReaderDbProvider.fs" />
         <Compile Include="Infra\HashProvider.fs" />
         <Compile Include="Infra\SHA256.fs" />
-        <Compile Include="Infra\Config.fs" />
         <Compile Include="Infra\AuthStringsProvider.fs" />
         <Compile Include="Infra\SystemActorsProvider.fs" />
         <Compile Include="Infra\HttpRequestFun.fs" />
         <Compile Include="ErrorHandler.fs" />
+        <Compile Include="Configuration\Tracing.fs" />
+        <Compile Include="Configuration\Logging.fs" />
+        <Compile Include="Configuration\Authorization.fs" />
+        <Compile Include="Configuration\Infra.fs" />
+        <Compile Include="Configuration\ConfigureDataContext.fs" />
+        <Compile Include="Configuration\ConfigureActors.fs" />
+        <Compile Include="Configuration\ConfigureAppServices.fs" />
+        <Compile Include="Configuration\CreateAppConfig.fs" />
         <Compile Include="Routes\DIHelpers.fs" />
         <Compile Include="Routes\AuthRoutes.fs" />
         <Compile Include="Routes\MeRoutes.fs" />
@@ -70,10 +77,6 @@
         <Compile Include="Routes\Auth\Social\PostAuthSocial.fs" />
         <Compile Include="Routes\Auth\Social\GetAuthSocialCallback.fs" />
         <Compile Include="Routes\Auth\Social\SocialRoutes.fs" />
-        <Compile Include="Configuration\Tracing.fs" />
-        <Compile Include="Configuration\Logging.fs" />
-        <Compile Include="Configuration\ConfigureServices.fs" />
-        <Compile Include="Configuration\CreateEnv.fs" />
         <Compile Include="Program.fs" />
         <Content Include="appsettings.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>

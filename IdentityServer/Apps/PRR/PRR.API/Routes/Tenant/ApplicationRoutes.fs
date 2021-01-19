@@ -19,8 +19,8 @@ module private ApplicationHandlers =
             (create
              <!> ((fun ctx ->
                       let config = getConfig ctx
-                      { RefreshTokenExpiresIn = config.Jwt.RefreshTokenExpiresIn
-                        IdTokenExpiresIn = config.Jwt.IdTokenExpiresIn
+                      { RefreshTokenExpiresIn = config.Auth.Jwt.RefreshTokenExpiresIn
+                        IdTokenExpiresIn = config.Auth.Jwt.IdTokenExpiresIn
                         AuthStringsProvider = getAuthStringsProvider ctx })
                   |> ofReader)
              <*> ((doublet domainId)
