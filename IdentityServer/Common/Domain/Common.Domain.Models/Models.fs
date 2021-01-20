@@ -51,6 +51,10 @@ module Models =
 
     [<Measure>]
     type milliseconds
+    
+    [<Measure>]
+    type gigabytes
+
 
     type AuthStringsProvider =
         { ClientId: unit -> string

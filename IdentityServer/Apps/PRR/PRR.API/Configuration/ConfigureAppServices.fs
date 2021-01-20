@@ -22,7 +22,8 @@ module ConfigureServices =
           Auth: AuthConfig
           Infra: InfraConfig
           DataContext: DataContextConfig
-          Actors: ActorsConfig }
+          Actors: ActorsConfig
+          HealthCheck: HealthCheckConfig }
 
     type IConfigProvider =
         abstract GetConfig: (unit -> AppConfig)
@@ -39,7 +40,6 @@ module ConfigureServices =
         configureLogging config.Logging services
         configureTracing config.Tracing services
         configureActors config.Actors services
+        configureHealthCheck config.HealthCheck services
         services.AddSingleton<IConfigProvider>(ConfigProvider config)
         |> ignore
-        
-        

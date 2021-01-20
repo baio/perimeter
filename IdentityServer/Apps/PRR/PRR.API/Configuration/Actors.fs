@@ -24,7 +24,7 @@ type ActorsConfig =
       EnvironmentName: string }
 
 [<AutoOpen>]
-module private ConfigureActors =
+module private Actors =
 
     let configureActors (config: ActorsConfig) (services: IServiceCollection) =
 

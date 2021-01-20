@@ -24,7 +24,7 @@ module private Tracing =
             Seq.contains path ignorePaths |> not)
 
 
-    let configureTracing (env: TracingEnv) (services: IServiceCollection) =
+    let configureTracing (env: TracingEnv) (services: IServiceCollection) =        
 
 #if !TEST
         // Change default activity format to OpenTelemetry
