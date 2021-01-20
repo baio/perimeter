@@ -9,7 +9,7 @@ open Serilog
 type DataContextConfig = { ConnectionString: string }
 
 [<AutoOpen>]
-module private ConfigureDataContext =
+module private DataContext =
 
     let configureDataContext (config: DataContextConfig) (services: IServiceCollection) =
 

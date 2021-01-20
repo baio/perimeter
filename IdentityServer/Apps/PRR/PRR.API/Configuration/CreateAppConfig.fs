@@ -62,10 +62,20 @@ module CreateAppConfig =
                     CallbackExpiresIn =
                         configuration.GetValue<int<milliseconds>>("Auth:Social:CallbackExpiresInMilliseconds") } }
 
-        let ignoreObserveApiPaths = [ "/metrics" ]
+        let ignoreObserveApiPaths = [ "/metrics"; "/health" ]
 
-        { Actors = actorsConfig
-          DataContext = { ConnectionString = configuration.GetConnectionString "PostgreSQL" }
+        let psqlConnectionString =
+            configuration.GetConnectionString "PostgreSQL"
+
+        let mongoConnectionString =
+            configuration.GetConnectionString "Mongo"
+
+        { HealthCheck =
+              { PsqlConnectionString = psqlConnectionString
+                MongoConnectionString = mongoConnectionString
+                AllocatedMemory = 5<gigabytes> }
+          Actors = actorsConfig
+          DataContext = { ConnectionString = psqlConnectionString }
           Infra =
               { MongoViewsConnectionString = configuration.GetConnectionString("MongoViews")
                 PasswordSecret = configuration.GetValue<string>("Auth:PasswordSecret") }
