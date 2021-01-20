@@ -22,6 +22,7 @@ module Setup =
     let recreateDataContext (context: WebHostBuilderContext) (services: IServiceCollection) =
         let psqlConnectionString =
             context.Configuration.GetConnectionString "PostgreSQL"
+
         PRR.Data.DataContextMigrations.DataContextHelpers.RecreateDataContext(psqlConnectionString)
         dropDatabase (context.Configuration.GetConnectionString "MongoJournal")
         dropDatabase (context.Configuration.GetConnectionString "MongoSnapshot")
@@ -43,7 +44,6 @@ module Setup =
             else builder
 
 
-    let createServer' =
-        createHost' >> (fun x -> new TestServer(x))
+    let createServer' = createHost' >> TestServer
 
     let createServer () = createServer' false

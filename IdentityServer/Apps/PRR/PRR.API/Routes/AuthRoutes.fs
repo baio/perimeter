@@ -9,6 +9,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open Giraffe
 open Microsoft.AspNetCore.Http
 open Microsoft.AspNetCore.Identity
+open Microsoft.Extensions.Logging
 open Microsoft.Extensions.Primitives
 open PRR.API
 open PRR.Domain.Auth.LogInSSO
@@ -24,7 +25,8 @@ module private Handlers =
             (signUp
              <!> ((fun ctx ->
                       { DataContext = getDataContext ctx
-                        HashProvider = getHash ctx })
+                        HashProvider = getHash ctx
+                        Logger = ctx.GetLogger() })
                   |> ofReader)
              <*> bindValidateJsonAsync validateData)
 
@@ -85,8 +87,8 @@ module private Handlers =
             { DataContext = getDataContext ctx
               PasswordSalter = getPasswordSalter ctx
               CodeGenerator = getHash ctx
-              CodeExpiresIn = config.Jwt.CodeExpiresIn
-              SSOExpiresIn = config.SSOCookieExpiresIn })
+              CodeExpiresIn = config.Auth.Jwt.CodeExpiresIn
+              SSOExpiresIn = config.Auth.SSOCookieExpiresIn })
 
     let private concatQueryString (url: string) key v =
         let kv = sprintf "%s=%s" key v
@@ -161,11 +163,12 @@ module private Handlers =
 
     let getLogInTokenEnv =
         ofReader (fun ctx ->
+            let config = getConfig ctx
             { DataContext = getDataContext ctx
               HashProvider = getHash ctx
               Sha256Provider = getSHA256 ctx
-              SSOCookieExpiresIn = (getConfig ctx).SSOCookieExpiresIn
-              JwtConfig = (getConfig ctx).Jwt })
+              SSOCookieExpiresIn = config.Auth.SSOCookieExpiresIn
+              JwtConfig = config.Auth.Jwt })
 
     let private bindLogInCodeQuery =
         ((fun (x: Data) -> x.Code) <!> bindJsonAsync<Data>)
@@ -204,7 +207,7 @@ module private Handlers =
         ofReader (fun ctx ->
             { DataContext = getDataContext ctx
               CodeGenerator = getHash ctx
-              CodeExpiresIn = (getConfig ctx).Jwt.CodeExpiresIn })
+              CodeExpiresIn = (getConfig ctx).Auth.Jwt.CodeExpiresIn })
 
     let private bindLogSSOQuery sso =
         ofReader (fun _ -> sso)
@@ -258,7 +261,7 @@ module private Handlers =
         logout
         <!> ofReader (fun ctx ->
                 { DataContext = getDataContext ctx
-                  AccessTokenSecret = (getConfig ctx).Jwt.AccessTokenSecret })
+                  AccessTokenSecret = (getConfig ctx).Auth.Jwt.AccessTokenSecret })
         <*> ofReader (fun _ -> data)
 
     let logoutHandler next (ctx: HttpContext) =

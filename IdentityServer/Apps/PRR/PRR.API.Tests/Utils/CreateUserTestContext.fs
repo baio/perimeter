@@ -54,6 +54,9 @@ module UserTestContext =
             | _ -> ()
 
         testFixture.OverrideServices(fun services ->
+
+            printfn "5555"
+
             let sp = services.BuildServiceProvider()
             let systemEnv = sp.GetService<SystemEnv>()
             let systemConfig = sp.GetService<SystemConfig>()
@@ -77,6 +80,8 @@ module UserTestContext =
 
             services.AddSingleton<ISystemActorsProvider>(SystemActorsProvider sys1)
             |> ignore
+
+            printfn "666"
 
             servicesOverridesFun services)
 

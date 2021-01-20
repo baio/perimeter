@@ -1,6 +1,7 @@
 ﻿namespace PRR.Domain.Auth.SignUp
 
 open Common.Domain.Models
+open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
 open PRR.System.Models
 open System.Threading.Tasks
@@ -9,7 +10,8 @@ open System.Threading.Tasks
 module Models =
     type Env =
         { DataContext: DbDataContext
-          HashProvider: HashProvider }
+          HashProvider: HashProvider
+          Logger: ILogger }
 
     [<CLIMutable>]
     type Data =

@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.SignUp
 
+open System.Diagnostics
 open Akkling
 open Common.Domain.Models
 open Common.Domain.Utils
@@ -7,24 +8,30 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open Models
 open PRR.Domain.Auth.Utils
 open PRR.System.Models
+open Microsoft.Extensions.Logging
 
 [<AutoOpen>]
 module SignUp =
 
     let validateData (data: Data) =
+                
         [| (validateNullOrEmpty "firstName" data.FirstName)
            (validateNullOrEmpty "lastName" data.LastName)
            (validateNullOrEmpty "email" data.Email) |]
         |> Array.append (Utils.validatePassword data.Password)
         |> Array.choose id
 
-    let signUp: SignUp =
+    let signUp : SignUp =
         fun env data ->
+            
+            env.Logger.LogInformation("Signup with data {@data}", { data with Password = "***"} )
+            
+            Activity.Current.AddTag("user.email", data.Email)
 
             let dataContext = env.DataContext
 
             task {
-
+                
                 // check user this the same email not exists
                 let! sameEmailUsersCount = query {
                                                for user in dataContext.Users do

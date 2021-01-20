@@ -1,5 +1,7 @@
 ﻿namespace PRR.API.Routes
 
+open Microsoft.Extensions.Configuration
+open PRR.API.Configuration.ConfigureServices
 open PRR.Data.DataContext
 open Giraffe
 open Microsoft.AspNetCore.Http
@@ -22,8 +24,8 @@ module DIHelpers =
     let getPasswordSalter (ctx: HttpContext) =
         ctx.GetService<IPasswordSaltProvider>().SaltPassword
 
-    let getConfig (ctx: HttpContext) = ctx.GetService<IConfig>().GetConfig()
-
+    let getConfig (ctx: HttpContext) =
+        ctx.GetService<IConfigProvider>().GetConfig()
 
     let getSystemActors (ctx: HttpContext) =
         ctx.GetService<ISystemActorsProvider>().SystemActors
