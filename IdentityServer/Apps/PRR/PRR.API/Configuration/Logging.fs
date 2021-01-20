@@ -31,8 +31,9 @@ module private Logging =
         services.AddLogging(fun (builder: ILoggingBuilder) -> builder.ClearProviders().AddSerilog() |> ignore)
         |> ignore
 
+
         Log.Logger <-
-            LoggerConfiguration().Enrich.FromLogContext().WriteTo.Console()
+            LoggerConfiguration().Enrich.FromLogContext().WriteTo.Console().WriteTo.Debug()
                 #if !TEST
                 .WriteTo.Seq(env.Config.ServiceUrl)
                 #endif

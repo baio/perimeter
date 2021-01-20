@@ -83,10 +83,11 @@ let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigu
     |> ignore
 
 [<EntryPoint>]
-let main _ =
+let main args =
 
+    let config = ConfigurationBuilder().AddCommandLine(args).Build()
     let app =
-        WebHostBuilder().UseKestrel().UseUrls("http://*:5000", "https://*:5001").UseIISIntegration()
+        WebHostBuilder().UseConfiguration(config).UseKestrel().UseUrls("http://*:5000", "https://*:5001").UseIISIntegration()
             .ConfigureAppConfiguration(configureAppConfiguration).Configure(Action<IApplicationBuilder> configureApp)
             .ConfigureServices(configureServices).Build()
 
