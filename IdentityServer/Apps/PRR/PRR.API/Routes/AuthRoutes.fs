@@ -15,22 +15,6 @@ open PRR.System.Models
 
 module private Handlers =
 
-    open PRR.Domain.Auth.ResetPasswordConfirm
-
-    let private bindResetPasswordQuery =
-        ((fun (x: Data) -> x.Token) <!> bindJsonAsync<Data>)
-        >>= ((bindSysQuery (ResetPassword.GetToken >> Queries.ResetPassword))
-             >> noneFails (UnAuthorized None))
-
-    let resetPasswordConfirmHandler =
-        sysWrap
-            (resetPasswordConfirm
-             <!> ((fun ctx ->
-                      { DataContext = getDataContext ctx
-                        PasswordSalter = getPasswordSalter ctx })
-                  |> ofReader)
-             <*> bindResetPasswordQuery
-             <*> bindValidateJsonAsync validateData)
 
     open PRR.Domain.Auth.LogIn
 
@@ -252,6 +236,4 @@ let createRoutes () =
                   POST
                   >=> choose [ route "/login" >=> authorizeHandler
                                route "/token" >=> logInTokenHandler
-                               route "/refresh-token" >=> refreshTokenHandler
-                               route "/reset-password/confirm"
-                               >=> resetPasswordConfirmHandler ] ])
+                               route "/refresh-token" >=> refreshTokenHandler ] ])

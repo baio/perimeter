@@ -11,4 +11,5 @@ module AuthRoutes =
             (choose [ Social.Routes.createRoutes ()
                       SignUp.PostSignUp.createRoute ()
                       SignUpConfirm.PostSignUpConfirm.createRoute ()
+                      ResetPasswordConfirm.PostResetPasswordConfirm.createRoute ()
                       ResetPassword.PostResetPassword.createRoute () ])

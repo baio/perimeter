@@ -84,6 +84,9 @@
         <Compile Include="Routes\Auth\SignUpConfirm\PostSignUpConfirm.fs" />
         <Compile Include="Routes\Auth\ResetPassword\OnSuccess.fs" />
         <Compile Include="Routes\Auth\ResetPassword\PostResetPassword.fs" />
+        <Compile Include="Routes\Auth\ResetPasswordConfirm\OnSuccess.fs" />
+        <Compile Include="Routes\Auth\ResetPasswordConfirm\GetTokenItem.fs" />
+        <Compile Include="Routes\Auth\ResetPasswordConfirm\PostResetPasswordConfirm.fs" />
         <Compile Include="Routes\Auth\AuthRoutes.fs" />
         <Compile Include="E2ERoutes.fs" />
         <Compile Include="Program.fs" />
