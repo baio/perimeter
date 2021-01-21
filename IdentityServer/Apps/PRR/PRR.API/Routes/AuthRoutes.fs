@@ -1,4 +1,4 @@
-﻿module PRR.API.Routes.Auth
+﻿module PRR.API.Routes._Auth
 
 open System.Web
 open Common.Domain.Giraffe
@@ -8,27 +8,12 @@ open Common.Utils.ReaderTask
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Giraffe
 open Microsoft.AspNetCore.Http
-open Microsoft.AspNetCore.Identity
-open Microsoft.Extensions.Logging
-open Microsoft.Extensions.Primitives
 open PRR.API
 open PRR.Domain.Auth.LogInSSO
 open PRR.Domain.Auth.LogOut
 open PRR.System.Models
 
 module private Handlers =
-
-    open PRR.Domain.Auth.SignUp
-
-    let signUpHandler =
-        sysWrap
-            (signUp
-             <!> ((fun ctx ->
-                      { DataContext = getDataContext ctx
-                        HashProvider = getHash ctx
-                        Logger = ctx.GetLogger() })
-                  |> ofReader)
-             <*> bindValidateJsonAsync validateData)
 
     open PRR.Domain.Auth.SignUpConfirm
 
@@ -298,8 +283,7 @@ let createRoutes () =
         (choose [ GET >=> route "/logout" >=> logoutHandler
                   POST
                   >=> choose [ route "/login" >=> authorizeHandler
-                               route "/sign-up/confirm" >=> signUpConfirmHandler
-                               route "/sign-up" >=> signUpHandler
+                               route "/sign-up/confirm" >=> signUpConfirmHandler                               
                                route "/token" >=> logInTokenHandler
                                route "/refresh-token" >=> refreshTokenHandler
                                route "/reset-password/confirm"

@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes.AuthSocial
+﻿namespace PRR.API.Routes.Auth.Social
 
 open Akkling
 open FSharpx
@@ -66,6 +66,6 @@ module private Handler =
 
 module GetAuthSocialCallback =
     let createRoute () =
-        route "/auth/social/callback"
+        route "/social/callback"
         >=> GET
         >=> Handler.handle

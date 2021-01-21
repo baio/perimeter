@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes.AuthSocial
+﻿namespace PRR.API.Routes.Auth.Social
 
 open Akkling
 open Microsoft.AspNetCore.Http
@@ -42,4 +42,4 @@ module PostAuthSocial =
         |> wrapHandler
 
 
-    let createRoute () = route "/auth/social" >=> POST >=> handle
+    let createRoute () = route "/social" >=> POST >=> handle

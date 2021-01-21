@@ -8,10 +8,14 @@ open System.Threading.Tasks
 
 [<AutoOpen>]
 module Models =
+
+    type OnSuccess = SignUpSuccess -> Task<unit>
+
     type Env =
         { DataContext: DbDataContext
           HashProvider: HashProvider
-          Logger: ILogger }
+          Logger: ILogger
+          OnSuccess: OnSuccess }
 
     [<CLIMutable>]
     type Data =
@@ -21,4 +25,4 @@ module Models =
           Password: string
           QueryString: string }
 
-    type SignUp = Env -> Data -> Task<Events>
+    type SignUp = Env -> Data -> Task<unit>

@@ -15,7 +15,6 @@ open Microsoft.Extensions.Logging
 open PRR.API
 open PRR.API.Routes
 open PRR.API.Routes.Tenant
-open PRR.API.Routes.AuthSocial
 open PRR.Data.DataContext
 open System
 open PRR.API.Configuration
@@ -25,12 +24,12 @@ open HealthChecks.Prometheus
 let webApp =
     subRoute
         "/api"
-        (choose [ Auth.createRoutes ()
+        (choose [ _Auth.createRoutes ()
                   Me.createRoutes ()
                   Tenant.createRoutes ()
                   PingRoutes.createRoutes ()
                   ApplicationInfo.createRoutes ()
-                  SocialRoutes.createRoutes ()
+                  PRR.API.Routes.Auth.AuthRoutes.createRoutes ()
 #if E2E
                   E2E.createRoutes ()
 #endif

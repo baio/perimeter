@@ -9,6 +9,7 @@ open Common.Utils
 open Common.Utils.ReaderTask
 open PRR.API.Infra.Models
 open PRR.Sys.SetUp
+open PRR.System.Models.CQRSSystem
 
 [<AutoOpen>]
 module DIHelpers =
@@ -29,7 +30,10 @@ module DIHelpers =
 
     let getSystemActors (ctx: HttpContext) =
         ctx.GetService<ISystemActorsProvider>().SystemActors
-
+        
+    let getCQRSSystem (ctx: HttpContext) =
+        ctx.GetService<ICQRSSystem>()
+        
     let getAuthStringsProvider (ctx: HttpContext) =
         ctx.GetService<IAuthStringsProvider>().AuthStringsProvider
 

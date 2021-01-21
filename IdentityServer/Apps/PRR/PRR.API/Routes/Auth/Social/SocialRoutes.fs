@@ -1,8 +1,8 @@
-﻿namespace PRR.API.Routes.AuthSocial
+﻿namespace PRR.API.Routes.Auth.Social
 
 open Giraffe
 
-module SocialRoutes =
+module Routes =
 
     let createRoutes () =
         choose [ PostAuthSocial.createRoute ()

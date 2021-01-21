@@ -22,6 +22,7 @@
         <Compile Include="Common\ReadToken.fs" />
         <Compile Include="Common\ValidateScopes.fs" />
         <Compile Include="Common\JwtConfig.fs" />
+        <Compile Include="Common\MapBadRequest.fs" />
         <Compile Include="LogIn\Models.fs" />
         <Compile Include="LogIn\UserHelpers.fs" />
         <Compile Include="LogIn\LogIn.fs" />

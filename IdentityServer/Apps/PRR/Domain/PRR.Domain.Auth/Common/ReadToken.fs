@@ -11,6 +11,6 @@ module ReadToken =
         try
             let securityToken = tokenHandler.ReadJwtToken(token)
             if (securityToken = null) then None else Some securityToken
-        with :? Exception as ex ->
+        with ex ->
             printfn "Read token fails %O" ex
             None

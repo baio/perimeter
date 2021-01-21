@@ -78,6 +78,9 @@
         <Compile Include="Routes\Auth\Social\PostAuthSocial.fs" />
         <Compile Include="Routes\Auth\Social\GetAuthSocialCallback.fs" />
         <Compile Include="Routes\Auth\Social\SocialRoutes.fs" />
+        <Compile Include="Routes\Auth\SignUp\OnSuccess.fs" />
+        <Compile Include="Routes\Auth\SignUp\PostSignUp.fs" />
+        <Compile Include="Routes\Auth\AuthRoutes.fs" />
         <Compile Include="Program.fs" />
         <Content Include="appsettings.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
