@@ -30,10 +30,9 @@ module DIHelpers =
 
     let getSystemActors (ctx: HttpContext) =
         ctx.GetService<ISystemActorsProvider>().SystemActors
-        
-    let getCQRSSystem (ctx: HttpContext) =
-        ctx.GetService<ICQRSSystem>()
-        
+
+    let getCQRSSystem (ctx: HttpContext) = ctx.GetService<ICQRSSystem>()
+
     let getAuthStringsProvider (ctx: HttpContext) =
         ctx.GetService<IAuthStringsProvider>().AuthStringsProvider
 
@@ -42,3 +41,5 @@ module DIHelpers =
 
     let getHttpRequestFun (ctx: HttpContext) =
         ctx.GetService<IHttpRequestFunProvider>().HttpRequestFun
+
+    let getLogger (ctx: HttpContext) = ctx.GetLogger()

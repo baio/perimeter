@@ -8,18 +8,37 @@ open Models
 open PRR.Data.Entities
 open PRR.System.Models
 open System
+open Microsoft.Extensions.Logging
 
 [<AutoOpen>]
 module SignUpConfirm =
 
     let signUpConfirm: SignUpConfirm =
-        fun createTenant env item ->
+        fun env data ->
 
-            if item.ExpiredAt < DateTime.UtcNow then raise (UnAuthorized None)
+            env.Logger.LogInformation("Signup confirm")
 
-            let dataContext = env.DataContext
+            let token = data.Token
 
             task {
+
+                let! item = env.GetTokenItem token
+
+                let item =
+                    match item with
+                    | Some item ->
+                        env.Logger.LogInformation("Signup item found ${@item}", { item with Password = "***" })
+                        item
+                    | None ->
+                        env.Logger.LogWarning("Couldn't find signup item ${token}", token)
+                        raise (UnAuthorized None)
+
+                if item.ExpiredAt < DateTime.UtcNow then
+                    env.Logger.LogWarning("Signup item expired for token ${token}", token)
+                    raise (UnAuthorized None)
+
+                let dataContext = env.DataContext
+
                 let user =
                     User
                         (FirstName = item.FirstName,
@@ -30,6 +49,10 @@ module SignUpConfirm =
 
                 do! saveChangesAsync dataContext
 
-                return ({ UserId = user.Id; Email = user.Email }, createTenant)
-                       |> UserSignUpConfirmedEvent
+                let successData = { UserId = user.Id; Email = user.Email }
+
+                env.Logger.LogInformation("Signup confirm success data {@data}", successData)
+
+
+                env.OnSuccess successData
             }

@@ -15,30 +15,6 @@ open PRR.System.Models
 
 module private Handlers =
 
-    open PRR.Domain.Auth.SignUpConfirm
-
-    let private bindSignUpTokenQuery =
-        ((fun (x: Data) -> x.Token) <!> bindJsonAsync<Data>)
-        >>= ((bindSysQuery (SignUpToken.GetToken >> Queries.SignUpToken))
-             >> noneFails (UnAuthorized None))
-
-    let signUpConfirmHandler =
-        sysWrap
-            (signUpConfirm
-             <!> (ofReader
-                      // Create default tenant for tests only
-#if TEST
-                      (bindQueryStringField "skipCreateTenant"
-                       >> function
-                       | None -> true
-                       | Some _ -> false)
-#else
-                      (fun _ -> false)
-#endif
-             )
-             <*> (ofReader (fun ctx -> { DataContext = getDataContext ctx }))
-             <*> bindSignUpTokenQuery)
-
     open PRR.Domain.Auth.ResetPassword
 
     let resetPasswordHandler =
@@ -283,7 +259,6 @@ let createRoutes () =
         (choose [ GET >=> route "/logout" >=> logoutHandler
                   POST
                   >=> choose [ route "/login" >=> authorizeHandler
-                               route "/sign-up/confirm" >=> signUpConfirmHandler                               
                                route "/token" >=> logInTokenHandler
                                route "/refresh-token" >=> refreshTokenHandler
                                route "/reset-password/confirm"

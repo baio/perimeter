@@ -9,4 +9,5 @@ module AuthRoutes =
         subRoute
             "/auth"
             (choose [ Social.Routes.createRoutes ()
-                      SignUp.PostSignUp.createRoute () ])
+                      SignUp.PostSignUp.createRoute ()
+                      SignUpConfirm.PostSignUpConfirm.createRoute () ])

@@ -10,6 +10,7 @@ open Microsoft.AspNetCore.Http
 open Microsoft.EntityFrameworkCore
 open Microsoft.Extensions.Configuration
 open MongoDB.Driver
+open PRR.API.Routes.Auth.SignUpConfirm
 open PRR.Domain.Auth.SignUpConfirm
 open PRR.System.Models
 open PRR.System.Utils
@@ -44,6 +45,7 @@ module E2E =
         recreateMongoDb ctx
 
     let createRoutes () =
+
         choose [ route "/e2e/reset"
                  >=> POST
                  >=> fun next ctx ->
@@ -56,11 +58,10 @@ module E2E =
                  >=> fun next ctx ->
                          let dataContext = getDataContext ctx
                          let sys = ctx.GetService<ICQRSSystem>()
+
                          recreatedDbs ctx
                          // signup
-                         let signupEnv = { DataContext = dataContext }
-
-                         let signupItem: SignUpToken.Item =
+                         let signUpConfirmItem: SignUpToken.Item =
                              { FirstName = "test"
                                LastName = "user"
                                Email = "hahijo5833@acceptmail.net"
@@ -68,6 +69,14 @@ module E2E =
                                Token = ""
                                ExpiredAt = DateTime.UtcNow.AddDays(1.)
                                QueryString = None }
+
+
+                         let signUpEnv = PostSignUpConfirm.getEnv true ctx
+
+                         let signUpEnv =
+                             { signUpEnv with
+                                   GetTokenItem = fun _ -> Task.FromResult(Some signUpConfirmItem) }
+
                          // login
                          let loginEnv: PRR.Domain.Auth.LogInToken.Models.Env =
                              let config = getConfig ctx
@@ -78,8 +87,7 @@ module E2E =
                                JwtConfig = config.Auth.Jwt }
 
                          task {
-                             let! evt = signUpConfirm true signupEnv signupItem
-                             sys.EventsRef <! evt
+                             do! signUpConfirm signUpEnv { Token = "xxx" }
                              //
                              Thread.Sleep(100)
 
@@ -92,7 +100,7 @@ module E2E =
                                          for dur in dataContext.DomainUserRole do
                                              where
                                                  (dur.RoleId = PRR.Data.DataContext.Seed.Roles.DomainOwner.Id
-                                                  && dur.UserEmail = signupItem.Email)
+                                                  && dur.UserEmail = signUpConfirmItem.Email)
                                              select
                                                  (dur.Domain.Applications.Single(fun p -> p.IsDomainManagement).ClientId)
                                      }
@@ -104,8 +112,8 @@ module E2E =
                                  PRR.Domain.Auth.LogInEmail.logInEmail
                                      loginEnv
                                      clientId
-                                     signupItem.Email
-                                     signupItem.Password
+                                     signUpConfirmItem.Email
+                                     signUpConfirmItem.Password
 
                              let (result, _, _) = res
 
