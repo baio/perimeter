@@ -17,7 +17,7 @@ module CreateUser =
 
     let logIn' (testFixture: TestFixture) (data: PRR.Domain.Auth.LogIn.Models.Data) =
         testFixture.HttpPostFormAsync'
-            "/api/auth/login"
+            "/api/auth/authorize"
             (Map
                 (seq {
                     ("Client_Id", data.Client_Id)

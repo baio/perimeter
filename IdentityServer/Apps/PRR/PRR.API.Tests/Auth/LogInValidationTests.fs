@@ -55,7 +55,7 @@ module LogInValidation =
         member __.``A Login data with empty client_id should give validation error``() =
             task {
                 let! result =
-                    testFixture.HttpPostFormJsonAsync userToken "/api/auth/login" {| logInData with client_id = "" |}
+                    testFixture.HttpPostFormJsonAsync userToken "/api/auth/authorize" {| logInData with client_id = "" |}
 
                 do! ensureRedirectErrorAsync result
             }
@@ -63,7 +63,7 @@ module LogInValidation =
         [<Fact>]
         member __.``B All empty fields should give validation error``() =
             task {
-                let! result = testFixture.HttpPostFormJsonAsync userToken "/api/auth/login" {|  |}
+                let! result = testFixture.HttpPostFormJsonAsync userToken "/api/auth/authorize" {|  |}
                 do! ensureRedirectErrorAsync result
             }
 
@@ -73,7 +73,7 @@ module LogInValidation =
                 let! result =
                     testFixture.HttpPostFormJsonAsync
                         userToken
-                        "/api/auth/login"
+                        "/api/auth/authorize"
                         {| logInData with
                                response_type = "not_code" |}
 
@@ -86,7 +86,7 @@ module LogInValidation =
                 let! result =
                     testFixture.HttpPostFormJsonAsync
                         userToken
-                        "/api/auth/login"
+                        "/api/auth/authorize"
                         {| logInData with
                                redirect_uri = "redirect_uri" |}
 
@@ -97,7 +97,7 @@ module LogInValidation =
         member __.``E scopes doesn't contain required scopes``() =
             task {
                 let! result =
-                    testFixture.HttpPostFormJsonAsync userToken "/api/auth/login" {| logInData with scope = "openid" |}
+                    testFixture.HttpPostFormJsonAsync userToken "/api/auth/authorize" {| logInData with scope = "openid" |}
 
                 do! ensureRedirectErrorAsync result
             }
@@ -108,7 +108,7 @@ module LogInValidation =
                 let! result =
                     testFixture.HttpPostFormJsonAsync
                         userToken
-                        "/api/auth/login"
+                        "/api/auth/authorize"
                         {| logInData with email = "not_email" |}
 
                 do! ensureRedirectErrorAsync result
@@ -120,7 +120,7 @@ module LogInValidation =
                 let! result =
                     testFixture.HttpPostFormJsonAsync
                         userToken
-                        "/api/auth/login"
+                        "/api/auth/authorize"
                         {| logInData with
                                code_challenge_method = "not_S256" |}
 
