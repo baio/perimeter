@@ -8,11 +8,12 @@ open PRR.Data.DataContext
 open PRR.System.Models
 open System
 open PRR.Domain.Auth.Common
+open Microsoft.Extensions.Logging
 
 [<AutoOpen>]
 module Authorize =
 
-    let validateData (data: Data): BadRequestError array =
+    let private validateData (data: Data) =
         let scope =
             if data.Scope = null then "" else data.Scope
 
@@ -26,18 +27,39 @@ module Authorize =
            (validateNullOrEmpty "code_challenge" data.Code_Challenge)
            (validateNullOrEmpty "code_challenge_method" data.Code_Challenge_Method)
            (validateContains [| "S256" |] "code_challenge_method" data.Code_Challenge_Method) |]
-        |> Array.choose id
+        |> mapBadRequest
 
     let logInSSO: LogInSSO =
-        fun env data sso ->
+        fun env ssoToken data ->
 
-            if sso.ExpiresAt < DateTime.UtcNow then raise (unAuthorized "sso expired")
+            env.Logger.LogInformation("LogIn SSO with ${@data}", { data with Code_Challenge = "***" })
+
+            match validateData data with
+            | Some ex ->
+                env.Logger.LogWarning("Data validation failed {@ex}", ex)
+                raise ex
+            | None -> ()
 
             let dataContext = env.DataContext
             task {
 
+                let! ssoItem = env.GetSSOItem ssoToken
+
+                let ssoItem =
+                    match ssoItem with
+                    | Some ssoItem ->
+                        env.Logger.LogInformation("SSO ${@item} is found", ssoItem)
+                        ssoItem
+                    | None ->
+                        env.Logger.LogWarning("SSO Item is not found for ${token}", ssoItem)
+                        raise (unAuthorized "sso not found")
+
+                if ssoItem.ExpiresAt < DateTime.UtcNow then raise (unAuthorized "sso expired")
+
                 let! { ClientId = clientId; Issuer = issuer } =
-                    PRR.Domain.Auth.LogIn.UserHelpers.getAppInfo env.DataContext data.Client_Id sso.Email 1<minutes>
+                    PRR.Domain.Auth.LogIn.UserHelpers.getAppInfo env.DataContext data.Client_Id ssoItem.Email 1<minutes>
+
+                env.Logger.LogInformation("AppInfo found ${clientId} ${issuer}", clientId, issuer)
 
                 let! app =
                     query {
@@ -50,14 +72,27 @@ module Authorize =
                                      app.AllowedCallbackUrls,
                                      app.IsDomainManagement))
                     }
-                    |> toSingleExnAsync (unAuthorized ("client_id not found"))
+                    |> toSingleOptionAsync
+
+                let app =
+                    match app with
+                    | Some app ->
+                        env.Logger.LogInformation("Application ${@app} found for ${clientId}", app, clientId)
+                        app
+                    | None ->
+                        env.Logger.LogWarning("Application data is not found for ${clientId}", clientId)
+                        raise (unAuthorized ("client_id not found"))
 
                 let (poolTenantId, managementDomainTenantId, callbackUrls, isDomainManagementClient) = app
 
                 let tenantId =
                     if managementDomainTenantId.HasValue then managementDomainTenantId.Value else poolTenantId
 
-                if tenantId <> sso.TenantId then
+                if tenantId <> ssoItem.TenantId then
+
+                    env.Logger.LogInformation
+                        ("${tenantId} is not equal to ${ssoItemTenantId}", tenantId, ssoItem.TenantId)
+
                     // Switch to management client (from any tenant) should be valid
                     // admin should be relogined silently when switching between tenants
                     // TODO : Add IsTenantManagement to app, anyway we can figure it out implicitly like so
@@ -66,7 +101,17 @@ module Authorize =
                     if not
                         (isDomainManagementClient
                          || isTenantManagementClient) then
+                        env.Logger.LogWarning
+                            ("Application tenant and tenant from sso item are different and ${isDomainManagementClient} or ${isTenantManagementClient} are not true, so this is common client, we dont allow switch tenant silently for these",
+                             tenantId,
+                             ssoItem.TenantId)
+
                         return raise (unAuthorized "sso wrong tenant")
+                    else
+                        env.Logger.LogInformation
+                            ("${isDomainManagementClient} or ${isTenantManagementClient} is true, so this is admin client, we allow switch tenant silently for these",
+                             tenantId,
+                             ssoItem.TenantId)
 
                 if (callbackUrls
                     <> "*"
@@ -74,10 +119,14 @@ module Authorize =
                         |> Seq.map (fun x -> x.Trim())
                         |> Seq.contains data.Redirect_Uri
                         |> not)) then
+                    env.Logger.LogWarning
+                        ("${@dataRedirectUri} is not contained in ${@callbackUrls}", data.Redirect_Uri, callbackUrls)
                     return! raise (unAuthorized "return_uri mismatch")
 
-                match! getUserId dataContext sso.Email with
+                match! getUserId dataContext ssoItem.Email with
                 | Some userId ->
+                    env.Logger.LogInformation("${@userId} is found for ${@ssoItemEmail}", userId, ssoItem.Email)
+
                     let code = env.CodeGenerator()
 
                     let result: PRR.Domain.Auth.LogIn.Models.Result =
@@ -85,12 +134,14 @@ module Authorize =
                           State = data.State
                           Code = code }
 
+                    env.Logger.LogInformation("${@result} is ready", result)
+
                     let expiresAt =
                         DateTime.UtcNow.AddMinutes(float env.CodeExpiresIn)
 
                     let scopes = data.Scope.Split " "
 
-                    let! validatedScopes = validateScopes dataContext sso.Email clientId scopes
+                    let! validatedScopes = validateScopes dataContext ssoItem.Email clientId scopes
 
                     let loginItem: LogIn.Item =
                         { Code = code
@@ -104,9 +155,13 @@ module Authorize =
                           RedirectUri = data.Redirect_Uri
                           Social = None }
 
-                    let evt = UserLogInSuccessEvent(loginItem, None)
+                    env.Logger.LogInformation("${@loginItem} ready", loginItem)
 
-                    return (result, evt)
+                    do! env.OnSuccess loginItem
 
-                | None -> return! raise (unAuthorized "Wrong email or password")
+                    return result
+
+                | None ->
+                    env.Logger.LogWarning("userId is not found for ${email}", ssoItem.Email)
+                    return! raise (unAuthorized "Wrong email or password")
             }

@@ -2,6 +2,7 @@
 
 open System.Threading.Tasks
 open Common.Domain.Models
+open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
 open PRR.Sys.Models.Social
 open PRR.System.Models
@@ -28,7 +29,8 @@ module Models =
           GetSocialLoginItem: Token -> Task<Item option>
           HttpRequestFun: HttpRequestFun
           PerimeterSocialClientSecretKeys: PerimeterSocialClientSecretKeys
-          SocialCallbackUrl: string }
+          SocialCallbackUrl: string
+          Logger: ILogger }
 
     type Result =
         { RedirectUrl: Uri

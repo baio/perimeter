@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.Social.SocialCallback
 
+open System.Threading
 open Common.Domain.Models
 open System.Net.Http
 open System.Threading.Tasks
@@ -94,6 +95,7 @@ module Social =
             | None -> return raise NotFound
         }
 
+
     let socialCallback (env: Env, data: Data, ssoToken: string option) =
 
         task {
@@ -133,23 +135,29 @@ module Social =
                   CodeChallenge = item.CodeChallenge
                   CodeChallengeMethod = item.CodeChallengeMethod }
 
+            let success = TaskCompletionSource<_>()
+
+            let onSuccess: PRR.Domain.Auth.LogIn.Models.OnSuccess =
+                fun data ->
+                    success.TrySetResult data
+                    Task.FromResult(())
+
             let env': PRR.Domain.Auth.LogIn.Models.Env =
                 { DataContext = env.DataContext
                   CodeGenerator = env.CodeGenerator
                   PasswordSalter = env.PasswordSalter
                   CodeExpiresIn = env.CodeExpiresIn
-                  SSOExpiresIn = env.SSOExpiresIn }
+                  SSOExpiresIn = env.SSOExpiresIn
+                  Logger = env.Logger
+                  OnSuccess = onSuccess }
 
-            let! (res, evt) = logInUser env' ssoToken loginData
+            let! res = logInUser env' ssoToken loginData
 
             // get redirect url
             let redirectUrl = getSuccessRedirectUrl res
 
             // prepare result
-            let (loginItem, ssoItem) =
-                match evt with
-                | UserLogInSuccessEvent (loginItem, ssoItem) -> (loginItem, ssoItem)
-                | _ -> raise Unexpected'
+            let! (loginItem, ssoItem) = success.Task
 
             let social: Social =
                 { Id = ident.SocialId

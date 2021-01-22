@@ -24,7 +24,4 @@ module PostResetPasswordConfirm =
             return! resetPasswordConfirm env data
         }
 
-    let createRoute () =
-        route "/reset-password/confirm"
-        >=> POST
-        >=> (wrapHandlerNoContent handler)
+    let createRoute () = POST >=> (wrapHandlerNoContent handler)

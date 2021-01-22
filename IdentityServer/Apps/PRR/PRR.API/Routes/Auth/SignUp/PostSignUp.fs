@@ -21,7 +21,4 @@ module PostSignUp =
             return! signUp env data
         }
 
-    let createRoute () =
-        route "/sign-up"
-        >=> POST
-        >=> (wrapHandlerNoContent handler)
+    let createRoute () = POST >=> (wrapHandlerNoContent handler)

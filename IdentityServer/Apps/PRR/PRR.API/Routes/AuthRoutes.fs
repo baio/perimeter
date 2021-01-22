@@ -15,86 +15,35 @@ open PRR.System.Models
 
 module private Handlers =
 
-
-    open PRR.Domain.Auth.LogIn
-
-    let getLogInEnv =
-        ofReader (fun ctx ->
-            let config = getConfig ctx
-            { DataContext = getDataContext ctx
-              PasswordSalter = getPasswordSalter ctx
-              CodeGenerator = getHash ctx
-              CodeExpiresIn = config.Auth.Jwt.CodeExpiresIn
-              SSOExpiresIn = config.Auth.SSOCookieExpiresIn })
-
-    let private concatQueryString (url: string) key v =
-        let kv = sprintf "%s=%s" key v
-        if kv |> (HttpUtility.UrlDecode url).Contains |> not
-        then sprintf "%s%s%s" url (if url.Contains "?" then "&" else "?") kv
-        else url
-
-    let private concatError url = concatQueryString url "error"
-
-    let private concatErrorDescription url =
-        concatQueryString url "error_description"
-
-    let concatErrorAndDescription url err =
-        function
-        | Some descr -> concatErrorDescription (concatError url err) descr
-        | None -> err |> concatError url
-
     let private getRefererHeader ctx = ctx |> bindHeader "Referer"
 
-    let private getRefererUrl ctx =
+    let getRefererUrl ctx =
         ctx
         |> getRefererHeader
         |> function
         | Some x -> x
         | None -> "http://referer-not-found"
 
-    let private redirectUrl ctx err = concatError (getRefererUrl ctx) err
+    let concatQueryString (url: string) key v =
+        let kv = sprintf "%s=%s" key v
+        if kv |> (HttpUtility.UrlDecode url).Contains |> not
+        then sprintf "%s%s%s" url (if url.Contains "?" then "&" else "?") kv
+        else url
 
-    let private getRedirectUrl isSSO redirUrl: GetResultUrlFun<_> =
-        // TODO : Distinguish redir urls
-        fun ctx ->
-            function
-            | Ok res -> sprintf "%s?code=%s&state=%s" res.RedirectUri res.Code res.State
-            | Error ex ->
-                printf "Error %O" ex
-                match isSSO with
-                | true -> "login_required"
-                | false ->
-                    match ex with
-                    | :? BadRequest -> "invalid_request"
-                    | :? UnAuthorized -> "unauthorized_client"
-                    | _ -> "server_error"
-                |> fun err -> if redirUrl <> null then concatError redirUrl err else redirectUrl ctx err
+    let concatQueryStringError url = concatQueryString url "error"
 
-    let private getLoginSuccessRedirectUrl (res: Result) =
-        sprintf "%s?code=%s&state=%s" res.RedirectUri res.Code res.State
+    let private concatErrorDescription url =
+        concatQueryString url "error_description"
 
-    let private getLoginErrorRedirectUrl (refererUrl, redirectUri) (ex: exn) =
-        // RedirectUri could not be retrieved in some cases
-        let redirectUri =
-            if System.String.IsNullOrEmpty redirectUri then refererUrl else redirectUri
-
-        match ex with
-        | :? UnAuthorized as e -> concatErrorAndDescription refererUrl "unauthorized_client" e.Data0
-        | :? BadRequest -> concatError redirectUri "invalid_request"
-        | _ -> concatError redirectUri "server_error"
-
-    let private getRedirectUrl' urls =
+    let concatErrorAndDescription url err =
         function
-        | Ok res -> getLoginSuccessRedirectUrl res
-        | Error (ex: exn) -> getLoginErrorRedirectUrl urls ex
+        | Some descr -> concatErrorDescription (concatQueryStringError url err) descr
+        | None -> err |> concatQueryStringError url
 
-    let logInHandler sso redirectUri =
-        sysWrapRedirect (fun ctx ->
-            let refererUrl = getRefererUrl ctx
-            getRedirectUrl' (refererUrl, redirectUri))
-            (logIn sso
-             <!> getLogInEnv
-             <*> bindValidateFormAsync validateData)
+    let private redirectUrl ctx err =
+        concatQueryStringError (getRefererUrl ctx) err
+
+    ///
 
     open PRR.Domain.Auth.LogInToken
 
@@ -138,60 +87,6 @@ module private Handlers =
              <*> bindRefreshTokenQuery)
 
 
-    open PRR.Domain.Auth.LogInSSO
-
-    let getLogInSSOEnv =
-        ofReader (fun ctx ->
-            { DataContext = getDataContext ctx
-              CodeGenerator = getHash ctx
-              CodeExpiresIn = (getConfig ctx).Auth.Jwt.CodeExpiresIn })
-
-    let private bindLogSSOQuery sso =
-        ofReader (fun _ -> sso)
-        >>= ((bindSysQuery (SSO.GetCode >> Queries.SSO))
-             >> noneFails (unAuthorized "Code not found"))
-
-    let logInSSOHandler sso redirUrl =
-        sysWrapRedirect
-            (getRedirectUrl true redirUrl)
-            (logInSSO
-             <!> getLogInSSOEnv
-             <*> bindValidateFormAsync validateData
-             <*> bindLogSSOQuery sso)
-
-    let authorizeHandler next (ctx: HttpContext) =
-        // https://auth0.com/docs/authorization/configure-silent-authentication
-        task {
-            let ssoCookie = bindCookie "sso" ctx
-            let! data = ctx.BindFormAsync<Data>()
-
-            match data.Prompt with
-            | Some "none" ->
-                let errRedirectUrl =
-                    sprintf "%s?error=login_required" data.Redirect_Uri
-
-                let errRedirect () = redirectTo false errRedirectUrl next ctx
-                match ssoCookie with
-                | Some sso ->
-                    try
-                        return! logInSSOHandler sso data.Redirect_Uri next ctx
-                    with _ ->
-                        // TODO : Appropriate errors !
-                        return! errRedirect ()
-                | None ->
-                    // sso cookie not found just redirect back to itself with sso cookie
-                    let hasher = getHash ctx
-                    let token = hasher ()
-                    // TODO : Secure = TRUE !!!
-                    // TODO : Handle TOO many redirects when cookie couldn't be set
-                    ctx.Response.Cookies.Append("sso", token, CookieOptions(HttpOnly = true, Secure = false))
-                    let url = ctx.Request.HttpContext.GetRequestUrl()
-                    ctx.Response.Redirect(url, true)
-                    ctx.SetStatusCode(307)
-                    return Some ctx
-            | _ -> return! logInHandler ssoCookie data.Redirect_Uri next ctx
-        }
-
     open PRR.Domain.Auth.LogOut
 
     let logout data =
@@ -234,6 +129,5 @@ let createRoutes () =
         "/auth"
         (choose [ GET >=> route "/logout" >=> logoutHandler
                   POST
-                  >=> choose [ route "/login" >=> authorizeHandler
-                               route "/token" >=> logInTokenHandler
+                  >=> choose [ route "/token" >=> logInTokenHandler
                                route "/refresh-token" >=> refreshTokenHandler ] ])

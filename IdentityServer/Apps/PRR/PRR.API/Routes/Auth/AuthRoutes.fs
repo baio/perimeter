@@ -9,7 +9,13 @@ module AuthRoutes =
         subRoute
             "/auth"
             (choose [ Social.Routes.createRoutes ()
-                      SignUp.PostSignUp.createRoute ()
-                      SignUpConfirm.PostSignUpConfirm.createRoute ()
-                      ResetPasswordConfirm.PostResetPasswordConfirm.createRoute ()
-                      ResetPassword.PostResetPassword.createRoute () ])
+                      route "/sign-up"
+                      >=> SignUp.PostSignUp.createRoute ()
+                      route "/sign-up/confirm"
+                      >=> SignUpConfirm.PostSignUpConfirm.createRoute ()
+                      route "/reset-password"
+                      >=> ResetPassword.PostResetPassword.createRoute ()
+                      route "/reset-password/confirm"
+                      >=> ResetPasswordConfirm.PostResetPasswordConfirm.createRoute ()
+                      route "/login"
+                      >=> Authorize.PostAuthorize.createRoute () ])

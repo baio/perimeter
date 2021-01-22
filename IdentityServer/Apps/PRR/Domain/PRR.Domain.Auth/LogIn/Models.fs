@@ -1,7 +1,7 @@
 ﻿namespace PRR.Domain.Auth.LogIn
 
 open Common.Domain.Models
-
+open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
 open PRR.System.Models
 open System.Threading.Tasks
@@ -26,11 +26,15 @@ module Models =
           Code: string
           RedirectUri: string }
 
+    type OnSuccess = (LogIn.Item * SSO.Item option) -> Task<unit>
+
     type Env =
         { DataContext: DbDataContext
           CodeGenerator: HashProvider
           PasswordSalter: StringSalter
           CodeExpiresIn: int<minutes>
-          SSOExpiresIn: int<minutes> }
+          SSOExpiresIn: int<minutes>
+          Logger: ILogger
+          OnSuccess: OnSuccess }
 
-    type LogIn = string option -> Env -> Data -> Task<Result * Events>
+    type LogIn = Env -> string option -> Data -> Task<Result>

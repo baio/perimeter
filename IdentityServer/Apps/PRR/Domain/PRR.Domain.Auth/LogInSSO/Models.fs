@@ -2,6 +2,7 @@
 
 open Common.Domain.Models
 
+open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
 open PRR.System.Models
 open System.Threading.Tasks
@@ -20,9 +21,16 @@ module Models =
           Code_Challenge_Method: string
           Prompt: string option }
 
+    type OnSuccess = LogIn.Item -> Task<unit>
+
+    type GetSSOItem = Token -> Task<SSO.Item option>
+
     type Env =
         { DataContext: DbDataContext
           CodeGenerator: HashProvider
-          CodeExpiresIn: int<minutes> }
+          CodeExpiresIn: int<minutes>
+          Logger: ILogger
+          OnSuccess: OnSuccess
+          GetSSOItem: GetSSOItem }
 
-    type LogInSSO = Env -> Data -> SSO.Item -> Task<PRR.Domain.Auth.LogIn.Models.Result * Events>
+    type LogInSSO = Env -> string -> Data -> Task<PRR.Domain.Auth.LogIn.Models.Result>

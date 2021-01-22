@@ -27,6 +27,7 @@ module private Handler =
         { DataContext = getDataContext ctx
           PasswordSalter = getPasswordSalter ctx
           CodeGenerator = getHash ctx
+          Logger = getLogger ctx
           CodeExpiresIn = config.Auth.Jwt.CodeExpiresIn
           SSOExpiresIn = config.Auth.SSOCookieExpiresIn
           GetSocialLoginItem = getSocialLoginItem ctx

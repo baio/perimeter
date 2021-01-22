@@ -38,7 +38,4 @@ module PostSignUpConfirm =
             return! signUpConfirm env data
         }
 
-    let createRoute () =
-        route "/sign-up/confirm"
-        >=> POST
-        >=> (wrapHandlerNoContent handler)
+    let createRoute () = POST >=> (wrapHandlerNoContent handler)

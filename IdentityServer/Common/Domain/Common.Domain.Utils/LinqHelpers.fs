@@ -61,7 +61,7 @@ module LinqHelpers =
             | Some r -> return r
             | None -> return raise ex
         }
-
+    
     let toSingleAsync x = x |> toSingleExnAsync NotFound
 
     let setUnchanged (dataContext: DbContext) x =

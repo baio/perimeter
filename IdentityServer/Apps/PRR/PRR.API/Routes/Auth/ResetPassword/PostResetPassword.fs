@@ -20,7 +20,4 @@ module PostResetPassword =
             return! resetPassword env data
         }
 
-    let createRoute () =
-        route "/reset-password"
-        >=> POST
-        >=> (wrapHandlerNoContent handler)
+    let createRoute () = POST >=> (wrapHandlerNoContent handler)
