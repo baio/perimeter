@@ -95,6 +95,9 @@
         <Compile Include="Routes\Auth\LogInSSO\GetSSOCode.fs" />
         <Compile Include="Routes\Auth\LogInSSO\Handler.fs" />
         <Compile Include="Routes\Auth\Authorize\PostAuthorize.fs" />
+        <Compile Include="Routes\Auth\AuthorizeToken\OnSuccess.fs" />
+        <Compile Include="Routes\Auth\AuthorizeToken\GetCodeItem.fs" />
+        <Compile Include="Routes\Auth\AuthorizeToken\PostAuthorizeToken.fs" />
         <Compile Include="Routes\Auth\AuthRoutes.fs" />
         <Compile Include="E2ERoutes.fs" />
         <Compile Include="Program.fs" />

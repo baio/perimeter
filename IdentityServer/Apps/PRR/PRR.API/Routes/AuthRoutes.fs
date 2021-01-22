@@ -45,32 +45,15 @@ module private Handlers =
 
     ///
 
-    open PRR.Domain.Auth.LogInToken
+    open PRR.Domain.Auth.RefreshToken
 
     let getLogInTokenEnv =
         ofReader (fun ctx ->
             let config = getConfig ctx
             { DataContext = getDataContext ctx
               HashProvider = getHash ctx
-              Sha256Provider = getSHA256 ctx
-              SSOCookieExpiresIn = config.Auth.SSOCookieExpiresIn
-              JwtConfig = config.Auth.Jwt })
-
-    let private bindLogInCodeQuery =
-        ((fun (x: Data) -> x.Code) <!> bindJsonAsync<Data>)
-        >>= ((bindSysQuery (LogIn.GetCode >> Queries.LogIn))
-             >> noneFails (unAuthorized "Code not found"))
-
-    let logInTokenHandler next ctx =
-        sysWrapOK
-            (logInToken
-             <!> getLogInTokenEnv
-             <*> bindLogInCodeQuery
-             <*> bindValidateJsonAsync validateData)
-            next
-            ctx
-
-    open PRR.Domain.Auth.RefreshToken
+              Logger = getLogger ctx
+              JwtConfig = config.Auth.Jwt }: PRR.Domain.Auth.LogInToken.SignInUserEnv)
 
     let private bindRefreshTokenQuery =
         ((fun (x: Data) -> x.RefreshToken)
@@ -129,5 +112,4 @@ let createRoutes () =
         "/auth"
         (choose [ GET >=> route "/logout" >=> logoutHandler
                   POST
-                  >=> choose [ route "/token" >=> logInTokenHandler
-                               route "/refresh-token" >=> refreshTokenHandler ] ])
+                  >=> choose [ route "/refresh-token" >=> refreshTokenHandler ] ])

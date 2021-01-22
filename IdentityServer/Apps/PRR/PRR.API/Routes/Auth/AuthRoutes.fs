@@ -18,4 +18,6 @@ module AuthRoutes =
                       route "/reset-password/confirm"
                       >=> ResetPasswordConfirm.PostResetPasswordConfirm.createRoute ()
                       route "/authorize"
-                      >=> Authorize.PostAuthorize.createRoute () ])
+                      >=> Authorize.PostAuthorize.createRoute ()
+                      route "/token"
+                      >=> AuthorizeToken.PostAuthorizeToken.createRoute () ])

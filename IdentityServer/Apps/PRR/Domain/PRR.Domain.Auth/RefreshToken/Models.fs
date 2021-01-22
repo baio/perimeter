@@ -16,4 +16,4 @@ module Models =
 
     type AccessToken = Token
 
-    type RefreshToken = Env -> AccessToken -> RefreshToken.Item -> Task<Result * Events>
+    type RefreshToken = SignInUserEnv -> AccessToken -> RefreshToken.Item -> Task<Result * Events>

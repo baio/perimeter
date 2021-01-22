@@ -9,11 +9,10 @@ open Models
 open PRR.Data.DataContext
 open PRR.System.Models
 open System
-open System.Security.Cryptography
-open System.Text.Encodings.Web
 open System.Text.RegularExpressions
 open PRR.Domain.Auth
 open PRR.Domain.Auth.Common
+open Microsoft.Extensions.Logging
 
 [<AutoOpen>]
 module LogInToken =
@@ -26,7 +25,7 @@ module LogInToken =
         >> replace "\/" "_"
         >> replace "=" ""
 
-    let validateData (data: Data): BadRequestError array =
+    let private validateData (data: Data): BadRequestError array =
         [| (validateNullOrEmpty "client_id" data.Client_Id)
            (validateNullOrEmpty "code" data.Code)
            (validateNullOrEmpty "grant_type" data.Grant_Type)
@@ -77,35 +76,67 @@ module LogInToken =
 
 
     let logInToken: LogInToken =
-        fun env item data ->
-            let dataContext = env.DataContext
-            if (item.ExpiresAt < DateTime.UtcNow) then raise (unAuthorized "code expires")
-            if data.Client_Id <> item.ClientId
-            then raise (unAuthorized "client_id mismatch")
-            if data.Redirect_Uri <> item.RedirectUri
-            then raise (unAuthorized "redirect_uri mismatch")
+        fun env data ->
 
-            let codeChallenge =
-                env.Sha256Provider(data.Code_Verifier)
-                |> cleanupCodeChallenge
-
-            let itemCodeChallenge = item.CodeChallenge
-            printfn "****"
-            printfn "Code_Verifier %s" data.Code_Verifier
-            printfn "1 codeChallenge %s" codeChallenge
-            printfn "2 codeChallenge %s" itemCodeChallenge
-            printfn "****"
-            if codeChallenge <> itemCodeChallenge
-            then raise (unAuthorized "code_verifier code_challenge mismatch")
-
-            let socialType =
-                item.Social |> Option.map (fun f -> f.Type)
+            env.Logger.LogInformation("LogInToken with ${@data}", { data with Code = "***" })
 
             task {
+
+                let! item = env.GetCodeItem data.Code
+
+                let item =
+                    match item with
+                    | Some item ->
+                        env.Logger.LogInformation("Signup item found ${@item}", { item with Code = "***" })
+                        item
+                    | None ->
+                        env.Logger.LogWarning("Couldn't find signup item ${code}", data.Code)
+                        raise (UnAuthorized None)
+
+                let dataContext = env.DataContext
+
+                if (item.ExpiresAt < DateTime.UtcNow) then
+                    env.Logger.LogWarning
+                        ("LoginItem item expired at ${expiresAt} for code ${code}", item.ExpiresAt, data.Code)
+                    raise (unAuthorized "code expires")
+
+                if data.Client_Id <> item.ClientId then
+                    env.Logger.LogWarning
+                        ("${clientId} and ${itemClientId} mismatch error", data.Client_Id, item.ClientId)
+                    raise (unAuthorized "client_id mismatch")
+
+                if data.Redirect_Uri <> item.RedirectUri then
+                    env.Logger.LogWarning
+                        ("${redirectUri} and ${itemRedirectUri} mismatch error", data.Redirect_Uri, item.RedirectUri)
+                    raise (unAuthorized "redirect_uri mismatch")
+
+                let codeChallenge =
+                    env.Sha256Provider(data.Code_Verifier)
+                    |> cleanupCodeChallenge
+
+                let itemCodeChallenge = item.CodeChallenge
+
+                if codeChallenge <> itemCodeChallenge then
+                    env.Logger.LogWarning
+                        ("${codeChallenge} and ${itemCodeChallenge} mismatch error", codeChallenge, itemCodeChallenge)
+                    raise (unAuthorized "code_verifier code_challenge mismatch")
+
+                let socialType =
+                    item.Social |> Option.map (fun f -> f.Type)
+
                 match! getUserDataForToken dataContext item.UserId socialType with
                 | Some tokenData ->
+                    env.Logger.LogInformation
+                        ("${@tokenData} for ${userId} and ${socialType} is found", tokenData, item.UserId, socialType)
+
+                    let signInUserEnv: SignInUserEnv =
+                        { DataContext = env.DataContext
+                          JwtConfig = env.JwtConfig
+                          Logger = env.Logger
+                          HashProvider = env.HashProvider }
+
                     let! (result, clientId, isPerimeterClient) =
-                        signInUser env tokenData data.Client_Id (ValidatedScopes item.ValidatedScopes)
+                        signInUser signInUserEnv tokenData data.Client_Id (ValidatedScopes item.ValidatedScopes)
 
                     let refreshTokenItem: RefreshToken.Item =
                         { Token = result.refresh_token
@@ -118,9 +149,13 @@ module LogInToken =
 
                     let! successData = getSuccessData dataContext clientId item.UserId isPerimeterClient
 
-                    let evt =
-                        UserLogInTokenSuccessEvent(item.Code, refreshTokenItem, successData)
+                    env.Logger.LogInformation("Success with ${@successData}", successData)
 
-                    return (result, evt)
-                | None -> return! raiseTask (unAuthorized "user is not found")
+                    do! env.OnSuccess(item.Code, refreshTokenItem, successData)
+
+                    return result
+                | None ->
+                    env.Logger.LogWarning
+                        ("$tokenData for ${userId} and ${socialType} is not found", item.UserId, socialType)
+                    return! raiseTask (unAuthorized "user is not found")
             }

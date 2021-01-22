@@ -78,13 +78,12 @@ module E2E =
                                    GetTokenItem = fun _ -> Task.FromResult(Some signUpConfirmItem) }
 
                          // login
-                         let loginEnv: PRR.Domain.Auth.LogInToken.Models.Env =
+                         let loginEnv: PRR.Domain.Auth.LogInToken.SignInUserEnv =
                              let config = getConfig ctx
                              { DataContext = getDataContext ctx
                                HashProvider = getHash ctx
-                               Sha256Provider = getSHA256 ctx
-                               SSOCookieExpiresIn = config.Auth.SSOCookieExpiresIn
-                               JwtConfig = config.Auth.Jwt }
+                               JwtConfig = config.Auth.Jwt
+                               Logger = getLogger ctx }
 
                          task {
                              do! signUpConfirm signUpEnv { Token = "xxx" }
