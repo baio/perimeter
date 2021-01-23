@@ -77,6 +77,8 @@
         <Compile Include="Routes\Auth\Helpers\GetExnRedirectUrl.fs" />
         <Compile Include="Routes\Auth\AuthSocial\OnSuccess.fs" />
         <Compile Include="Routes\Auth\AuthSocial\PostAuthSocial.fs" />
+        <Compile Include="Routes\Auth\AuthSocialCallback\OnSuccess.fs" />
+        <Compile Include="Routes\Auth\AuthSocialCallback\GetSocialLoginItem.fs" />
         <Compile Include="Routes\Auth\AuthSocialCallback\GetAuthSocialCallback.fs" />
         <Compile Include="Routes\Auth\SignUp\OnSuccess.fs" />
         <Compile Include="Routes\Auth\SignUp\PostSignUp.fs" />

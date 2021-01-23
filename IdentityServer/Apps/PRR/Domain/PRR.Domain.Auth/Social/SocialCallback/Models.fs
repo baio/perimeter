@@ -20,6 +20,8 @@ module Models =
           Twitter: string
           Google: string }
 
+    type OnSuccess = (LogIn.Item * SSO.Item option) -> Task<unit>
+
     type Env =
         { DataContext: DbDataContext
           CodeGenerator: HashProvider
@@ -30,7 +32,8 @@ module Models =
           HttpRequestFun: HttpRequestFun
           PerimeterSocialClientSecretKeys: PerimeterSocialClientSecretKeys
           SocialCallbackUrl: string
-          Logger: ILogger }
+          Logger: ILogger
+          OnSuccess: OnSuccess }
 
     type Result =
         { RedirectUrl: Uri

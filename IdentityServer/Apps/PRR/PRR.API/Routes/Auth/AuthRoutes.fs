@@ -11,7 +11,7 @@ module AuthRoutes =
             (choose [ route "/social"
                       >=> Social.PostAuthSocial.createRoute ()
                       route "/social/callback"
-                      >=> Social.GetAuthSocialCallback.createRoute ()
+                      >=> SocialCallback.GetAuthSocialCallback.createRoute ()
                       route "/sign-up"
                       >=> SignUp.PostSignUp.createRoute ()
                       route "/sign-up/confirm"

@@ -16,6 +16,7 @@ open PRR.Sys.Models.Social
 open Hopac
 open PRR.System.Models
 open System.Linq
+open Microsoft.Extensions.Logging
 
 [<AutoOpen>]
 module Social =
@@ -91,15 +92,19 @@ module Social =
     let private getSocialLoginItem env state =
         task {
             match! env.GetSocialLoginItem state with
-            | Some item -> return item
-            | None -> return raise NotFound
+            | Some item ->
+                env.Logger.LogInformation("SocialLoginItem ${@item} found", item)
+                return item
+            | None ->
+                env.Logger.LogWarning("SocialLoginItem is not found for ${state}", state)
+                return raise (unAuthorized "state is not found")
         }
 
 
-    let socialCallback (env: Env, data: Data, ssoToken: string option) =
-
+    let socialCallback (env: Env) (data: Data) (ssoToken: string option) =
+        let logger = env.Logger
         task {
-
+            logger.LogInformation("SocialCallback starts")
             // Get stored before social login item
             let! item = getSocialLoginItem env data.State
 
@@ -123,6 +128,8 @@ module Social =
             // create user and social identity (if still not created)
             let! userId = createUserAndSocialIdentity env.DataContext ident
 
+            logger.LogInformation("User with ${userId} and social identity created", userId)
+
             // login user as usual with data from social provider
             let loginData: LoginData =
                 { UserId = userId
@@ -134,6 +141,8 @@ module Social =
                   Email = ident.Email
                   CodeChallenge = item.CodeChallenge
                   CodeChallengeMethod = item.CodeChallengeMethod }
+
+            logger.LogInformation("${@loginData} created", { loginData with CodeChallenge = "***" })
 
             let success = TaskCompletionSource<_>()
 
@@ -153,8 +162,12 @@ module Social =
 
             let! res = logInUser env' ssoToken loginData
 
+            logger.LogInformation("loginUser success ${@res}", { res with Code = "***" })
+
             // get redirect url
             let redirectUrl = getSuccessRedirectUrl res
+
+            logger.LogInformation("${@redirectUrl} is ready", redirectUrl)
 
             // prepare result
             let! (loginItem, ssoItem) = success.Task
@@ -163,13 +176,25 @@ module Social =
                 { Id = ident.SocialId
                   Type = item.Type }
 
+            let loginItem = { loginItem with Social = Some social }
+
+            let ssoItem =
+                ssoItem
+                |> Option.map (fun ssoItem -> { ssoItem with Social = Some social })
+
+            let successData = loginItem, ssoItem
+
+            logger.LogInformation("${@successData} is ready", successData)
+
+            do! env.OnSuccess(successData)
+
             let result: Result =
                 { RedirectUrl = redirectUrl
                   SocialLoginToken = item.Token
-                  LoginItem = { loginItem with Social = Some social }
-                  SSOItem =
-                      ssoItem
-                      |> Option.map (fun ssoItem -> { ssoItem with Social = Some social }) }
+                  LoginItem = loginItem
+                  SSOItem = ssoItem }
+
+            logger.LogInformation("${@result} is ready", { result with SocialLoginToken = "***" })
 
             return result
         }
