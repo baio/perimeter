@@ -57,6 +57,7 @@
         <Compile Include="Configuration\CreateAppConfig.fs" />
         <Compile Include="Routes\DIHelpers.fs" />
         <Compile Include="Routes\MeRoutes.fs" />
+        <Compile Include="Routes\PingRoutes.fs" />
         <Compile Include="Routes\Tenant\PermissionConstants.fs" />
         <Compile Include="Routes\Tenant\Utils.fs" />
         <Compile Include="Routes\Tenant\TenantsRoutes.fs" />
@@ -72,13 +73,11 @@
         <Compile Include="Routes\Tenant\TenantUserRoleRoutes.fs" />
         <Compile Include="Routes\Tenant\UserActivities.fs" />
         <Compile Include="Routes\Tenant\TenantRoutes.fs" />
-        <Compile Include="Routes\PingRoutes.fs" />
         <Compile Include="Routes\Auth\Helpers\GetRefererUrl.fs" />
-        <Compile Include="Routes\Auth\Helpers\GetRedirectUrl.fs" />
-        <Compile Include="Routes\Auth\Helpers\getExnRedirectUrl.fs" />
-        <Compile Include="Routes\Auth\Social\PostAuthSocial.fs" />
-        <Compile Include="Routes\Auth\Social\GetAuthSocialCallback.fs" />
-        <Compile Include="Routes\Auth\Social\SocialRoutes.fs" />
+        <Compile Include="Routes\Auth\Helpers\GetExnRedirectUrl.fs" />
+        <Compile Include="Routes\Auth\AuthSocial\OnSuccess.fs" />
+        <Compile Include="Routes\Auth\AuthSocial\PostAuthSocial.fs" />
+        <Compile Include="Routes\Auth\AuthSocialCallback\GetAuthSocialCallback.fs" />
         <Compile Include="Routes\Auth\SignUp\OnSuccess.fs" />
         <Compile Include="Routes\Auth\SignUp\PostSignUp.fs" />
         <Compile Include="Routes\Auth\SignUpConfirm\OnSuccess.fs" />

@@ -8,7 +8,10 @@ module AuthRoutes =
     let createRoutes () =
         subRoute
             "/auth"
-            (choose [ Social.Routes.createRoutes ()
+            (choose [ route "/social"
+                      >=> Social.PostAuthSocial.createRoute ()
+                      route "/social/callback"
+                      >=> Social.GetAuthSocialCallback.createRoute ()
                       route "/sign-up"
                       >=> SignUp.PostSignUp.createRoute ()
                       route "/sign-up/confirm"
@@ -22,6 +25,6 @@ module AuthRoutes =
                       route "/token"
                       >=> AuthorizeToken.PostAuthorizeToken.createRoute ()
                       route "/refresh-token"
-                      >=> RefreshToken.PostRefreshToken.createRoute () 
+                      >=> RefreshToken.PostRefreshToken.createRoute ()
                       route "/logout"
                       >=> LogOut.GetLogout.createRoute () ])

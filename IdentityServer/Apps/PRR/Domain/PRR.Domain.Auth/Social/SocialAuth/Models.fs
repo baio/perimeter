@@ -1,6 +1,8 @@
 ﻿namespace PRR.Domain.Auth.Social.SocialAuth
 
+open System.Threading.Tasks
 open Common.Domain.Models
+open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
 
 [<AutoOpen>]
@@ -30,9 +32,12 @@ module Models =
           Google: string
           Twitter: string }
 
+    type OnSuccess = PRR.Sys.Models.Social.Item -> Task<unit>
     type Env =
         { DataContext: DbDataContext
           HashProvider: HashProvider
           SocialCallbackUrl: string
           SocialCallbackExpiresIn: int<milliseconds>
-          PerimeterSocialClientIds: PerimeterSocialClientIds }
+          PerimeterSocialClientIds: PerimeterSocialClientIds
+          OnSuccess: OnSuccess
+          Logger: ILogger }

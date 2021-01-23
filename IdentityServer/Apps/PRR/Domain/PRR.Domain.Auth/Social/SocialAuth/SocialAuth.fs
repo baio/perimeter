@@ -8,6 +8,7 @@ open Common.Domain.Utils
 open PRR.Data.Entities
 open PRR.Sys.Models.Social
 open PRR.Domain.Auth.Common
+open Microsoft.Extensions.Logging
 
 [<AutoOpen>]
 module SocialAuth =
@@ -52,9 +53,10 @@ module SocialAuth =
         | _ -> getCommonSocialConnectionInfo dataContext clientId socialType
 
 
-    let socialAuth (env: Env, data: Data) =
+    let socialAuth (env: Env) (data: Data) =
+        let logger = env.Logger
         task {
-
+            logger.LogInformation("SocialAuth with ${@data}", { data with Code_Challenge = "***" })
             // Social name to social type
             let socialType = socialName2Type data.Social_Name
 
@@ -62,14 +64,18 @@ module SocialAuth =
             let! socialInfo =
                 getSocialConnectionInfo env.PerimeterSocialClientIds env.DataContext data.Client_Id socialType
 
+            logger.LogInformation("${@socialInfo} found", socialInfo)
+
             // Generate token it will be used as state for social redirect url
             let token = env.HashProvider()
 
             let socialRedirectUrl =
                 getSocialRedirectUrl token env.SocialCallbackUrl socialInfo.ClientId socialType
 
+            logger.LogInformation("${socialRedirectUrl} created", socialRedirectUrl)
+
             // Store login data they will be used when callback hit back
-            let item =
+            let successData =
                 { Token = token
                   ExpiresIn = env.SocialCallbackExpiresIn
                   SocialClientId = socialInfo.ClientId
@@ -83,5 +89,9 @@ module SocialAuth =
                   CodeChallenge = data.Code_Challenge
                   CodeChallengeMethod = data.Code_Challenge_Method }
 
-            return (socialRedirectUrl, item)
+            logger.LogInformation("${successData} ready", successData)
+
+            do! env.OnSuccess successData
+
+            return socialRedirectUrl
         }
