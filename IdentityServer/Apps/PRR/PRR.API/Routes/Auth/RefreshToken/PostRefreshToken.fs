@@ -23,12 +23,17 @@ module internal PostRefreshToken =
 
     let handler ctx =
         let env = getEnv ctx
+
+        let logger = env.Logger        
+
         let bearer = bindAuthorizationBearerHeader ctx
 
         let bearer =
             match bearer with
             | Some bearer -> bearer
-            | None -> raise UnAuthorized'
+            | None -> 
+                logger.LogWarning("Bearer is not found in Authorization header")
+                raise (UnAuthorized (Some "Bearer is not found in Authorization header"))
 
         task {
             let! data = bindJsonAsync ctx
