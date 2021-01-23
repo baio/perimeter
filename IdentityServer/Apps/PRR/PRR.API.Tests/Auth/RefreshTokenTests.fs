@@ -84,7 +84,7 @@ module RefreshToken =
             task {
 
                 let data: RefreshToken.Models.Data =
-                    { RefreshToken = "xxxx" }                                                                           
+                    { RefreshToken = "xxxx"  }                                                                           
 
                 let! result = testFixture.HttpPostAsync accessToken "/api/auth/refresh-token" data
 

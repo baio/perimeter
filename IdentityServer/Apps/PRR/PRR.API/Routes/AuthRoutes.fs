@@ -26,6 +26,7 @@ module private Handlers =
 
     let concatQueryString (url: string) key v =
         let kv = sprintf "%s=%s" key v
+
         if kv |> (HttpUtility.UrlDecode url).Contains |> not
         then sprintf "%s%s%s" url (if url.Contains "?" then "&" else "?") kv
         else url
@@ -43,44 +44,21 @@ module private Handlers =
     let private redirectUrl ctx err =
         concatQueryStringError (getRefererUrl ctx) err
 
-    ///
-
-    open PRR.Domain.Auth.RefreshToken
-
-    let getLogInTokenEnv =
-        ofReader (fun ctx ->
-            let config = getConfig ctx
-            { DataContext = getDataContext ctx
-              HashProvider = getHash ctx
-              Logger = getLogger ctx
-              JwtConfig = config.Auth.Jwt }: PRR.Domain.Auth.LogInToken.SignInUserEnv)
-
-    let private bindRefreshTokenQuery =
-        ((fun (x: Data) -> x.RefreshToken)
-         <!> bindJsonAsync<Data>)
-        >>= ((bindSysQuery (RefreshToken.GetToken >> Queries.RefreshToken))
-             >> noneFails (UnAuthorized None))
-
-    let refreshTokenHandler =
-        sysWrapOK
-            (refreshToken
-             <!> getLogInTokenEnv
-             <*> (bindAuthorizationBearerHeader
-                  >> option2Task (UnAuthorized None))
-             <*> bindRefreshTokenQuery)
 
 
     open PRR.Domain.Auth.LogOut
 
     let logout data =
         logout
-        <!> ofReader (fun ctx ->
-                { DataContext = getDataContext ctx
-                  AccessTokenSecret = (getConfig ctx).Auth.Jwt.AccessTokenSecret })
+        <!> ofReader
+                (fun ctx ->
+                    { DataContext = getDataContext ctx
+                      AccessTokenSecret = (getConfig ctx).Auth.Jwt.AccessTokenSecret })
         <*> ofReader (fun _ -> data)
 
     let logoutHandler next (ctx: HttpContext) =
         ctx.Response.Cookies.Delete("sso")
+
         task {
             let returnUri =
                 bindQueryStringField "return_uri" ctx
@@ -108,8 +86,4 @@ module private Handlers =
 open Handlers
 
 let createRoutes () =
-    subRoute
-        "/auth"
-        (choose [ GET >=> route "/logout" >=> logoutHandler
-                  POST
-                  >=> choose [ route "/refresh-token" >=> refreshTokenHandler ] ])
+    subRoute "/auth" (choose [ GET >=> route "/logout" >=> logoutHandler ])

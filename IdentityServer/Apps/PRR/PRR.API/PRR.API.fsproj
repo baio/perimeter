@@ -98,6 +98,9 @@
         <Compile Include="Routes\Auth\AuthorizeToken\OnSuccess.fs" />
         <Compile Include="Routes\Auth\AuthorizeToken\GetCodeItem.fs" />
         <Compile Include="Routes\Auth\AuthorizeToken\PostAuthorizeToken.fs" />
+        <Compile Include="Routes\Auth\RefreshToken\OnSuccess.fs" />
+        <Compile Include="Routes\Auth\RefreshToken\GetTokenItem.fs" />
+        <Compile Include="Routes\Auth\RefreshToken\PostRefreshToken.fs" />
         <Compile Include="Routes\Auth\AuthRoutes.fs" />
         <Compile Include="E2ERoutes.fs" />
         <Compile Include="Program.fs" />

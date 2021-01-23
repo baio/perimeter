@@ -20,4 +20,6 @@ module AuthRoutes =
                       route "/authorize"
                       >=> Authorize.PostAuthorize.createRoute ()
                       route "/token"
-                      >=> AuthorizeToken.PostAuthorizeToken.createRoute () ])
+                      >=> AuthorizeToken.PostAuthorizeToken.createRoute ()
+                      route "/refresh-token"
+                      >=> RefreshToken.PostRefreshToken.createRoute () ])

@@ -7,13 +7,25 @@ open PRR.Domain.Auth.LogInToken
 open PRR.System.Models
 open System
 open System.Threading.Tasks
+open Microsoft.Extensions.Logging
 
 [<AutoOpen>]
 module Models =
 
     type Data =
-        { RefreshToken: string }
+        { 
+            RefreshToken: Token
+        }
 
-    type AccessToken = Token
+    type OnSuccess = RefreshTokenSuccess -> Task<unit>
 
-    type RefreshToken = SignInUserEnv -> AccessToken -> RefreshToken.Item -> Task<Result * Events>
+    type GetTokenItem = Token -> Task<RefreshToken.Item option>
+    type Env =
+        { DataContext: DbDataContext
+          JwtConfig: JwtConfig
+          Logger: ILogger
+          HashProvider: HashProvider
+          OnSuccess: OnSuccess
+          GetTokenItem: GetTokenItem }
+
+    type RefreshToken = Env -> Token -> Data -> Task<Result>
