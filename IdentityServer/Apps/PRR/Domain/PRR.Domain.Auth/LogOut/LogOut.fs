@@ -21,7 +21,7 @@ module LogOut =
                     (ValidateAudience = false, ValidateIssuer = false, ValidateIssuerSigningKey = true,
                      IssuerSigningKey = SymmetricSecurityKey(Encoding.UTF8.GetBytes(env.AccessTokenSecret)),
                      ValidateLifetime = false)
-            let token = ValidateAccessToken.validateToken accessToken tokenValidationParameters
+            let token = validateToken accessToken tokenValidationParameters
             match token with
             | Some token ->
                 // TODO : Check allowed return url
@@ -31,7 +31,9 @@ module LogOut =
                     |> Options.noneFails (unAuthorized "sub is not found")
 
                 let result = { ReturnUri = data.ReturnUri }
-                let evt = UserLogOutRequestedEvent(sub)
-                Task.FromResult(result, evt)
+                task {
+                    do! env.OnSuccess sub
+                    return result
+                }
             | None ->
                 raise (Exceptions.unAuthorized "access_token is not valid")

@@ -22,4 +22,6 @@ module AuthRoutes =
                       route "/token"
                       >=> AuthorizeToken.PostAuthorizeToken.createRoute ()
                       route "/refresh-token"
-                      >=> RefreshToken.PostRefreshToken.createRoute () ])
+                      >=> RefreshToken.PostRefreshToken.createRoute () 
+                      route "/logout"
+                      >=> LogOut.GetLogout.createRoute () ])

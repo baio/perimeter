@@ -24,12 +24,11 @@ open HealthChecks.Prometheus
 let webApp =
     subRoute
         "/api"
-        (choose [ _Auth.createRoutes ()
-                  Me.createRoutes ()
+        (choose [ Me.createRoutes ()
                   Tenant.createRoutes ()
                   PingRoutes.createRoutes ()
                   ApplicationInfo.createRoutes ()
-                  PRR.API.Routes.Auth.AuthRoutes.createRoutes ()
+                  Auth.AuthRoutes.createRoutes ()
 #if E2E
                   E2E.createRoutes ()
 #endif
@@ -40,6 +39,7 @@ let migrateDatabase (webHost: IWebHost) =
     // https://docs.microsoft.com/en-us/archive/msdn-magazine/2019/april/data-points-ef-core-in-a-docker-containerized-app#migrating-the-database
     use scope = webHost.Services.CreateScope()
     let services = scope.ServiceProvider
+
     try
         let db =
             services.GetRequiredService<DbDataContext>()
@@ -53,17 +53,26 @@ let migrateDatabase (webHost: IWebHost) =
 
 
 let configureCors (builder: CorsPolicyBuilder) =
-    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+    builder
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader()
     |> ignore
 
 let configureApp (app: IApplicationBuilder) =
-    app.UseGiraffeErrorHandler(errorHandler).UseAuthentication().UseAuthorization().UseCors(configureCors)
-       // Configure metrics from prometheus
+    app
+        .UseGiraffeErrorHandler(errorHandler)
+        .UseAuthentication()
+        .UseAuthorization()
+        .UseCors(configureCors)
+        // Configure metrics from prometheus
 #if !TEST
-       .UseHealthChecks(PathString("/health")).UseHealthChecksPrometheusExporter(PathString("/metrics"))
-       .UseMetricServer().UseHttpMetrics()
+        .UseHealthChecks(PathString("/health"))
+        .UseHealthChecksPrometheusExporter(PathString("/metrics"))
+        .UseMetricServer()
+        .UseHttpMetrics()
 #endif
-       .UseGiraffe(webApp)
+        .UseGiraffe(webApp)
 
 let configureServices (context: WebHostBuilderContext) (services: IServiceCollection) =
 
@@ -82,20 +91,30 @@ let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigu
     let envName =
         (context.HostingEnvironment.EnvironmentName.ToLower())
 
-    config.AddJsonFile("appsettings.json", false, true).AddJsonFile(sprintf "appsettings.%s.json" envName, true)
-          .AddEnvironmentVariables()
+    config
+        .AddJsonFile("appsettings.json", false, true)
+        .AddJsonFile(sprintf "appsettings.%s.json" envName, true)
+        .AddEnvironmentVariables()
     |> ignore
 
 [<EntryPoint>]
 let main args =
 
     let config =
-        ConfigurationBuilder().AddCommandLine(args).Build()
+        ConfigurationBuilder()
+            .AddCommandLine(args)
+            .Build()
 
     let app =
-        WebHostBuilder().UseConfiguration(config).UseKestrel().UseUrls("http://*:5000", "https://*:5001")
-            .UseIISIntegration().ConfigureAppConfiguration(configureAppConfiguration)
-            .Configure(Action<IApplicationBuilder> configureApp).ConfigureServices(configureServices).Build()
+        WebHostBuilder()
+            .UseConfiguration(config)
+            .UseKestrel()
+            .UseUrls("http://*:5000", "https://*:5001")
+            .UseIISIntegration()
+            .ConfigureAppConfiguration(configureAppConfiguration)
+            .Configure(Action<IApplicationBuilder> configureApp)
+            .ConfigureServices(configureServices)
+            .Build()
 
 #if !TEST
     // test will apply migrations by itself

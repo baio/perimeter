@@ -56,7 +56,6 @@
         <Compile Include="Configuration\ConfigureAppServices.fs" />
         <Compile Include="Configuration\CreateAppConfig.fs" />
         <Compile Include="Routes\DIHelpers.fs" />
-        <Compile Include="Routes\AuthRoutes.fs" />
         <Compile Include="Routes\MeRoutes.fs" />
         <Compile Include="Routes\Tenant\PermissionConstants.fs" />
         <Compile Include="Routes\Tenant\Utils.fs" />
@@ -76,6 +75,7 @@
         <Compile Include="Routes\PingRoutes.fs" />
         <Compile Include="Routes\Auth\Helpers\GetRefererUrl.fs" />
         <Compile Include="Routes\Auth\Helpers\GetRedirectUrl.fs" />
+        <Compile Include="Routes\Auth\Helpers\getExnRedirectUrl.fs" />
         <Compile Include="Routes\Auth\Social\PostAuthSocial.fs" />
         <Compile Include="Routes\Auth\Social\GetAuthSocialCallback.fs" />
         <Compile Include="Routes\Auth\Social\SocialRoutes.fs" />
@@ -101,6 +101,8 @@
         <Compile Include="Routes\Auth\RefreshToken\OnSuccess.fs" />
         <Compile Include="Routes\Auth\RefreshToken\GetTokenItem.fs" />
         <Compile Include="Routes\Auth\RefreshToken\PostRefreshToken.fs" />
+        <Compile Include="Routes\Auth\Logout\OnSuccess.fs" />
+        <Compile Include="Routes\Auth\Logout\GetLogout.fs" />
         <Compile Include="Routes\Auth\AuthRoutes.fs" />
         <Compile Include="E2ERoutes.fs" />
         <Compile Include="Program.fs" />

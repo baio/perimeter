@@ -12,15 +12,6 @@ open Microsoft.Extensions.Logging
 
 module internal Handler =
 
-    let private getLoginErrorRedirectUrl (refererUrl, redirectUri) (ex: exn) =
-        // RedirectUri could not be retrieved in some cases
-        let redirectUri =
-            if System.String.IsNullOrEmpty redirectUri then refererUrl else redirectUri
-
-        match ex with
-        | :? UnAuthorized as e -> concatErrorAndDescription refererUrl "unauthorized_client" e.Data0
-        | :? BadRequest -> concatQueryStringError redirectUri "invalid_request"
-        | _ -> concatQueryStringError redirectUri "server_error"
 
     let getEnv ctx =
 
@@ -57,7 +48,7 @@ module internal Handler =
                 let refererUrl = getRefererUrl ctx
 
                 let redirectUrlError =
-                    getLoginErrorRedirectUrl (refererUrl, data.Redirect_Uri) ex
+                    getExnRedirectUrl (refererUrl, data.Redirect_Uri) ex
 
                 env.Logger.LogWarning("Redirect on ${@error} to ${redirectUrlError}", ex, redirectUrlError)
 

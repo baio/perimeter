@@ -7,7 +7,6 @@ open PRR.API.Routes
 open PRR.Domain.Auth.LogInSSO
 open Microsoft.Extensions.Logging
 
-
 module internal Handler =
     
     let getEnv ctx =
