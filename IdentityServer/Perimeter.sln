@@ -44,6 +44,10 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PRR.Sys", "Apps\PRR\System\
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PRR.Sys.Models", "Apps\PRR\System\PRR.Sys.Models\PRR.Sys.Models.fsproj", "{4949E937-5880-404B-9A8F-45FD36AB8F1D}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DataAvail.KeyValueStorage.Mongo", "Libs\DataAvail.KeyValueStorage.Mongo\DataAvail.KeyValueStorage.Mongo.fsproj", "{EEE1B0C4-DA15-433D-9A85-8DE74E77F174}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DataAvail.KeyValueStorage.Mongo.Tests", "Libs\DataAvail.KeyValueStorage.Mongo.Tests\DataAvail.KeyValueStorage.Mongo.Tests.fsproj", "{E720AAD5-61B7-416A-B63D-ACE3450E7C9A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -233,6 +237,26 @@ Global
 		{4949E937-5880-404B-9A8F-45FD36AB8F1D}.E2E|Any CPU.Build.0 = Debug|Any CPU
 		{4949E937-5880-404B-9A8F-45FD36AB8F1D}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{4949E937-5880-404B-9A8F-45FD36AB8F1D}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{EEE1B0C4-DA15-433D-9A85-8DE74E77F174}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEE1B0C4-DA15-433D-9A85-8DE74E77F174}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEE1B0C4-DA15-433D-9A85-8DE74E77F174}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEE1B0C4-DA15-433D-9A85-8DE74E77F174}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEE1B0C4-DA15-433D-9A85-8DE74E77F174}.Test|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEE1B0C4-DA15-433D-9A85-8DE74E77F174}.Test|Any CPU.Build.0 = Debug|Any CPU
+		{EEE1B0C4-DA15-433D-9A85-8DE74E77F174}.E2E|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEE1B0C4-DA15-433D-9A85-8DE74E77F174}.E2E|Any CPU.Build.0 = Debug|Any CPU
+		{EEE1B0C4-DA15-433D-9A85-8DE74E77F174}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEE1B0C4-DA15-433D-9A85-8DE74E77F174}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{E720AAD5-61B7-416A-B63D-ACE3450E7C9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E720AAD5-61B7-416A-B63D-ACE3450E7C9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E720AAD5-61B7-416A-B63D-ACE3450E7C9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E720AAD5-61B7-416A-B63D-ACE3450E7C9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E720AAD5-61B7-416A-B63D-ACE3450E7C9A}.Test|Any CPU.ActiveCfg = Debug|Any CPU
+		{E720AAD5-61B7-416A-B63D-ACE3450E7C9A}.Test|Any CPU.Build.0 = Debug|Any CPU
+		{E720AAD5-61B7-416A-B63D-ACE3450E7C9A}.E2E|Any CPU.ActiveCfg = Debug|Any CPU
+		{E720AAD5-61B7-416A-B63D-ACE3450E7C9A}.E2E|Any CPU.Build.0 = Debug|Any CPU
+		{E720AAD5-61B7-416A-B63D-ACE3450E7C9A}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{E720AAD5-61B7-416A-B63D-ACE3450E7C9A}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
