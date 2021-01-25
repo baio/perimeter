@@ -53,6 +53,8 @@
         <Compile Include="Configuration\DataContext.fs" />
         <Compile Include="Configuration\Actors.fs" />
         <Compile Include="Configuration\HealthCheck.fs" />
+        <Compile Include="Configuration\SendMail.fs" />
+        <Compile Include="Configuration\KeyValueStorage.fs" />
         <Compile Include="Configuration\ConfigureAppServices.fs" />
         <Compile Include="Configuration\CreateAppConfig.fs" />
         <Compile Include="Routes\DIHelpers.fs" />

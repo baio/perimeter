@@ -12,14 +12,15 @@ type DbRecord<'a> =
       Key: string
       Partition: string
       Data: 'a
-      ExpireAt: DateTime }
+      ExpireAt: DateTime
+      Tag: string option }
 
 module Mongo =
 
     let private MongoKeyExistsErrorHResult = -2146233088
     let private MongoKeyNotFoundErrorHResult = -2146233079
 
-    let private createExpireAtIndex (collection: IMongoCollection<DbRecord<obj>>) =
+    let private createExpireAtIndex () =
         // https://docs.mongodb.com/manual/tutorial/expire-data/
         let expireAt =
             FieldDefinition<DbRecord<obj>>.op_Implicit("ExpireAt")
@@ -30,13 +31,12 @@ module Mongo =
 
         let indexOptions = CreateIndexOptions()
         indexOptions.ExpireAfter <- Nullable(TimeSpan.FromSeconds(float 0))
-        let indexKeyDefinition = CreateIndexModel(indexes, indexOptions)
-        collection.Indexes.CreateOneAsync(indexKeyDefinition)
+        CreateIndexModel(indexes, indexOptions)
 
-    let private createKeyIndex (collection: IMongoCollection<DbRecord<obj>>) =
+    let private createFieldPartitionIndex (fieldName, isUniq) =
 
         let keyFieldDefinition =
-            FieldDefinition<DbRecord<obj>>.op_Implicit("Key")
+            FieldDefinition<DbRecord<obj>>.op_Implicit(fieldName)
 
         let partitionFieldDefinition =
             FieldDefinition<DbRecord<obj>>.op_Implicit("Partition")
@@ -53,25 +53,33 @@ module Mongo =
             builderIndexKeys.Combine([ keyIndex; partitionIndex ])
 
         let indexOptions =
-            CreateIndexOptions(Unique = (Nullable true))
+            CreateIndexOptions(Unique = (Nullable isUniq))
 
-        collection.Indexes.CreateOneAsync(compoundIndex, indexOptions)
+        CreateIndexModel(compoundIndex, indexOptions)
 
+
+    let private createKeyIndex () = createFieldPartitionIndex ("Key", true)
+
+    let private createTagIndex () = createFieldPartitionIndex ("Tag", false)
 
     type KeyValueStorageMongo(connectionString: string, dbName: string, collectionName: string) =
         let connectionString = connectionString
         let client = MongoClient(connectionString)
         let db = client.GetDatabase(dbName)
 
+
         member __.CreateIndexes() =
             let collection =
                 db.GetCollection<DbRecord<obj>>(collectionName)
 
-            createExpireAtIndex collection
-            createKeyIndex collection
+            collection.Indexes.CreateMany
+                ([ createExpireAtIndex ()
+                   createKeyIndex ()
+                   createTagIndex () ])
 
         interface IKeyValueStorage with
-            member __.AddValue key v expiresAt =
+
+            member __.AddValue key v expiresAt tag =
                 let collection =
                     db.GetCollection<DbRecord<'a>> collectionName
 
@@ -84,7 +92,8 @@ module Mongo =
                                   Key = key
                                   Data = v
                                   Partition = partition
-                                  ExpireAt = expiresAt }
+                                  ExpireAt = expiresAt
+                                  Tag = tag }
 
                         return Result.Ok(())
                     with
@@ -126,4 +135,17 @@ module Mongo =
                     | 0L -> return Result.Error(RemoveValueError.KeyNotFound)
                     | 1L -> return Result.Ok(())
                     | n -> return raise (InvalidOperationException(sprintf "Too many items to delete %i" n))
+                }
+
+            member __.RemoveValuesByTag<'a> tag =
+
+                let collection =
+                    db.GetCollection<DbRecord<_>> collectionName
+
+                let partition = getPartitionName<'a> ()
+
+                task {
+                    let! x = collection.DeleteManyAsync(fun doc -> doc.Tag = (Some tag) && doc.Partition = partition)
+                    printfn "1111 %O %O %s" x tag partition                     
+                    return ()
                 }

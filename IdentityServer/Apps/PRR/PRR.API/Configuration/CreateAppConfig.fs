@@ -18,7 +18,7 @@ module CreateAppConfig =
               RefreshTokenExpiresIn = configuration.GetValue<int<minutes>>("Auth:Jwt:RefreshTokenExpiresInMinutes")
               CodeExpiresIn = configuration.GetValue<int<minutes>>("Auth:Jwt:CodeExpiresInMinutes") }
 
-        let mailEnv: MailEnv =
+        let mailSenderConfig: MailSenderConfig =
             { FromEmail = configuration.GetValue("MailSender:FromEmail")
               FromName = configuration.GetValue("MailSender:FromName")
               Project =
@@ -35,7 +35,7 @@ module CreateAppConfig =
               MongoViews = configuration.GetConnectionString("MongoViews") }
 
         let actorsConfig: ActorsConfig =
-            { Mail = mailEnv
+            { Mail = mailSenderConfig
               SendGridApiKey = sendGridApiKey
               Jwt = jwt
               ConnectionStrings = connectionStrings
@@ -46,6 +46,8 @@ module CreateAppConfig =
 
         let authConfig: AuthConfig =
             { Jwt = jwt
+              ResetPasswordTokenExpiresIn =
+                  configuration.GetValue<int<minutes>>("Auth:ResetPasswordTokenExpiresInMinutes")
               SSOCookieExpiresIn = configuration.GetValue<int<minutes>>("Auth:SSOCookieExpiresInMinutes")
               PerimeterSocialProviders =
                   { Github =
@@ -62,6 +64,11 @@ module CreateAppConfig =
                     CallbackExpiresIn =
                         configuration.GetValue<int<milliseconds>>("Auth:Social:CallbackExpiresInMilliseconds") } }
 
+        let keyValueStorageConfig: KeyValueStorageConfig =
+            { ConnectionString = configuration.GetValue("MongoKeyValueStorage:ConnectionString")
+              DbName = configuration.GetValue("MongoKeyValueStorage:DbName")
+              CollectionName = configuration.GetValue("MongoKeyValueStorage:CollectionName") }
+
         let ignoreObserveApiPaths = [ "/metrics"; "/health" ]
 
         let psqlConnectionString =
@@ -70,7 +77,10 @@ module CreateAppConfig =
         let mongoConnectionString =
             configuration.GetConnectionString "Mongo"
 
-        { HealthCheck =
+        { SendGridApiKey = sendGridApiKey
+          MailSender = mailSenderConfig
+          KeyValueStorage = keyValueStorageConfig
+          HealthCheck =
               { PsqlConnectionString = psqlConnectionString
                 MongoConnectionString = mongoConnectionString
                 AllocatedMemory = 5<gigabytes> }

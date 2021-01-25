@@ -2,13 +2,12 @@
 
 open Akkling
 open System.Threading.Tasks
+open DataAvail.KeyValueStorage
 open PRR.System.Models
-open PRR.Domain.Auth.ResetPassword
+open PRR.Domain.Auth.ResetPasswordConfirm
 
 [<AutoOpen>]
 module private OnSuccess =
 
-    let onSuccess (sys: ICQRSSystem): OnSuccess =
-        fun data ->
-            sys.EventsRef <! (ResetPasswordUpdated data)
-            Task.FromResult()
+    let onSuccess (KeyValueStorage: IKeyValueStorage): OnSuccess =
+        fun email -> KeyValueStorage.RemoveValuesByTag<ResetPassword.Item>(email)

@@ -1,9 +1,11 @@
 ﻿namespace PRR.API.Tests.Utils
 
+open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.DependencyInjection
 open PRR.API.Infra
 open PRR.System.Models
 open System.Threading
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 [<AutoOpen>]
 module UserTestContext =
@@ -53,9 +55,27 @@ module UserTestContext =
                 resetPasswordTokenHandle.Set() |> ignore
             | _ -> ()
 
-        testFixture.OverrideServices(fun services ->
+        let overrideKeyValueStorage (kvStorage: IKeyValueStorage) (services: IServiceCollection) =
+            let kvStorage' =
+                { new IKeyValueStorage with
+                    member __.AddValue k v e t =
+                        task {
+                            let! res = kvStorage.AddValue k v e t
+                            resetPasswordToken <- Some k
+                            resetPasswordTokenHandle.Set() |> ignore
+                            return res
+                        }
 
-            printfn "5555"
+                    member __.GetValue<'a> k = kvStorage.GetValue<'a> k
+
+                    member __.RemoveValue<'a> k = kvStorage.RemoveValue<'a> k
+
+                    member __.RemoveValuesByTag<'a> k = kvStorage.RemoveValuesByTag<'a> k }
+
+            services.AddSingleton<IKeyValueStorage>(kvStorage')
+
+
+        testFixture.OverrideServices(fun services ->
 
             let sp = services.BuildServiceProvider()
             let systemEnv = sp.GetService<SystemEnv>()
@@ -81,7 +101,7 @@ module UserTestContext =
             services.AddSingleton<ISystemActorsProvider>(SystemActorsProvider sys1)
             |> ignore
 
-            printfn "666"
+            overrideKeyValueStorage (sp.GetService<IKeyValueStorage>()) services
 
             servicesOverridesFun services)
 

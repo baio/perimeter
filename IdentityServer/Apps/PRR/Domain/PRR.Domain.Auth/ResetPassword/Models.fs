@@ -9,12 +9,14 @@ open System.Threading.Tasks
 [<AutoOpen>]
 module Models =
 
-    type OnSuccess = string -> Task<unit>
+    type OnSuccess = ResetPassword.Item -> Task<unit>
 
     type Env =
         { DataContext: DbDataContext
           Logger: ILogger
-          OnSuccess: OnSuccess }
+          OnSuccess: OnSuccess
+          TokenExpiresIn: int<minutes>
+          HashProvider: HashProvider }
 
     [<CLIMutable>]
     type Data = { Email: Email }

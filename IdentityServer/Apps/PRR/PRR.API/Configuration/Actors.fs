@@ -15,7 +15,7 @@ type ActorsConnectionsString =
       MongoViews: string }
 
 type ActorsConfig =
-    { Mail: MailEnv
+    { Mail: MailSenderConfig
       SendGridApiKey: string
       Jwt: JwtConfig
       SignUpTokenExpiresIn: int<minutes>
@@ -31,7 +31,7 @@ module private Actors =
         let sha256 = SHA256.Create()
         let hashProvider = HashProvider sha256
 
-        let mailEnv: MailEnv =
+        let mailEnv: MailSenderConfig =
             { FromEmail = config.Mail.FromEmail
               FromName = config.Mail.FromName
               Project =

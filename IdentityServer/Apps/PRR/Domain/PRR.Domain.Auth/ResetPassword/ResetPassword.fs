@@ -3,8 +3,11 @@
 open Common.Domain.Models
 open Common.Domain.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open HttpFs.Logging
 open PRR.Domain.Auth.ResetPassword.Models
 open Microsoft.Extensions.Logging
+open PRR.System.Models
+open System
 
 [<AutoOpen>]
 module ResetPassword =
@@ -25,6 +28,17 @@ module ResetPassword =
                     env.Logger.LogWarning("User ${email} is not found", data.Email)
                     raise NotFound
                 else
-                    env.Logger.LogWarning("User ${email} found successfully", data.Email)
-                    env.OnSuccess data.Email
+                    let successData: ResetPassword.Item =
+                        {
+                          ExpiredAt = DateTime.UtcNow.AddMinutes(float (int env.TokenExpiresIn)) 
+                          Email = data.Email
+#if E2E
+                          Token = "HASH"
+#else
+                          Token = env.HashProvider()
+#endif
+                        }
+                    
+                    env.Logger.LogWarning("${@successData} ready", {successData with Token = "***"})
+                    env.OnSuccess successData
             }

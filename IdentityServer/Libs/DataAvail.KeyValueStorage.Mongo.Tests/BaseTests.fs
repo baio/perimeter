@@ -1,56 +1,30 @@
 namespace Tests
 
-open System.Configuration
 open System.Threading
-open DataAvail.KeyValueStorage.Core
 open DataAvail.KeyValueStorage.Core
 open DataAvail.KeyValueStorage.Mongo
 open System
-open Microsoft.Extensions.Configuration
-open MongoDB.Driver
 open Xunit
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Xunit.Priority
 
 [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
-module StorageTests =
+module BaseTests =
 
     let mutable storage: IKeyValueStorage option = None
-
 
     [<PartitionName("DataA")>]
     type Data = { SomeField: string }
 
     [<Fact>]
-    let ``A. Before all`` () =
-
-        let configuration =
-            ConfigurationBuilder().AddJsonFile("appsettings.json").Build()
-
-        let connectionString =
-            configuration.Item("Mongo:ConnectionString")
-
-        let dbName = configuration.Item("Mongo:DbName")
-
-        let collectionName =
-            configuration.Item("Mongo:CollectionName")
-
-        let client = MongoClient(connectionString)
-        client.DropDatabase(dbName)
-
-        storage <- Some(KeyValueStorageMongo(connectionString, dbName, collectionName) :> IKeyValueStorage)
-
-    [<Fact>]
-    let ``B. Create Indexes`` () =
-        task {
-            let! _ = (storage.Value :?> KeyValueStorageMongo).CreateIndexes()
-            Assert.True(true)
-        }
+    let ``A. Before all`` () = 
+        let kvStorage = setUp ()
+        storage <- Some kvStorage    
 
     [<Fact>]
     let ``C. Add item to storage should be success`` () =
         task {
-            let! _ = storage.Value.AddValue "one" { SomeField = "test" } (DateTime.Now.AddSeconds(float 100))
+            let! _ = storage.Value.AddValue "one" { SomeField = "test" } (DateTime.Now.AddSeconds(float 100)) None
             Assert.True(true)
         }
 
@@ -58,7 +32,7 @@ module StorageTests =
     [<Fact>]
     let ``D. Add item with the same key should give KeyAlreadyExists error`` () =
         task {
-            let! result = storage.Value.AddValue "one" { SomeField = "test" } DateTime.Now
+            let! result = storage.Value.AddValue "one" { SomeField = "test" } DateTime.Now None
             Assert.Equal(Result.Error(KeyAlreadyExists), result)
         }
 
@@ -80,7 +54,7 @@ module StorageTests =
     [<Fact>]
     let ``F. Add short lived item and then retrieve it should fail with KeyNotFound`` () =
         task {
-            let! _ = storage.Value.AddValue "short" { SomeField = "short lived item" } (DateTime.Now)
+            let! _ = storage.Value.AddValue "short" { SomeField = "short lived item" } (DateTime.Now) None
             Thread.Sleep(1)
             let! result = storage.Value.GetValue<Data> "short"
             Assert.Equal(Result.Error(GetValueError.KeyNotFound), result)

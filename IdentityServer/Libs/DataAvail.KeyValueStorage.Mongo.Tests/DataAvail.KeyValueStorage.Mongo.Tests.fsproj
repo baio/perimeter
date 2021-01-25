@@ -8,7 +8,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Tests.fs" />
+        <Compile Include="SetUp.fs" />
+        <Compile Include="BaseTests.fs" />
+        <Compile Include="TagTests.fs" />
         <Compile Include="Program.fs" />
         <Content Include="appsettings.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>

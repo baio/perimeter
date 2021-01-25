@@ -52,7 +52,7 @@ module ResetPasswordTests =
                 let! res = testFixture.HttpPostAsync' "/api/auth/reset-password" resetPasswordData
                 do! ensureSuccessAsync res
                 testContext.Value.ResetPasswordTokenHandle.WaitOne() |> ignore
-                testContext.Value.GetResetPasswordToken() |> should be (not' null)
+                testContext.Value.GetResetPasswordToken() |> should be (not' null)                
             }
 
         [<Fact>]

@@ -7,7 +7,7 @@ open PRR.System.Models
 module SendMail =
 
 
-    let private getConfirmSignupHtml (proj: ProjectEnv) (item: SignUpToken.Item) =
+    let private getConfirmSignupHtml (proj: ProjectConfig) (item: SignUpToken.Item) =
         sprintf """
             <h2>Hello %s %s</h2>
             <p>
@@ -20,7 +20,7 @@ module SendMail =
              | Some x -> (sprintf "&%s" x)
              | None -> "") proj.Name proj.Name
 
-    let private getResetPasswordHtml (proj: ProjectEnv) (item: ResetPassword.Item) =
+    let private getResetPasswordHtml (proj: ProjectConfig) (item: ResetPassword.Item) =
         sprintf """
             <h2>Hello</h2>
             <p>
@@ -31,7 +31,7 @@ module SendMail =
         """ proj.BaseUrl proj.ResetPasswordUrl item.Token proj.Name
 
 
-    let private createSendMail' (env: MailEnv) (prms: SendMailParams) =
+    let private createSendMail' (env: MailSenderConfig) (prms: SendMailParams) =
         let mail: SendMailData =
             { FromEmail = env.FromEmail
               FromName = env.FromName
@@ -47,7 +47,7 @@ module SendMail =
         | ResetPasswordMail item ->
             { mail with Html = getResetPasswordHtml env.Project item }
 
-    let createSendMail (env: MailEnv) (sender: MailSender) =
+    let createSendMail (env: MailSenderConfig) (sender: MailSender) =
         let sendMail: SendMail =
             fun prms -> createSendMail' env prms |> sender
         sendMail

@@ -9,11 +9,22 @@ open PRR.Domain.Auth.ResetPassword
 module PostResetPassword =
 
     let private handler ctx =
+
+        let logger = getLogger ctx
+
+        let onSuccessEnv: OnSuccess.Env =
+            { SendMail = getSendMail ctx
+              KeyValueStorage = getKeyValueStorage ctx
+              Logger = logger }
+
+        let env =
+            { DataContext = getDataContext ctx
+              OnSuccess = onSuccess onSuccessEnv
+              Logger = logger
+              HashProvider = getHash ctx
+              TokenExpiresIn = (getConfig ctx).Auth.ResetPasswordTokenExpiresIn }
+
         task {
-            let env =
-                { DataContext = getDataContext ctx
-                  OnSuccess = onSuccess (getCQRSSystem ctx)
-                  Logger = getLogger ctx }
 
             let! data = bindJsonAsync ctx
 

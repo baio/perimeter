@@ -7,8 +7,7 @@ open System
 
 module ResetPassword =
     
-    // Models
-    
+    // Models    
     type Item = {
         Email: Email
         Token: Token
