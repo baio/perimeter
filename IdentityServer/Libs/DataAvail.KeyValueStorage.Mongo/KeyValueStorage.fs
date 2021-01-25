@@ -6,6 +6,10 @@ open System.Threading.Tasks
 [<AutoOpen>]
 module Core =
 
+    type PartitionName( name: string ) =
+        inherit Attribute()
+        member __.Name = name
+        
     type AddValueError = KeyAlreadyExists
 
     type GetValueError = KeyNotFound
@@ -15,4 +19,4 @@ module Core =
     type IKeyValueStorage =
         abstract AddValue: key:string -> v:'a -> expiresAt: DateTime -> Task<Result<unit, AddValueError>>
         abstract GetValue<'a> : key:string -> Task<Result<'a, GetValueError>>
-        abstract RemoveValue: key:string -> Task<Result<unit, RemoveValueError>>
+        abstract RemoveValue<'a> : key:string -> Task<Result<unit, RemoveValueError>>

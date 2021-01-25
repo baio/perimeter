@@ -6,6 +6,7 @@
 
     <ItemGroup>
         <Compile Include="KeyValueStorage.fs" />
+        <Compile Include="PartitionName.fs" />
         <Compile Include="Mongo\KeyValueStorageMongo.fs" />
     </ItemGroup>
 

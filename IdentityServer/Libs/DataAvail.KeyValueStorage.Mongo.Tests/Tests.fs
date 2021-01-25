@@ -17,6 +17,8 @@ module StorageTests =
 
     let mutable storage: IKeyValueStorage option = None
 
+
+    [<PartitionName("DataA")>]
     type Data = { SomeField: string }
 
     [<Fact>]
@@ -87,7 +89,7 @@ module StorageTests =
     [<Fact>]
     let ``J. Remove item should success`` () =
         task {
-            let! result = storage.Value.RemoveValue "one"
+            let! result = storage.Value.RemoveValue<Data> "one"
             Assert.Equal(Result.Ok(()), result)
         }
 
@@ -101,6 +103,6 @@ module StorageTests =
     [<Fact>]
     let ``L. Remove not existent item should fail with KeyNotFound error`` () =
         task {
-            let! result = storage.Value.RemoveValue "one"
+            let! result = storage.Value.RemoveValue<Data> "one"
             Assert.Equal(Result.Error((RemoveValueError.KeyNotFound)), result)
         }

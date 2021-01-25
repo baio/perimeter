@@ -155,6 +155,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\Common\Domain\Common.Domain.Giraffe\Common.Domain.Giraffe.fsproj" />
       <ProjectReference Include="..\..\..\Common\Domain\Common.Domain.Utils\Common.Domain.Utils.fsproj" />
+      <ProjectReference Include="..\..\..\Libs\DataAvail.KeyValueStorage.Mongo\DataAvail.KeyValueStorage.Mongo.fsproj" />
       <ProjectReference Include="..\Data\PRR.Data.DataContextMigrations\PRR.Data.DataContextMigrations.csproj" />
       <ProjectReference Include="..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
       <ProjectReference Include="..\Domain\PRR.Domain.Auth\PRR.Domain.Auth.fsproj" />
