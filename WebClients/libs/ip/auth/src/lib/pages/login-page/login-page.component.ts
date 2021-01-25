@@ -26,7 +26,7 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
     appInfo: AppInfo;
 
     get submitAction() {
-        return `${this.baseUrl}/auth/login`;
+        return `${this.baseUrl}/auth/authorize`;
     }
 
     constructor(

@@ -6,7 +6,7 @@ export const environment = {
     production: false,
     baseUrl: '/api',
     auth: {
-        loginUrl: '/auth/login',
+        loginUrl: '/auth/authorize',
         signupUrl: '/auth/register',
         tokenUrl: '/auth/token',
         logoutUrl: '/auth/logout',

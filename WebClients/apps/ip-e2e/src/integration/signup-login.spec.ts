@@ -20,7 +20,7 @@ describe('signup login page', () => {
 
         cy.route({
             method: 'POST',
-            url: '**/auth/login',
+            url: '**/auth/authorize',
             status: 200,
             delay: 10,
             response: {},
