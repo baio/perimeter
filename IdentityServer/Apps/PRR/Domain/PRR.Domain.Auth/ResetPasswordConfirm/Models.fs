@@ -12,7 +12,7 @@ module Models =
 
     type Data = { Token: string; Password: string }
     type OnSuccess = Email -> Task<unit>
-    type GetTokenItem = string -> Task<Item option>
+    type GetTokenItem = string -> Task<Email option>
 
     type Env =
         { DataContext: DbDataContext

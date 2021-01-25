@@ -58,19 +58,19 @@ module UserTestContext =
         let overrideKeyValueStorage (kvStorage: IKeyValueStorage) (services: IServiceCollection) =
             let kvStorage' =
                 { new IKeyValueStorage with
-                    member __.AddValue k v e t =
+                    member __.AddValue k v x =
                         task {
-                            let! res = kvStorage.AddValue k v e t
+                            let! res = kvStorage.AddValue k v x
                             resetPasswordToken <- Some k
                             resetPasswordTokenHandle.Set() |> ignore
                             return res
                         }
 
-                    member __.GetValue<'a> k = kvStorage.GetValue<'a> k
+                    member __.GetValue<'a> k x = kvStorage.GetValue<'a> k x
 
-                    member __.RemoveValue<'a> k = kvStorage.RemoveValue<'a> k
+                    member __.RemoveValue<'a> k x = kvStorage.RemoveValue<'a> k x
 
-                    member __.RemoveValuesByTag<'a> k = kvStorage.RemoveValuesByTag<'a> k }
+                    member __.RemoveValuesByTag<'a> k x = kvStorage.RemoveValuesByTag<'a> k x }
 
             services.AddSingleton<IKeyValueStorage>(kvStorage')
 

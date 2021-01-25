@@ -7,9 +7,11 @@ open Common.Domain.Models.Exceptions
 open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
 open PRR.API.Infra.Mail.Models
+open PRR.API.Routes.Auth.KVPartitionNames
 open PRR.System.Models
 open PRR.Domain.Auth.ResetPassword
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open DataAvail.KeyValueStorage.Core
 
 [<AutoOpen>]
 module private OnSuccess =
@@ -23,7 +25,13 @@ module private OnSuccess =
         fun data ->
             task {
 
-                let! result = env.KeyValueStorage.AddValue data.Token data data.ExpiredAt (Some data.Email)
+                let options =
+                    { addValueDefaultOptions with
+                          Tag = data.Email
+                          ExpiresAt = (Some data.ExpiredAt)
+                          PartitionName = RESET_PASSWORD_KV_PARTITION_NAME }
+
+                let! result = env.KeyValueStorage.AddValue data.Token data.Email (Some options)
 
                 match result with
                 | Result.Error AddValueError.KeyAlreadyExists ->

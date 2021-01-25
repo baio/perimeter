@@ -75,6 +75,7 @@
         <Compile Include="Routes\Tenant\TenantUserRoleRoutes.fs" />
         <Compile Include="Routes\Tenant\UserActivities.fs" />
         <Compile Include="Routes\Tenant\TenantRoutes.fs" />
+        <Compile Include="Routes\Auth\KVPartitionNames.fs" />
         <Compile Include="Routes\Auth\Helpers\GetRefererUrl.fs" />
         <Compile Include="Routes\Auth\Helpers\GetExnRedirectUrl.fs" />
         <Compile Include="Routes\Auth\AuthSocial\OnSuccess.fs" />

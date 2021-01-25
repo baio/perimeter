@@ -17,14 +17,14 @@ module BaseTests =
     type Data = { SomeField: string }
 
     [<Fact>]
-    let ``A. Before all`` () = 
+    let ``A. Before all`` () =
         let kvStorage = setUp ()
-        storage <- Some kvStorage    
+        storage <- Some kvStorage
 
     [<Fact>]
     let ``C. Add item to storage should be success`` () =
         task {
-            let! _ = storage.Value.AddValue "one" { SomeField = "test" } (DateTime.Now.AddSeconds(float 100)) None
+            let! _ = storage.Value.AddValue "one" { SomeField = "test" } None
             Assert.True(true)
         }
 
@@ -32,7 +32,7 @@ module BaseTests =
     [<Fact>]
     let ``D. Add item with the same key should give KeyAlreadyExists error`` () =
         task {
-            let! result = storage.Value.AddValue "one" { SomeField = "test" } DateTime.Now None
+            let! result = storage.Value.AddValue "one" { SomeField = "test" } None
             Assert.Equal(Result.Error(KeyAlreadyExists), result)
         }
 
@@ -40,43 +40,51 @@ module BaseTests =
     [<Fact>]
     let ``E.A Retrieve item from storage should be success`` () =
         task {
-            let! result = storage.Value.GetValue<Data> "one"
+            let! result = storage.Value.GetValue<Data> "one" None
             Assert.Equal(Result.Ok({ SomeField = "test" }), result)
         }
 
     [<Fact>]
     let ``E.B Read not existent item should give KeyNotFound`` () =
         task {
-            let! result = storage.Value.GetValue<Data> "two"
+            let! result = storage.Value.GetValue<Data> "two" None
             Assert.Equal(Result.Error(GetValueError.KeyNotFound), result)
         }
 
     [<Fact>]
     let ``F. Add short lived item and then retrieve it should fail with KeyNotFound`` () =
         task {
-            let! _ = storage.Value.AddValue "short" { SomeField = "short lived item" } (DateTime.Now) None
+            let! _ =
+                storage.Value.AddValue
+                    "short"
+                    { SomeField = "short lived item" }
+                    (Some
+                        { addValueDefaultOptions with
+                              ExpiresAt = (Some DateTime.Now) })
+
             Thread.Sleep(1)
-            let! result = storage.Value.GetValue<Data> "short"
+
+            let! result = storage.Value.GetValue<Data> "short" None
             Assert.Equal(Result.Error(GetValueError.KeyNotFound), result)
         }
 
     [<Fact>]
     let ``J. Remove item should success`` () =
         task {
-            let! result = storage.Value.RemoveValue<Data> "one"
+            let! result = storage.Value.RemoveValue<Data> "one" None
             Assert.Equal(Result.Ok(()), result)
         }
 
     [<Fact>]
     let ``K. Get removed item should fail with KeyNotFound error`` () =
         task {
-            let! result = storage.Value.GetValue<Data> "one"
+            let! result = storage.Value.GetValue<Data> "one" None
             Assert.Equal(Result.Error(GetValueError.KeyNotFound), result)
         }
 
     [<Fact>]
     let ``L. Remove not existent item should fail with KeyNotFound error`` () =
         task {
-            let! result = storage.Value.RemoveValue<Data> "one"
+            let! result = storage.Value.RemoveValue<Data> "one" None
             Assert.Equal(Result.Error((RemoveValueError.KeyNotFound)), result)
         }

@@ -1,6 +1,7 @@
 ﻿namespace DataAvail.KeyValueStorage
 
 open System
+open System
 open MongoDB.Bson
 open MongoDB.Driver
 open FSharp.Control.Tasks.V2.ContextInsensitive
@@ -62,11 +63,31 @@ module Mongo =
 
     let private createTagIndex () = createFieldPartitionIndex ("Tag", false)
 
+    let getExpireAtOption =
+        Option.bind (fun x -> x.ExpiresAt)
+        >> Option.defaultValue DateTime.MaxValue
+
+    let getTagOption =
+        Option.bind (fun (x: AddValueOptions) -> x.Tag |> Option.ofObj)
+
+    let getAddValuePartitionOption =
+        Option.bind (fun (x: AddValueOptions) -> x.PartitionName |> Option.ofObj)
+
+    let getGetValuePartitionOption =
+        Option.bind (fun (x: GetValueOptions) -> x.PartitionName |> Option.ofObj)
+
+    let getAddValuePartitionName<'a> =
+        getAddValuePartitionOption
+        >> Option.defaultWith getPartitionName<'a>
+
+    let getGetValuePartitionName<'a> =
+        getGetValuePartitionOption
+        >> Option.defaultWith getPartitionName<'a>
+
     type KeyValueStorageMongo(connectionString: string, dbName: string, collectionName: string) =
         let connectionString = connectionString
         let client = MongoClient(connectionString)
         let db = client.GetDatabase(dbName)
-
 
         member __.CreateIndexes() =
             let collection =
@@ -79,11 +100,11 @@ module Mongo =
 
         interface IKeyValueStorage with
 
-            member __.AddValue key v expiresAt tag =
+            member __.AddValue key v options =
                 let collection =
                     db.GetCollection<DbRecord<'a>> collectionName
 
-                let partition = getPartitionName<'a> ()
+                let partition = getAddValuePartitionName<'a> options
 
                 task {
                     try
@@ -92,8 +113,8 @@ module Mongo =
                                   Key = key
                                   Data = v
                                   Partition = partition
-                                  ExpireAt = expiresAt
-                                  Tag = tag }
+                                  ExpireAt = getExpireAtOption options
+                                  Tag = getTagOption options }
 
                         return Result.Ok(())
                     with
@@ -102,11 +123,11 @@ module Mongo =
                     | ex -> return raise ex
                 }
 
-            member __.GetValue<'a> key =
+            member __.GetValue<'a> key options =
                 let collection =
                     db.GetCollection<DbRecord<'a>> collectionName
 
-                let partition = getPartitionName<'a> ()
+                let partition = getGetValuePartitionName<'a> options
 
                 task {
                     try
@@ -121,12 +142,12 @@ module Mongo =
                     | ex -> return raise ex
                 }
 
-            member __.RemoveValue<'a> key =
+            member __.RemoveValue<'a> key options =
 
                 let collection =
                     db.GetCollection<DbRecord<_>> collectionName
 
-                let partition = getPartitionName<'a> ()
+                let partition = getGetValuePartitionName<'a> options
 
                 task {
                     let! result = collection.DeleteOneAsync(fun doc -> doc.Key = key && doc.Partition = partition)
@@ -137,15 +158,14 @@ module Mongo =
                     | n -> return raise (InvalidOperationException(sprintf "Too many items to delete %i" n))
                 }
 
-            member __.RemoveValuesByTag<'a> tag =
+            member __.RemoveValuesByTag<'a> tag options =
 
                 let collection =
                     db.GetCollection<DbRecord<_>> collectionName
 
-                let partition = getPartitionName<'a> ()
+                let partition = getGetValuePartitionName<'a> options
 
                 task {
-                    let! x = collection.DeleteManyAsync(fun doc -> doc.Tag = (Some tag) && doc.Partition = partition)
-                    printfn "1111 %O %O %s" x tag partition                     
+                    let! _ = collection.DeleteManyAsync(fun doc -> doc.Tag = (Some tag) && doc.Partition = partition)
                     return ()
                 }

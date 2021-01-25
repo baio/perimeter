@@ -22,20 +22,17 @@ module ResetPasswordConfirm =
             env.Logger.LogInformation("Reset password confirm")
 
             task {
-                let! item = env.GetTokenItem data.Token
+                let! tokenEmail = env.GetTokenItem data.Token
 
-                let item =
-                    match item with
+                let tokenEmail =
+                    match tokenEmail with
                     | Some item ->
-                        env.Logger.LogInformation("Reset password item found ${item}", { item with Token = "***" })
+                        env.Logger.LogInformation("Reset password item found ${item}", item)
                         item
                     | None ->
                         env.Logger.LogWarning("Reset password item is not found for ${token}", data.Token)
                         raise UnAuthorized'
 
-                if item.ExpiredAt < DateTime.UtcNow then
-                    env.Logger.LogWarning("Reset password item expired for token ${token}", data.Token)
-                    raise UnAuthorized'
 
                 let saltedPassword = env.PasswordSalter data.Password
 
@@ -43,9 +40,9 @@ module ResetPasswordConfirm =
                         (UnAuthorized None)
                         env.DataContext.Users
                         {| Password = saltedPassword |}
-                        {| Email = item.Email |}
+                        {| Email = tokenEmail |}
 
                 env.Logger.LogInformation("Reset password confirm success")
 
-                do! env.OnSuccess item.Email
+                do! env.OnSuccess tokenEmail
             }

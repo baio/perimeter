@@ -1,5 +1,6 @@
 ﻿namespace PRR.API.Routes.Auth.ResetPasswordConfirm
 
+open PRR.API.Routes.Auth.KVPartitionNames
 open Common.Domain.Giraffe
 open DataAvail.KeyValueStorage
 open Microsoft.Extensions.Logging
@@ -18,7 +19,10 @@ module private GetTokenItem =
 
     let getTokenItem (env: Env) token =
         task {
-            let! result = env.KeyValueStorage.GetValue<ResetPassword.Item> token
+            let! result =
+                env.KeyValueStorage.GetValue<string>
+                    token
+                    (Some { PartitionName = RESET_PASSWORD_KV_PARTITION_NAME })
 
             return match result with
                    | Ok result -> Some result
