@@ -44,9 +44,20 @@ module E2E =
         recreatedDataContextDb ctx
         recreateMongoDb ctx
 
+
+    let createUserTenant (sysEnv: SystemEnv) userId email =
+
+        PRR.System.CreateUserTenant.createUserTenant
+            { GetDataContextProvider = sysEnv.GetDataContextProvider
+              AuthConfig = sysEnv.AuthConfig
+              AuthStringsProvider = sysEnv.AuthStringsProvider }
+            { Email = email; UserId = userId }
+
+
     let createRoutes () =
 
-        choose [ route "/e2e/reset"
+        choose [                 
+                 route "/e2e/reset"
                  >=> POST
                  >=> fun next ctx ->
                          // Recreate db on start
@@ -71,7 +82,9 @@ module E2E =
                                QueryString = None }
 
 
-                         let signUpEnv = PostSignUpConfirm.getEnv true ctx
+                         let signUpEnv = PostSignUpConfirm.getEnv ctx
+
+                         let sysEnv = ctx.GetService<SystemEnv>()
 
                          let signUpEnv =
                              { signUpEnv with
@@ -86,9 +99,13 @@ module E2E =
                                Logger = getLogger ctx }
 
                          task {
-                             do! signUpConfirm signUpEnv { Token = "xxx" }
+                             let! userId = signUpConfirm signUpEnv { Token = "xxx" }
                              //
                              Thread.Sleep(100)
+
+                             let sysEnv = ctx.GetService<SystemEnv>()
+
+                             let! _ = createUserTenant sysEnv userId signUpConfirmItem.Email
 
                              let! data = ctx |> bindJsonAsync<ReinitData>
 

@@ -20,4 +20,4 @@ module Models =
           OnSuccess: OnSuccess
           GetTokenItem: GetTokenItem }
 
-    type SignUpConfirm = Env -> Data -> Task<unit>
+    type SignUpConfirm = Env -> Data -> Task<int>

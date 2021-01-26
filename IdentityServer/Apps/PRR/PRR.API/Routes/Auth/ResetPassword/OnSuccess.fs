@@ -24,7 +24,6 @@ module private OnSuccess =
     let onSuccess (env: Env): OnSuccess =
         fun data ->
             task {
-
                 let options =
                     { addValueDefaultOptions with
                           Tag = data.Email
@@ -39,11 +38,11 @@ module private OnSuccess =
                     return raise (Unexpected')
                 | _ -> ()
 
-                { From = "admin"
-                  To = data.Email
-                  Subject = "welcome"
-                  Template = ResetPasswordMail data }
-                |> env.SendMail
+                do! env.SendMail
+                        { From = "admin"
+                          To = data.Email
+                          Subject = "welcome"
+                          Template = ResetPasswordMail data }
 
                 return ()
             }

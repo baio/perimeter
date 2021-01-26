@@ -15,7 +15,7 @@ open System.Threading.Tasks
 open PRR.Domain.Tenant.Helpers
 
 [<AutoOpen>]
-module private CreateUserTenant =
+module CreateUserTenant =
     type Env =
         { GetDataContextProvider: GetDataContextProvider
           AuthConfig: AuthConfig

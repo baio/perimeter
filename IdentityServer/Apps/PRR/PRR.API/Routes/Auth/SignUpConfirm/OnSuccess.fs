@@ -2,14 +2,15 @@
 
 open Akkling
 open System.Threading.Tasks
+open DataAvail.KeyValueStorage
+open PRR.API.Configuration
+open PRR.API.Routes.Auth
 open PRR.System.Models
 open PRR.Domain.Auth.SignUpConfirm
+open KVPartitionNames
 
 [<AutoOpen>]
 module private OnSuccess =
 
-    let onSuccess fCreateTenant (sys: ICQRSSystem): OnSuccess =
-        fun data ->
-            sys.EventsRef
-            <! (UserSignUpConfirmedEvent(data, fCreateTenant))
-            Task.FromResult()
+    let onSuccess (keyValueStorage: IKeyValueStorage): OnSuccess =
+        fun data -> keyValueStorage.RemoveValuesByTag data.Email (Some { PartitionName = SIGN_UP_KV_PARTITION_NAME })

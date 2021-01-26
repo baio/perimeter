@@ -16,11 +16,14 @@ module UserTestContext =
           TenantWaitHandle: AutoResetEvent
           GetConfirmToken: unit -> string
           GetTenant: unit -> CreatedTenantInfo
+          SetTenant: CreatedTenantInfo -> unit
           GetResetPasswordToken: unit -> string
           ResetPasswordTokenHandle: AutoResetEvent }
 
     let createUserTestContextWithServicesOverrides servicesOverridesFun (testFixture: TestFixture) =
-
+        
+        let mutable createdUserId: int option = None
+                
         let mutable confirmToken: string = null
 
         let confirmTokenWaitHandle =
@@ -61,8 +64,19 @@ module UserTestContext =
                     member __.AddValue k v x =
                         task {
                             let! res = kvStorage.AddValue k v x
-                            resetPasswordToken <- Some k
-                            resetPasswordTokenHandle.Set() |> ignore
+
+                            match x with
+                            | Some x ->
+                                match x.PartitionName with
+                                | "ResetPassword" ->
+                                    resetPasswordToken <- Some k
+                                    resetPasswordTokenHandle.Set() |> ignore
+                                | "SignUp" ->
+                                    confirmToken <- k 
+                                    confirmTokenWaitHandle.Set() |> ignore
+                                | _ -> ()
+                            | None -> ()
+
                             return res
                         }
 
@@ -102,6 +116,7 @@ module UserTestContext =
             |> ignore
 
             overrideKeyValueStorage (sp.GetService<IKeyValueStorage>()) services
+            |> ignore
 
             servicesOverridesFun services)
 
@@ -112,7 +127,8 @@ module UserTestContext =
           GetConfirmToken = fun () -> confirmToken
           GetTenant = fun () -> tenant.Value
           GetResetPasswordToken = fun () -> resetPasswordToken.Value
-          ResetPasswordTokenHandle = resetPasswordTokenHandle }
+          ResetPasswordTokenHandle = resetPasswordTokenHandle
+          SetTenant = fun t -> tenant <- (Some t)}
 
 
     let createUserTestContext x =

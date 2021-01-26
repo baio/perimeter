@@ -60,7 +60,7 @@ module SignIn =
         do setConsoleOutput output
         interface IClassFixture<TestFixture>
 
-        [<Fact>]
+        // [<Fact>]
         [<Priority(-1)>]
         member __.``0 BeforeAll``() =
             testFixture.OverrideServices(fun services ->
@@ -83,7 +83,7 @@ module SignIn =
             }
 
 
-        [<Fact>]
+        // [<Fact>]
         [<Priority(1)>]
         member __.``A LogIn must be success``() =
 

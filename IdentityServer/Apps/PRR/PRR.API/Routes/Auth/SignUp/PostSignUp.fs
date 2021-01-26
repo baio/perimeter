@@ -10,11 +10,21 @@ module PostSignUp =
 
     let private handler ctx =
         task {
+
+            let logger = getLogger ctx
+
+            let successEnv: OnSuccess.Env =
+                { SendMail = getSendMail ctx
+                  KeyValueStorage = getKeyValueStorage ctx
+                  Logger = logger }
+
             let env =
                 { DataContext = getDataContext ctx
                   HashProvider = getHash ctx
-                  Logger = ctx.GetLogger()
-                  OnSuccess = onSuccess (getCQRSSystem ctx) }
+                  Logger = logger
+                  OnSuccess = onSuccess successEnv
+                  TokenExpiresIn = (getConfig ctx).Auth.SignUpTokenExpiresIn
+                  PasswordSalter = (getPasswordSalter ctx) }
 
             let! data = bindJsonAsync ctx
 

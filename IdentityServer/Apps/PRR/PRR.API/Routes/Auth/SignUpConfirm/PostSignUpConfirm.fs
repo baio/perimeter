@@ -20,22 +20,24 @@ module PostSignUpConfirm =
         false
 #endif
 
-    let getEnv fCreateTenant ctx =
+    let getEnv ctx =
+        let kvStorage = getKeyValueStorage ctx
+        let logger = getLogger ctx
+
+        let getTokenItemEnv: GetTokenItem.Env =
+            { Logger = logger
+              KeyValueStorage = kvStorage }
+
         { DataContext = getDataContext ctx
           Logger = getLogger ctx
-          OnSuccess = onSuccess fCreateTenant (getCQRSSystem ctx)
-          GetTokenItem = getTokenItem ctx }
+          OnSuccess = onSuccess kvStorage
+          GetTokenItem = getTokenItem getTokenItemEnv }
 
     let private handler ctx =
         task {
-
-            let fCreateTenant = getFCreateTenant ctx
-
-            let env = getEnv fCreateTenant ctx
-
+            let env = getEnv ctx
             let! data = bindJsonAsync<Data> ctx
-
             return! signUpConfirm env data
         }
 
-    let createRoute () = POST >=> (wrapHandlerNoContent handler)
+    let createRoute () = POST >=> (wrapHandlerOK handler)

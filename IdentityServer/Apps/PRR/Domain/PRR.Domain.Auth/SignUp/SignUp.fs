@@ -5,6 +5,7 @@ open Akkling
 open Common.Domain.Models
 open Common.Domain.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open HttpFs.Logging
 open Models
 open PRR.Domain.Auth.Common
 open PRR.Domain.Auth.Utils
@@ -60,24 +61,30 @@ module SignUp =
                 let token = "HASH"
 #else
                 let token = env.HashProvider()
+
 #endif
+                let encodedPassword = env.PasswordSalter data.Password
 
                 let signupSuccessData =
                     { FirstName = data.FirstName
                       LastName = data.LastName
                       Token = token
-                      Password = data.Password
+                      Password = encodedPassword
                       Email = data.Email
                       QueryString =
                           if System.String.IsNullOrEmpty data.QueryString
                           then None
                           else (Some(data.QueryString.TrimStart('?'))) }
 
+                let expiresAt =
+                    System.DateTime.UtcNow.AddMinutes(float (int env.TokenExpiresIn))
+
                 env.Logger.LogInformation
-                    ("Signup success data {@data}",
+                    ("Signup success data {@data} and expires at ${expiresAt}",
                      { signupSuccessData with
                            Password = "***"
-                           Token = "***" })
+                           Token = "***" },
+                     expiresAt)
 
-                do! env.OnSuccess signupSuccessData
+                do! env.OnSuccess(signupSuccessData, expiresAt)
             }

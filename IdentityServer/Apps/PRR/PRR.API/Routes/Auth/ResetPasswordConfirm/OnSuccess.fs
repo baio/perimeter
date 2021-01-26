@@ -10,8 +10,5 @@ open PRR.Domain.Auth.ResetPasswordConfirm
 [<AutoOpen>]
 module private OnSuccess =
 
-    let onSuccess (KeyValueStorage: IKeyValueStorage): OnSuccess =
-        fun email ->
-            KeyValueStorage.RemoveValuesByTag
-                email
-                (Some { PartitionName = RESET_PASSWORD_KV_PARTITION_NAME })
+    let onSuccess (keyValueStorage: IKeyValueStorage): OnSuccess =
+        fun email -> keyValueStorage.RemoveValuesByTag email (Some { PartitionName = RESET_PASSWORD_KV_PARTITION_NAME })

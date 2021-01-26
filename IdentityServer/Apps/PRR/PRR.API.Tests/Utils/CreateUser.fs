@@ -10,7 +10,8 @@ open System
 open System.Security.Cryptography
 open System.Threading
 open System.Web
-
+open PRR.API.Routes.E2E
+open PRR.System.Models
 
 [<AutoOpen>]
 module CreateUser =
@@ -78,7 +79,7 @@ module CreateUser =
             let scope =
                 [ "openid"; "profile"; "email" ]
                 |> Seq.append scopes
-                |> String.concat " "               
+                |> String.concat " "
 
             let logInData: PRR.Domain.Auth.LogIn.Models.Data =
                 { Client_Id = clientId
@@ -117,11 +118,16 @@ module CreateUser =
             env.ConfirmTokenWaitHandle.WaitOne() |> ignore
             let confirmData: SignUpConfirm.Models.Data = { Token = env.GetConfirmToken() }
 
-            let! _ = env.TestFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
+            let! result = env.TestFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
 
-            env.TenantWaitHandle.WaitOne() |> ignore
+            let! userId = readAsJsonAsync<int> result
 
-            let tenant = env.GetTenant()
+            let systemEnv =
+                env.TestFixture.Server.Services.GetService(typeof<SystemEnv>) :?> SystemEnv
+
+            let! tenant = createUserTenant systemEnv userId userData.Email
+
+            env.SetTenant tenant
 
             let clientId =
                 if signInUnderSampleDomain
@@ -147,7 +153,7 @@ module CreateUser =
             env.ConfirmTokenWaitHandle.WaitOne() |> ignore
             let confirmData: SignUpConfirm.Models.Data = { Token = env.GetConfirmToken() }
 
-            let! _ = env.TestFixture.HttpPostAsync' "/api/auth/sign-up/confirm?skipCreateTenant=true" confirmData
+            let! _ = env.TestFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
 
             let clientId = "__DEFAULT_CLIENT_ID__"
 

@@ -53,6 +53,7 @@ module SignUpConfirm =
 
                 env.Logger.LogInformation("Signup confirm success data {@data}", successData)
 
+                do! env.OnSuccess successData
 
-                env.OnSuccess successData
+                return user.Id
             }

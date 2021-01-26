@@ -9,13 +9,15 @@ open System.Threading.Tasks
 [<AutoOpen>]
 module Models =
 
-    type OnSuccess = SignUpSuccess -> Task<unit>
+    type OnSuccess = (SignUpSuccess * System.DateTime) -> Task<unit>
 
     type Env =
-        { DataContext: DbDataContext
+        { TokenExpiresIn: int<minutes>
+          DataContext: DbDataContext
           HashProvider: HashProvider
           Logger: ILogger
-          OnSuccess: OnSuccess }
+          OnSuccess: OnSuccess
+          PasswordSalter: StringSalter }
 
     [<CLIMutable>]
     type Data =
