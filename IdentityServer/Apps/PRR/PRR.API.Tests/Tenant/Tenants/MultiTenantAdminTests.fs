@@ -14,7 +14,6 @@ open PRR.Domain.Auth.SignUp
 open PRR.Domain.Tenant
 open PRR.Domain.Tenant.DomainUserRoles
 open PRR.Domain.Tenant.UserDomains
-open PRR.System.Models
 open TaskUtils
 open Xunit
 open Xunit.Abstractions

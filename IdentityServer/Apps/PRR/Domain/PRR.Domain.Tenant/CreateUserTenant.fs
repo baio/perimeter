@@ -1,6 +1,5 @@
-﻿namespace PRR.System
+﻿namespace PRR.Domain.Tenant
 
-open Akkling
 
 open Common.Domain.Models
 open Common.Domain.Utils.LinqHelpers
@@ -9,17 +8,39 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx.Reader
 open PRR.Data.DataContext
 open PRR.Data.Entities
-open PRR.System.Models
 open System
 open System.Threading.Tasks
+open PRR.Domain.Tenant
 open PRR.Domain.Tenant.Helpers
 
 [<AutoOpen>]
 module CreateUserTenant =
+
+    type CreatedTenantInfo = {
+        TenantId: int
+        TenantManagementDomainId: int
+        TenantManagementApiId: int
+        TenantManagementApplicationId: int        
+        TenantManagementApiIdentifier: string
+        TenantManagementApplicationClientId: string
+        DomainPoolId: int
+        DomainId: int
+        DomainManagementApplicationId: int
+        DomainManagementApplicationClientId: string
+        DomainManagementApiId: int
+        DomainManagementApiIdentifier: string
+        SampleApiId: int
+        SampleApiIdentifier: string
+        SampleApplicationId: int
+        SampleApplicationClientId: string        
+    }    
+    
     type Env =
-        { GetDataContextProvider: GetDataContextProvider
+        { DbDataContext: DbDataContext
           AuthConfig: AuthConfig
-          AuthStringsProvider: AuthStringsGetter }
+          AuthStringsGetter: AuthStringsGetter }
+
+    type UserTenantData = { UserId: UserId; Email: string }
 
 
     /// Creates tenant, domain pool, domain, new app, new api and new users management api
@@ -28,28 +49,20 @@ module CreateUserTenant =
     /// app -
     /// api -
     /// users management api -
-    let createUserTenant (env: Env) data =
+    let createUserTenant (env: Env) (data: UserTenantData) =
 
-        let authConfig' = env.AuthConfig
-
-        let authConfig: PRR.Domain.Tenant.Models.AuthConfig =
-            { IdTokenExpiresIn = authConfig'.IdTokenExpiresIn
-              AccessTokenSecret = authConfig'.AccessTokenSecret
-              AccessTokenExpiresIn = authConfig'.AccessTokenExpiresIn
-              RefreshTokenExpiresIn = authConfig'.ResetPasswordTokenExpiresIn }
+        let authConfig = env.AuthConfig
 
         task {
 
-            use dpr = env.GetDataContextProvider()
-
-            let dataContext = dpr.DataContext
+            let dataContext = env.DbDataContext
 
             let add x = x |> add dataContext
 
             let add' x = x |> add' dataContext
 
             let tenant =
-                createTenant (sprintf "sample-tenant-%s" (env.AuthStringsProvider.ClientId())) data.UserId
+                createTenant (sprintf "sample-tenant-%s" (env.AuthStringsGetter.ClientId())) data.UserId
                 |> add'
 
             //
@@ -58,7 +71,7 @@ module CreateUserTenant =
                 |> add'
 
             let tenantManagementApp =
-                createTenantManagementApp env.AuthStringsProvider authConfig tenantManagementDomain
+                createTenantManagementApp env.AuthStringsGetter authConfig tenantManagementDomain
                 |> add'
 
             let tenantManagementApi =
@@ -73,13 +86,12 @@ module CreateUserTenant =
                 createDomainPool tenant "sample-domain" "default-domain"
                 |> add'
 
-
             let sampleDomain =
-                createMainDomain env.AuthStringsProvider authConfig pool
+                createMainDomain env.AuthStringsGetter authConfig pool
                 |> add'
 
             let domainManagementApp =
-                createDomainManagementApp env.AuthStringsProvider authConfig sampleDomain
+                createDomainManagementApp env.AuthStringsGetter authConfig sampleDomain
                 |> add'
 
             let domainManagementApi =
@@ -92,11 +104,11 @@ module CreateUserTenant =
             //
 
             let sampleApp =
-                createDomainApp env.AuthStringsProvider authConfig sampleDomain "sample-app"
+                createDomainApp env.AuthStringsGetter authConfig sampleDomain "sample-app"
                 |> add'
 
             let sampleApi =
-                createDomainApi env.AuthStringsProvider authConfig sampleDomain "sample-api" "sample-api"
+                createDomainApi env.AuthStringsGetter authConfig sampleDomain "sample-api" "sample-api"
                 |> add'
 
             do! saveChangesAsync dataContext

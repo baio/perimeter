@@ -26,7 +26,6 @@ module ConfigureServices =
           Auth: AuthConfig
           Infra: InfraConfig
           DataContext: DataContextConfig
-          Actors: ActorsConfig
           HealthCheck: HealthCheckConfig
           KeyValueStorage: KeyValueStorageConfig
           MailSender: MailSenderConfig
@@ -46,7 +45,6 @@ module ConfigureServices =
         configureInfra config.Infra services
         configureLogging config.Logging services
         configureTracing config.Tracing services
-        configureActors config.Actors services
         configureHealthCheck config.HealthCheck services
         configureKeyValueStorage config.KeyValueStorage services
         configureSendMail config.SendGridApiKey config.MailSender services

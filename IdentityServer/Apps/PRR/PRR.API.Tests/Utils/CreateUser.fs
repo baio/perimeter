@@ -4,14 +4,16 @@ open Common.Test.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx
 open Microsoft.Azure.Documents
+open PRR.API.Configuration.ConfigureServices
 open PRR.API.Infra
+open PRR.Data.DataContext
 open PRR.Domain.Auth
 open System
 open System.Security.Cryptography
 open System.Threading
 open System.Web
 open PRR.API.Routes.E2E
-open PRR.System.Models
+
 
 [<AutoOpen>]
 module CreateUser =
@@ -122,10 +124,25 @@ module CreateUser =
 
             let! userId = readAsJsonAsync<int> result
 
-            let systemEnv =
-                env.TestFixture.Server.Services.GetService(typeof<SystemEnv>) :?> SystemEnv
 
-            let! tenant = createUserTenant systemEnv userId userData.Email
+            //
+            let services = env.TestFixture.Server.Services
+
+            let configProvider =
+                services.GetService(typeof<IConfigProvider>) :?> IConfigProvider
+
+            let dataContext =
+                services.GetService(typeof<DbDataContext>) :?> DbDataContext
+
+            let authStringsProvider =
+                services.GetService(typeof<IAuthStringsProvider>) :?> IAuthStringsProvider
+
+            let env' =
+                { DataContext = dataContext
+                  AuthStringsGetter = authStringsProvider.AuthStringsGetter
+                  Config = configProvider.GetConfig() }
+
+            let! tenant = createUserTenant env' userId userData.Email
 
             env.SetTenant tenant
 

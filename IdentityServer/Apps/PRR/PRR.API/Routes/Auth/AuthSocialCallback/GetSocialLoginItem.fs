@@ -1,12 +1,6 @@
 ﻿namespace PRR.API.Routes.Auth.SocialCallback
 
-open Common.Domain.Giraffe
 open Common.Domain.Models
-open Microsoft.AspNetCore.Http
-open PRR.API.Routes.DIHelpers
-open PRR.API
-open Common.Utils
-open FSharp.Akkling.CQRS
 open PRR.API.Routes.Auth.KVPartitionNames
 open DataAvail.KeyValueStorage
 open Microsoft.Extensions.Logging

@@ -21,7 +21,7 @@ module Helpers =
              SigningAlgorithm = SigningAlgorithmType.HS256,
              HS256SigningSecret = authConfig.AccessTokenSecret)
 
-    let createTenantManagementApp (authStringProvider: AuthStringsProvider) (authConfig: AuthConfig) domain =
+    let createTenantManagementApp (authStringProvider: AuthStringsGetter) (authConfig: AuthConfig) domain =
         Application
             (Domain = domain,
              Name = "Tenant domains management application",
@@ -44,7 +44,7 @@ module Helpers =
              IsDomainManagement = false)
 
     //
-    let createMainDomain (authStringProviders: AuthStringsProvider) authConfig (domainPool: DomainPool) =
+    let createMainDomain (authStringProviders: AuthStringsGetter) authConfig (domainPool: DomainPool) =
         Domain
             (Pool = domainPool,
              EnvName = "dev",
@@ -56,7 +56,7 @@ module Helpers =
              Issuer =
                  sprintf "https://dev.%s.%s.perimeter.com/domain/issuer" domainPool.Identifier domainPool.Tenant.Name)
 
-    let createDomainApp (authStringProvider: AuthStringsProvider) (authConfig: AuthConfig) domain name =
+    let createDomainApp (authStringProvider: AuthStringsGetter) (authConfig: AuthConfig) domain name =
         Application
             (Domain = domain,
              Name = name,
@@ -69,7 +69,7 @@ module Helpers =
              Flow = FlowType.PKCE,
              IsDomainManagement = false)
 
-    let createDomainManagementApp (authStringProvider: AuthStringsProvider) (authConfig: AuthConfig) domain =
+    let createDomainManagementApp (authStringProvider: AuthStringsGetter) (authConfig: AuthConfig) domain =
         Application
             (Domain = domain,
              Name = "Domain management application",
@@ -83,7 +83,7 @@ module Helpers =
              SSOEnabled = true,
              IsDomainManagement = true)
 
-    let createDomainApi (authStringProvider: AuthStringsProvider)
+    let createDomainApi (authStringProvider: AuthStringsGetter)
                         (authConfig: AuthConfig)
                         (domain: Domain)
                         name

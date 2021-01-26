@@ -8,11 +8,14 @@ open Giraffe
 open PRR.API.Routes
 open PRR.Domain.Auth.GetAudience
 
-open PRR.System.Views.LogInView
+// open PRR.System.Views.LogInView
 
 
-module private UserActivitiesRoutesHandlers =
+module private UserActivitiesRoutesHandlers = ()
 
+    // TODO : Restore
+    
+    (*
     let bindListQuery =
         bindListQuery
             ((function
@@ -46,3 +49,4 @@ module UsersActivities =
                          permissionGuard MANAGE_DOMAIN
                          >=> wrapAudienceGuard fromDomainId domainId
                          >=> getLogIns true domainId) ]
+*)

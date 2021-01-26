@@ -15,7 +15,7 @@ module private ApiHandlers =
 
     let getEnv ctx =
         let config = getConfig ctx
-        let authStringsProvider = getAuthStringsProvider ctx
+        let authStringsProvider = getAuthStringsGetter ctx
         { AccessTokenExpiresIn = config.Auth.Jwt.AccessTokenExpiresIn
           HS256SigningSecret = authStringsProvider.HS256SigningSecret }
 

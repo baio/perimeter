@@ -32,7 +32,6 @@
 
     <ItemGroup>
         <Compile Include="PermssionsFromRoles.fs" />
-        <Compile Include="SysWrap.fs" />
         <Compile Include="Infra\Models.fs" />
         <Compile Include="Infra\Mail\Models.fs" />
         <Compile Include="Infra\Mail\SendMail.fs" />
@@ -43,7 +42,6 @@
         <Compile Include="Infra\HashProvider.fs" />
         <Compile Include="Infra\SHA256.fs" />
         <Compile Include="Infra\AuthStringsProvider.fs" />
-        <Compile Include="Infra\SystemActorsProvider.fs" />
         <Compile Include="Infra\HttpRequestFun.fs" />
         <Compile Include="ErrorHandler.fs" />
         <Compile Include="Configuration\Tracing.fs" />
@@ -51,7 +49,6 @@
         <Compile Include="Configuration\Authorization.fs" />
         <Compile Include="Configuration\Infra.fs" />
         <Compile Include="Configuration\DataContext.fs" />
-        <Compile Include="Configuration\Actors.fs" />
         <Compile Include="Configuration\HealthCheck.fs" />
         <Compile Include="Configuration\SendMail.fs" />
         <Compile Include="Configuration\KeyValueStorage.fs" />
@@ -119,20 +116,9 @@
         <Content Include="appsettings.stage.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Include="akka.e2e.hocon">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="akka.stage.hocon">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="akka.local.hocon">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Akka.Persistence.MongoDb" Version="1.4.5" />
-      <PackageReference Include="Akkling" Version="0.10.0" />
       <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="3.1.3" />
       <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="3.1.1" />
       <PackageReference Include="AspNetCore.HealthChecks.Prometheus.Metrics" Version="3.1.4" />
@@ -164,8 +150,6 @@
       <ProjectReference Include="..\Domain\PRR.Domain.Auth\PRR.Domain.Auth.fsproj" />
       <ProjectReference Include="..\Domain\PRR.Domain.Tenant\PRR.Domain.Tenant.fsproj" />
       <ProjectReference Include="..\System\PRR.System.Models\PRR.System.Models.fsproj" />
-      <ProjectReference Include="..\System\PRR.System\PRR.System.fsproj" />
-      <ProjectReference Include="..\System\PRR.Sys\PRR.Sys.fsproj" />
     </ItemGroup>
 
     <ItemGroup>

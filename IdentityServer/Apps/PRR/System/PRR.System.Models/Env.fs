@@ -32,7 +32,7 @@ module Env =
     type SystemEnv =
         { HashProvider: HashProvider
           PasswordSalter: StringSalter
-          AuthStringsProvider: AuthStringsProvider
+          AuthStringsProvider: AuthStringsGetter
           SendMail: SendMail
           GetDataContextProvider: GetDataContextProvider
           AuthConfig: AuthConfig

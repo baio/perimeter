@@ -36,7 +36,7 @@ module Applications =
           Flow: FlowType }
 
     type CreateEnv =
-        { AuthStringsProvider: AuthStringsProvider
+        { AuthStringsProvider: AuthStringsGetter
           IdTokenExpiresIn: int<minutes>
           RefreshTokenExpiresIn: int<minutes> }
 

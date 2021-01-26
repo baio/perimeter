@@ -10,10 +10,13 @@ open Microsoft.AspNetCore.Http
 open Microsoft.EntityFrameworkCore
 open Microsoft.Extensions.Configuration
 open MongoDB.Driver
+open PRR.API.Configuration.ConfigureServices
+
+open PRR.API.Infra.RandomStringProvider
 open PRR.API.Routes.Auth.SignUpConfirm
+open PRR.Data.DataContext
 open PRR.Domain.Auth.SignUpConfirm
 open PRR.System.Models
-open PRR.System.Utils
 open System
 open System.Linq
 open System.Threading
@@ -45,13 +48,26 @@ module E2E =
         recreatedDataContextDb ctx
         recreateMongoDb ctx
 
+    type CreateUserTenantEnv =
+        { DataContext: DbDataContext
+          Config: AppConfig
+          AuthStringsGetter: AuthStringsGetter }
 
-    let createUserTenant (sysEnv: SystemEnv) userId email =
+    let createUserTenant (env: CreateUserTenantEnv) userId email =
 
-        PRR.System.CreateUserTenant.createUserTenant
-            { GetDataContextProvider = sysEnv.GetDataContextProvider
-              AuthConfig = sysEnv.AuthConfig
-              AuthStringsProvider = sysEnv.AuthStringsProvider }
+        let config = env.Config
+
+        let authConfig: PRR.Domain.Tenant.Models.AuthConfig =
+            { AccessTokenSecret = config.Auth.Jwt.AccessTokenSecret
+              AccessTokenExpiresIn = config.Auth.Jwt.AccessTokenExpiresIn
+              IdTokenExpiresIn = config.Auth.Jwt.IdTokenExpiresIn
+              RefreshTokenExpiresIn = config.Auth.Jwt.RefreshTokenExpiresIn }
+
+        PRR.Domain.Tenant.CreateUserTenant.createUserTenant
+            { DbDataContext = env.DataContext
+              AuthConfig = authConfig
+              AuthStringsGetter = env.AuthStringsGetter }
+
             { Email = email; UserId = userId }
 
 
@@ -103,9 +119,13 @@ module E2E =
                              //
                              Thread.Sleep(100)
 
-                             let sysEnv = ctx.GetService<SystemEnv>()
+                             //
+                             let env =
+                                 { DataContext = getDataContext ctx
+                                   AuthStringsGetter = getAuthStringsGetter ctx
+                                   Config = getConfig ctx }
 
-                             let! _ = createUserTenant sysEnv userId signUpConfirmItem.Email
+                             let! _ = createUserTenant env userId signUpConfirmItem.Email
 
                              let! data = ctx |> bindJsonAsync<ReinitData>
 
@@ -114,18 +134,12 @@ module E2E =
                                  | true ->
                                      query {
                                          for dur in dataContext.DomainUserRole do
-                                             where (
-                                                 dur.RoleId = PRR.Data.DataContext.Seed.Roles.DomainOwner.Id
-                                                 && dur.UserEmail = signUpConfirmItem.Email
-                                             )
+                                             where
+                                                 (dur.RoleId = PRR.Data.DataContext.Seed.Roles.DomainOwner.Id
+                                                  && dur.UserEmail = signUpConfirmItem.Email)
 
-                                             select (
-                                                 dur
-                                                     .Domain
-                                                     .Applications
-                                                     .Single(fun p -> p.IsDomainManagement)
-                                                     .ClientId
-                                             )
+                                             select
+                                                 (dur.Domain.Applications.Single(fun p -> p.IsDomainManagement).ClientId)
                                      }
                                      |> LinqHelpers.toSingleAsync
                                  | _ -> Task.FromResult "__DEFAULT_CLIENT_ID__"

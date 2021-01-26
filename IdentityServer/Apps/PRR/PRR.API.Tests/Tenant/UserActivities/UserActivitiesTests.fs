@@ -7,16 +7,17 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.SignUp
-open PRR.System.Views.LogInView
+//open PRR.System.Views.LogInView
 open PRR.System.Models
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
-open PRR.System.Views.LogInView
+//open PRR.System.Views.LogInView
 
 // TODO : Restore !!! via bus
-module CRUD =
+module CRUD = ()
 
+    (*
     let userData: Data =
         { FirstName = "First"
           LastName = "Last"
@@ -124,3 +125,4 @@ module CRUD =
 
                 ()
             }
+            *)

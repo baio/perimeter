@@ -15,7 +15,7 @@ module private TenantHandlers =
 
     let private getEnv ctx =
         let config = getConfig ctx
-        { AuthStringsProvider = getAuthStringsProvider ctx
+        { AuthStringsProvider = getAuthStringsGetter ctx
           DataContext = getDataContext ctx
           AuthConfig =
               { AccessTokenSecret = config.Auth.Jwt.AccessTokenSecret

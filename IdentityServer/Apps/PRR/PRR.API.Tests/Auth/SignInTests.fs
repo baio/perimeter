@@ -25,10 +25,14 @@ module SignIn =
           refreshToken: string }
 
     let mutable confirmToken: string = null
-    let confirmTokenWaitHandle = new System.Threading.AutoResetEvent(false)
+
+    let confirmTokenWaitHandle =
+        new System.Threading.AutoResetEvent(false)
 
     let mutable tenant: CreatedTenantInfo option = None
-    let tenantWaitHandle = new System.Threading.AutoResetEvent(false)
+
+    let tenantWaitHandle =
+        new System.Threading.AutoResetEvent(false)
 
     let ownerData: Data =
         { FirstName = "First"
@@ -51,8 +55,7 @@ module SignIn =
         | QueryFailureEvent _ ->
             confirmTokenWaitHandle.Set() |> ignore
             tenantWaitHandle.Set() |> ignore
-        | _ ->
-            ()
+        | _ -> ()
 
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
@@ -63,20 +66,11 @@ module SignIn =
         // [<Fact>]
         [<Priority(-1)>]
         member __.``0 BeforeAll``() =
-            testFixture.OverrideServices(fun services ->
-                let sp = services.BuildServiceProvider()
-                let systemEnv = sp.GetService<SystemEnv>()
-                let systemEnv =
-                    { systemEnv with EventHandledCallback = systemEventHandled }
-                let systemConfig = sp.GetService<SystemConfig>()
-                let sys = PRR.System.Setup.setUp systemEnv systemConfig "akka.hocon"
-                services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore)
 
             task {
                 let! _ = testFixture.HttpPostAsync' "/api/auth/sign-up" ownerData
                 confirmTokenWaitHandle.WaitOne() |> ignore
-                let confirmData: SignUpConfirm.Models.Data =
-                    { Token = confirmToken }
+                let confirmData: SignUpConfirm.Models.Data = { Token = confirmToken }
                 let! _ = testFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
                 tenantWaitHandle.WaitOne() |> ignore
                 return ()
@@ -91,10 +85,11 @@ module SignIn =
 
             task {
 
-                let! result = logInUser testFixture tenant.Value.SampleApplicationClientId ownerData.Email
-                                  ownerData.Password
+                let! result =
+                    logInUser testFixture tenant.Value.SampleApplicationClientId ownerData.Email ownerData.Password
 
                 result.access_token |> should be (not' Null)
+
                 result.id_token |> should be (not' Null)
                 result.refresh_token |> should be (not' Null)
             }

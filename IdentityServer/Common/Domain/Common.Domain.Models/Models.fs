@@ -56,7 +56,7 @@ module Models =
     type gigabytes
 
 
-    type AuthStringsProvider =
+    type AuthStringsGetter =
         { ClientId: unit -> string
           ClientSecret: unit -> string
           AuthorizationCode: unit -> string

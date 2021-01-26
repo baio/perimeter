@@ -51,15 +51,6 @@ module SignUp =
         [<Priority(-1)>]
         member __.``0 BeforeAll``() =
             testFixture.OverrideServices(fun services ->
-                let sp = services.BuildServiceProvider()
-                let systemEnv = sp.GetService<SystemEnv>()
-                let systemConfig = sp.GetService<SystemConfig>()
-
-                let sys =
-                    PRR.System.Setup.setUp systemEnv systemConfig "akka.hocon"
-
-                services.AddSingleton<ICQRSSystem>(fun _ -> sys)
-                |> ignore
                 services.AddSingleton<ISendMailProvider>(SendMailProvider sendMail)
                 |> ignore)
 

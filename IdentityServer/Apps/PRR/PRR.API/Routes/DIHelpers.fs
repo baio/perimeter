@@ -10,7 +10,6 @@ open Microsoft.AspNetCore.Http
 open Common.Utils
 open Common.Utils.ReaderTask
 open PRR.API.Infra.Models
-open PRR.Sys.SetUp
 open PRR.System.Models.CQRSSystem
 
 [<AutoOpen>]
@@ -30,13 +29,10 @@ module DIHelpers =
     let getConfig (ctx: HttpContext) =
         ctx.GetService<IConfigProvider>().GetConfig()
 
-    let getSystemActors (ctx: HttpContext) =
-        ctx.GetService<ISystemActorsProvider>().SystemActors
-
     let getCQRSSystem (ctx: HttpContext) = ctx.GetService<ICQRSSystem>()
 
-    let getAuthStringsProvider (ctx: HttpContext) =
-        ctx.GetService<IAuthStringsProvider>().AuthStringsProvider
+    let getAuthStringsGetter (ctx: HttpContext) =
+        ctx.GetService<IAuthStringsProvider>().AuthStringsGetter
 
     let getViewsReaderDb (ctx: HttpContext) =
         ctx.GetService<IViewsReaderDbProvider>().ViewsReaderDb

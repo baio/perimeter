@@ -29,21 +29,6 @@ module CreateAppConfig =
 
         let sendGridApiKey = configuration.GetValue("SendGridApiKey")
 
-        let connectionStrings: ActorsConnectionsString =
-            { MongoJournal = configuration.GetConnectionString("MongoJournal")
-              MongoSnapshot = configuration.GetConnectionString("MongoSnapshot")
-              MongoViews = configuration.GetConnectionString("MongoViews") }
-
-        let actorsConfig: ActorsConfig =
-            { Mail = mailSenderConfig
-              SendGridApiKey = sendGridApiKey
-              Jwt = jwt
-              ConnectionStrings = connectionStrings
-              SignUpTokenExpiresIn = configuration.GetValue<int<minutes>>("Auth:SignUpTokenExpiresInMinutes")
-              ResetPasswordTokenExpiresIn =
-                  configuration.GetValue<int<minutes>>("Auth:ResetPasswordTokenExpiresInMinutes")
-              EnvironmentName = envName }
-
         let authConfig: AuthConfig =
             { Jwt = jwt
               RefreshTokenExpiresIn = configuration.GetValue<int<minutes>>("Auth:Jwt:RefreshTokenExpiresInMinutes")
@@ -86,7 +71,6 @@ module CreateAppConfig =
               { PsqlConnectionString = psqlConnectionString
                 MongoConnectionString = mongoConnectionString
                 AllocatedMemory = 5<gigabytes> }
-          Actors = actorsConfig
           DataContext = { ConnectionString = psqlConnectionString }
           Infra =
               { MongoViewsConnectionString = configuration.GetConnectionString("MongoViews")

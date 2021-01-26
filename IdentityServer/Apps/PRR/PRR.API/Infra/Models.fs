@@ -2,8 +2,6 @@
 
 open Common.Domain.Models
 open MongoDB.Driver
-open PRR.Domain.Auth
-open PRR.Sys.SetUp
 
 [<AutoOpen>]
 module Models =
@@ -22,13 +20,11 @@ module Models =
         abstract GetSHA256: (string -> string)
 
     type IAuthStringsProvider =
-        abstract AuthStringsProvider: AuthStringsProvider
+        abstract AuthStringsGetter: AuthStringsGetter
 
     type IViewsReaderDbProvider =
         abstract ViewsReaderDb: IMongoDatabase
 
-    type ISystemActorsProvider =
-        abstract SystemActors: SystemActors
 
     type IHttpRequestFunProvider =
         abstract HttpRequestFun: HttpRequestFun
