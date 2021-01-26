@@ -20,14 +20,23 @@ module private OnSuccess =
                         data.OldRefreshToken
                         (Some { PartitionName = REFRESH_TOKEN_KV_PARTITION_NAME })
 
+                let newRefreshTokenItem: RefreshToken.Item =
+                    { ClientId = data.ClientId
+                      IsPerimeterClient = data.IsPerimeterClient
+                      UserId = data.UserId
+                      Token = data.RefreshToken
+                      ExpiresAt = expiresIn
+                      Scopes = data.Scopes
+                      SocialType = data.SocialType }
+
                 let! _ =
                     keyValueStorage.AddValue
                         data.RefreshToken
-                        data
+                        newRefreshTokenItem
                         (Some
                             { PartitionName = REFRESH_TOKEN_KV_PARTITION_NAME
                               ExpiresAt = (Some expiresIn)
-                              Tag = null })
+                              Tag = (data.UserId.ToString()) })
 
                 ()
             }

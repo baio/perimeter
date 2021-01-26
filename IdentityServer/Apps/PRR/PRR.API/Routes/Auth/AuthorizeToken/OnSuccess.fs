@@ -19,12 +19,12 @@ module private OnSuccess =
 
                 let! _ =
                     keyValueStorage.AddValue
-                        token
+                        item.Token
                         item
                         (Some
                             { PartitionName = REFRESH_TOKEN_KV_PARTITION_NAME
                               ExpiresAt = (Some item.ExpiresAt)
-                              Tag = null })
+                              Tag = (item.UserId.ToString()) })
 
                 ()
             }

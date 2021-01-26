@@ -1,5 +1,6 @@
 ﻿namespace PRR.API.Routes.Auth.LogIn
 
+open Akka.Configuration.Hocon
 open Akkling
 open System.Threading.Tasks
 open PRR.System.Models
@@ -40,9 +41,9 @@ module private OnSuccess =
     let private storeSSO env (item: SSO.Item) =
         task {
             let options =
-                { addValueDefaultOptions with
-                      ExpiresAt = (Some item.ExpiresAt)
-                      PartitionName = SSO_KV_PARTITION_NAME }
+                { Tag = (item.UserId.ToString())
+                  ExpiresAt = (Some item.ExpiresAt)
+                  PartitionName = SSO_KV_PARTITION_NAME }
 
             let! result = env.KeyValueStorage.AddValue item.Code item (Some options)
 

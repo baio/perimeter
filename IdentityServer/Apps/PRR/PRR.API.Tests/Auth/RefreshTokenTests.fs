@@ -34,7 +34,6 @@ module RefreshToken =
     let confirmTokenWaitHandle = new System.Threading.AutoResetEvent(false)
 
     let mutable tenant: CreatedTenantInfo option = None
-    let tenantWaitHandle = new System.Threading.AutoResetEvent(false)
 
     let ownerData: Data =
         { FirstName = "First"
@@ -43,22 +42,6 @@ module RefreshToken =
           Password = "#6VvR&^"
           QueryString = null }
 
-    let systemEventHandled =
-        function
-        | UserSignedUpEvent data ->
-            confirmToken <- data.Token
-            confirmTokenWaitHandle.Set() |> ignore
-        | UserTenantCreatedEvent data ->
-            tenant <- Some data
-            tenantWaitHandle.Set() |> ignore
-        | CommandFailureEvent _ ->
-            confirmTokenWaitHandle.Set() |> ignore
-            tenantWaitHandle.Set() |> ignore
-        | QueryFailureEvent _ ->
-            confirmTokenWaitHandle.Set() |> ignore
-            tenantWaitHandle.Set() |> ignore
-        | _ ->
-            ()
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
     type ``refresh-token-api``(testFixture: TestFixture, output: ITestOutputHelper) =

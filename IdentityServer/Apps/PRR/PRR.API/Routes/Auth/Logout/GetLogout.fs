@@ -10,17 +10,15 @@ open Common.Domain.Models
 open PRR.API.Routes.Auth.Helpers
 
 module internal GetLogout =
-    
+
     let getEnv ctx =
-        { 
-            DataContext = getDataContext ctx
-            AccessTokenSecret = (getConfig ctx).Auth.Jwt.AccessTokenSecret 
-            Logger = getLogger ctx
-            OnSuccess = onSuccess (getCQRSSystem ctx)
-        }
+        { DataContext = getDataContext ctx
+          AccessTokenSecret = (getConfig ctx).Auth.Jwt.AccessTokenSecret
+          Logger = getLogger ctx
+          OnSuccess = onSuccess (getKeyValueStorage ctx) }
 
     let handler next ctx =
-        
+
         let env = getEnv ctx
 
         let logger = env.Logger
@@ -31,18 +29,18 @@ module internal GetLogout =
 
             let returnUri =
                 match bindQueryStringField "return_uri" ctx with
-                | Some returnUri -> 
+                | Some returnUri ->
                     returnUri' <- returnUri
                     returnUri
-                | None -> 
-                    logger.LogWarning("return_uri param is not found")                 
+                | None ->
+                    logger.LogWarning("return_uri param is not found")
                     raise (unAuthorized "return_uri param is not found")
 
             let accessToken =
                 match bindQueryStringField "access_token" ctx with
                 | Some accessToken -> accessToken
-                | None -> 
-                    logger.LogWarning("access_token param is not found")                 
+                | None ->
+                    logger.LogWarning("access_token param is not found")
                     raise (unAuthorized "access_token param is not found")
 
             let data: Data =
@@ -67,4 +65,4 @@ module internal GetLogout =
                 return! redirectTo false redirectUrlError next ctx
         }
 
-    let createRoute () = GET >=> route "/logout" >=> handler        
+    let createRoute () = GET >=> route "/logout" >=> handler
