@@ -1,17 +1,12 @@
 ﻿namespace PRR.API.Routes.Auth.ResetPassword
 
-open Akka.Util
-open Akkling
-open System.Threading.Tasks
 open Common.Domain.Models.Exceptions
 open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
-open PRR.API.Infra.Mail.Models
 open PRR.API.Routes.Auth.KVPartitionNames
 open PRR.System.Models
 open PRR.Domain.Auth.ResetPassword
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open DataAvail.KeyValueStorage.Core
 
 [<AutoOpen>]
 module private OnSuccess =
@@ -46,4 +41,3 @@ module private OnSuccess =
 
                 return ()
             }
-// sys.EventsRef <! (ResetPasswordRequested email)

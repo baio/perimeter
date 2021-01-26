@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.RefreshToken
 
+open System
 open Common.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.Entities
@@ -48,7 +49,9 @@ module RefreshToken =
                         raise UnAuthorized'
 
                 let issuer = getTokenIssuer accessToken
+
                 logger.LogInformation("${@issuer} found for bearer token", issuer)
+
                 let! domainSecret = getDomainSecretAndExpire env' issuer item.IsPerimeterClient
 
                 match validate env accessToken (item.ExpiresAt, item.UserId, domainSecret.SigningCredentials.Key) with
@@ -73,15 +76,19 @@ module RefreshToken =
                               Scopes = item.Scopes
                               SocialType = item.SocialType }
 
-                        logger.LogInformation("@{successData} ready", successData)
+                        let expiresIn =
+                            DateTime.UtcNow.AddMinutes(float env.TokenExpiresIn)
 
-                        do! env.OnSuccess successData
+                        logger.LogInformation
+                            ("successData ${@successData} ready, expires ${@expiresIn}", successData, expiresIn)
+
+                        do! env.OnSuccess(successData, expiresIn)
 
                         return res
                     | None ->
                         logger.LogWarning("tokenData for token is not found")
                         return! raise (UnAuthorized None)
                 | res ->
-                    logger.LogWarning("${@error} while walidating token", res)
+                    logger.LogWarning("${@error} while validating token", res)
                     return! raise (UnAuthorized None)
             }

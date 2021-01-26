@@ -78,7 +78,7 @@ module LogInToken =
     let logInToken: LogInToken =
         fun env data ->
 
-            env.Logger.LogInformation("LogInToken with ${@data}", { data with Code = "***" })
+            env.Logger.LogInformation("LogInToken with ${@data}", data)
 
             task {
 
@@ -87,10 +87,10 @@ module LogInToken =
                 let item =
                     match item with
                     | Some item ->
-                        env.Logger.LogInformation("Signup item found ${@item}", { item with Code = "***" })
+                        env.Logger.LogInformation("LogIn item found ${@item}", { item with Code = "***" })
                         item
                     | None ->
-                        env.Logger.LogWarning("Couldn't find signup item ${code}", data.Code)
+                        env.Logger.LogWarning("Couldn't find LogIn item ${code}", data.Code)
                         raise (UnAuthorized None)
 
                 let dataContext = env.DataContext

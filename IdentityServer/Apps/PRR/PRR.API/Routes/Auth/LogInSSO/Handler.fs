@@ -8,14 +8,26 @@ open PRR.Domain.Auth.LogInSSO
 open Microsoft.Extensions.Logging
 
 module internal Handler =
-    
+
     let getEnv ctx =
+
+        let kvStorage = getKeyValueStorage ctx
+        let logger = getLogger ctx
+
+        let onSuccessEnv: OnSuccess.Env =
+            { KeyValueStorage = kvStorage
+              Logger = logger }
+
+        let getSSOCodeEnv: GetSSOCode.Env =
+            { KeyValueStorage = kvStorage
+              Logger = logger }
+
         { DataContext = getDataContext ctx
           CodeGenerator = getHash ctx
           CodeExpiresIn = (getConfig ctx).Auth.Jwt.CodeExpiresIn
-          Logger = getLogger ctx
-          OnSuccess = onSuccess (getCQRSSystem ctx)
-          GetSSOItem = getSSOCode ctx }
+          Logger = logger
+          OnSuccess = onSuccess onSuccessEnv
+          GetSSOItem = getSSOCode getSSOCodeEnv }
 
     let handler ctx sso =
 

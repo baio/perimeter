@@ -46,6 +46,7 @@ module CreateAppConfig =
 
         let authConfig: AuthConfig =
             { Jwt = jwt
+              RefreshTokenExpiresIn = configuration.GetValue<int<minutes>>("Auth:Jwt:RefreshTokenExpiresInMinutes")
               SignUpTokenExpiresIn = configuration.GetValue<int<minutes>>("Auth:SignUpTokenExpiresInMinutes")
               ResetPasswordTokenExpiresIn =
                   configuration.GetValue<int<minutes>>("Auth:ResetPasswordTokenExpiresInMinutes")

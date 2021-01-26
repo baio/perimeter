@@ -17,7 +17,7 @@ module Models =
             RefreshToken: Token
         }
 
-    type OnSuccess = RefreshTokenSuccess -> Task<unit>
+    type OnSuccess = (RefreshTokenSuccess * DateTime) -> Task<unit>
 
     type GetTokenItem = Token -> Task<RefreshToken.Item option>
     type Env =
@@ -26,6 +26,7 @@ module Models =
           Logger: ILogger
           HashProvider: HashProvider
           OnSuccess: OnSuccess
-          GetTokenItem: GetTokenItem }
+          GetTokenItem: GetTokenItem
+          TokenExpiresIn: int<minutes> }
 
     type RefreshToken = Env -> Token -> Data -> Task<Result>

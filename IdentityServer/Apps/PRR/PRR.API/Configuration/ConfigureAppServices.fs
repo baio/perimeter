@@ -16,6 +16,7 @@ module ConfigureServices =
           SSOCookieExpiresIn: int<minutes>
           PerimeterSocialProviders: PerimeterSocialProviders
           ResetPasswordTokenExpiresIn: int<minutes>
+          RefreshTokenExpiresIn: int<minutes>
           SignUpTokenExpiresIn: int<minutes>
           Social: SocialConfig }
 
