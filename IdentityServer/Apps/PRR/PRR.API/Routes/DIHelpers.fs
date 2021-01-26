@@ -29,8 +29,6 @@ module DIHelpers =
     let getConfig (ctx: HttpContext) =
         ctx.GetService<IConfigProvider>().GetConfig()
 
-    let getCQRSSystem (ctx: HttpContext) = ctx.GetService<ICQRSSystem>()
-
     let getAuthStringsGetter (ctx: HttpContext) =
         ctx.GetService<IAuthStringsProvider>().AuthStringsGetter
 

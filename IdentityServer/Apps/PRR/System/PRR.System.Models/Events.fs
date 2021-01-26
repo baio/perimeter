@@ -1,6 +1,5 @@
 ﻿namespace PRR.System.Models
 
-open Akkling.ActorRefs
 open Common.Domain.Models
 open System
 

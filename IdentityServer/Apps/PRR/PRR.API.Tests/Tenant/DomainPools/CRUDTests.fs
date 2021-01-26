@@ -1,6 +1,5 @@
 ﻿namespace PRR.API.Tests.Tenant.DomainPools
 
-open Akkling
 open Common.Test.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit

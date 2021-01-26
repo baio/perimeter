@@ -1,6 +1,5 @@
 ﻿namespace PRR.System.Models
 
-open Akkling
 open Common.Domain.Models
 open System
 
@@ -17,7 +16,7 @@ module SSO =
     // Queries
     type GetSSOCodeQueryResult = ValueResult<Item>
 
-    type Queries = GetCode of Token * IActorRef<GetSSOCodeQueryResult>
+    type Queries = GetCode of Token * GetSSOCodeQueryResult
 
     // Commands
     type Commands =

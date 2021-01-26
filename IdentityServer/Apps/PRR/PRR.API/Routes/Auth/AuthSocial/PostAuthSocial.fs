@@ -1,6 +1,5 @@
 ﻿namespace PRR.API.Routes.Auth.Social
 
-open Akkling
 open Microsoft.AspNetCore.Http
 open Giraffe
 open PRR.API.Routes

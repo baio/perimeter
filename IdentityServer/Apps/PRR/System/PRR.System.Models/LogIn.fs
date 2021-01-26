@@ -1,7 +1,6 @@
 ﻿namespace PRR.System.Models
 
 open System
-open Akkling
 open Common.Domain.Models
 
 module LogIn =
@@ -28,7 +27,7 @@ module LogIn =
     // Queries
     type GetLogInCodeQueryResult = ValueResult<Item>
 
-    type Queries = GetCode of Token * IActorRef<GetLogInCodeQueryResult>
+    type Queries = GetCode of Token
 
     // Commands
     type Commands =

@@ -5,7 +5,6 @@ open DataAvail.KeyValueStorage
 open PRR.API
 open PRR.System.Models
 open PRR.Domain.Auth.LogOut
-open Akkling
 open System.Threading.Tasks
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.API.Routes.Auth.KVPartitionNames

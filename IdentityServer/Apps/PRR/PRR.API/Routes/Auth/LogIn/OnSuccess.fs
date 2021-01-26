@@ -1,7 +1,5 @@
 ﻿namespace PRR.API.Routes.Auth.LogIn
 
-open Akka.Configuration.Hocon
-open Akkling
 open System.Threading.Tasks
 open PRR.System.Models
 open PRR.Domain.Auth.LogIn

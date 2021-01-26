@@ -1,6 +1,5 @@
 ﻿namespace PRR.Sys.Models
 
-open Akkling
 open Common.Domain.Models
 
 module Social =
@@ -21,6 +20,6 @@ module Social =
     type Message =
         | SocialLoginAddCommand of Item
         | SocialLoginAddedEvent of Item
-        | SocialLoginQueryCommand of (Token * IActorRef<Token * Item option>)
+        | SocialLoginQueryCommand of Token
         | SocialLoginRemoveCommand of Token
         | SocialLoginRemovedEvent of Token

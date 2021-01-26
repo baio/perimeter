@@ -1,6 +1,5 @@
 ﻿namespace PRR.API.Tests.Tenant.DomainUserRoles
 
-open Akkling
 open Common.Test.Utils
 open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive

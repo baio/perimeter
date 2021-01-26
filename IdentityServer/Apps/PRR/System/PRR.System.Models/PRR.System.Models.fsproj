@@ -37,8 +37,4 @@
       <ProjectReference Include="..\..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Akkling" Version="0.10.0" />
-    </ItemGroup>
-
 </Project>

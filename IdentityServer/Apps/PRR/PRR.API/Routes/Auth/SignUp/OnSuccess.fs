@@ -1,6 +1,5 @@
 ﻿namespace PRR.API.Routes.Auth.SignUp
 
-open Akkling
 open System.Threading.Tasks
 open DataAvail.KeyValueStorage
 open Microsoft.Extensions.Logging

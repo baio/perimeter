@@ -2,7 +2,6 @@
 
 open Common.Domain.Models
 open System
-open Akkling
 
 
 module RefreshToken =
@@ -19,7 +18,7 @@ module RefreshToken =
 
     type GetRefreshTokenQueryResult = ValueResult<Item>
 
-    type Queries = GetToken of Token * IActorRef<GetRefreshTokenQueryResult>
+    type Queries = GetToken of Token * GetRefreshTokenQueryResult
 
     // Commands
     type Commands =

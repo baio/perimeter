@@ -1,6 +1,5 @@
 ﻿namespace PRR.API.Routes.Auth.SignUpConfirm
 
-open Akkling
 open System.Threading.Tasks
 open DataAvail.KeyValueStorage
 open PRR.API.Configuration

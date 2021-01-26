@@ -5,10 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Akkling" Version="0.10.0" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Compile Include="Common.fs" />
       <Compile Include="Social.fs" />
     </ItemGroup>

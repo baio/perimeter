@@ -2,7 +2,6 @@
 
 open Common.Domain.Models
 open System
-open Akkling
 
 
 module SignUpToken =
@@ -23,7 +22,7 @@ module SignUpToken =
 
     type GetSignUpTokenQueryResult = ValueResult<Item>
 
-    type Queries = GetToken of Token * IActorRef<GetSignUpTokenQueryResult>
+    type Queries = GetToken of Token * GetSignUpTokenQueryResult
     
     // Commands
     type Commands =

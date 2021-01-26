@@ -1,6 +1,5 @@
 ﻿namespace PRR.API.Routes
 
-open Akkling
 open Common.Domain.Giraffe
 open Common.Domain.Models
 open Common.Domain.Utils

@@ -1,7 +1,6 @@
 ﻿namespace PRR.API.Routes.Auth.ResetPasswordConfirm
 
 open PRR.API.Routes.Auth.KVPartitionNames
-open Akkling
 open System.Threading.Tasks
 open DataAvail.KeyValueStorage
 open PRR.System.Models

@@ -75,6 +75,7 @@
 
     <ItemGroup>
         <PackageReference Include="Http.fs" Version="5.4.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
         <PackageReference Include="TaskBuilder.fs" Version="2.1.0" />
     </ItemGroup>

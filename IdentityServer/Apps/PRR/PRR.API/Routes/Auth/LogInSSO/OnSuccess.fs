@@ -1,6 +1,5 @@
 ﻿namespace PRR.API.Routes.Auth.LogInSSO
 
-open Akkling
 open System.Threading.Tasks
 open PRR.System.Models
 open PRR.Domain.Auth.LogIn

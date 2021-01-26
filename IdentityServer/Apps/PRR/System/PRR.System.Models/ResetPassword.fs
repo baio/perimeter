@@ -1,7 +1,6 @@
 ﻿namespace PRR.System.Models
 
 
-open Akkling
 open Common.Domain.Models
 open System
 
@@ -18,7 +17,7 @@ module ResetPassword =
 
     type GetTokenQueryResult = ValueResult<Item>
 
-    type Queries = GetToken of Token * IActorRef<GetTokenQueryResult>
+    type Queries = GetToken of Token
     
     // Commands
     type Commands =

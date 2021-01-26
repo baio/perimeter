@@ -1,6 +1,5 @@
 ﻿namespace PRR.API.Routes.Auth.SocialCallback
 
-open Akkling
 open FSharpx
 open PRR.System.Models
 open Common.Domain.Models

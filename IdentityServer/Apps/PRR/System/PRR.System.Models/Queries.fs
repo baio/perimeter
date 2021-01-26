@@ -1,6 +1,5 @@
 ﻿namespace PRR.System.Models
 
-open Akkling
 open Common.Domain.Models
 
 [<AutoOpen>]

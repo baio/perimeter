@@ -1,7 +1,6 @@
 ﻿namespace PRR.API.Tests.UserActivities
 
 open System.Threading
-open Akkling
 open Common.Test.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit

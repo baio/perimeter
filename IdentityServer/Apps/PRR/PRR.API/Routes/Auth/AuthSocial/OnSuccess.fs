@@ -2,7 +2,6 @@ namespace PRR.API.Routes.Auth.Social
 
 open DataAvail.KeyValueStorage
 open PRR.Domain.Auth.Social.SocialAuth
-open Akkling
 open System.Threading.Tasks
 open PRR.API.Routes.DIHelpers
 open PRR.Sys.Models.Social
