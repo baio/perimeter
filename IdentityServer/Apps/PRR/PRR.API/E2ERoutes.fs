@@ -18,6 +18,7 @@ open System
 open System.Linq
 open System.Threading
 open System.Threading.Tasks
+open Microsoft.Extensions.Logging
 
 [<CLIMutable>]
 type ReinitData = { LoginAsDomain: bool }
@@ -56,8 +57,7 @@ module E2E =
 
     let createRoutes () =
 
-        choose [                 
-                 route "/e2e/reset"
+        choose [ route "/e2e/reset"
                  >=> POST
                  >=> fun next ctx ->
                          // Recreate db on start
@@ -68,7 +68,8 @@ module E2E =
                  >=> POST
                  >=> fun next ctx ->
                          let dataContext = getDataContext ctx
-                         let sys = ctx.GetService<ICQRSSystem>()
+
+                         let logger = ctx.GetLogger()
 
                          recreatedDbs ctx
                          // signup
@@ -84,8 +85,6 @@ module E2E =
 
                          let signUpEnv = PostSignUpConfirm.getEnv ctx
 
-                         let sysEnv = ctx.GetService<SystemEnv>()
-
                          let signUpEnv =
                              { signUpEnv with
                                    GetTokenItem = fun _ -> Task.FromResult(Some signUpConfirmItem) }
@@ -93,6 +92,7 @@ module E2E =
                          // login
                          let loginEnv: PRR.Domain.Auth.LogInToken.SignInUserEnv =
                              let config = getConfig ctx
+
                              { DataContext = getDataContext ctx
                                HashProvider = getHash ctx
                                JwtConfig = config.Auth.Jwt
@@ -114,11 +114,18 @@ module E2E =
                                  | true ->
                                      query {
                                          for dur in dataContext.DomainUserRole do
-                                             where
-                                                 (dur.RoleId = PRR.Data.DataContext.Seed.Roles.DomainOwner.Id
-                                                  && dur.UserEmail = signUpConfirmItem.Email)
-                                             select
-                                                 (dur.Domain.Applications.Single(fun p -> p.IsDomainManagement).ClientId)
+                                             where (
+                                                 dur.RoleId = PRR.Data.DataContext.Seed.Roles.DomainOwner.Id
+                                                 && dur.UserEmail = signUpConfirmItem.Email
+                                             )
+
+                                             select (
+                                                 dur
+                                                     .Domain
+                                                     .Applications
+                                                     .Single(fun p -> p.IsDomainManagement)
+                                                     .ClientId
+                                             )
                                      }
                                      |> LinqHelpers.toSingleAsync
                                  | _ -> Task.FromResult "__DEFAULT_CLIENT_ID__"

@@ -67,14 +67,12 @@ module private Actors =
               SnapshotConnectionString = config.ConnectionStrings.MongoSnapshot
               ViewsConnectionString = config.ConnectionStrings.MongoViews }
 
-#if TEST
-        // Tests must initialize sys by themselves
-        //For tests
         services.AddSingleton<SystemEnv>(fun _ -> systemEnv)
         |> ignore
         services.AddSingleton<SystemConfig>(fun _ -> systemConfig)
         |> ignore
-#else
+
+#if !TEST 
         let env = config.EnvironmentName
 
         let akkaConfFile = sprintf "akka.%s.hocon" env

@@ -42,22 +42,6 @@ module SignUp =
     let tenantWaitHandle =
         new System.Threading.AutoResetEvent(false)
 
-    let mutable sysException: Exception = null
-
-    let systemEventHandled =
-        function
-        | UserTenantCreatedEvent data ->
-            tenant <- Some data
-            tenantWaitHandle.Set() |> ignore
-        | CommandFailureEvent e ->
-            sysException <- e
-            tenantWaitHandle.Set() |> ignore
-        | QueryFailureEvent e ->
-            sysException <- e
-            tenantWaitHandle.Set() |> ignore
-        | _ -> ()
-
-
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
     type ``sign-up-api``(testFixture: TestFixture, output: ITestOutputHelper) =
         do setConsoleOutput output

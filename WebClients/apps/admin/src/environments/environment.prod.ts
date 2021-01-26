@@ -2,7 +2,7 @@ export const environment = {
     production: true,
     baseUrl: 'https://perimeter.azurefd.net/api',
     auth: {
-        loginUrl: 'https://perimeter.azurefd.net/auth/authorize',
+        loginUrl: 'https://perimeter.azurefd.net/auth/login',
         signupUrl: 'https://perimeter.azurefd.net/auth/register',
         tokenUrl: 'https://perimeter.azurefd.net/api/auth/token',
         logoutUrl: 'https://perimeter.azurefd.net/api/auth/logout',
