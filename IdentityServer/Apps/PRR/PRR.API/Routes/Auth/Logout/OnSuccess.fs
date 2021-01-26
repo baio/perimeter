@@ -1,7 +1,7 @@
 namespace PRR.API.Routes.Auth.LogOut
 
 open Common.Domain.Giraffe
-open DataAvail.KeyValueStorage
+open DataAvail.KeyValueStorage.Core
 open PRR.API
 open PRR.System.Models
 open PRR.Domain.Auth.LogOut

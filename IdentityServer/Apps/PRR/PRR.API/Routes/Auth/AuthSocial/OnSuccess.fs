@@ -1,6 +1,6 @@
 namespace PRR.API.Routes.Auth.Social
 
-open DataAvail.KeyValueStorage
+open DataAvail.KeyValueStorage.Core
 open PRR.Domain.Auth.Social.SocialAuth
 open System.Threading.Tasks
 open PRR.API.Routes.DIHelpers

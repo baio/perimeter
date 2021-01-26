@@ -1,7 +1,7 @@
 ﻿namespace PRR.API.Routes.Auth.RefreshToken
 
 open System.Threading.Tasks
-open DataAvail.KeyValueStorage
+open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
 open PRR.System.Models
 open PRR.Domain.Auth.RefreshToken

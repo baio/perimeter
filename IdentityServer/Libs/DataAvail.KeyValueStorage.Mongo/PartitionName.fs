@@ -1,7 +1,8 @@
-﻿namespace DataAvail.KeyValueStorage
+﻿namespace DataAvail.KeyValueStorage.Core
 
 open System
 
+[<AutoOpen>]
 module PartitionName =
 
     let private getStorageNameFromAttribute<'a> () =

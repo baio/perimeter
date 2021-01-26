@@ -8,30 +8,11 @@ open PRR.Domain.Auth.SignUpConfirm
 
 module PostSignUpConfirm =
 
-    let private getFCreateTenant ctx =
-#if TEST
-        let f =
-            bindQueryStringField "skipCreateTenant" ctx
-
-        match f with
-        | None -> true
-        | Some _ -> false
-#else
-        false
-#endif
-
     let getEnv ctx =
-        let kvStorage = getKeyValueStorage ctx
-        let logger = getLogger ctx
-
-        let getTokenItemEnv: GetTokenItem.Env =
-            { Logger = logger
-              KeyValueStorage = kvStorage }
 
         { DataContext = getDataContext ctx
           Logger = getLogger ctx
-          OnSuccess = onSuccess kvStorage
-          GetTokenItem = getTokenItem getTokenItemEnv }
+          KeyValueStorage = getKeyValueStorage ctx }
 
     let private handler ctx =
         task {

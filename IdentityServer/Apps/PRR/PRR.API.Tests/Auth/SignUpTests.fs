@@ -1,4 +1,5 @@
 ﻿namespace PRR.API.Tests
+
 open Common.Test.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
@@ -95,8 +96,6 @@ module SignUp =
                                     LastName = userData.LastName
                                     Email = userData.Email
                                     Token = userToken
-                                    Password = x.Password
-                                    ExpiredAt = x.ExpiredAt
                                     QueryString = None } }
 
 

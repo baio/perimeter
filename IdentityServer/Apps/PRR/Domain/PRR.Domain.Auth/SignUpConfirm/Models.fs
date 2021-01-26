@@ -1,6 +1,7 @@
 ﻿namespace PRR.Domain.Auth.SignUpConfirm
 
 open Common.Domain.Models
+open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
 open PRR.System.Models
@@ -11,13 +12,9 @@ open PRR.System.Models.SignUpToken
 module Models =
 
     type Data = { Token: string }
-    type OnSuccess = SignUpConfirmSuccess -> Task<unit>
-    type GetTokenItem = string -> Task<Item option>
-
     type Env =
         { DataContext: DbDataContext
           Logger: ILogger
-          OnSuccess: OnSuccess
-          GetTokenItem: GetTokenItem }
+          KeyValueStorage: IKeyValueStorage }
 
     type SignUpConfirm = Env -> Data -> Task<int>

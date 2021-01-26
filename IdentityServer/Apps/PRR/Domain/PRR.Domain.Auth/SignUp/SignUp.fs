@@ -64,26 +64,30 @@ module SignUp =
 #endif
                 let encodedPassword = env.PasswordSalter data.Password
 
-                let signupSuccessData =
-                    { FirstName = data.FirstName
-                      LastName = data.LastName
-                      Token = token
-                      Password = encodedPassword
-                      Email = data.Email
-                      QueryString =
-                          if System.String.IsNullOrEmpty data.QueryString
-                          then None
-                          else (Some(data.QueryString.TrimStart('?'))) }
+                let queryString =
+                    if System.String.IsNullOrEmpty data.QueryString
+                    then None
+                    else (Some(data.QueryString.TrimStart('?')))
 
                 let expiresAt =
                     System.DateTime.UtcNow.AddMinutes(float (int env.TokenExpiresIn))
 
+                let kv: SignUpKV =
+                    { FirstName = data.FirstName
+                      LastName = data.LastName
+                      Email = data.Email
+                      Password = encodedPassword
+                      Token = token
+                      ExpiredAt = expiresAt
+                      QueryString = queryString }
+
+
                 env.Logger.LogInformation
                     ("Signup success data {@data} and expires at ${expiresAt}",
-                     { signupSuccessData with
+                     { kv with
                            Password = "***"
                            Token = "***" },
                      expiresAt)
 
-                do! env.OnSuccess(signupSuccessData, expiresAt)
+                do! onSuccess env kv
             }

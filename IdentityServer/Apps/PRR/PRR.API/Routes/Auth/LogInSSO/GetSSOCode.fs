@@ -1,7 +1,7 @@
 ﻿namespace PRR.API.Routes.Auth.LogInSSO
 
 open PRR.API.Routes.Auth.KVPartitionNames
-open DataAvail.KeyValueStorage
+open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.System.Models

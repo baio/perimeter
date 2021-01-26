@@ -1,6 +1,6 @@
 ﻿namespace Tests
 
-open DataAvail.KeyValueStorage
+open DataAvail.KeyValueStorage.Core
 open DataAvail.KeyValueStorage.Mongo
 open Microsoft.Extensions.Configuration
 open MongoDB.Driver

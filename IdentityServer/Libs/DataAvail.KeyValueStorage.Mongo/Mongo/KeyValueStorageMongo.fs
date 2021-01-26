@@ -5,7 +5,7 @@ open System
 open MongoDB.Bson
 open MongoDB.Driver
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open PartitionName
+open DataAvail.KeyValueStorage.Core
 
 [<CLIMutable>]
 type DbRecord<'a> =
@@ -62,27 +62,6 @@ module Mongo =
     let private createKeyIndex () = createFieldPartitionIndex ("Key", true)
 
     let private createTagIndex () = createFieldPartitionIndex ("Tag", false)
-
-    let getExpireAtOption =
-        Option.bind (fun x -> x.ExpiresAt)
-        >> Option.defaultValue DateTime.MaxValue
-
-    let getTagOption =
-        Option.bind (fun (x: AddValueOptions) -> x.Tag |> Option.ofObj)
-
-    let getAddValuePartitionOption =
-        Option.bind (fun (x: AddValueOptions) -> x.PartitionName |> Option.ofObj)
-
-    let getGetValuePartitionOption =
-        Option.bind (fun (x: GetValueOptions) -> x.PartitionName |> Option.ofObj)
-
-    let getAddValuePartitionName<'a> =
-        getAddValuePartitionOption
-        >> Option.defaultWith getPartitionName<'a>
-
-    let getGetValuePartitionName<'a> =
-        getGetValuePartitionOption
-        >> Option.defaultWith getPartitionName<'a>
 
     type KeyValueStorageMongo(connectionString: string, dbName: string, collectionName: string) =
         let connectionString = connectionString

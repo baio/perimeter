@@ -6,6 +6,7 @@ open PRR.API.Infra
 open System.Threading
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Domain.Tenant
+open DataAvail.KeyValueStorage.Core
 
 [<AutoOpen>]
 module UserTestContext =
@@ -41,21 +42,19 @@ module UserTestContext =
         let overrideKeyValueStorage (kvStorage: IKeyValueStorage) (services: IServiceCollection) =
             let kvStorage' =
                 { new IKeyValueStorage with
-                    member __.AddValue k v x =
+                    member __.AddValue k (v: 'a) x =
                         task {
                             let! res = kvStorage.AddValue k v x
 
-                            match x with
-                            | Some x ->
-                                match x.PartitionName with
-                                | "ResetPassword" ->
-                                    resetPasswordToken <- Some k
-                                    resetPasswordTokenHandle.Set() |> ignore
-                                | "SignUp" ->
-                                    confirmToken <- k
-                                    confirmTokenWaitHandle.Set() |> ignore
-                                | _ -> ()
-                            | None -> ()
+                            match getAddValuePartitionName<'a> x with
+                            | "ResetPassword" ->
+                                resetPasswordToken <- Some k
+                                resetPasswordTokenHandle.Set() |> ignore
+                            | "SignUp" ->
+                                confirmToken <- k
+                                confirmTokenWaitHandle.Set() |> ignore
+                            | _ -> ()
+
 
                             return res
                         }

@@ -1,7 +1,7 @@
 ﻿namespace Tests
 
 open System
-open DataAvail.KeyValueStorage
+open DataAvail.KeyValueStorage.Core
 open Xunit
 open Xunit.Priority
 open FSharp.Control.Tasks.V2.ContextInsensitive

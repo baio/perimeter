@@ -11,18 +11,12 @@ module PostSignUp =
     let private handler ctx =
         task {
 
-            let logger = getLogger ctx
-
-            let successEnv: OnSuccess.Env =
-                { SendMail = getSendMail ctx
-                  KeyValueStorage = getKeyValueStorage ctx
-                  Logger = logger }
-
             let env =
                 { DataContext = getDataContext ctx
                   HashProvider = getHash ctx
-                  Logger = logger
-                  OnSuccess = onSuccess successEnv
+                  Logger = getLogger ctx
+                  KeyValueStorage = getKeyValueStorage ctx
+                  SendMail = getSendMail ctx
                   TokenExpiresIn = (getConfig ctx).Auth.SignUpTokenExpiresIn
                   PasswordSalter = (getPasswordSalter ctx) }
 

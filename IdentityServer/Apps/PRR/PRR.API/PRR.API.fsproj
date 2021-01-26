@@ -75,10 +75,7 @@
         <Compile Include="Routes\Auth\KVPartitionNames.fs" />
         <Compile Include="Routes\Auth\Helpers\GetRefererUrl.fs" />
         <Compile Include="Routes\Auth\Helpers\GetExnRedirectUrl.fs" />
-        <Compile Include="Routes\Auth\SignUp\OnSuccess.fs" />
         <Compile Include="Routes\Auth\SignUp\PostSignUp.fs" />
-        <Compile Include="Routes\Auth\SignUpConfirm\OnSuccess.fs" />
-        <Compile Include="Routes\Auth\SignUpConfirm\GetTokenItem.fs" />
         <Compile Include="Routes\Auth\SignUpConfirm\PostSignUpConfirm.fs" />
         <Compile Include="Routes\Auth\ResetPassword\OnSuccess.fs" />
         <Compile Include="Routes\Auth\ResetPassword\PostResetPassword.fs" />

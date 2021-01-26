@@ -2,7 +2,7 @@
 
 open PRR.API.Routes.Auth.KVPartitionNames
 open Common.Domain.Giraffe
-open DataAvail.KeyValueStorage
+open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
 open PRR.API
 open FSharp.Control.Tasks.V2.ContextInsensitive

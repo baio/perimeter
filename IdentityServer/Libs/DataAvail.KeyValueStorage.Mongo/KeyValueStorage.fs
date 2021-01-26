@@ -1,10 +1,10 @@
-﻿namespace DataAvail.KeyValueStorage
+﻿namespace DataAvail.KeyValueStorage.Core
 
 open System
 open System.Threading.Tasks
 
 [<AutoOpen>]
-module Core =
+module KeyValueStorage =
 
     type PartitionName(name: string) =
         inherit Attribute()

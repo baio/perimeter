@@ -100,10 +100,6 @@ module E2E =
 
                          let signUpEnv = PostSignUpConfirm.getEnv ctx
 
-                         let signUpEnv =
-                             { signUpEnv with
-                                   GetTokenItem = fun _ -> Task.FromResult(Some signUpConfirmItem) }
-
                          // login
                          let loginEnv: PRR.Domain.Auth.LogInToken.SignInUserEnv =
                              let config = getConfig ctx
