@@ -12,19 +12,30 @@ open Common.Utils
 open PRR.Domain.Auth.Social.SocialCallback
 open PRR.Sys.Models.Social
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open PRR.API.Routes.Auth
 
 module GetAuthSocialCallback =
 
     let private getEnv (ctx: HttpContext): Env =
         let config = getConfig ctx
+        let logger = getLogger ctx
+
+        let onSuccessEnv: LogIn.OnSuccess.Env =
+            { KeyValueStorage = getKeyValueStorage ctx
+              Logger = logger }
+
+        let getSocialLoginEnv: GetSocialLoginItem.Env =
+            { KeyValueStorage = getKeyValueStorage ctx
+              Logger = logger }
+
         { DataContext = getDataContext ctx
           PasswordSalter = getPasswordSalter ctx
           CodeGenerator = getHash ctx
           Logger = getLogger ctx
           CodeExpiresIn = config.Auth.Jwt.CodeExpiresIn
           SSOExpiresIn = config.Auth.SSOCookieExpiresIn
-          GetSocialLoginItem = getSocialLoginItem ctx
-          OnSuccess = onSuccess ctx
+          GetSocialLoginItem = getSocialLoginItem getSocialLoginEnv
+          OnSuccess = LogIn.OnSuccess.onSuccess onSuccessEnv
           HttpRequestFun = getHttpRequestFun ctx
           SocialCallbackUrl = config.Auth.Social.CallbackUrl
           PerimeterSocialClientSecretKeys =

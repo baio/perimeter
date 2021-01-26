@@ -5,4 +5,5 @@ module KVPartitionNames =
     let SIGN_UP_KV_PARTITION_NAME = "SignUp"
     let LOG_IN_KV_PARTITION_NAME = "LogIn"
     let SSO_KV_PARTITION_NAME = "SSO"
-    let REFRESH_TOKEN_KV_PARTITION_NAME = "RefreshToken"
+    let REFRESH_TOKEN_KV_PARTITION_NAME = "RefreshToken"    
+    let SOCIAL_LOG_IN_KV_PARTITION_NAME = "Social"

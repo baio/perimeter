@@ -78,11 +78,6 @@
         <Compile Include="Routes\Auth\KVPartitionNames.fs" />
         <Compile Include="Routes\Auth\Helpers\GetRefererUrl.fs" />
         <Compile Include="Routes\Auth\Helpers\GetExnRedirectUrl.fs" />
-        <Compile Include="Routes\Auth\AuthSocial\OnSuccess.fs" />
-        <Compile Include="Routes\Auth\AuthSocial\PostAuthSocial.fs" />
-        <Compile Include="Routes\Auth\AuthSocialCallback\OnSuccess.fs" />
-        <Compile Include="Routes\Auth\AuthSocialCallback\GetSocialLoginItem.fs" />
-        <Compile Include="Routes\Auth\AuthSocialCallback\GetAuthSocialCallback.fs" />
         <Compile Include="Routes\Auth\SignUp\OnSuccess.fs" />
         <Compile Include="Routes\Auth\SignUp\PostSignUp.fs" />
         <Compile Include="Routes\Auth\SignUpConfirm\OnSuccess.fs" />
@@ -107,6 +102,11 @@
         <Compile Include="Routes\Auth\RefreshToken\PostRefreshToken.fs" />
         <Compile Include="Routes\Auth\Logout\OnSuccess.fs" />
         <Compile Include="Routes\Auth\Logout\GetLogout.fs" />
+        <Compile Include="Routes\Auth\AuthSocial\OnSuccess.fs" />
+        <Compile Include="Routes\Auth\AuthSocial\PostAuthSocial.fs" />
+        <Compile Include="Routes\Auth\AuthSocialCallback\OnSuccess.fs" />
+        <Compile Include="Routes\Auth\AuthSocialCallback\GetSocialLoginItem.fs" />
+        <Compile Include="Routes\Auth\AuthSocialCallback\GetAuthSocialCallback.fs" />
         <Compile Include="Routes\Auth\AuthRoutes.fs" />
         <Compile Include="E2ERoutes.fs" />
         <Compile Include="Program.fs" />

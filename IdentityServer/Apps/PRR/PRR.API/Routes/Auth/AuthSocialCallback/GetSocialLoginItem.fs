@@ -7,14 +7,27 @@ open PRR.API.Routes.DIHelpers
 open PRR.API
 open Common.Utils
 open FSharp.Akkling.CQRS
+open PRR.API.Routes.Auth.KVPartitionNames
+open DataAvail.KeyValueStorage
+open Microsoft.Extensions.Logging
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Sys.Models.Social
 
 [<AutoOpen>]
 module private GetSocialLoginItem =
 
-    let getSocialLoginItem (ctx: HttpContext) (token: Token) =
-        let sysActors = getSystemActors ctx
-        let sys = sysActors.System
-        let socialActor = sysActors.Social
-        taskOfQueryActor sys socialActor (fun sendResultTo -> SocialLoginQueryCommand(token, sendResultTo))
-        |> TaskUtils.map (snd)
+    type Env =
+        { KeyValueStorage: IKeyValueStorage
+          Logger: ILogger }
+
+    let getSocialLoginItem (env: Env) (token: Token) =
+        task {
+            let! result =
+                env.KeyValueStorage.GetValue<Item> token (Some { PartitionName = SOCIAL_LOG_IN_KV_PARTITION_NAME })
+
+            return match result with
+                   | Ok result -> Some result
+                   | Error err ->
+                       env.Logger.LogWarning("Get SocialLoginItem ${token} item fails with ${@err}", token, err)
+                       None
+        }

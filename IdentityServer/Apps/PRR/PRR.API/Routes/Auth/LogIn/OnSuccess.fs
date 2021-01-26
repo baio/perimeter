@@ -16,7 +16,7 @@ open PRR.Domain.Auth.LogIn
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
 [<AutoOpen>]
-module private OnSuccess =
+module internal OnSuccess =
 
     type Env =
         { KeyValueStorage: IKeyValueStorage
