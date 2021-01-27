@@ -3,17 +3,20 @@
 open Common.Domain.Giraffe
 open Common.Domain.Models
 open Common.Domain.Utils
+open DataAvail.KeyValueStorage.Core
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Giraffe
 open Microsoft.AspNetCore.Http
 open Microsoft.EntityFrameworkCore
 open Microsoft.Extensions.Configuration
 open MongoDB.Driver
+open PRR.API.Configuration
 open PRR.API.Configuration.ConfigureServices
 
 open PRR.API.Infra.RandomStringProvider
 open PRR.API.Routes.Auth.SignUpConfirm
 open PRR.Data.DataContext
+open PRR.Domain.Auth.Common.KeyValueModels
 open PRR.Domain.Auth.SignUpConfirm
 open PRR.System.Models
 open System
@@ -84,11 +87,10 @@ module E2E =
                  >=> fun next ctx ->
                          let dataContext = getDataContext ctx
 
-                         let logger = ctx.GetLogger()
 
                          recreatedDbs ctx
                          // signup
-                         let signUpConfirmItem: SignUpToken.Item =
+                         let signUpConfirmItem: SignUpKV =
                              { FirstName = "test"
                                LastName = "user"
                                Email = "hahijo5833@acceptmail.net"
@@ -100,6 +102,19 @@ module E2E =
 
                          let signUpEnv = PostSignUpConfirm.getEnv ctx
 
+                         let kvStorage = getKeyValueStorage ctx
+
+                         let kvStorage' =
+                             { new IKeyValueStorage with
+                                 member __.AddValue k (v: 'a) x = kvStorage.AddValue<'a> k v x
+                                 member __.GetValue<'a> k x =
+                                     (Task.FromResult(Result.Ok((box signUpConfirmItem) :?> 'a)))
+
+                                 member __.RemoveValue<'a> k x = kvStorage.RemoveValue<'a> k x
+                                 member __.RemoveValuesByTag<'a> k x = kvStorage.RemoveValuesByTag<'a> k x }
+
+
+
                          // login
                          let loginEnv: PRR.Domain.Auth.LogInToken.SignInUserEnv =
                              let config = getConfig ctx
@@ -110,7 +125,11 @@ module E2E =
                                Logger = getLogger ctx }
 
                          task {
-                             let! userId = signUpConfirm signUpEnv { Token = "xxx" }
+                             let! userId =
+                                 signUpConfirm
+                                     { signUpEnv with
+                                           KeyValueStorage = kvStorage' }
+                                     { Token = "xxx" }
                              //
                              Thread.Sleep(100)
 
