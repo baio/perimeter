@@ -3,11 +3,8 @@
 open Common.Test.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
-open NUnit.Framework.Internal
-open PRR.API.Tests
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.ResetPasswordConfirm
-open PRR.System.Models
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority

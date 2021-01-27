@@ -7,7 +7,6 @@ open Microsoft.AspNetCore.Http
 open PRR.API.Routes
 open PRR.Domain.Auth.LogInSSO
 open Microsoft.Extensions.Logging
-open PRR.System.Models
 open PRR.API.Routes.Auth
 
 module PostAuthorize =

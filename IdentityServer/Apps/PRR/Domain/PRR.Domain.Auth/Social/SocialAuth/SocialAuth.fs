@@ -5,8 +5,6 @@ open Common.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
 open Common.Domain.Utils
-open PRR.Data.Entities
-open PRR.Sys.Models.Social
 open PRR.Domain.Auth.Common
 open Microsoft.Extensions.Logging
 open DataAvail.KeyValueStorage.Core

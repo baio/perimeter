@@ -1,7 +1,7 @@
 ﻿namespace PRR.API.Infra
 
 open PRR.API.Infra.Mail
-open PRR.System.Models
+open PRR.Domain.Auth.Common
 
 [<AutoOpen>]
 module SendMail =
@@ -47,7 +47,11 @@ module SendMail =
                   Html = getConfirmSignupHtml env.Project item }
         | ResetPasswordMail item ->
             { mail with
-                  Html = getResetPasswordHtml env.Project { Email = item.Email; Token = item.Token } }
+                  Html =
+                      getResetPasswordHtml
+                          env.Project
+                          { Email = item.Email
+                            Token = item.Token } }
 
     let createSendMail (env: MailSenderConfig) (sender: MailSender) =
         let sendMail: SendMail =

@@ -7,13 +7,11 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx
 open Models
 open PRR.Data.DataContext
-open PRR.System.Models
 open System
 open System.Text.RegularExpressions
 open PRR.Domain.Auth
 open PRR.Domain.Auth.Common
 open Microsoft.Extensions.Logging
-open PRR.Domain.Auth.Common.KeyValueModels
 
 [<AutoOpen>]
 module LogInToken =
@@ -35,46 +33,6 @@ module LogInToken =
            (validateUrl "redirect_uri" data.Redirect_Uri)
            (validateNullOrEmpty "code_verifier" data.Code_Verifier) |]
         |> Array.choose id
-
-    let private getSuccessData (dataContext: DbDataContext) clientId userId isPerimeterClient =
-        task {
-
-            let! userEmail =
-                query {
-                    for user in dataContext.Users do
-                        where (user.Id = userId)
-                        select user.Email
-                }
-                |> toSingleExnAsync (Unexpected')
-
-            if clientId = PERIMETER_CLIENT_ID then
-                let result: LogIn.LoginSuccessData =
-                    { DomainId = PERIMETER_DOMAIN_ID
-                      IsManagementClient = true
-                      AppIdentifier = PERIMETER_APP_IDENTIFIER
-                      UserEmail = userEmail
-                      Date = DateTime.UtcNow }
-
-                return result
-            else
-                let! (domainId, appIdentifier) =
-                    query {
-                        for app in dataContext.Applications do
-                            where (app.ClientId = clientId)
-                            select (app.Domain.Id, app.Name)
-                    }
-                    |> toSingleExnAsync (Unexpected')
-
-                let successData: LogIn.LoginSuccessData =
-                    { DomainId = domainId
-                      IsManagementClient = isPerimeterClient
-                      AppIdentifier = appIdentifier
-                      UserEmail = userEmail
-                      Date = DateTime.UtcNow }
-
-                return successData
-        }
-
 
     let logInToken: LogInToken =
         fun env data ->

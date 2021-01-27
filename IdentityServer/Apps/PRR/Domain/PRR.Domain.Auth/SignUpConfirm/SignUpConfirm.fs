@@ -7,7 +7,6 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open Models
 open PRR.Data.Entities
 open PRR.Domain.Auth.Common
-open PRR.System.Models
 open System
 open Microsoft.Extensions.Logging
 

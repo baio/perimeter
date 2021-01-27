@@ -1,11 +1,7 @@
 ﻿namespace PRR.Domain.Auth.LogIn
 
 open Microsoft.Extensions.Logging
-open PRR.Data.DataContext
 open PRR.Domain.Auth.Common
-open PRR.System.Models
-open PRR.Domain.Auth.LogIn
-open Microsoft.Extensions.Logging
 open DataAvail.KeyValueStorage.Core
 open Common.Domain.Models.Exceptions
 open FSharp.Control.Tasks.V2.ContextInsensitive

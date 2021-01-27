@@ -3,7 +3,6 @@
 open System.Threading.Tasks
 open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
-open PRR.System.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Common.Domain.Models.Exceptions
 open PRR.Domain.Auth.Common

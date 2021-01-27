@@ -1,7 +1,7 @@
 ﻿namespace PRR.API.Infra.Mail
 
 open System.Threading.Tasks
-open PRR.System.Models
+open PRR.Domain.Auth.Common
 
 [<AutoOpen>]
 module Models =

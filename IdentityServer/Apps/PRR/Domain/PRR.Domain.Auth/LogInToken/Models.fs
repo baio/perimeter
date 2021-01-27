@@ -5,7 +5,6 @@ open Common.Domain.Models
 open DataAvail.KeyValueStorage.Core
 open PRR.Data.DataContext
 open PRR.Domain.Auth
-open PRR.System.Models
 open System.Threading.Tasks
 open Microsoft.Extensions.Logging
 

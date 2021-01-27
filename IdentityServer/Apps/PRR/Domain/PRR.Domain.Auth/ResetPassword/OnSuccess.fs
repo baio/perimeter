@@ -4,9 +4,9 @@ open Common.Domain.Models.Exceptions
 open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
 open PRR.Domain.Auth.Common.KeyValueModels
-open PRR.System.Models
 open PRR.Domain.Auth.ResetPassword
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open PRR.Domain.Auth.Common
 
 [<AutoOpen>]
 module private OnSuccess =

@@ -6,7 +6,6 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open HttpFs.Logging
 open PRR.Domain.Auth.ResetPassword.Models
 open Microsoft.Extensions.Logging
-open PRR.System.Models
 open System
 
 [<AutoOpen>]

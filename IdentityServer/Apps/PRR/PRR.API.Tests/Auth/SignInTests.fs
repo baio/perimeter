@@ -7,9 +7,9 @@ open NUnit.Framework.Internal
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth
 open PRR.Domain.Auth.SignUp
-open PRR.System.Models
 open System
 open System.Threading
+open PRR.Domain.Tenant
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
@@ -38,22 +38,6 @@ module SignIn =
           Email = "user@user.com"
           Password = "#6VvR&^"
           QueryString = null }
-
-    let systemEventHandled =
-        function
-        | UserSignedUpEvent data ->
-            confirmToken <- data.Token
-            confirmTokenWaitHandle.Set() |> ignore
-        | UserTenantCreatedEvent data ->
-            tenant <- Some data
-            tenantWaitHandle.Set() |> ignore
-        | CommandFailureEvent _ ->
-            confirmTokenWaitHandle.Set() |> ignore
-            tenantWaitHandle.Set() |> ignore
-        | QueryFailureEvent _ ->
-            confirmTokenWaitHandle.Set() |> ignore
-            tenantWaitHandle.Set() |> ignore
-        | _ -> ()
 
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]

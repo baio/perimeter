@@ -4,11 +4,8 @@ open Microsoft.AspNetCore.Http
 open Giraffe
 open PRR.API.Routes
 open Common.Domain.Giraffe
-open Common.Utils
-open ReaderTask
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Domain.Auth.Social.SocialAuth
-open PRR.Sys.Models.Social
 open PRR.API.Routes.Auth.Helpers
 open Microsoft.Extensions.Logging
 

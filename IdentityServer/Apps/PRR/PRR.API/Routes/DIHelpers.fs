@@ -1,16 +1,13 @@
 ﻿namespace PRR.API.Routes
 
 open DataAvail.KeyValueStorage.Core
-open Microsoft.Extensions.Configuration
 open PRR.API.Configuration.ConfigureServices
 open PRR.API.Infra.Mail.Models
 open PRR.Data.DataContext
 open Giraffe
 open Microsoft.AspNetCore.Http
-open Common.Utils
 open Common.Utils.ReaderTask
 open PRR.API.Infra.Models
-open PRR.System.Models.CQRSSystem
 
 [<AutoOpen>]
 module DIHelpers =
@@ -39,11 +36,8 @@ module DIHelpers =
         ctx.GetService<IHttpRequestFunProvider>().HttpRequestFun
 
     let getLogger (ctx: HttpContext) = ctx.GetLogger()
-    
-    let getKeyValueStorage (ctx: HttpContext) =
-        ctx.GetService<IKeyValueStorage>()
+
+    let getKeyValueStorage (ctx: HttpContext) = ctx.GetService<IKeyValueStorage>()
 
     let getSendMail (ctx: HttpContext) =
         ctx.GetService<ISendMailProvider>().GetSendMail()
-
-

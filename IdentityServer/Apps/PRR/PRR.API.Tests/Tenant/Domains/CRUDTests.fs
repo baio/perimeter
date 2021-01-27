@@ -7,7 +7,6 @@ open PRR.Data.Entities
 open PRR.Domain.Auth.SignUp
 open PRR.Domain.Tenant.Domains
 open PRR.Domain.Tenant.UserDomains
-open PRR.System.Models
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority

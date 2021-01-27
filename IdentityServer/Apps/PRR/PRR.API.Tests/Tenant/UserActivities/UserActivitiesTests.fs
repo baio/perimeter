@@ -7,7 +7,6 @@ open FsUnit
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.SignUp
 //open PRR.System.Views.LogInView
-open PRR.System.Models
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority

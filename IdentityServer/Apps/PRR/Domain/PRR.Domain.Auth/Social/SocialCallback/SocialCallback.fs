@@ -1,21 +1,14 @@
 ﻿namespace PRR.Domain.Auth.Social.SocialCallback
 
-open System.Threading
 open Common.Domain.Models
-open System.Net.Http
 open System.Threading.Tasks
 open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open HttpFs.Client
-open Newtonsoft.Json
 open PRR.Data.DataContext
 open Common.Domain.Utils
 open PRR.Data.Entities
 open PRR.Domain.Auth.Common.KeyValueModels
 open PRR.Domain.Auth.LogIn.Authorize
-open PRR.Sys.Models.Social
-open Hopac
-open PRR.System.Models
 open System.Linq
 open Microsoft.Extensions.Logging
 

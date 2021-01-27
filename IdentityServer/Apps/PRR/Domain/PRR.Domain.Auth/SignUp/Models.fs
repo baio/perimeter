@@ -4,8 +4,7 @@ open Common.Domain.Models
 open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
-open PRR.Domain.Auth.Common.KeyValueModels
-open PRR.System.Models
+open PRR.Domain.Auth.Common
 open System.Threading.Tasks
 
 [<AutoOpen>]

@@ -8,7 +8,6 @@ open HttpFs.Logging
 open Models
 open PRR.Domain.Auth.Common
 open PRR.Domain.Auth.Utils
-open PRR.System.Models
 open Microsoft.Extensions.Logging
 
 [<AutoOpen>]

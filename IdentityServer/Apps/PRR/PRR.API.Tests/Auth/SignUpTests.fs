@@ -7,9 +7,10 @@ open Microsoft.Extensions.DependencyInjection
 open PRR.API.Infra.Mail.Models
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth
+open PRR.Domain.Auth.Common
 open PRR.Domain.Auth.SignUp
-open PRR.System.Models
 open System
+open PRR.Domain.Tenant
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority

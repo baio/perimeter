@@ -3,13 +3,10 @@ open Common.Test.Utils
 open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
-open PRR.API.Tests.Tenant.Permissions.CRUD
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.SignUp
 open PRR.Domain.Tenant
 open PRR.Domain.Tenant.Apis
-open PRR.System.Models
-open System
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority

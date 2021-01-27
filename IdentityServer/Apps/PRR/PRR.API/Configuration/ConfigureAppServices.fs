@@ -6,7 +6,6 @@ open Microsoft.Extensions.Logging
 open PRR.API.Infra.Mail.Models
 open PRR.API.Infra.Models
 open PRR.Domain.Auth
-open PRR.Sys.Models
 
 [<AutoOpen>]
 module ConfigureServices =

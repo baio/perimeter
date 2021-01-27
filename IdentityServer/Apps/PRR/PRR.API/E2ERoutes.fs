@@ -11,19 +11,15 @@ open Microsoft.EntityFrameworkCore
 open Microsoft.Extensions.Configuration
 open MongoDB.Driver
 open PRR.API.Configuration
-open PRR.API.Configuration.ConfigureServices
 
-open PRR.API.Infra.RandomStringProvider
 open PRR.API.Routes.Auth
 open PRR.Data.DataContext
 open PRR.Domain.Auth.Common.KeyValueModels
 open PRR.Domain.Auth.SignUpConfirm
-open PRR.System.Models
 open System
 open System.Linq
 open System.Threading
 open System.Threading.Tasks
-open Microsoft.Extensions.Logging
 
 [<CLIMutable>]
 type ReinitData = { LoginAsDomain: bool }

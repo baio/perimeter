@@ -1,10 +1,7 @@
 ﻿namespace PRR.Domain.Auth.Utils
 
 open Common.Domain.Models
-open Common.Domain.Models.Exceptions
 open Common.Domain.Utils
-open Models
-open PRR.System.Models
 
 [<AutoOpen>]
 module Utils =

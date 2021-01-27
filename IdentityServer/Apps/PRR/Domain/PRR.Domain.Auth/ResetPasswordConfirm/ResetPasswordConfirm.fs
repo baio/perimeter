@@ -6,8 +6,6 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Domain.Auth.Common
 open PRR.Domain.Auth.ResetPasswordConfirm.Models
 open PRR.Domain.Auth.Utils
-open PRR.System.Models
-open System
 open Microsoft.Extensions.Logging
 
 [<AutoOpen>]

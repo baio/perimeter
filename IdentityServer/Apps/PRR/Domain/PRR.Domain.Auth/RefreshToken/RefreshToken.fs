@@ -6,7 +6,6 @@ open Common.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.Entities
 open PRR.Domain.Auth.LogInToken
-open PRR.System.Models
 open PRR.Domain.Auth.Common
 open Microsoft.Extensions.Logging
 

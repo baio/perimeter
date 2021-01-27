@@ -6,7 +6,6 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open Microsoft.IdentityModel.Tokens
 open PRR.Domain.Auth.Common.KeyValueModels
 open PRR.Domain.Auth.RefreshToken
-open PRR.System.Models
 open System.Security.Claims
 open System.Text
 open System.Threading.Tasks

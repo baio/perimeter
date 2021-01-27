@@ -1,13 +1,9 @@
 ﻿namespace PRR.Domain.Auth.Social.SocialCallback
 
-open System.Threading.Tasks
 open Common.Domain.Models
 open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
-open PRR.Domain.Auth.Common.KeyValueModels
-open PRR.Sys.Models.Social
-open PRR.System.Models
 
 [<AutoOpen>]
 module Models =

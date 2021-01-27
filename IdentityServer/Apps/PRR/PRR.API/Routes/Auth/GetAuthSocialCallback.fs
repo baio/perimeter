@@ -1,17 +1,12 @@
 ﻿namespace PRR.API.Routes.Auth
 
-open FSharpx
-open PRR.System.Models
 open Common.Domain.Models
 open Microsoft.AspNetCore.Http
 open Giraffe
 open PRR.API.Routes
 open Common.Domain.Giraffe
-open Common.Utils
 open PRR.Domain.Auth.Social.SocialCallback
-open PRR.Sys.Models.Social
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open PRR.API.Routes.Auth
 
 module GetAuthSocialCallback =
 

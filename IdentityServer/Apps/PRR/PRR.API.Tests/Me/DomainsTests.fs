@@ -1,12 +1,11 @@
 ﻿namespace PRR.API.Tests.Me
+
 open Common.Test.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.SignUp
-open PRR.Domain.Tenant.Domains
 open PRR.Domain.Tenant.UserDomains
-open PRR.System.Models
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
@@ -34,9 +33,9 @@ module Domains =
         [<Fact>]
         [<Priority(-1)>]
         member __.``0 BEFORE ALL``() =
-            task {                
+            task {
                 testContext <- Some(createUserTestContext testFixture)
-                let! userToken' = createUser' false testContext.Value userData 
+                let! userToken' = createUser' false testContext.Value userData
                 userToken <- userToken'
             }
 
