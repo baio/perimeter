@@ -4,6 +4,7 @@ open Common.Domain.Models
 open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Microsoft.IdentityModel.Tokens
+open PRR.Domain.Auth.Common.KeyValueModels
 open PRR.Domain.Auth.RefreshToken
 open PRR.System.Models
 open System.Security.Claims
@@ -16,12 +17,18 @@ module LogOut =
     let logout: LogOut =
         fun env data ->
             let accessToken = data.AccessToken
+
             let tokenValidationParameters =
                 TokenValidationParameters
-                    (ValidateAudience = false, ValidateIssuer = false, ValidateIssuerSigningKey = true,
+                    (ValidateAudience = false,
+                     ValidateIssuer = false,
+                     ValidateIssuerSigningKey = true,
                      IssuerSigningKey = SymmetricSecurityKey(Encoding.UTF8.GetBytes(env.AccessTokenSecret)),
                      ValidateLifetime = false)
-            let token = validateToken accessToken tokenValidationParameters
+
+            let token =
+                validateToken accessToken tokenValidationParameters
+
             match token with
             | Some token ->
                 // TODO : Check allowed return url
@@ -32,8 +39,10 @@ module LogOut =
 
                 let result = { ReturnUri = data.ReturnUri }
                 task {
-                    do! env.OnSuccess sub
+                    let! _ = env.KeyValueStorage.RemoveValuesByTag<SSOKV> (sub.ToString()) None
+
+                    let! _ = env.KeyValueStorage.RemoveValuesByTag<RefreshTokenKV> (sub.ToString()) None
+
                     return result
                 }
-            | None ->
-                raise (Exceptions.unAuthorized "access_token is not valid")
+            | None -> raise (Exceptions.unAuthorized "access_token is not valid")

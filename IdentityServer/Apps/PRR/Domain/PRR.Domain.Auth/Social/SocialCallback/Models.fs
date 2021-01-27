@@ -2,8 +2,10 @@
 
 open System.Threading.Tasks
 open Common.Domain.Models
+open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
+open PRR.Domain.Auth.Common.KeyValueModels
 open PRR.Sys.Models.Social
 open PRR.System.Models
 
@@ -20,23 +22,18 @@ module Models =
           Twitter: string
           Google: string }
 
-    type OnSuccess = (LogIn.Item * SSO.Item option) -> Task<unit>
-
     type Env =
         { DataContext: DbDataContext
           CodeGenerator: HashProvider
           PasswordSalter: StringSalter
           CodeExpiresIn: int<minutes>
           SSOExpiresIn: int<minutes>
-          GetSocialLoginItem: Token -> Task<Item option>
           HttpRequestFun: HttpRequestFun
           PerimeterSocialClientSecretKeys: PerimeterSocialClientSecretKeys
           SocialCallbackUrl: string
           Logger: ILogger
-          OnSuccess: OnSuccess }
+          KeyValueStorage: IKeyValueStorage }
 
     type Result =
         { RedirectUrl: Uri
-          SocialLoginToken: Token
-          LoginItem: LogIn.Item
-          SSOItem: SSO.Item option }
+          SocialLoginToken: Token }

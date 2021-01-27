@@ -9,24 +9,14 @@ open PRR.Domain.Auth.LogInToken
 module PostAuthorizeToken =
 
     let getEnv ctx =
-
-        let logger = getLogger ctx
-
-        let kvStorage = getKeyValueStorage ctx
-
-        let getCodeItemEnv: GetCodeItem.Env =
-            { KeyValueStorage = kvStorage
-              Logger = logger }
-
         let config = getConfig ctx
         { DataContext = getDataContext ctx
           HashProvider = getHash ctx
           Sha256Provider = getSHA256 ctx
-          SSOCookieExpiresIn = config.Auth.SSOCookieExpiresIn
+          RefreshTokenExpiresIn = config.Auth.RefreshTokenExpiresIn
           JwtConfig = config.Auth.Jwt
-          Logger = logger
-          GetCodeItem = getCodeItem getCodeItemEnv
-          OnSuccess = onSuccess kvStorage }
+          Logger = getLogger ctx
+          KeyValueStorage = getKeyValueStorage ctx }
 
     let private handler ctx =
         task {

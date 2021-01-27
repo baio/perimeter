@@ -2,6 +2,7 @@
 
 open System.Threading.Tasks
 open Common.Domain.Models
+open DataAvail.KeyValueStorage.Core.KeyValueStorage
 open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
 
@@ -32,12 +33,11 @@ module Models =
           Google: string
           Twitter: string }
 
-    type OnSuccess = PRR.Sys.Models.Social.Item -> Task<unit>
     type Env =
         { DataContext: DbDataContext
           HashProvider: HashProvider
           SocialCallbackUrl: string
           SocialCallbackExpiresIn: int<milliseconds>
           PerimeterSocialClientIds: PerimeterSocialClientIds
-          OnSuccess: OnSuccess
+          KeyValueStorage: IKeyValueStorage
           Logger: ILogger }

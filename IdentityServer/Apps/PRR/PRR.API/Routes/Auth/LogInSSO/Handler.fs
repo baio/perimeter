@@ -10,24 +10,11 @@ open Microsoft.Extensions.Logging
 module internal Handler =
 
     let getEnv ctx =
-
-        let kvStorage = getKeyValueStorage ctx
-        let logger = getLogger ctx
-
-        let onSuccessEnv: OnSuccess.Env =
-            { KeyValueStorage = kvStorage
-              Logger = logger }
-
-        let getSSOCodeEnv: GetSSOCode.Env =
-            { KeyValueStorage = kvStorage
-              Logger = logger }
-
         { DataContext = getDataContext ctx
           CodeGenerator = getHash ctx
           CodeExpiresIn = (getConfig ctx).Auth.Jwt.CodeExpiresIn
-          Logger = logger
-          OnSuccess = onSuccess onSuccessEnv
-          GetSSOItem = getSSOCode getSSOCodeEnv }
+          Logger = getLogger ctx
+          KeyValueStorage = getKeyValueStorage ctx }
 
     let handler ctx sso =
 

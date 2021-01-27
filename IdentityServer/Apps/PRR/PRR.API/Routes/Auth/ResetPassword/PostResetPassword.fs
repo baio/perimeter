@@ -10,13 +10,11 @@ module PostResetPassword =
 
     let private handler ctx =
 
-        let logger = getLogger ctx
-
         let env =
             { DataContext = getDataContext ctx
               KeyValueStorage = getKeyValueStorage ctx
               SendMail = getSendMail ctx
-              Logger = logger
+              Logger = getLogger ctx
               HashProvider = getHash ctx
               TokenExpiresIn = (getConfig ctx).Auth.ResetPasswordTokenExpiresIn }
 

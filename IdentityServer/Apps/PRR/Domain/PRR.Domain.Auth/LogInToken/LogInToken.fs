@@ -13,6 +13,7 @@ open System.Text.RegularExpressions
 open PRR.Domain.Auth
 open PRR.Domain.Auth.Common
 open Microsoft.Extensions.Logging
+open PRR.Domain.Auth.Common.KeyValueModels
 
 [<AutoOpen>]
 module LogInToken =
@@ -82,15 +83,15 @@ module LogInToken =
 
             task {
 
-                let! item = env.GetCodeItem data.Code
+                let! item = env.KeyValueStorage.GetValue<LogInKV> data.Code None
 
                 let item =
                     match item with
-                    | Some item ->
+                    | Ok item ->
                         env.Logger.LogInformation("LogIn item found ${@item}", { item with Code = "***" })
                         item
-                    | None ->
-                        env.Logger.LogWarning("Couldn't find LogIn item ${code}", data.Code)
+                    | Result.Error err ->
+                        env.Logger.LogWarning("Couldn't find LogIn item ${code} with error ${@error}", data.Code, err)
                         raise (UnAuthorized None)
 
                 let dataContext = env.DataContext
@@ -138,20 +139,28 @@ module LogInToken =
                     let! (result, clientId, isPerimeterClient) =
                         signInUser signInUserEnv tokenData data.Client_Id (ValidatedScopes item.ValidatedScopes)
 
-                    let refreshTokenItem: RefreshToken.Item =
+                    let refreshTokenItem: RefreshTokenKV =
                         { Token = result.refresh_token
                           ClientId = clientId
                           UserId = item.UserId
-                          ExpiresAt = DateTime.UtcNow.AddMinutes(float env.SSOCookieExpiresIn)
+                          ExpiresAt = DateTime.UtcNow.AddMinutes(float env.RefreshTokenExpiresIn)
                           Scopes = item.RequestedScopes
                           IsPerimeterClient = isPerimeterClient
                           SocialType = socialType }
 
-                    let! successData = getSuccessData dataContext clientId item.UserId isPerimeterClient
+                    
+                    env.Logger.LogInformation("Success with refreshToken ${@refreshToken}", refreshTokenItem)
 
-                    env.Logger.LogInformation("Success with ${@successData}", successData)
+                    let! _ = env.KeyValueStorage.RemoveValue<LogInKV> item.Code None
 
-                    do! env.OnSuccess(item.Code, refreshTokenItem, successData)
+                    let! _ =
+                        env.KeyValueStorage.AddValue
+                            refreshTokenItem.Token
+                            refreshTokenItem
+                            (Some
+                                { PartitionName = null
+                                  ExpiresAt = (Some item.ExpiresAt)
+                                  Tag = (item.UserId.ToString()) })
 
                     return result
                 | None ->

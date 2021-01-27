@@ -9,6 +9,7 @@ open PRR.Data.Entities
 open PRR.Sys.Models.Social
 open PRR.Domain.Auth.Common
 open Microsoft.Extensions.Logging
+open DataAvail.KeyValueStorage.Core
 
 [<AutoOpen>]
 module SocialAuth =
@@ -75,9 +76,8 @@ module SocialAuth =
             logger.LogInformation("${socialRedirectUrl} created", socialRedirectUrl)
 
             // Store login data they will be used when callback hit back
-            let successData =
+            let data: SocialLoginKV =
                 { Token = token
-                  ExpiresIn = env.SocialCallbackExpiresIn
                   SocialClientId = socialInfo.ClientId
                   // The client id here must stay __DEFAULT_CLIENT_ID__ if it was so, since it will be used further in authorization flow
                   DomainClientId = data.Client_Id
@@ -89,9 +89,22 @@ module SocialAuth =
                   CodeChallenge = data.Code_Challenge
                   CodeChallengeMethod = data.Code_Challenge_Method }
 
-            logger.LogInformation("${successData} ready", successData)
+            logger.LogInformation("${successData} ready", data)
 
-            do! env.OnSuccess successData
+            let expiresIn =
+                System.DateTime.UtcNow.AddMinutes(float env.SocialCallbackExpiresIn)
+
+            let options =
+                { addValueDefaultOptions with
+                      ExpiresAt = (Some expiresIn) }
+
+            let! result = env.KeyValueStorage.AddValue token data (Some options)
+
+            match result with
+            | Result.Error AddValueError.KeyAlreadyExists ->
+                env.Logger.LogError("Token ${token} already exists in Social LogIn storage", token)
+                return raise (Unexpected')
+            | _ -> ()
 
             return socialRedirectUrl
         }

@@ -16,19 +16,13 @@ module PostAuthSocial =
 
     let getEnv (ctx: HttpContext): Env =
         let config = getConfig ctx
-        let logger = getLogger ctx
-        let kvStorage = getKeyValueStorage ctx
-
-        let onSuccessEnv: OnSuccess.Env =
-            { KeyValueStorage = kvStorage
-              Logger = logger }
 
         { DataContext = getDataContext ctx
           HashProvider = getHash ctx
           SocialCallbackUrl = config.Auth.Social.CallbackUrl
           SocialCallbackExpiresIn = config.Auth.Social.CallbackExpiresIn
-          OnSuccess = onSuccess onSuccessEnv
           Logger = getLogger ctx
+          KeyValueStorage = getKeyValueStorage ctx
           PerimeterSocialClientIds =
               { Github = config.Auth.PerimeterSocialProviders.Github.ClientId
                 Google = config.Auth.PerimeterSocialProviders.Google.ClientId

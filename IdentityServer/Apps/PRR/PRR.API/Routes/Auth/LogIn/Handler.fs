@@ -15,20 +15,14 @@ module internal Handler =
 
     let getEnv ctx =
 
-        let logger = getLogger ctx
-
-        let onSuccessEnv: OnSuccess.Env =
-            { KeyValueStorage = getKeyValueStorage ctx
-              Logger = logger }
-
         let config = getConfig ctx
         { DataContext = getDataContext ctx
           PasswordSalter = getPasswordSalter ctx
           CodeGenerator = getHash ctx
           CodeExpiresIn = config.Auth.Jwt.CodeExpiresIn
           SSOExpiresIn = config.Auth.SSOCookieExpiresIn
-          Logger = logger
-          OnSuccess = onSuccess onSuccessEnv }
+          Logger = getLogger ctx
+          KeyValueStorage = getKeyValueStorage ctx }
 
 
     let handler ctx sso =

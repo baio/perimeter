@@ -17,24 +17,14 @@ module GetAuthSocialCallback =
 
     let private getEnv (ctx: HttpContext): Env =
         let config = getConfig ctx
-        let logger = getLogger ctx
-
-        let onSuccessEnv: LogIn.OnSuccess.Env =
-            { KeyValueStorage = getKeyValueStorage ctx
-              Logger = logger }
-
-        let getSocialLoginEnv: GetSocialLoginItem.Env =
-            { KeyValueStorage = getKeyValueStorage ctx
-              Logger = logger }
-
+        
         { DataContext = getDataContext ctx
           PasswordSalter = getPasswordSalter ctx
           CodeGenerator = getHash ctx
           Logger = getLogger ctx
           CodeExpiresIn = config.Auth.Jwt.CodeExpiresIn
-          SSOExpiresIn = config.Auth.SSOCookieExpiresIn
-          GetSocialLoginItem = getSocialLoginItem getSocialLoginEnv
-          OnSuccess = LogIn.OnSuccess.onSuccess onSuccessEnv
+          SSOExpiresIn = config.Auth.SSOCookieExpiresIn          
+          KeyValueStorage = getKeyValueStorage ctx
           HttpRequestFun = getHttpRequestFun ctx
           SocialCallbackUrl = config.Auth.Social.CallbackUrl
           PerimeterSocialClientSecretKeys =

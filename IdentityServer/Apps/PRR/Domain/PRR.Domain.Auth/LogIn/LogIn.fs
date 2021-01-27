@@ -52,7 +52,6 @@ module Authorize =
             else return! getClientAppData' dataContext clientId
         }
 
-
     type LoginData =
         { UserId: int
           ClientId: ClientId
@@ -64,9 +63,13 @@ module Authorize =
           CodeChallenge: string
           CodeChallengeMethod: string }
 
-    let logInUser env (sso: Token option) (data: LoginData) =
+    let logInUser (env: Models.Env) (sso: Token option) (data: LoginData) (social: Social option) =
 
-        env.Logger.LogInformation("LogIn user with ${@data} and ${sso}", { data with CodeChallenge = "***" }, sso.IsSome)
+        env.Logger.LogInformation
+            ("LogIn user with ${@data} and ${sso} and social ${@social}",
+             { data with CodeChallenge = "***" },
+             sso.IsSome,
+             social)
 
         let dataContext = env.DataContext
 
@@ -76,7 +79,9 @@ module Authorize =
 
             env.Logger.LogInformation("App info found ${@info}", r)
 
-            let { ClientId = clientId; Issuer = issuer } = r
+            let issuer = r.Issuer
+
+            let clientId = r.ClientId
 
             let! r = getClientAppData dataContext clientId
 
@@ -132,7 +137,7 @@ module Authorize =
 
             let userId = data.UserId
 
-            let loginItem: LogIn.Item =
+            let loginItem: LogInKV =
                 { Code = code
                   ClientId = data.ClientId
                   Issuer = issuer
@@ -142,7 +147,7 @@ module Authorize =
                   UserId = userId
                   ExpiresAt = codeExpiresAt
                   RedirectUri = data.RedirectUri
-                  Social = None }
+                  Social = social }
 
             let ssoExpiresAt =
                 DateTime.UtcNow.AddMinutes(float env.SSOExpiresIn)
@@ -157,7 +162,7 @@ module Authorize =
                            TenantId = tenantId
                            ExpiresAt = ssoExpiresAt
                            Email = data.Email
-                           Social = None }: SSO.Item)
+                           Social = social }: SSOKV)
                 // TODO : Handle case SSO enabled but sso token not found
                 | _ -> None
 
@@ -165,7 +170,11 @@ module Authorize =
 
             env.Logger.LogInformation("${@successData} is ready", successData)
 
-            do! env.OnSuccess(successData)
+            let env': OnSuccess.Env =
+                { Logger = env.Logger
+                  KeyValueStorage = env.KeyValueStorage }
+
+            do! onSuccess env' successData
 
             env.Logger.LogInformation("Login user success")
 
@@ -209,7 +218,9 @@ module Authorize =
                           CodeChallenge = data.Code_Challenge
                           CodeChallengeMethod = data.Code_Challenge_Method }
 
-                    return! logInUser env sso loginData
+                    let! result = logInUser env sso loginData None
+
+                    return result
 
                 | None ->
                     env.Logger.LogWarning("Wrong email or password")

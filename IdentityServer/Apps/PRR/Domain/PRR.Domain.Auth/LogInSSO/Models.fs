@@ -2,6 +2,7 @@
 
 open Common.Domain.Models
 
+open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
 open PRR.System.Models
@@ -21,16 +22,12 @@ module Models =
           Code_Challenge_Method: string
           Prompt: string option }
 
-    type OnSuccess = LogIn.Item -> Task<unit>
-
-    type GetSSOItem = Token -> Task<SSO.Item option>
 
     type Env =
         { DataContext: DbDataContext
           CodeGenerator: HashProvider
           CodeExpiresIn: int<minutes>
           Logger: ILogger
-          OnSuccess: OnSuccess
-          GetSSOItem: GetSSOItem }
+          KeyValueStorage: IKeyValueStorage }
 
     type LogInSSO = Env -> string -> Data -> Task<PRR.Domain.Auth.LogIn.Models.Result>

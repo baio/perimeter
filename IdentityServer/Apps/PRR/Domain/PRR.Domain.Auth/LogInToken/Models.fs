@@ -2,6 +2,7 @@
 
 open Common.Domain.Models
 
+open DataAvail.KeyValueStorage.Core
 open PRR.Data.DataContext
 open PRR.Domain.Auth
 open PRR.System.Models
@@ -22,17 +23,13 @@ module Models =
           access_token: string
           refresh_token: string }
 
-    type GetCodeItem = Token -> Task<LogIn.Item option>
-    type OnSuccess = (Token * RefreshToken.Item * LogIn.LoginSuccessData) -> Task<unit>
-
     type Env =
         { DataContext: DbDataContext
           JwtConfig: JwtConfig
-          SSOCookieExpiresIn: int<minutes>
+          RefreshTokenExpiresIn: int<minutes>
           HashProvider: HashProvider
           Sha256Provider: Sha256Provider
-          Logger: ILogger
-          GetCodeItem: GetCodeItem
-          OnSuccess: OnSuccess }
+          KeyValueStorage: IKeyValueStorage
+          Logger: ILogger }
 
     type LogInToken = Env -> Data -> Task<Result>

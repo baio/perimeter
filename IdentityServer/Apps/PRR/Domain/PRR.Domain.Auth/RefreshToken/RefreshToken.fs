@@ -1,6 +1,7 @@
 ﻿namespace PRR.Domain.Auth.RefreshToken
 
 open System
+open System
 open Common.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.Entities
@@ -37,15 +38,18 @@ module RefreshToken =
             let accessToken = token
 
             task {
-                let! item = env.GetTokenItem data.RefreshToken
+                let! item = env.KeyValueStorage.GetValue<RefreshTokenKV> data.RefreshToken None
 
                 let item =
                     match item with
-                    | Some item ->
+                    | Ok item ->
                         logger.LogInformation("${@item} is found for refresh token", item)
                         item
-                    | None ->
-                        logger.LogWarning("item is not found for refresh token", item)
+                    | Error err ->
+                        logger.LogWarning
+                            ("Refresh token item is not found for refresh token {token} with error ${@error}",
+                             data.RefreshToken,
+                             err)
                         raise UnAuthorized'
 
                 let issuer = getTokenIssuer accessToken
@@ -67,22 +71,21 @@ module RefreshToken =
 
                         let! (res, clientId, _) = signInUser env' tokenData item.ClientId (RequestedScopes scopes)
 
-                        let successData =
+                        let newRefreshTokenItem: RefreshTokenKV =
                             { ClientId = clientId
                               IsPerimeterClient = item.IsPerimeterClient
                               UserId = tokenData.Id
-                              RefreshToken = res.refresh_token
-                              OldRefreshToken = item.Token
+                              Token = res.refresh_token
+                              ExpiresAt = DateTime.UtcNow.AddMinutes(float env.TokenExpiresIn)
                               Scopes = item.Scopes
                               SocialType = item.SocialType }
 
-                        let expiresIn =
-                            DateTime.UtcNow.AddMinutes(float env.TokenExpiresIn)
-
                         logger.LogInformation
-                            ("successData ${@successData} ready, expires ${@expiresIn}", successData, expiresIn)
+                            ("successData ${@successData} ready",
+                             { newRefreshTokenItem with
+                                   Token = "***" })
 
-                        do! env.OnSuccess(successData, expiresIn)
+                        do! onSuccess env item.Token newRefreshTokenItem
 
                         return res
                     | None ->

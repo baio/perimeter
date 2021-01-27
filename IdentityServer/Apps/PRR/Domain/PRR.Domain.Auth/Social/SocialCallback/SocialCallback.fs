@@ -11,6 +11,7 @@ open Newtonsoft.Json
 open PRR.Data.DataContext
 open Common.Domain.Utils
 open PRR.Data.Entities
+open PRR.Domain.Auth.Common.KeyValueModels
 open PRR.Domain.Auth.LogIn.Authorize
 open PRR.Sys.Models.Social
 open Hopac
@@ -91,12 +92,12 @@ module Social =
 
     let private getSocialLoginItem env state =
         task {
-            match! env.GetSocialLoginItem state with
-            | Some item ->
+            match! env.KeyValueStorage.GetValue<SocialLoginKV> state None with
+            | Ok item ->
                 env.Logger.LogInformation("SocialLoginItem ${@item} found", item)
                 return item
-            | None ->
-                env.Logger.LogWarning("SocialLoginItem is not found for ${state}", state)
+            | Error err ->
+                env.Logger.LogWarning("SocialLoginItem is not found for ${state} with ${@error}", state, err)
                 return raise (unAuthorized "state is not found")
         }
 
@@ -104,7 +105,7 @@ module Social =
     let socialCallback (env: Env) (data: Data) (ssoToken: string option) =
         let logger = env.Logger
         task {
-            logger.LogInformation("SocialCallback starts")
+            logger.LogInformation("SocialCallback starts ${@data}", data)
             // Get stored before social login item
             let! item = getSocialLoginItem env data.State
 
@@ -144,13 +145,6 @@ module Social =
 
             logger.LogInformation("${@loginData} created", { loginData with CodeChallenge = "***" })
 
-            let success = TaskCompletionSource<_>()
-
-            let onSuccess: PRR.Domain.Auth.LogIn.Models.OnSuccess =
-                fun data ->
-                    success.TrySetResult data
-                    Task.FromResult(())
-
             let env': PRR.Domain.Auth.LogIn.Models.Env =
                 { DataContext = env.DataContext
                   CodeGenerator = env.CodeGenerator
@@ -158,24 +152,22 @@ module Social =
                   CodeExpiresIn = env.CodeExpiresIn
                   SSOExpiresIn = env.SSOExpiresIn
                   Logger = env.Logger
-                  OnSuccess = onSuccess }
+                  KeyValueStorage = env.KeyValueStorage }
 
-            let! res = logInUser env' ssoToken loginData
+            let social: Social =
+                { Id = ident.SocialId
+                  Type = item.Type }
 
-            logger.LogInformation("loginUser success ${@res}", { res with Code = "***" })
+            let! res = logInUser env' ssoToken loginData (Some social)
+
+            logger.LogInformation("loginUser success ${@res}", res)
 
             // get redirect url
             let redirectUrl = getSuccessRedirectUrl res
 
             logger.LogInformation("${@redirectUrl} is ready", redirectUrl)
 
-            // prepare result
-            let! (loginItem, ssoItem) = success.Task
-
-            let social: Social =
-                { Id = ident.SocialId
-                  Type = item.Type }
-
+            (*
             let loginItem = { loginItem with Social = Some social }
 
             let ssoItem =
@@ -186,13 +178,16 @@ module Social =
 
             logger.LogInformation("${@successData} is ready", successData)
 
-            do! env.OnSuccess(successData)
+            let env': PRR.Domain.Auth.LogIn.OnSuccess.Env =
+                { KeyValueStorage = env.KeyValueStorage
+                  Logger = env.Logger }
+
+            do! PRR.Domain.Auth.LogIn.OnSuccess.onSuccess env' (successData)
+            *)
 
             let result: Result =
                 { RedirectUrl = redirectUrl
-                  SocialLoginToken = item.Token
-                  LoginItem = loginItem
-                  SSOItem = ssoItem }
+                  SocialLoginToken = item.Token }
 
             logger.LogInformation("${@result} is ready", { result with SocialLoginToken = "***" })
 

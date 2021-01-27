@@ -14,21 +14,13 @@ module internal PostRefreshToken =
 
     let getEnv ctx =
 
-        let kvStorage = getKeyValueStorage ctx
-        let logger = getLogger ctx
-
-        let getTokenItemEnv: GetTokenItem.Env =
-            { KeyValueStorage = kvStorage
-              Logger = logger }
-
         let config = getConfig ctx
 
         { DataContext = getDataContext ctx
           HashProvider = getHash ctx
           Logger = getLogger ctx
           JwtConfig = config.Auth.Jwt
-          OnSuccess = onSuccess kvStorage
-          GetTokenItem = getTokenItem getTokenItemEnv
+          KeyValueStorage = getKeyValueStorage ctx
           TokenExpiresIn = config.Auth.ResetPasswordTokenExpiresIn }
 
     let handler ctx =

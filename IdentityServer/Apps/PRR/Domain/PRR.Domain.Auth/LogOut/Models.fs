@@ -1,6 +1,7 @@
 ﻿namespace PRR.Domain.Auth.LogOut
 
 open Common.Domain.Models
+open DataAvail.KeyValueStorage.Core
 open PRR.Data.DataContext
 open PRR.System.Models
 open System.Threading.Tasks
@@ -21,7 +22,7 @@ module Models =
     type Env =
         { DataContext: DbDataContext
           AccessTokenSecret: string
-          OnSuccess: OnSuccess
+          KeyValueStorage: IKeyValueStorage
           Logger: ILogger }
 
     type LogOut = Env -> Data -> Task<Result>

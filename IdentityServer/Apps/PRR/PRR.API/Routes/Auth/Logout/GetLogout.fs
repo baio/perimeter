@@ -15,7 +15,7 @@ module internal GetLogout =
         { DataContext = getDataContext ctx
           AccessTokenSecret = (getConfig ctx).Auth.Jwt.AccessTokenSecret
           Logger = getLogger ctx
-          OnSuccess = onSuccess (getKeyValueStorage ctx) }
+          KeyValueStorage = getKeyValueStorage ctx }
 
     let handler next ctx =
 

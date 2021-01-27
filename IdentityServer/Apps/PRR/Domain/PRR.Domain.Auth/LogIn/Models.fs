@@ -1,6 +1,7 @@
 ﻿namespace PRR.Domain.Auth.LogIn
 
 open Common.Domain.Models
+open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
 open PRR.System.Models
@@ -26,8 +27,6 @@ module Models =
           Code: string
           RedirectUri: string }
 
-    type OnSuccess = (LogIn.Item * SSO.Item option) -> Task<unit>
-
     type Env =
         { DataContext: DbDataContext
           CodeGenerator: HashProvider
@@ -35,6 +34,6 @@ module Models =
           CodeExpiresIn: int<minutes>
           SSOExpiresIn: int<minutes>
           Logger: ILogger
-          OnSuccess: OnSuccess }
+          KeyValueStorage: IKeyValueStorage }
 
     type LogIn = Env -> string option -> Data -> Task<Result>

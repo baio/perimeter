@@ -26,6 +26,7 @@
         <Compile Include="Common\KeyValueModels.fs" />
         <Compile Include="LogIn\Models.fs" />
         <Compile Include="LogIn\UserHelpers.fs" />
+        <Compile Include="LogIn\OnSuccess.fs" />
         <Compile Include="LogIn\LogIn.fs" />
         <Compile Include="LogInToken\Models.fs" />
         <Compile Include="LogInToken\UserHelpers.fs" />
@@ -43,6 +44,7 @@
         <Compile Include="RefreshToken\Models.fs" />
         <Compile Include="RefreshToken\ValidateAccessToken.fs" />
         <Compile Include="RefreshToken\Validate.fs" />
+        <Compile Include="RefreshToken\OnSuccess.fs" />
         <Compile Include="RefreshToken\RefreshToken.fs" />
         <Compile Include="GetAudience.fs" />
         <Compile Include="Helpers.fs" />
