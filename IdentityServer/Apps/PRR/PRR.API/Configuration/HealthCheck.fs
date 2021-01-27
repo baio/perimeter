@@ -5,6 +5,7 @@ open System.Collections.Generic
 open Common.Domain.Models
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Diagnostics.HealthChecks
+open MassTransit
 
 type HealthCheckConfig =
     { AllocatedMemory: int<gigabytes>
@@ -29,4 +30,7 @@ module HealthCheck =
                             null,
                             (Nullable<TimeSpan>(TimeSpan(int64 (1E+6)))))
         |> ignore
-        ()
+
+        services.Configure(fun (options: HealthCheckPublisherOptions) ->
+            options.Delay <- TimeSpan.FromSeconds(2.)
+            options.Predicate <- (fun check -> check.Tags.Contains("ready")))

@@ -47,5 +47,6 @@ module ConfigureServices =
         configureHealthCheck config.HealthCheck services
         configureKeyValueStorage config.KeyValueStorage services
         configureSendMail config.SendGridApiKey config.MailSender services
+        configureServiceBus () services
         services.AddSingleton<IConfigProvider>(ConfigProvider config)
         |> ignore

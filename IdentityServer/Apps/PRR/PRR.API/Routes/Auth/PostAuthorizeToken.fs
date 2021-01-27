@@ -1,9 +1,12 @@
 ﻿namespace PRR.API.Routes.Auth
 
+open System
 open Giraffe
 open Common.Domain.Giraffe
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open MassTransit
 open PRR.API.Routes
+open PRR.Domain.Auth.Common.KeyValueModels
 open PRR.Domain.Auth.LogInToken
 
 module PostAuthorizeToken =
@@ -16,7 +19,8 @@ module PostAuthorizeToken =
           RefreshTokenExpiresIn = config.Auth.RefreshTokenExpiresIn
           JwtConfig = config.Auth.Jwt
           Logger = getLogger ctx
-          KeyValueStorage = getKeyValueStorage ctx }
+          KeyValueStorage = getKeyValueStorage ctx
+          PublishEndpoint = getPublishEndpoint ctx }
 
     let private handler' ctx =
         task {
@@ -24,7 +28,9 @@ module PostAuthorizeToken =
 
             let! data = bindJsonAsync ctx
 
-            return! logInToken env data
+            let! result = logInToken env data
+
+            return result
         }
 
     let handler: HttpHandler = wrapHandlerOK handler'

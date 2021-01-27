@@ -1,6 +1,7 @@
 ﻿namespace PRR.API.Routes
 
 open DataAvail.KeyValueStorage.Core
+open MassTransit
 open PRR.API.Configuration.ConfigureServices
 open PRR.API.Infra.Mail.Models
 open PRR.Data.DataContext
@@ -41,3 +42,5 @@ module DIHelpers =
 
     let getSendMail (ctx: HttpContext) =
         ctx.GetService<ISendMailProvider>().GetSendMail()
+
+    let getPublishEndpoint (ctx: HttpContext) = ctx.GetService<IPublishEndpoint>()

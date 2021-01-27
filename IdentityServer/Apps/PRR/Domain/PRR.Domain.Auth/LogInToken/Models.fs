@@ -3,10 +3,13 @@
 open Common.Domain.Models
 
 open DataAvail.KeyValueStorage.Core
+open MassTransit
+open MassTransit.Transports
 open PRR.Data.DataContext
 open PRR.Domain.Auth
 open System.Threading.Tasks
 open Microsoft.Extensions.Logging
+open PRR.Domain.Auth.Common.KeyValueModels
 
 [<AutoOpen>]
 module Models =
@@ -29,6 +32,7 @@ module Models =
           HashProvider: HashProvider
           Sha256Provider: Sha256Provider
           KeyValueStorage: IKeyValueStorage
-          Logger: ILogger }
+          Logger: ILogger
+          PublishEndpoint: IPublishEndpoint }
 
     type LogInToken = Env -> Data -> Task<Result>

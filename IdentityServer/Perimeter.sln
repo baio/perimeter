@@ -38,6 +38,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DataAvail.KeyValueStorage.M
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DataAvail.KeyValueStorage.Mongo.Tests", "Libs\DataAvail.KeyValueStorage.Mongo.Tests\DataAvail.KeyValueStorage.Mongo.Tests.fsproj", "{E720AAD5-61B7-416A-B63D-ACE3450E7C9A}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PRR.Domain.Common", "Apps\PRR\Domain\PRR.Domain.Common\PRR.Domain.Common.fsproj", "{265ED96E-93F9-4AF5-92E8-C49625FD8E6C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -197,6 +199,16 @@ Global
 		{E720AAD5-61B7-416A-B63D-ACE3450E7C9A}.E2E|Any CPU.Build.0 = Debug|Any CPU
 		{E720AAD5-61B7-416A-B63D-ACE3450E7C9A}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
 		{E720AAD5-61B7-416A-B63D-ACE3450E7C9A}.Stage|Any CPU.Build.0 = Debug|Any CPU
+		{265ED96E-93F9-4AF5-92E8-C49625FD8E6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{265ED96E-93F9-4AF5-92E8-C49625FD8E6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{265ED96E-93F9-4AF5-92E8-C49625FD8E6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{265ED96E-93F9-4AF5-92E8-C49625FD8E6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{265ED96E-93F9-4AF5-92E8-C49625FD8E6C}.Test|Any CPU.ActiveCfg = Debug|Any CPU
+		{265ED96E-93F9-4AF5-92E8-C49625FD8E6C}.Test|Any CPU.Build.0 = Debug|Any CPU
+		{265ED96E-93F9-4AF5-92E8-C49625FD8E6C}.E2E|Any CPU.ActiveCfg = Debug|Any CPU
+		{265ED96E-93F9-4AF5-92E8-C49625FD8E6C}.E2E|Any CPU.Build.0 = Debug|Any CPU
+		{265ED96E-93F9-4AF5-92E8-C49625FD8E6C}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{265ED96E-93F9-4AF5-92E8-C49625FD8E6C}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

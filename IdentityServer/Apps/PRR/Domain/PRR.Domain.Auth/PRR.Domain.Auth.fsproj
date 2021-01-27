@@ -76,10 +76,12 @@
         <ProjectReference Include="..\..\..\..\Common\Domain\Common.Domain.Utils\Common.Domain.Utils.fsproj" />
         <ProjectReference Include="..\..\..\..\Libs\DataAvail.KeyValueStorage.Mongo\DataAvail.KeyValueStorage.Mongo.fsproj" />
         <ProjectReference Include="..\..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
+        <ProjectReference Include="..\PRR.Domain.Common\PRR.Domain.Common.fsproj" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Http.fs" Version="5.4.0" />
+        <PackageReference Include="MassTransit" Version="7.1.4" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
         <PackageReference Include="TaskBuilder.fs" Version="2.1.0" />
