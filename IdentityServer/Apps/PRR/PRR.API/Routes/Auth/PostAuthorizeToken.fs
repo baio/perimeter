@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes.Auth.AuthorizeToken
+﻿namespace PRR.API.Routes.Auth
 
 open Giraffe
 open Common.Domain.Giraffe
@@ -18,7 +18,7 @@ module PostAuthorizeToken =
           Logger = getLogger ctx
           KeyValueStorage = getKeyValueStorage ctx }
 
-    let private handler ctx =
+    let private handler' ctx =
         task {
             let env = getEnv ctx
 
@@ -27,4 +27,4 @@ module PostAuthorizeToken =
             return! logInToken env data
         }
 
-    let createRoute () = POST >=> (wrapHandlerOK handler)
+    let handler: HttpHandler = wrapHandlerOK handler'

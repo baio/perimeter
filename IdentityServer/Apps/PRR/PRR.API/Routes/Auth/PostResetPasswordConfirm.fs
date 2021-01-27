@@ -1,17 +1,14 @@
-﻿namespace PRR.API.Routes.Auth.ResetPasswordConfirm
+﻿namespace PRR.API.Routes.Auth
 
 open Giraffe
 open Common.Domain.Giraffe
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.API.Routes
 open PRR.Domain.Auth.ResetPasswordConfirm
-open Microsoft.Extensions.Logging
-
 
 module PostResetPasswordConfirm =
 
-
-    let private handler ctx =
+    let private handler' ctx =
         task {
             let env =
                 { DataContext = getDataContext ctx
@@ -24,4 +21,4 @@ module PostResetPasswordConfirm =
             return! resetPasswordConfirm env data
         }
 
-    let createRoute () = POST >=> (wrapHandlerNoContent handler)
+    let handler: HttpHandler = wrapHandlerNoContent handler'

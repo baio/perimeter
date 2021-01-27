@@ -1,7 +1,6 @@
-﻿namespace PRR.API.Routes.Auth.RefreshToken
+﻿namespace PRR.API.Routes.Auth
 
 open Common.Domain.Models
-open PRR.API.Routes.Auth.ResetPasswordConfirm
 open PRR.Domain.Auth
 open PRR.Domain.Auth.RefreshToken
 open Giraffe
@@ -23,7 +22,7 @@ module internal PostRefreshToken =
           KeyValueStorage = getKeyValueStorage ctx
           TokenExpiresIn = config.Auth.ResetPasswordTokenExpiresIn }
 
-    let handler ctx =
+    let handler' ctx =
         let env = getEnv ctx
 
         let logger = env.Logger
@@ -43,6 +42,4 @@ module internal PostRefreshToken =
             return! refreshToken env bearer data
         }
 
-    let createRoute () =
-        POST
-        >=> choose [ route "/refresh-token" >=> wrapHandlerOK handler ]
+    let handler: HttpHandler = wrapHandlerOK handler'

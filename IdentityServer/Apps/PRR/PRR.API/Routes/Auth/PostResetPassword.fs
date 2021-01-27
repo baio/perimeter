@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes.Auth.ResetPassword
+﻿namespace PRR.API.Routes.Auth
 
 open Giraffe
 open Common.Domain.Giraffe
@@ -8,7 +8,7 @@ open PRR.Domain.Auth.ResetPassword
 
 module PostResetPassword =
 
-    let private handler ctx =
+    let private handler' ctx =
 
         let env =
             { DataContext = getDataContext ctx
@@ -23,4 +23,4 @@ module PostResetPassword =
             return! resetPassword env data
         }
 
-    let createRoute () = POST >=> (wrapHandlerNoContent handler)
+    let handler: HttpHandler = wrapHandlerNoContent handler'

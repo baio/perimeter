@@ -65,4 +65,3 @@ module internal GetLogout =
                 return! redirectTo false redirectUrlError next ctx
         }
 
-    let createRoute () = GET >=> route "/logout" >=> handler

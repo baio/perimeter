@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes.Auth.SignUpConfirm
+﻿namespace PRR.API.Routes.Auth
 
 open Giraffe
 open Common.Domain.Giraffe
@@ -14,11 +14,11 @@ module PostSignUpConfirm =
           Logger = getLogger ctx
           KeyValueStorage = getKeyValueStorage ctx }
 
-    let private handler ctx =
+    let private handler' ctx =
         task {
             let env = getEnv ctx
             let! data = bindJsonAsync<Data> ctx
             return! signUpConfirm env data
         }
 
-    let createRoute () = POST >=> (wrapHandlerOK handler)
+    let handler: HttpHandler = wrapHandlerOK handler'

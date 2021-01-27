@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes.Auth.SocialCallback
+﻿namespace PRR.API.Routes.Auth
 
 open FSharpx
 open PRR.System.Models
@@ -17,13 +17,13 @@ module GetAuthSocialCallback =
 
     let private getEnv (ctx: HttpContext): Env =
         let config = getConfig ctx
-        
+
         { DataContext = getDataContext ctx
           PasswordSalter = getPasswordSalter ctx
           CodeGenerator = getHash ctx
           Logger = getLogger ctx
           CodeExpiresIn = config.Auth.Jwt.CodeExpiresIn
-          SSOExpiresIn = config.Auth.SSOCookieExpiresIn          
+          SSOExpiresIn = config.Auth.SSOCookieExpiresIn
           KeyValueStorage = getKeyValueStorage ctx
           HttpRequestFun = getHttpRequestFun ctx
           SocialCallbackUrl = config.Auth.Social.CallbackUrl
@@ -33,7 +33,7 @@ module GetAuthSocialCallback =
                 Twitter = config.Auth.PerimeterSocialProviders.Twitter.SecretKey } }
 
 
-    let private handle next ctx =
+    let handler next ctx =
         let env = getEnv ctx
         task {
             let data = bindQueryString ctx
@@ -42,5 +42,3 @@ module GetAuthSocialCallback =
             // TODO : Error handler
             return! redirectTo false result.RedirectUrl next ctx
         }
-
-    let createRoute () = GET >=> handle

@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes.Auth.SignUp
+﻿namespace PRR.API.Routes.Auth
 
 open Giraffe
 open Common.Domain.Giraffe
@@ -8,7 +8,7 @@ open PRR.Domain.Auth.SignUp
 
 module PostSignUp =
 
-    let private handler ctx =
+    let private handler' ctx =
         task {
 
             let env =
@@ -25,4 +25,4 @@ module PostSignUp =
             return! signUp env data
         }
 
-    let createRoute () = POST >=> (wrapHandlerNoContent handler)
+    let handler: HttpHandler = wrapHandlerNoContent handler'

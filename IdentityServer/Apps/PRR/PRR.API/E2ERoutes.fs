@@ -14,7 +14,7 @@ open PRR.API.Configuration
 open PRR.API.Configuration.ConfigureServices
 
 open PRR.API.Infra.RandomStringProvider
-open PRR.API.Routes.Auth.SignUpConfirm
+open PRR.API.Routes.Auth
 open PRR.Data.DataContext
 open PRR.Domain.Auth.Common.KeyValueModels
 open PRR.Domain.Auth.SignUpConfirm
@@ -111,6 +111,7 @@ module E2E =
                                      (Task.FromResult(Result.Ok((box signUpConfirmItem) :?> 'a)))
 
                                  member __.RemoveValue<'a> k x = kvStorage.RemoveValue<'a> k x
+
                                  member __.RemoveValuesByTag<'a> k x = kvStorage.RemoveValuesByTag<'a> k x }
 
 

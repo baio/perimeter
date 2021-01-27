@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes.Auth.Authorize
+﻿namespace PRR.API.Routes.Auth
 
 open Giraffe
 open Common.Domain.Giraffe
@@ -33,7 +33,7 @@ module PostAuthorize =
                 | Some sso ->
                     logger.LogInformation
                         ("Prompt ${@prompt} and ${@ssoCookie}, use SSO handler", data.Prompt, ssoCookie)
-                    let! returnUrl = LogInSSO.Handler.handler ctx sso
+                    let! returnUrl = PostLogInSSO.handler ctx sso
                     ctx.Response.Redirect(returnUrl, true)
                     return! redirectTo false returnUrl next ctx
                 | None ->
@@ -52,8 +52,6 @@ module PostAuthorize =
                     return Some ctx
             | _ ->
                 logger.LogInformation("No ${@prompt}, use regular login handler", data.Prompt)
-                let! returnUrl = LogIn.Handler.handler ctx ssoCookie
+                let! returnUrl = PostLogIn.handler ctx ssoCookie
                 return! redirectTo false returnUrl next ctx
         }
-
-    let createRoute () = POST >=> handler

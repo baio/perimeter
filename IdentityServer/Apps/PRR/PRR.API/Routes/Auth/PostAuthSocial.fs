@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes.Auth.Social
+﻿namespace PRR.API.Routes.Auth
 
 open Microsoft.AspNetCore.Http
 open Giraffe
@@ -28,7 +28,7 @@ module PostAuthSocial =
                 Google = config.Auth.PerimeterSocialProviders.Google.ClientId
                 Twitter = config.Auth.PerimeterSocialProviders.Twitter.ClientId } }
 
-    let handle next ctx =
+    let handler next ctx =
         let env = getEnv ctx
         task {
             let! data = bindFormAsync ctx
@@ -46,5 +46,3 @@ module PostAuthSocial =
 
                 return! redirectTo false redirectUrlError next ctx
         }
-
-    let createRoute () = POST >=> handle

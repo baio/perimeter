@@ -1,20 +1,29 @@
-﻿namespace PRR.API.Routes.Auth.LogInSSO
+﻿namespace PRR.API.Routes.Auth
 
+open Common.Domain.Models
+open PRR.Domain.Auth
+open PRR.Domain.Auth.LogIn
 open Giraffe
 open Common.Domain.Giraffe
-open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.API.Routes
-open PRR.Domain.Auth.LogInSSO
+open FSharp.Control.Tasks.V2.ContextInsensitive
+open PRR.API.Routes.Auth.Helpers
 open Microsoft.Extensions.Logging
 
-module internal Handler =
+module internal PostLogIn =
+
 
     let getEnv ctx =
+
+        let config = getConfig ctx
         { DataContext = getDataContext ctx
+          PasswordSalter = getPasswordSalter ctx
           CodeGenerator = getHash ctx
-          CodeExpiresIn = (getConfig ctx).Auth.Jwt.CodeExpiresIn
+          CodeExpiresIn = config.Auth.Jwt.CodeExpiresIn
+          SSOExpiresIn = config.Auth.SSOCookieExpiresIn
           Logger = getLogger ctx
           KeyValueStorage = getKeyValueStorage ctx }
+
 
     let handler ctx sso =
 
@@ -25,7 +34,7 @@ module internal Handler =
 
             try
 
-                let! result = logInSSO env sso data
+                let! result = logIn env sso data
 
                 let redirectUrlSuccess =
                     sprintf "%s?code=%s&state=%s" result.RedirectUri result.Code result.State
@@ -36,8 +45,10 @@ module internal Handler =
 
             with ex ->
 
+                let refererUrl = getRefererUrl ctx
+
                 let redirectUrlError =
-                    sprintf "%s?error=login_required" data.Redirect_Uri
+                    getExnRedirectUrl (refererUrl, data.Redirect_Uri) ex
 
                 env.Logger.LogWarning("Redirect on ${@error} to ${redirectUrlError}", ex, redirectUrlError)
 

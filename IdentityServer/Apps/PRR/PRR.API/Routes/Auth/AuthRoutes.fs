@@ -8,23 +8,29 @@ module AuthRoutes =
     let createRoutes () =
         subRoute
             "/auth"
-            (choose [ route "/social"
-                      >=> Social.PostAuthSocial.createRoute ()
-                      route "/social/callback"
-                      >=> SocialCallback.GetAuthSocialCallback.createRoute ()
-                      route "/sign-up"
-                      >=> SignUp.PostSignUp.createRoute ()
-                      route "/sign-up/confirm"
-                      >=> SignUpConfirm.PostSignUpConfirm.createRoute ()
-                      route "/reset-password"
-                      >=> ResetPassword.PostResetPassword.createRoute ()
-                      route "/reset-password/confirm"
-                      >=> ResetPasswordConfirm.PostResetPasswordConfirm.createRoute ()
-                      route "/authorize"
-                      >=> Authorize.PostAuthorize.createRoute ()
-                      route "/token"
-                      >=> AuthorizeToken.PostAuthorizeToken.createRoute ()
-                      route "/refresh-token"
-                      >=> RefreshToken.PostRefreshToken.createRoute ()
-                      route "/logout"
-                      >=> LogOut.GetLogout.createRoute () ])
+            (choose [ route "/social" >=> PostAuthSocial.handler
+                      GET
+                      >=> route "/social/callback"
+                      >=> GetAuthSocialCallback.handler
+                      POST >=> route "/sign-up" >=> PostSignUp.handler
+                      POST
+                      >=> route "/sign-up/confirm"
+                      >=> PostSignUpConfirm.handler
+                      POST
+                      >=> route "/reset-password"
+                      >=> PostResetPassword.handler
+                      POST
+                      >=> route "/reset-password/confirm"
+                      >=> PostResetPasswordConfirm.handler
+                      POST
+                      >=> route "/authorize"
+                      >=> PostAuthorize.handler
+                      POST
+                      >=> route "/token"
+                      >=> PostAuthorizeToken.handler
+                      POST
+                      >=> route "/refresh-token"
+                      >=> PostRefreshToken.handler
+                      GET
+                      >=> route "/logout"
+                      >=> LogOut.GetLogout.handler ])
