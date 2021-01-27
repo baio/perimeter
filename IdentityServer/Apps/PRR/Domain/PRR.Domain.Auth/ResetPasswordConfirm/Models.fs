@@ -1,6 +1,7 @@
 ﻿namespace PRR.Domain.Auth.ResetPasswordConfirm
 
 open Common.Domain.Models
+open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
 open PRR.System.Models
@@ -18,7 +19,6 @@ module Models =
         { DataContext: DbDataContext
           Logger: ILogger
           PasswordSalter: StringSalter
-          OnSuccess: OnSuccess
-          GetTokenItem: GetTokenItem }
+          KeyValueStorage: IKeyValueStorage }
 
     type ResetPasswordConfirm = Env -> Data -> Task<unit>

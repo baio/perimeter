@@ -12,22 +12,16 @@ module PostResetPassword =
 
         let logger = getLogger ctx
 
-        let onSuccessEnv: OnSuccess.Env =
-            { SendMail = getSendMail ctx
-              KeyValueStorage = getKeyValueStorage ctx
-              Logger = logger }
-
         let env =
             { DataContext = getDataContext ctx
-              OnSuccess = onSuccess onSuccessEnv
+              KeyValueStorage = getKeyValueStorage ctx
+              SendMail = getSendMail ctx
               Logger = logger
               HashProvider = getHash ctx
               TokenExpiresIn = (getConfig ctx).Auth.ResetPasswordTokenExpiresIn }
 
         task {
-
             let! data = bindJsonAsync ctx
-
             return! resetPassword env data
         }
 

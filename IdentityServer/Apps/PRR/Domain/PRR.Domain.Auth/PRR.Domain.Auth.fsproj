@@ -49,6 +49,7 @@
         <Compile Include="ResetPasswordConfirm\Models.fs" />
         <Compile Include="ResetPasswordConfirm\ResetPasswordConfirm.fs" />
         <Compile Include="ResetPassword\Models.fs" />
+        <Compile Include="ResetPassword\OnSuccess.fs" />
         <Compile Include="ResetPassword\ResetPassword.fs" />
         <Compile Include="UpdatePassword\Models.fs" />
         <Compile Include="UpdatePassword\UpdatePassword.fs" />

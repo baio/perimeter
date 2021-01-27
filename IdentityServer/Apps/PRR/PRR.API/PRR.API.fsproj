@@ -77,7 +77,6 @@
         <Compile Include="Routes\Auth\Helpers\GetExnRedirectUrl.fs" />
         <Compile Include="Routes\Auth\SignUp\PostSignUp.fs" />
         <Compile Include="Routes\Auth\SignUpConfirm\PostSignUpConfirm.fs" />
-        <Compile Include="Routes\Auth\ResetPassword\OnSuccess.fs" />
         <Compile Include="Routes\Auth\ResetPassword\PostResetPassword.fs" />
         <Compile Include="Routes\Auth\ResetPasswordConfirm\OnSuccess.fs" />
         <Compile Include="Routes\Auth\ResetPasswordConfirm\GetTokenItem.fs" />

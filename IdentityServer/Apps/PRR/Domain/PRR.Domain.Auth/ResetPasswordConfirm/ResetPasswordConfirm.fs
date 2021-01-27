@@ -22,15 +22,16 @@ module ResetPasswordConfirm =
             env.Logger.LogInformation("Reset password confirm")
 
             task {
-                let! tokenEmail = env.GetTokenItem data.Token
+                let! item = env.KeyValueStorage.GetValue<ResetPasswordKV> data.Token None
 
-                let tokenEmail =
-                    match tokenEmail with
-                    | Some item ->
+                let item =
+                    match item with
+                    | Ok item ->
                         env.Logger.LogInformation("Reset password item found ${item}", item)
                         item
-                    | None ->
-                        env.Logger.LogWarning("Reset password item is not found for ${token}", data.Token)
+                    | Error err ->
+                        env.Logger.LogWarning
+                            ("Reset password item is not found for ${token} with ${@error}", data.Token, err)
                         raise UnAuthorized'
 
 
@@ -40,9 +41,9 @@ module ResetPasswordConfirm =
                         (UnAuthorized None)
                         env.DataContext.Users
                         {| Password = saltedPassword |}
-                        {| Email = tokenEmail |}
+                        {| Email = item.Email |}
 
                 env.Logger.LogInformation("Reset password confirm success")
 
-                do! env.OnSuccess tokenEmail
+                do! env.KeyValueStorage.RemoveValuesByTag<ResetPasswordKV> item.Email None
             }

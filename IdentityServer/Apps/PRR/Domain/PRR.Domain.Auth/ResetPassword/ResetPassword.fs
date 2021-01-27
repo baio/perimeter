@@ -28,17 +28,14 @@ module ResetPassword =
                     env.Logger.LogWarning("User ${email} is not found", data.Email)
                     raise NotFound
                 else
-                    let successData: ResetPassword.Item =
-                        {
-                          ExpiredAt = DateTime.UtcNow.AddMinutes(float (int env.TokenExpiresIn)) 
-                          Email = data.Email
+                    let expiredAt =
+                        DateTime.UtcNow.AddMinutes(float (int env.TokenExpiresIn))
 #if E2E
-                          Token = "HASH"
+                    let token = "HASH"
 #else
-                          Token = env.HashProvider()
+                    let token = env.HashProvider()
 #endif
-                        }
-                    
-                    env.Logger.LogWarning("${@successData} ready", {successData with Token = "***"})
-                    env.OnSuccess successData
+                    env.Logger.LogInformation
+                        ("On success for email ${email} token expires at ${@expiredAt}", data.Email, expiredAt)
+                    do! onSuccess env data.Email token expiredAt
             }

@@ -1,4 +1,5 @@
 ﻿namespace PRR.Domain.Auth.Common
+
 open System
 open DataAvail.KeyValueStorage.Core
 
@@ -14,3 +15,7 @@ module KeyValueModels =
           Token: string
           ExpiredAt: DateTime
           QueryString: string option }
+
+
+    [<PartitionName("ResetPassword")>]
+    type ResetPasswordKV = { Email: string }

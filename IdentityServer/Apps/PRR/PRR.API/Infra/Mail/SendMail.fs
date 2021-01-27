@@ -20,7 +20,7 @@ module SendMail =
              | Some x -> (sprintf "&%s" x)
              | None -> "") proj.Name proj.Name
 
-    let private getResetPasswordHtml (proj: ProjectConfig) (item: ResetPassword.Item) =
+    let private getResetPasswordHtml (proj: ProjectConfig) (item: ResetPasswordMailData) =
         sprintf """
             <h2>Hello</h2>
             <p>
@@ -47,7 +47,7 @@ module SendMail =
                   Html = getConfirmSignupHtml env.Project item }
         | ResetPasswordMail item ->
             { mail with
-                  Html = getResetPasswordHtml env.Project item }
+                  Html = getResetPasswordHtml env.Project { Email = item.Email; Token = item.Token } }
 
     let createSendMail (env: MailSenderConfig) (sender: MailSender) =
         let sendMail: SendMail =

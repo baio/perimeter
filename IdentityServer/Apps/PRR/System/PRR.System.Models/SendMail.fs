@@ -10,10 +10,16 @@ module SendMail =
         Token: string
         QueryString: string option
     }
+    
+    type ResetPasswordMailData = {
+        Email: string
+        Token: string
+    }
+
 
     type SendMailTemplate =
         | ConfirmSignUpMail of ConfirmSignUpMailData
-        | ResetPasswordMail of ResetPassword.Item
+        | ResetPasswordMail of ResetPasswordMailData
 
     type SendMailParams =
         { From: string

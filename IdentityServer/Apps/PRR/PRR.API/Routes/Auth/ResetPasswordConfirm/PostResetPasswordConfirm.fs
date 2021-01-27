@@ -13,19 +13,10 @@ module PostResetPasswordConfirm =
 
     let private handler ctx =
         task {
-
-            let logger = getLogger ctx
-            let kvStorage = getKeyValueStorage ctx
-
-            let getTokenIemEnv: GetTokenItem.Env =
-                { Logger = logger
-                  KeyValueStorage = kvStorage }
-
             let env =
                 { DataContext = getDataContext ctx
-                  Logger = logger
-                  OnSuccess = onSuccess kvStorage
-                  GetTokenItem = getTokenItem getTokenIemEnv
+                  Logger = getLogger ctx
+                  KeyValueStorage = getKeyValueStorage ctx
                   PasswordSalter = getPasswordSalter ctx }
 
             let! data = bindJsonAsync ctx
