@@ -32,7 +32,6 @@
 
     <ItemGroup>
         <Compile Include="PermssionsFromRoles.fs" />
-        <Compile Include="SysWrap.fs" />
         <Compile Include="Infra\Models.fs" />
         <Compile Include="Infra\Mail\Models.fs" />
         <Compile Include="Infra\Mail\SendMail.fs" />
@@ -43,7 +42,6 @@
         <Compile Include="Infra\HashProvider.fs" />
         <Compile Include="Infra\SHA256.fs" />
         <Compile Include="Infra\AuthStringsProvider.fs" />
-        <Compile Include="Infra\SystemActorsProvider.fs" />
         <Compile Include="Infra\HttpRequestFun.fs" />
         <Compile Include="ErrorHandler.fs" />
         <Compile Include="Configuration\Tracing.fs" />
@@ -51,13 +49,14 @@
         <Compile Include="Configuration\Authorization.fs" />
         <Compile Include="Configuration\Infra.fs" />
         <Compile Include="Configuration\DataContext.fs" />
-        <Compile Include="Configuration\Actors.fs" />
         <Compile Include="Configuration\HealthCheck.fs" />
+        <Compile Include="Configuration\SendMail.fs" />
+        <Compile Include="Configuration\KeyValueStorage.fs" />
         <Compile Include="Configuration\ConfigureAppServices.fs" />
         <Compile Include="Configuration\CreateAppConfig.fs" />
         <Compile Include="Routes\DIHelpers.fs" />
-        <Compile Include="Routes\AuthRoutes.fs" />
         <Compile Include="Routes\MeRoutes.fs" />
+        <Compile Include="Routes\PingRoutes.fs" />
         <Compile Include="Routes\Tenant\PermissionConstants.fs" />
         <Compile Include="Routes\Tenant\Utils.fs" />
         <Compile Include="Routes\Tenant\TenantsRoutes.fs" />
@@ -73,20 +72,20 @@
         <Compile Include="Routes\Tenant\TenantUserRoleRoutes.fs" />
         <Compile Include="Routes\Tenant\UserActivities.fs" />
         <Compile Include="Routes\Tenant\TenantRoutes.fs" />
-        <Compile Include="Routes\PingRoutes.fs" />
-        <Compile Include="Routes\Auth\Social\PostAuthSocial.fs" />
-        <Compile Include="Routes\Auth\Social\GetAuthSocialCallback.fs" />
-        <Compile Include="Routes\Auth\Social\SocialRoutes.fs" />
-        <Compile Include="Routes\Auth\SignUp\OnSuccess.fs" />
-        <Compile Include="Routes\Auth\SignUp\PostSignUp.fs" />
-        <Compile Include="Routes\Auth\SignUpConfirm\OnSuccess.fs" />
-        <Compile Include="Routes\Auth\SignUpConfirm\GetTokenItem.fs" />
-        <Compile Include="Routes\Auth\SignUpConfirm\PostSignUpConfirm.fs" />
-        <Compile Include="Routes\Auth\ResetPassword\OnSuccess.fs" />
-        <Compile Include="Routes\Auth\ResetPassword\PostResetPassword.fs" />
-        <Compile Include="Routes\Auth\ResetPasswordConfirm\OnSuccess.fs" />
-        <Compile Include="Routes\Auth\ResetPasswordConfirm\GetTokenItem.fs" />
-        <Compile Include="Routes\Auth\ResetPasswordConfirm\PostResetPasswordConfirm.fs" />
+        <Compile Include="Routes\Auth\Helpers\GetRefererUrl.fs" />
+        <Compile Include="Routes\Auth\Helpers\GetExnRedirectUrl.fs" />
+        <Compile Include="Routes\Auth\PostSignUp.fs" />
+        <Compile Include="Routes\Auth\PostSignUpConfirm.fs" />
+        <Compile Include="Routes\Auth\PostResetPassword.fs" />
+        <Compile Include="Routes\Auth\PostResetPasswordConfirm.fs" />
+        <Compile Include="Routes\Auth\PostLogIn.fs" />
+        <Compile Include="Routes\Auth\LogInSSO.fs" />
+        <Compile Include="Routes\Auth\PostAuthorize.fs" />
+        <Compile Include="Routes\Auth\PostAuthorizeToken.fs" />
+        <Compile Include="Routes\Auth\PostRefreshToken.fs" />
+        <Compile Include="Routes\Auth\GetLogout.fs" />
+        <Compile Include="Routes\Auth\PostAuthSocial.fs" />
+        <Compile Include="Routes\Auth\GetAuthSocialCallback.fs" />
         <Compile Include="Routes\Auth\AuthRoutes.fs" />
         <Compile Include="E2ERoutes.fs" />
         <Compile Include="Program.fs" />
@@ -99,20 +98,9 @@
         <Content Include="appsettings.stage.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Include="akka.e2e.hocon">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="akka.stage.hocon">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-        <Content Include="akka.local.hocon">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Akka.Persistence.MongoDb" Version="1.4.5" />
-      <PackageReference Include="Akkling" Version="0.10.0" />
       <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="3.1.3" />
       <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="3.1.1" />
       <PackageReference Include="AspNetCore.HealthChecks.Prometheus.Metrics" Version="3.1.4" />
@@ -138,13 +126,11 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\Common\Domain\Common.Domain.Giraffe\Common.Domain.Giraffe.fsproj" />
       <ProjectReference Include="..\..\..\Common\Domain\Common.Domain.Utils\Common.Domain.Utils.fsproj" />
+      <ProjectReference Include="..\..\..\Libs\DataAvail.KeyValueStorage.Mongo\DataAvail.KeyValueStorage.Mongo.fsproj" />
       <ProjectReference Include="..\Data\PRR.Data.DataContextMigrations\PRR.Data.DataContextMigrations.csproj" />
       <ProjectReference Include="..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
       <ProjectReference Include="..\Domain\PRR.Domain.Auth\PRR.Domain.Auth.fsproj" />
       <ProjectReference Include="..\Domain\PRR.Domain.Tenant\PRR.Domain.Tenant.fsproj" />
-      <ProjectReference Include="..\System\PRR.System.Models\PRR.System.Models.fsproj" />
-      <ProjectReference Include="..\System\PRR.System\PRR.System.fsproj" />
-      <ProjectReference Include="..\System\PRR.Sys\PRR.Sys.fsproj" />
     </ItemGroup>
 
     <ItemGroup>

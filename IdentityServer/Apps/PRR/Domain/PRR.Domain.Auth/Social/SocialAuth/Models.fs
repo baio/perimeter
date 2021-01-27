@@ -1,6 +1,9 @@
 ﻿namespace PRR.Domain.Auth.Social.SocialAuth
 
+open System.Threading.Tasks
 open Common.Domain.Models
+open DataAvail.KeyValueStorage.Core.KeyValueStorage
+open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
 
 [<AutoOpen>]
@@ -35,4 +38,6 @@ module Models =
           HashProvider: HashProvider
           SocialCallbackUrl: string
           SocialCallbackExpiresIn: int<milliseconds>
-          PerimeterSocialClientIds: PerimeterSocialClientIds }
+          PerimeterSocialClientIds: PerimeterSocialClientIds
+          KeyValueStorage: IKeyValueStorage
+          Logger: ILogger }

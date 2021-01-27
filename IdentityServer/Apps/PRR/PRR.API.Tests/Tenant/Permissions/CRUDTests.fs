@@ -1,13 +1,11 @@
 ﻿namespace PRR.API.Tests.Tenant.Permissions
 
-open Akkling
 open Common.Test.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.SignUp
 open PRR.Domain.Tenant.Permissions
-open PRR.System.Models
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority

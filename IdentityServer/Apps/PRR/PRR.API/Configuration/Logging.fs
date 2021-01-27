@@ -33,7 +33,7 @@ module private Logging =
 
 
         Log.Logger <-
-            LoggerConfiguration().Enrich.FromLogContext().WriteTo.Console().WriteTo.Debug()
+            LoggerConfiguration().Enrich.FromLogContext()//.WriteTo.Console().WriteTo.Debug()
                 #if !TEST
                 .WriteTo.Seq(env.Config.ServiceUrl)
                 #endif

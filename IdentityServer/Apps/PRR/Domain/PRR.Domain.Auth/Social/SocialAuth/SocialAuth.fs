@@ -5,9 +5,9 @@ open Common.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
 open Common.Domain.Utils
-open PRR.Data.Entities
-open PRR.Sys.Models.Social
 open PRR.Domain.Auth.Common
+open Microsoft.Extensions.Logging
+open DataAvail.KeyValueStorage.Core
 
 [<AutoOpen>]
 module SocialAuth =
@@ -52,9 +52,10 @@ module SocialAuth =
         | _ -> getCommonSocialConnectionInfo dataContext clientId socialType
 
 
-    let socialAuth (env: Env, data: Data) =
+    let socialAuth (env: Env) (data: Data) =
+        let logger = env.Logger
         task {
-
+            logger.LogInformation("SocialAuth with ${@data}", { data with Code_Challenge = "***" })
             // Social name to social type
             let socialType = socialName2Type data.Social_Name
 
@@ -62,16 +63,19 @@ module SocialAuth =
             let! socialInfo =
                 getSocialConnectionInfo env.PerimeterSocialClientIds env.DataContext data.Client_Id socialType
 
+            logger.LogInformation("${@socialInfo} found", socialInfo)
+
             // Generate token it will be used as state for social redirect url
             let token = env.HashProvider()
 
             let socialRedirectUrl =
                 getSocialRedirectUrl token env.SocialCallbackUrl socialInfo.ClientId socialType
 
+            logger.LogInformation("${socialRedirectUrl} created", socialRedirectUrl)
+
             // Store login data they will be used when callback hit back
-            let item =
+            let data: SocialLoginKV =
                 { Token = token
-                  ExpiresIn = env.SocialCallbackExpiresIn
                   SocialClientId = socialInfo.ClientId
                   // The client id here must stay __DEFAULT_CLIENT_ID__ if it was so, since it will be used further in authorization flow
                   DomainClientId = data.Client_Id
@@ -83,5 +87,22 @@ module SocialAuth =
                   CodeChallenge = data.Code_Challenge
                   CodeChallengeMethod = data.Code_Challenge_Method }
 
-            return (socialRedirectUrl, item)
+            logger.LogInformation("${successData} ready", data)
+
+            let expiresIn =
+                System.DateTime.UtcNow.AddMinutes(float env.SocialCallbackExpiresIn)
+
+            let options =
+                { addValueDefaultOptions with
+                      ExpiresAt = (Some expiresIn) }
+
+            let! result = env.KeyValueStorage.AddValue token data (Some options)
+
+            match result with
+            | Result.Error AddValueError.KeyAlreadyExists ->
+                env.Logger.LogError("Token ${token} already exists in Social LogIn storage", token)
+                return raise (Unexpected')
+            | _ -> ()
+
+            return socialRedirectUrl
         }

@@ -19,7 +19,7 @@ module private DomainHandlers =
 
     let getEnv (ctx: HttpContext) =
         let config = getConfig ctx
-        let authStringsProvider = getAuthStringsProvider ctx
+        let authStringsProvider = getAuthStringsGetter ctx
         let dataContext = getDataContext ctx
         { DataContext = dataContext
           AuthConfig =
@@ -33,7 +33,7 @@ module private DomainHandlers =
         wrap
             (create
              <!> ofReader (getEnv)
-             <*> ofReader (getAuthStringsProvider)
+             <*> ofReader (getAuthStringsGetter)
              <*> ((triplet domainPoolId)
                   <!> bindValidateJsonAsync validatePostData
                   <*> bindUserClaimId))
@@ -48,7 +48,8 @@ module private DomainHandlers =
 
     let getOne (id: DomainId) = wrap (getOne id <!> dataContext)
 
-    //
+    // restore !!!
+    (*
     open PRR.System.Views.LogInView
 
     let bindListQuery =
@@ -68,6 +69,7 @@ module private DomainHandlers =
             (getList
              <!> (ofReader getViewsReaderDb)
              <*> (triplet domainId isManagement <!> bindListQuery))
+   *)             
 
 module Domain =
 
@@ -83,6 +85,7 @@ module Domain =
                          >=> choose [ PUT >=> updateHandler domainId
                                       DELETE >=> removeHandler domainId
                                       GET >=> getOne domainId
-                                      GET
-                                      >=> route "user-activities"
-                                      >=> (getLogIns false domainId) ]) ])
+                              (*
+                              GET
+                              >=> route "user-activities"
+                              >=> (getLogIns false domainId)*) ]) ])

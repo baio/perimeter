@@ -21,7 +21,7 @@ module private ApplicationHandlers =
                       let config = getConfig ctx
                       { RefreshTokenExpiresIn = config.Auth.Jwt.RefreshTokenExpiresIn
                         IdTokenExpiresIn = config.Auth.Jwt.IdTokenExpiresIn
-                        AuthStringsProvider = getAuthStringsProvider ctx })
+                        AuthStringsProvider = getAuthStringsGetter ctx })
                   |> ofReader)
              <*> ((doublet domainId)
                   <!> bindValidateJsonAsync validatePost)

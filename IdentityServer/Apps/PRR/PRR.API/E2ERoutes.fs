@@ -1,19 +1,21 @@
 ﻿namespace PRR.API.Routes
 
-open Akkling
 open Common.Domain.Giraffe
 open Common.Domain.Models
 open Common.Domain.Utils
+open DataAvail.KeyValueStorage.Core
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Giraffe
 open Microsoft.AspNetCore.Http
 open Microsoft.EntityFrameworkCore
 open Microsoft.Extensions.Configuration
 open MongoDB.Driver
-open PRR.API.Routes.Auth.SignUpConfirm
+open PRR.API.Configuration
+
+open PRR.API.Routes.Auth
+open PRR.Data.DataContext
+open PRR.Domain.Auth.Common.KeyValueModels
 open PRR.Domain.Auth.SignUpConfirm
-open PRR.System.Models
-open PRR.System.Utils
 open System
 open System.Linq
 open System.Threading
@@ -44,6 +46,29 @@ module E2E =
         recreatedDataContextDb ctx
         recreateMongoDb ctx
 
+    type CreateUserTenantEnv =
+        { DataContext: DbDataContext
+          Config: AppConfig
+          AuthStringsGetter: AuthStringsGetter }
+
+    let createUserTenant (env: CreateUserTenantEnv) userId email =
+
+        let config = env.Config
+
+        let authConfig: PRR.Domain.Tenant.Models.AuthConfig =
+            { AccessTokenSecret = config.Auth.Jwt.AccessTokenSecret
+              AccessTokenExpiresIn = config.Auth.Jwt.AccessTokenExpiresIn
+              IdTokenExpiresIn = config.Auth.Jwt.IdTokenExpiresIn
+              RefreshTokenExpiresIn = config.Auth.Jwt.RefreshTokenExpiresIn }
+
+        PRR.Domain.Tenant.CreateUserTenant.createUserTenant
+            { DbDataContext = env.DataContext
+              AuthConfig = authConfig
+              AuthStringsGetter = env.AuthStringsGetter }
+
+            { Email = email; UserId = userId }
+
+
     let createRoutes () =
 
         choose [ route "/e2e/reset"
@@ -57,11 +82,11 @@ module E2E =
                  >=> POST
                  >=> fun next ctx ->
                          let dataContext = getDataContext ctx
-                         let sys = ctx.GetService<ICQRSSystem>()
+
 
                          recreatedDbs ctx
                          // signup
-                         let signUpConfirmItem: SignUpToken.Item =
+                         let signUpConfirmItem: SignUpKV =
                              { FirstName = "test"
                                LastName = "user"
                                Email = "hahijo5833@acceptmail.net"
@@ -71,25 +96,47 @@ module E2E =
                                QueryString = None }
 
 
-                         let signUpEnv = PostSignUpConfirm.getEnv true ctx
+                         let signUpEnv = PostSignUpConfirm.getEnv ctx
 
-                         let signUpEnv =
-                             { signUpEnv with
-                                   GetTokenItem = fun _ -> Task.FromResult(Some signUpConfirmItem) }
+                         let kvStorage = getKeyValueStorage ctx
+
+                         let kvStorage' =
+                             { new IKeyValueStorage with
+                                 member __.AddValue k (v: 'a) x = kvStorage.AddValue<'a> k v x
+                                 member __.GetValue<'a> k x =
+                                     (Task.FromResult(Result.Ok((box signUpConfirmItem) :?> 'a)))
+
+                                 member __.RemoveValue<'a> k x = kvStorage.RemoveValue<'a> k x
+
+                                 member __.RemoveValuesByTag<'a> k x = kvStorage.RemoveValuesByTag<'a> k x }
+
+
 
                          // login
-                         let loginEnv: PRR.Domain.Auth.LogInToken.Models.Env =
+                         let loginEnv: PRR.Domain.Auth.LogInToken.SignInUserEnv =
                              let config = getConfig ctx
+
                              { DataContext = getDataContext ctx
                                HashProvider = getHash ctx
-                               Sha256Provider = getSHA256 ctx
-                               SSOCookieExpiresIn = config.Auth.SSOCookieExpiresIn
-                               JwtConfig = config.Auth.Jwt }
+                               JwtConfig = config.Auth.Jwt
+                               Logger = getLogger ctx }
 
                          task {
-                             do! signUpConfirm signUpEnv { Token = "xxx" }
+                             let! userId =
+                                 signUpConfirm
+                                     { signUpEnv with
+                                           KeyValueStorage = kvStorage' }
+                                     { Token = "xxx" }
                              //
                              Thread.Sleep(100)
+
+                             //
+                             let env =
+                                 { DataContext = getDataContext ctx
+                                   AuthStringsGetter = getAuthStringsGetter ctx
+                                   Config = getConfig ctx }
+
+                             let! _ = createUserTenant env userId signUpConfirmItem.Email
 
                              let! data = ctx |> bindJsonAsync<ReinitData>
 
@@ -101,6 +148,7 @@ module E2E =
                                              where
                                                  (dur.RoleId = PRR.Data.DataContext.Seed.Roles.DomainOwner.Id
                                                   && dur.UserEmail = signUpConfirmItem.Email)
+
                                              select
                                                  (dur.Domain.Applications.Single(fun p -> p.IsDomainManagement).ClientId)
                                      }

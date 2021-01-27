@@ -3,11 +3,8 @@
 open Common.Test.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
-open NUnit.Framework.Internal
-open PRR.API.Tests
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.ResetPasswordConfirm
-open PRR.System.Models
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
@@ -52,7 +49,7 @@ module ResetPasswordTests =
                 let! res = testFixture.HttpPostAsync' "/api/auth/reset-password" resetPasswordData
                 do! ensureSuccessAsync res
                 testContext.Value.ResetPasswordTokenHandle.WaitOne() |> ignore
-                testContext.Value.GetResetPasswordToken() |> should be (not' null)
+                testContext.Value.GetResetPasswordToken() |> should be (not' null)                
             }
 
         [<Fact>]

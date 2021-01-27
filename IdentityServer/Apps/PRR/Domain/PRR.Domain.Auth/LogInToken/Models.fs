@@ -2,10 +2,11 @@
 
 open Common.Domain.Models
 
+open DataAvail.KeyValueStorage.Core
 open PRR.Data.DataContext
 open PRR.Domain.Auth
-open PRR.System.Models
 open System.Threading.Tasks
+open Microsoft.Extensions.Logging
 
 [<AutoOpen>]
 module Models =
@@ -24,8 +25,10 @@ module Models =
     type Env =
         { DataContext: DbDataContext
           JwtConfig: JwtConfig
-          SSOCookieExpiresIn: int<minutes>
+          RefreshTokenExpiresIn: int<minutes>
           HashProvider: HashProvider
-          Sha256Provider: Sha256Provider }
+          Sha256Provider: Sha256Provider
+          KeyValueStorage: IKeyValueStorage
+          Logger: ILogger }
 
-    type LogInToken = Env -> LogIn.Item -> Data -> Task<Result * Events>
+    type LogInToken = Env -> Data -> Task<Result>

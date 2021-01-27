@@ -4,12 +4,15 @@ open Common.Test.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx
 open Microsoft.Azure.Documents
+open PRR.API.Configuration.ConfigureServices
 open PRR.API.Infra
+open PRR.Data.DataContext
 open PRR.Domain.Auth
 open System
 open System.Security.Cryptography
 open System.Threading
 open System.Web
+open PRR.API.Routes.E2E
 
 
 [<AutoOpen>]
@@ -17,7 +20,7 @@ module CreateUser =
 
     let logIn' (testFixture: TestFixture) (data: PRR.Domain.Auth.LogIn.Models.Data) =
         testFixture.HttpPostFormAsync'
-            "/api/auth/login"
+            "/api/auth/authorize"
             (Map
                 (seq {
                     ("Client_Id", data.Client_Id)
@@ -78,7 +81,7 @@ module CreateUser =
             let scope =
                 [ "openid"; "profile"; "email" ]
                 |> Seq.append scopes
-                |> String.concat " "               
+                |> String.concat " "
 
             let logInData: PRR.Domain.Auth.LogIn.Models.Data =
                 { Client_Id = clientId
@@ -117,11 +120,31 @@ module CreateUser =
             env.ConfirmTokenWaitHandle.WaitOne() |> ignore
             let confirmData: SignUpConfirm.Models.Data = { Token = env.GetConfirmToken() }
 
-            let! _ = env.TestFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
+            let! result = env.TestFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
 
-            env.TenantWaitHandle.WaitOne() |> ignore
+            let! userId = readAsJsonAsync<int> result
 
-            let tenant = env.GetTenant()
+
+            //
+            let services = env.TestFixture.Server.Services
+
+            let configProvider =
+                services.GetService(typeof<IConfigProvider>) :?> IConfigProvider
+
+            let dataContext =
+                services.GetService(typeof<DbDataContext>) :?> DbDataContext
+
+            let authStringsProvider =
+                services.GetService(typeof<IAuthStringsProvider>) :?> IAuthStringsProvider
+
+            let env' =
+                { DataContext = dataContext
+                  AuthStringsGetter = authStringsProvider.AuthStringsGetter
+                  Config = configProvider.GetConfig() }
+
+            let! tenant = createUserTenant env' userId userData.Email
+
+            env.SetTenant tenant
 
             let clientId =
                 if signInUnderSampleDomain
@@ -147,7 +170,7 @@ module CreateUser =
             env.ConfirmTokenWaitHandle.WaitOne() |> ignore
             let confirmData: SignUpConfirm.Models.Data = { Token = env.GetConfirmToken() }
 
-            let! _ = env.TestFixture.HttpPostAsync' "/api/auth/sign-up/confirm?skipCreateTenant=true" confirmData
+            let! _ = env.TestFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
 
             let clientId = "__DEFAULT_CLIENT_ID__"
 

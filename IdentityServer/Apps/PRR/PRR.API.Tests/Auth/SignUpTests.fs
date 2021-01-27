@@ -1,15 +1,16 @@
 ﻿namespace PRR.API.Tests
 
-open Akkling
 open Common.Test.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
 open Microsoft.Extensions.DependencyInjection
+open PRR.API.Infra.Mail.Models
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth
+open PRR.Domain.Auth.Common
 open PRR.Domain.Auth.SignUp
-open PRR.System.Models
 open System
+open PRR.Domain.Tenant
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
@@ -19,7 +20,8 @@ module SignUp =
     let mutable userToken: string = null
     let mutable actualEmail: SendMailParams option = None
 
-    let waitHandle = new System.Threading.AutoResetEvent(false)
+    let waitHandle =
+        new System.Threading.AutoResetEvent(false)
 
     let userData: Data =
         { FirstName = "First"
@@ -30,33 +32,15 @@ module SignUp =
 
     let sendMail: SendMail =
         fun data ->
-            task {
-                actualEmail <- Some data
-                match data.Template with
-                | ConfirmSignUpMail x ->
-                    userToken <- x.Token
-                waitHandle.Set() |> ignore
-            }
+            actualEmail <- Some data
+            match data.Template with
+            | ConfirmSignUpMail x -> userToken <- x.Token
+            task { waitHandle.Set() }
 
     let mutable tenant: CreatedTenantInfo option = None
-    let tenantWaitHandle = new System.Threading.AutoResetEvent(false)
 
-    let mutable sysException: Exception = null
-
-    let systemEventHandled =
-        function
-        | UserTenantCreatedEvent data ->
-            tenant <- Some data
-            tenantWaitHandle.Set() |> ignore
-        | CommandFailureEvent e ->
-            sysException <- e
-            tenantWaitHandle.Set() |> ignore
-        | QueryFailureEvent e ->
-            sysException <- e
-            tenantWaitHandle.Set() |> ignore
-        | _ ->
-            ()
-
+    let tenantWaitHandle =
+        new System.Threading.AutoResetEvent(false)
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
     type ``sign-up-api``(testFixture: TestFixture, output: ITestOutputHelper) =
@@ -67,15 +51,8 @@ module SignUp =
         [<Priority(-1)>]
         member __.``0 BeforeAll``() =
             testFixture.OverrideServices(fun services ->
-                let sp = services.BuildServiceProvider()
-                let systemEnv = sp.GetService<SystemEnv>()
-                let systemConfig = sp.GetService<SystemConfig>()
-                let systemEnv =
-                    { systemEnv with
-                          SendMail = sendMail
-                          EventHandledCallback = systemEventHandled }                
-                let sys = PRR.System.Setup.setUp systemEnv systemConfig "akka.hocon"
-                services.AddSingleton<ICQRSSystem>(fun _ -> sys) |> ignore)
+                services.AddSingleton<ISendMailProvider>(SendMailProvider sendMail)
+                |> ignore)
 
         [<Fact>]
         [<Priority(1)>]
@@ -120,8 +97,6 @@ module SignUp =
                                     LastName = userData.LastName
                                     Email = userData.Email
                                     Token = userToken
-                                    Password = x.Password
-                                    ExpiredAt = x.ExpiredAt
                                     QueryString = None } }
 
 
@@ -136,8 +111,7 @@ module SignUp =
 
             task {
 
-                let confirmData: SignUpConfirm.Models.Data =
-                    { Token = userToken }
+                let confirmData: SignUpConfirm.Models.Data = { Token = userToken }
 
                 let! result = testFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
 
@@ -150,8 +124,7 @@ module SignUp =
 
             task {
 
-                let confirmData: SignUpConfirm.Models.Data =
-                    { Token = userToken }
+                let confirmData: SignUpConfirm.Models.Data = { Token = userToken }
 
                 let! result = testFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
 
@@ -166,7 +139,8 @@ module SignUp =
 
                 let! result = testFixture.HttpPostAsync' "/api/auth/sign-up" userData
 
-                ensureConflict result }
+                ensureConflict result
+            }
 
         [<Fact>]
         [<Priority(3)>]
@@ -174,19 +148,17 @@ module SignUp =
 
             task {
 
-                let! _ = testFixture.HttpPostAsync' "/api/auth/sign-up" { userData with Email = "user2@user.com" }
+                let! _ =
+                    testFixture.HttpPostAsync'
+                        "/api/auth/sign-up"
+                        { userData with
+                              Email = "user2@user.com" }
 
                 waitHandle.WaitOne() |> ignore
 
-                let confirmData: SignUpConfirm.Models.Data =
-                    { Token = userToken }
+                let confirmData: SignUpConfirm.Models.Data = { Token = userToken }
 
                 let! result = testFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
 
                 do! ensureSuccessAsync result
-
-                tenantWaitHandle.WaitOne(500) |> ignore
-
-                sysException |> should be null
-                tenant |> should be (not' null)
             }

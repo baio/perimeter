@@ -1,13 +1,13 @@
 ﻿namespace PRR.API.Infra
 
 open PRR.API.Infra.Mail
-open PRR.System.Models
+open PRR.Domain.Auth.Common
 
 [<AutoOpen>]
 module SendMail =
 
 
-    let private getConfirmSignupHtml (proj: ProjectEnv) (item: SignUpToken.Item) =
+    let private getConfirmSignupHtml (proj: ProjectConfig) (item: ConfirmSignUpMailData) =
         sprintf """
             <h2>Hello %s %s</h2>
             <p>
@@ -20,7 +20,7 @@ module SendMail =
              | Some x -> (sprintf "&%s" x)
              | None -> "") proj.Name proj.Name
 
-    let private getResetPasswordHtml (proj: ProjectEnv) (item: ResetPassword.Item) =
+    let private getResetPasswordHtml (proj: ProjectConfig) (item: ResetPasswordMailData) =
         sprintf """
             <h2>Hello</h2>
             <p>
@@ -31,7 +31,7 @@ module SendMail =
         """ proj.BaseUrl proj.ResetPasswordUrl item.Token proj.Name
 
 
-    let private createSendMail' (env: MailEnv) (prms: SendMailParams) =
+    let private createSendMail' (env: MailSenderConfig) (prms: SendMailParams) =
         let mail: SendMailData =
             { FromEmail = env.FromEmail
               FromName = env.FromName
@@ -39,15 +39,22 @@ module SendMail =
               ToName = prms.To
               Subject = prms.Subject
               Html = "" }
+
         match prms.Template with
         | ConfirmSignUpMail item ->
             { mail with
                   ToName = (sprintf "%s %s" item.FirstName item.LastName)
                   Html = getConfirmSignupHtml env.Project item }
         | ResetPasswordMail item ->
-            { mail with Html = getResetPasswordHtml env.Project item }
+            { mail with
+                  Html =
+                      getResetPasswordHtml
+                          env.Project
+                          { Email = item.Email
+                            Token = item.Token } }
 
-    let createSendMail (env: MailEnv) (sender: MailSender) =
+    let createSendMail (env: MailSenderConfig) (sender: MailSender) =
         let sendMail: SendMail =
             fun prms -> createSendMail' env prms |> sender
+
         sendMail

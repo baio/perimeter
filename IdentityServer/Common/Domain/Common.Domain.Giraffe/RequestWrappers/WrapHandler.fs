@@ -13,6 +13,12 @@ module WrapHandler =
         |> fn
         |> TaskUtils.bind (fun hr -> hr ctx next)
 
+    let wrapHandlerOK (fn: HttpContext -> Task<'a>) next ctx =
+        task {
+            let! result = fn ctx
+            return! Successful.OK result next ctx
+        }
+
 
     let wrapHandlerNoContent (fn: HttpContext -> Task<unit>) next ctx =
         task {

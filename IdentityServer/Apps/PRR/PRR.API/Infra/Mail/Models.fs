@@ -1,19 +1,20 @@
 ﻿namespace PRR.API.Infra.Mail
 
 open System.Threading.Tasks
+open PRR.Domain.Auth.Common
 
 [<AutoOpen>]
 module Models =
     [<CLIMutable>]
-    type ProjectEnv =
+    type ProjectConfig =
         { Name: string
           BaseUrl: string
           ConfirmSignUpUrl: string
           ResetPasswordUrl: string }
 
     [<CLIMutable>]
-    type MailEnv =
-        { Project: ProjectEnv
+    type MailSenderConfig =
+        { Project: ProjectConfig
           FromEmail: string
           FromName: string }
 
@@ -26,3 +27,10 @@ module Models =
           Html: string }
 
     type MailSender = SendMailData -> Task<unit>
+
+    type ISendMailProvider =
+        abstract GetSendMail: unit -> SendMail
+
+    type SendMailProvider(sendMail: SendMail) =
+        interface ISendMailProvider with
+            member __.GetSendMail() = sendMail

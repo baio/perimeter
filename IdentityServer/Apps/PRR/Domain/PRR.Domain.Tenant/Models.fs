@@ -14,5 +14,5 @@ module Models =
 
     type Env =
         { DataContext: DbDataContext
-          AuthStringsProvider: AuthStringsProvider
+          AuthStringsProvider: AuthStringsGetter
           AuthConfig: AuthConfig }

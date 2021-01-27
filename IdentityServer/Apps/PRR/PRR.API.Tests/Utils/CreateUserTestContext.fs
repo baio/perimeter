@@ -1,9 +1,12 @@
 ﻿namespace PRR.API.Tests.Utils
 
+open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.DependencyInjection
 open PRR.API.Infra
-open PRR.System.Models
 open System.Threading
+open FSharp.Control.Tasks.V2.ContextInsensitive
+open PRR.Domain.Tenant
+open DataAvail.KeyValueStorage.Core
 
 [<AutoOpen>]
 module UserTestContext =
@@ -14,10 +17,12 @@ module UserTestContext =
           TenantWaitHandle: AutoResetEvent
           GetConfirmToken: unit -> string
           GetTenant: unit -> CreatedTenantInfo
+          SetTenant: CreatedTenantInfo -> unit
           GetResetPasswordToken: unit -> string
           ResetPasswordTokenHandle: AutoResetEvent }
 
     let createUserTestContextWithServicesOverrides servicesOverridesFun (testFixture: TestFixture) =
+
 
         let mutable confirmToken: string = null
 
@@ -34,54 +39,41 @@ module UserTestContext =
         let resetPasswordTokenHandle =
             new System.Threading.AutoResetEvent(false)
 
-        let systemEventHandled =
-            function
-            | UserSignedUpEvent data ->
-                confirmToken <- data.Token
-                confirmTokenWaitHandle.Set() |> ignore
-            | UserTenantCreatedEvent data ->
-                tenant <- Some data
-                tenantWaitHandle.Set() |> ignore
-            | CommandFailureEvent _ ->
-                confirmTokenWaitHandle.Set() |> ignore
-                tenantWaitHandle.Set() |> ignore
-            | QueryFailureEvent _ ->
-                confirmTokenWaitHandle.Set() |> ignore
-                tenantWaitHandle.Set() |> ignore
-            | ResetPasswordEvent (ResetPassword.TokenAdded (item)) ->
-                resetPasswordToken <- Some item.Token
-                resetPasswordTokenHandle.Set() |> ignore
-            | _ -> ()
+        let overrideKeyValueStorage (kvStorage: IKeyValueStorage) (services: IServiceCollection) =
+            let kvStorage' =
+                { new IKeyValueStorage with
+                    member __.AddValue k (v: 'a) x =
+                        task {
+                            let! res = kvStorage.AddValue k v x
+
+                            match getAddValuePartitionName<'a> x with
+                            | "ResetPassword" ->
+                                resetPasswordToken <- Some k
+                                resetPasswordTokenHandle.Set() |> ignore
+                            | "SignUp" ->
+                                confirmToken <- k
+                                confirmTokenWaitHandle.Set() |> ignore
+                            | _ -> ()
+
+
+                            return res
+                        }
+
+                    member __.GetValue<'a> k x = kvStorage.GetValue<'a> k x
+
+                    member __.RemoveValue<'a> k x = kvStorage.RemoveValue<'a> k x
+
+                    member __.RemoveValuesByTag<'a> k x = kvStorage.RemoveValuesByTag<'a> k x }
+
+            services.AddSingleton<IKeyValueStorage>(kvStorage')
+
 
         testFixture.OverrideServices(fun services ->
 
-            printfn "5555"
-
             let sp = services.BuildServiceProvider()
-            let systemEnv = sp.GetService<SystemEnv>()
-            let systemConfig = sp.GetService<SystemConfig>()
 
-            let systemEnv =
-                { systemEnv with
-                      EventHandledCallback = systemEventHandled }
-
-            let sys =
-                PRR.System.Setup.setUp systemEnv systemConfig "akka.hocon"
-
-            services.AddSingleton<ICQRSSystem>(fun _ -> sys)
+            overrideKeyValueStorage (sp.GetService<IKeyValueStorage>()) services
             |> ignore
-            //
-            let sysConfig: PRR.Sys.SetUp.Config =
-                { JournalConnectionString = systemConfig.JournalConnectionString
-                  SnapshotConnectionString = systemConfig.SnapshotConnectionString }
-
-            let sys1 =
-                PRR.Sys.SetUp.setUp sysConfig "akka.hocon"
-
-            services.AddSingleton<ISystemActorsProvider>(SystemActorsProvider sys1)
-            |> ignore
-
-            printfn "666"
 
             servicesOverridesFun services)
 
@@ -92,7 +84,8 @@ module UserTestContext =
           GetConfirmToken = fun () -> confirmToken
           GetTenant = fun () -> tenant.Value
           GetResetPasswordToken = fun () -> resetPasswordToken.Value
-          ResetPasswordTokenHandle = resetPasswordTokenHandle }
+          ResetPasswordTokenHandle = resetPasswordTokenHandle
+          SetTenant = fun t -> tenant <- (Some t) }
 
 
     let createUserTestContext x =

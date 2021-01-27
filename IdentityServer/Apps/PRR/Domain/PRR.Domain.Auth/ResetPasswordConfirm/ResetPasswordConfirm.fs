@@ -6,8 +6,6 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Domain.Auth.Common
 open PRR.Domain.Auth.ResetPasswordConfirm.Models
 open PRR.Domain.Auth.Utils
-open PRR.System.Models
-open System
 open Microsoft.Extensions.Logging
 
 [<AutoOpen>]
@@ -22,20 +20,18 @@ module ResetPasswordConfirm =
             env.Logger.LogInformation("Reset password confirm")
 
             task {
-                let! item = env.GetTokenItem data.Token
+                let! item = env.KeyValueStorage.GetValue<ResetPasswordKV> data.Token None
 
                 let item =
                     match item with
-                    | Some item ->
-                        env.Logger.LogInformation("Reset password item found ${item}", { item with Token = "***" })
+                    | Ok item ->
+                        env.Logger.LogInformation("Reset password item found ${item}", item)
                         item
-                    | None ->
-                        env.Logger.LogWarning("Reset password item is not found for ${token}", data.Token)
+                    | Error err ->
+                        env.Logger.LogWarning
+                            ("Reset password item is not found for ${token} with ${@error}", data.Token, err)
                         raise UnAuthorized'
 
-                if item.ExpiredAt < DateTime.UtcNow then
-                    env.Logger.LogWarning("Reset password item expired for token ${token}", data.Token)
-                    raise UnAuthorized'
 
                 let saltedPassword = env.PasswordSalter data.Password
 
@@ -47,5 +43,5 @@ module ResetPasswordConfirm =
 
                 env.Logger.LogInformation("Reset password confirm success")
 
-                do! env.OnSuccess item.Email
+                do! env.KeyValueStorage.RemoveValuesByTag<ResetPasswordKV> item.Email None
             }

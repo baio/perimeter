@@ -1,14 +1,13 @@
 ﻿namespace PRR.Domain.Auth.SignUp
 
 open System.Diagnostics
-open Akkling
 open Common.Domain.Models
 open Common.Domain.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open HttpFs.Logging
 open Models
 open PRR.Domain.Auth.Common
 open PRR.Domain.Auth.Utils
-open PRR.System.Models
 open Microsoft.Extensions.Logging
 
 [<AutoOpen>]
@@ -60,24 +59,34 @@ module SignUp =
                 let token = "HASH"
 #else
                 let token = env.HashProvider()
-#endif
 
-                let signupSuccessData =
+#endif
+                let encodedPassword = env.PasswordSalter data.Password
+
+                let queryString =
+                    if System.String.IsNullOrEmpty data.QueryString
+                    then None
+                    else (Some(data.QueryString.TrimStart('?')))
+
+                let expiresAt =
+                    System.DateTime.UtcNow.AddMinutes(float (int env.TokenExpiresIn))
+
+                let kv: SignUpKV =
                     { FirstName = data.FirstName
                       LastName = data.LastName
-                      Token = token
-                      Password = data.Password
                       Email = data.Email
-                      QueryString =
-                          if System.String.IsNullOrEmpty data.QueryString
-                          then None
-                          else (Some(data.QueryString.TrimStart('?'))) }
+                      Password = encodedPassword
+                      Token = token
+                      ExpiredAt = expiresAt
+                      QueryString = queryString }
+
 
                 env.Logger.LogInformation
-                    ("Signup success data {@data}",
-                     { signupSuccessData with
+                    ("Signup success data {@data} and expires at ${expiresAt}",
+                     { kv with
                            Password = "***"
-                           Token = "***" })
+                           Token = "***" },
+                     expiresAt)
 
-                do! env.OnSuccess signupSuccessData
+                do! onSuccess env kv
             }

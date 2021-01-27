@@ -3,9 +3,9 @@
 open Common.Domain.Models
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
+open PRR.API.Infra.Mail.Models
 open PRR.API.Infra.Models
 open PRR.Domain.Auth
-open PRR.Sys.Models
 
 [<AutoOpen>]
 module ConfigureServices =
@@ -14,6 +14,9 @@ module ConfigureServices =
         { Jwt: JwtConfig
           SSOCookieExpiresIn: int<minutes>
           PerimeterSocialProviders: PerimeterSocialProviders
+          ResetPasswordTokenExpiresIn: int<minutes>
+          RefreshTokenExpiresIn: int<minutes>
+          SignUpTokenExpiresIn: int<minutes>
           Social: SocialConfig }
 
     type AppConfig =
@@ -22,8 +25,10 @@ module ConfigureServices =
           Auth: AuthConfig
           Infra: InfraConfig
           DataContext: DataContextConfig
-          Actors: ActorsConfig
-          HealthCheck: HealthCheckConfig }
+          HealthCheck: HealthCheckConfig
+          KeyValueStorage: KeyValueStorageConfig
+          MailSender: MailSenderConfig
+          SendGridApiKey: string }
 
     type IConfigProvider =
         abstract GetConfig: (unit -> AppConfig)
@@ -39,7 +44,8 @@ module ConfigureServices =
         configureInfra config.Infra services
         configureLogging config.Logging services
         configureTracing config.Tracing services
-        configureActors config.Actors services
         configureHealthCheck config.HealthCheck services
+        configureKeyValueStorage config.KeyValueStorage services
+        configureSendMail config.SendGridApiKey config.MailSender services
         services.AddSingleton<IConfigProvider>(ConfigProvider config)
         |> ignore

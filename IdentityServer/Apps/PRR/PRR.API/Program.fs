@@ -1,7 +1,6 @@
 module PRR.API.App
 
 open System.Net
-open Akkling
 open Giraffe
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
@@ -24,12 +23,11 @@ open HealthChecks.Prometheus
 let webApp =
     subRoute
         "/api"
-        (choose [ _Auth.createRoutes ()
-                  Me.createRoutes ()
+        (choose [ Me.createRoutes ()
                   Tenant.createRoutes ()
                   PingRoutes.createRoutes ()
                   ApplicationInfo.createRoutes ()
-                  PRR.API.Routes.Auth.AuthRoutes.createRoutes ()
+                  Auth.AuthRoutes.createRoutes ()
 #if E2E
                   E2E.createRoutes ()
 #endif
@@ -40,6 +38,7 @@ let migrateDatabase (webHost: IWebHost) =
     // https://docs.microsoft.com/en-us/archive/msdn-magazine/2019/april/data-points-ef-core-in-a-docker-containerized-app#migrating-the-database
     use scope = webHost.Services.CreateScope()
     let services = scope.ServiceProvider
+
     try
         let db =
             services.GetRequiredService<DbDataContext>()

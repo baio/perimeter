@@ -17,7 +17,7 @@ module RandomStringProvider =
         |> System.String.Concat
 
 
-    let private authStringsProvider: AuthStringsProvider =
+    let private authStringsGetter: AuthStringsGetter =
         { ClientId = fun () -> getRandomString 33
           ClientSecret = fun () -> getRandomString 50
           // TODO : Read ???
@@ -30,4 +30,4 @@ module RandomStringProvider =
 
     type AuthStringsProvider() =
         interface IAuthStringsProvider with
-            member __.AuthStringsProvider = authStringsProvider
+            member __.AuthStringsGetter = authStringsGetter

@@ -6,6 +6,7 @@ open Common.Domain.Models
 
 open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open Microsoft.Extensions.Logging
 open Microsoft.IdentityModel.Tokens
 open Models
 open PRR.Data.DataContext
@@ -15,6 +16,12 @@ open PRR.Domain.Auth.LogIn.UserHelpers
 open PRR.Domain.Auth.LogInToken
 open Common.Domain.Utils.LinqHelpers
 open PRR.Domain.Auth.Common
+
+type SignInUserEnv =
+    { DataContext: DbDataContext
+      JwtConfig: JwtConfig
+      Logger: ILogger
+      HashProvider: HashProvider }
 
 [<AutoOpen>]
 module internal SignInUser =
@@ -46,7 +53,7 @@ module internal SignInUser =
         let accessToken =
             createAccessTokenClaims data.ClientId data.Issuer data.TokenData rolesPermissions audiences
             |> (createSignedToken data.AccessTokenCredentials data.AccessTokenExpiresIn)
-           
+
         let idToken =
             createIdTokenClaims data.ClientId data.Issuer data.TokenData rolesPermissions
             |> (createUnsignedToken data.IdTokenExpiresIn)
@@ -75,8 +82,7 @@ module internal SignInUser =
         |> Array.toSeq
 
     let private perimeterAudiences =
-        [| PERIMETER_USERS_AUDIENCE |]
-        |> Array.toSeq
+        [| PERIMETER_USERS_AUDIENCE |] |> Array.toSeq
 
     let private getClientAudiencesRolePermissions (dataContext: DbDataContext) clientId email =
 
@@ -141,7 +147,7 @@ module internal SignInUser =
                                  domain.RS256Params)
                     }
                     |> toSingleAsync
-                
+
                 return { AccessTokenExpiresIn = expiresIn
                          SigningCredentials =
                              if algo = SigningAlgorithmType.HS256 then
@@ -157,11 +163,7 @@ module internal SignInUser =
             let! { ClientId = clientId; Issuer = issuer; IdTokenExpiresIn = idTokenExpiresIn; Type = clientType } =
                 getAppInfo env.DataContext clientId tokenData.Email env.JwtConfig.IdTokenExpiresIn
 
-            printfn "signInUser:1 %s %s %A" clientId issuer scopes
-
             let! validatedScopes = getValidatedScopes env.DataContext tokenData.Email clientId scopes
-
-            printfn "signInUser:2 %A" validatedScopes
 
             let audiences =
                 validatedScopes |> Seq.map (fun x -> x.Audience)
@@ -172,8 +174,6 @@ module internal SignInUser =
             let isPerimeterClient = clientType <> Regular
 
             let! secretData = getDomainSecretAndExpire env issuer isPerimeterClient
-            
-            printfn "signInUser:3"
 
             let data =
                 { TokenData = tokenData
@@ -186,8 +186,6 @@ module internal SignInUser =
                   IdTokenExpiresIn = idTokenExpiresIn }
 
             let result = signInUser' data
-            
-            printfn "signInUser:4"
 
             return (result, clientId, isPerimeterClient)
         }

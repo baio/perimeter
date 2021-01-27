@@ -6,7 +6,7 @@ open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Models
 open PRR.Data.Entities
-open PRR.System.Models
+open PRR.Domain.Auth.Common
 open System
 open Microsoft.Extensions.Logging
 
@@ -22,15 +22,15 @@ module SignUpConfirm =
 
             task {
 
-                let! item = env.GetTokenItem token
+                let! item = env.KeyValueStorage.GetValue<SignUpKV> token None
 
                 let item =
                     match item with
-                    | Some item ->
+                    | Ok item ->
                         env.Logger.LogInformation("Signup item found ${@item}", { item with Password = "***" })
                         item
-                    | None ->
-                        env.Logger.LogWarning("Couldn't find signup item ${token}", token)
+                    | Error err ->
+                        env.Logger.LogWarning("Couldn't find signup item ${token} with error ${@error}", token, err)
                         raise (UnAuthorized None)
 
                 if item.ExpiredAt < DateTime.UtcNow then
@@ -49,10 +49,10 @@ module SignUpConfirm =
 
                 do! saveChangesAsync dataContext
 
-                let successData = { UserId = user.Id; Email = user.Email }
 
-                env.Logger.LogInformation("Signup confirm success data {@data}", successData)
+                env.Logger.LogInformation("Signup confirm success email {@email}", item.Email)
 
+                do! env.KeyValueStorage.RemoveValuesByTag<SignUpKV> user.Email None
 
-                env.OnSuccess successData
+                return user.Id
             }

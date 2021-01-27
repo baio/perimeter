@@ -12,7 +12,7 @@ let private getUserDataForToken (dataContext: DbDataContext) email password =
 
 
 // Exclusively for e2e test
-let logInEmail (env: Env) clientId email password =
+let logInEmail (env) clientId email password =
     task {
         match! getUserDataForToken env.DataContext email password with
         | Some tokenData ->

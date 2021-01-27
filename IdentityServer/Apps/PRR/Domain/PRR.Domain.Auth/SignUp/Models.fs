@@ -1,21 +1,25 @@
 ﻿namespace PRR.Domain.Auth.SignUp
 
 open Common.Domain.Models
+open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
-open PRR.System.Models
+open PRR.Domain.Auth.Common
 open System.Threading.Tasks
 
 [<AutoOpen>]
 module Models =
 
-    type OnSuccess = SignUpSuccess -> Task<unit>
+    type OnSuccess = SignUpKV -> Task<unit>
 
     type Env =
-        { DataContext: DbDataContext
+        { TokenExpiresIn: int<minutes>
+          DataContext: DbDataContext
           HashProvider: HashProvider
           Logger: ILogger
-          OnSuccess: OnSuccess }
+          PasswordSalter: StringSalter
+          KeyValueStorage: IKeyValueStorage
+          SendMail: SendMail }
 
     [<CLIMutable>]
     type Data =

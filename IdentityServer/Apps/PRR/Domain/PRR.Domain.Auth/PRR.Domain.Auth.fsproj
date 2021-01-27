@@ -23,8 +23,11 @@
         <Compile Include="Common\ValidateScopes.fs" />
         <Compile Include="Common\JwtConfig.fs" />
         <Compile Include="Common\MapBadRequest.fs" />
+        <Compile Include="Common\KeyValueModels.fs" />
+        <Compile Include="Common\SendMail.fs" />
         <Compile Include="LogIn\Models.fs" />
         <Compile Include="LogIn\UserHelpers.fs" />
+        <Compile Include="LogIn\OnSuccess.fs" />
         <Compile Include="LogIn\LogIn.fs" />
         <Compile Include="LogInToken\Models.fs" />
         <Compile Include="LogInToken\UserHelpers.fs" />
@@ -35,18 +38,21 @@
         <Compile Include="LogInToken\LogInEmail.fs" />
         <Compile Include="validatePassword.fs" />
         <Compile Include="SignUp\Models.fs" />
+        <Compile Include="SignUp\OnSuccess.fs" />
         <Compile Include="SignUp\SignUp.fs" />
         <Compile Include="SignUpConfirm\Models.fs" />
         <Compile Include="SignUpConfirm\SignUpConfirm.fs" />
         <Compile Include="RefreshToken\Models.fs" />
         <Compile Include="RefreshToken\ValidateAccessToken.fs" />
         <Compile Include="RefreshToken\Validate.fs" />
+        <Compile Include="RefreshToken\OnSuccess.fs" />
         <Compile Include="RefreshToken\RefreshToken.fs" />
         <Compile Include="GetAudience.fs" />
         <Compile Include="Helpers.fs" />
         <Compile Include="ResetPasswordConfirm\Models.fs" />
         <Compile Include="ResetPasswordConfirm\ResetPasswordConfirm.fs" />
         <Compile Include="ResetPassword\Models.fs" />
+        <Compile Include="ResetPassword\OnSuccess.fs" />
         <Compile Include="ResetPassword\ResetPassword.fs" />
         <Compile Include="UpdatePassword\Models.fs" />
         <Compile Include="UpdatePassword\UpdatePassword.fs" />
@@ -68,13 +74,13 @@
     <ItemGroup>
         <ProjectReference Include="..\..\..\..\Common\Domain\Common.Domain.Models\Common.Domain.Models.fsproj" />
         <ProjectReference Include="..\..\..\..\Common\Domain\Common.Domain.Utils\Common.Domain.Utils.fsproj" />
+        <ProjectReference Include="..\..\..\..\Libs\DataAvail.KeyValueStorage.Mongo\DataAvail.KeyValueStorage.Mongo.fsproj" />
         <ProjectReference Include="..\..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
-        <ProjectReference Include="..\..\System\PRR.Sys.Models\PRR.Sys.Models.fsproj" />
-        <ProjectReference Include="..\..\System\PRR.System.Models\PRR.System.Models.fsproj" />
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Http.fs" Version="5.4.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
         <PackageReference Include="TaskBuilder.fs" Version="2.1.0" />
     </ItemGroup>

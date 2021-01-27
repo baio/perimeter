@@ -18,7 +18,7 @@ module CreateAppConfig =
               RefreshTokenExpiresIn = configuration.GetValue<int<minutes>>("Auth:Jwt:RefreshTokenExpiresInMinutes")
               CodeExpiresIn = configuration.GetValue<int<minutes>>("Auth:Jwt:CodeExpiresInMinutes") }
 
-        let mailEnv: MailEnv =
+        let mailSenderConfig: MailSenderConfig =
             { FromEmail = configuration.GetValue("MailSender:FromEmail")
               FromName = configuration.GetValue("MailSender:FromName")
               Project =
@@ -29,23 +29,12 @@ module CreateAppConfig =
 
         let sendGridApiKey = configuration.GetValue("SendGridApiKey")
 
-        let connectionStrings: ActorsConnectionsString =
-            { MongoJournal = configuration.GetConnectionString("MongoJournal")
-              MongoSnapshot = configuration.GetConnectionString("MongoSnapshot")
-              MongoViews = configuration.GetConnectionString("MongoViews") }
-
-        let actorsConfig: ActorsConfig =
-            { Mail = mailEnv
-              SendGridApiKey = sendGridApiKey
-              Jwt = jwt
-              ConnectionStrings = connectionStrings
+        let authConfig: AuthConfig =
+            { Jwt = jwt
+              RefreshTokenExpiresIn = configuration.GetValue<int<minutes>>("Auth:Jwt:RefreshTokenExpiresInMinutes")
               SignUpTokenExpiresIn = configuration.GetValue<int<minutes>>("Auth:SignUpTokenExpiresInMinutes")
               ResetPasswordTokenExpiresIn =
                   configuration.GetValue<int<minutes>>("Auth:ResetPasswordTokenExpiresInMinutes")
-              EnvironmentName = envName }
-
-        let authConfig: AuthConfig =
-            { Jwt = jwt
               SSOCookieExpiresIn = configuration.GetValue<int<minutes>>("Auth:SSOCookieExpiresInMinutes")
               PerimeterSocialProviders =
                   { Github =
@@ -62,6 +51,11 @@ module CreateAppConfig =
                     CallbackExpiresIn =
                         configuration.GetValue<int<milliseconds>>("Auth:Social:CallbackExpiresInMilliseconds") } }
 
+        let keyValueStorageConfig: KeyValueStorageConfig =
+            { ConnectionString = configuration.GetValue("MongoKeyValueStorage:ConnectionString")
+              DbName = configuration.GetValue("MongoKeyValueStorage:DbName")
+              CollectionName = configuration.GetValue("MongoKeyValueStorage:CollectionName") }
+
         let ignoreObserveApiPaths = [ "/metrics"; "/health" ]
 
         let psqlConnectionString =
@@ -70,11 +64,13 @@ module CreateAppConfig =
         let mongoConnectionString =
             configuration.GetConnectionString "Mongo"
 
-        { HealthCheck =
+        { SendGridApiKey = sendGridApiKey
+          MailSender = mailSenderConfig
+          KeyValueStorage = keyValueStorageConfig
+          HealthCheck =
               { PsqlConnectionString = psqlConnectionString
                 MongoConnectionString = mongoConnectionString
                 AllocatedMemory = 5<gigabytes> }
-          Actors = actorsConfig
           DataContext = { ConnectionString = psqlConnectionString }
           Infra =
               { MongoViewsConnectionString = configuration.GetConnectionString("MongoViews")

@@ -1,15 +1,13 @@
 ﻿namespace PRR.API.Routes
 
-open Microsoft.Extensions.Configuration
+open DataAvail.KeyValueStorage.Core
 open PRR.API.Configuration.ConfigureServices
+open PRR.API.Infra.Mail.Models
 open PRR.Data.DataContext
 open Giraffe
 open Microsoft.AspNetCore.Http
-open Common.Utils
 open Common.Utils.ReaderTask
 open PRR.API.Infra.Models
-open PRR.Sys.SetUp
-open PRR.System.Models.CQRSSystem
 
 [<AutoOpen>]
 module DIHelpers =
@@ -28,13 +26,8 @@ module DIHelpers =
     let getConfig (ctx: HttpContext) =
         ctx.GetService<IConfigProvider>().GetConfig()
 
-    let getSystemActors (ctx: HttpContext) =
-        ctx.GetService<ISystemActorsProvider>().SystemActors
-
-    let getCQRSSystem (ctx: HttpContext) = ctx.GetService<ICQRSSystem>()
-
-    let getAuthStringsProvider (ctx: HttpContext) =
-        ctx.GetService<IAuthStringsProvider>().AuthStringsProvider
+    let getAuthStringsGetter (ctx: HttpContext) =
+        ctx.GetService<IAuthStringsProvider>().AuthStringsGetter
 
     let getViewsReaderDb (ctx: HttpContext) =
         ctx.GetService<IViewsReaderDbProvider>().ViewsReaderDb
@@ -43,3 +36,8 @@ module DIHelpers =
         ctx.GetService<IHttpRequestFunProvider>().HttpRequestFun
 
     let getLogger (ctx: HttpContext) = ctx.GetLogger()
+
+    let getKeyValueStorage (ctx: HttpContext) = ctx.GetService<IKeyValueStorage>()
+
+    let getSendMail (ctx: HttpContext) =
+        ctx.GetService<ISendMailProvider>().GetSendMail()

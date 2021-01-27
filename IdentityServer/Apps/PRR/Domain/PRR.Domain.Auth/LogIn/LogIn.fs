@@ -5,14 +5,14 @@ open Common.Domain.Models
 open Common.Domain.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
-open PRR.System.Models
 open System
 open PRR.Domain.Auth.Common
+open Microsoft.Extensions.Logging
 
 [<AutoOpen>]
 module Authorize =
 
-    let validateData (data: Data): BadRequestError array =
+    let validateData (data: Data) =
         let scope =
             if data.Scope = null then "" else data.Scope
 
@@ -29,7 +29,7 @@ module Authorize =
            (validateNullOrEmpty "code_challenge" data.Code_Challenge)
            (validateNullOrEmpty "code_challenge_method" data.Code_Challenge_Method)
            (validateContains [| "S256" |] "code_challenge_method" data.Code_Challenge_Method) |]
-        |> Array.choose id
+        |> mapBadRequest
 
     let private getClientAppData' (dataContext: DbDataContext) clientId =
         query {
@@ -51,7 +51,6 @@ module Authorize =
             else return! getClientAppData' dataContext clientId
         }
 
-
     type LoginData =
         { UserId: int
           ClientId: ClientId
@@ -63,19 +62,31 @@ module Authorize =
           CodeChallenge: string
           CodeChallengeMethod: string }
 
-    let logInUser env sso (data: LoginData) =
+    let logInUser (env: Models.Env) (sso: Token option) (data: LoginData) (social: Social option) =
+
+        env.Logger.LogInformation
+            ("LogIn user with ${@data} and ${sso} and social ${@social}",
+             { data with CodeChallenge = "***" },
+             sso.IsSome,
+             social)
+
         let dataContext = env.DataContext
+
         task {
 
-            printfn "login:1 %s %s" data.ClientId data.Email
-            let! { ClientId = clientId; Issuer = issuer } =
-                getAppInfo env.DataContext data.ClientId data.Email 1<minutes>
+            let! r = getAppInfo env.DataContext data.ClientId data.Email 1<minutes>
 
-            printfn "login:2 %s %s" clientId issuer
+            env.Logger.LogInformation("App info found ${@info}", r)
 
-            let! (ssoEnabled, callbackUrls, poolTenantId, domainTenantId) = getClientAppData dataContext clientId
+            let issuer = r.Issuer
 
-            printfn "login:3"
+            let clientId = r.ClientId
+
+            let! r = getClientAppData dataContext clientId
+
+            env.Logger.LogInformation("App data found ${@data}", r)
+
+            let (ssoEnabled, callbackUrls, poolTenantId, domainTenantId) = r
 
             let tenantId =
                 match (poolTenantId.HasValue, domainTenantId.HasValue) with
@@ -85,7 +96,14 @@ module Authorize =
                 | (true, false) -> poolTenantId.Value
                 // Tenant management app
                 | (false, true) -> domainTenantId.Value
-                | (true, true) -> raise (unexpected "Both poolTenantId, domainTenantId defined")
+                | (true, true) ->
+                    env.Logger.LogWarning
+                        ("Both ${@poolTenantId}, ${@domainTenantId} defined this is unexpected",
+                         poolTenantId,
+                         domainTenantId)
+                    raise (unexpected "Both poolTenantId, domainTenantId defined")
+
+            env.Logger.LogInformation("TenantId found ${tenantId}", tenantId)
 
             if (callbackUrls
                 <> "*"
@@ -93,8 +111,8 @@ module Authorize =
                     |> Seq.map (fun x -> x.Trim())
                     |> Seq.contains data.RedirectUri
                     |> not)) then
+                env.Logger.LogInformation("${callbackUrls} and ${redirectUri} mismatch", callbackUrls, data.RedirectUri)
                 return! raise (unAuthorized "return_uri mismatch")
-
 
             let code = env.CodeGenerator()
 
@@ -103,18 +121,22 @@ module Authorize =
                   State = data.State
                   Code = code }
 
+            env.Logger.LogInformation("Login ${@result} ready", result)
+
             let codeExpiresAt =
                 DateTime.UtcNow.AddMinutes(float env.CodeExpiresIn)
 
             let scopes = data.Scope.Split " "
 
+            env.Logger.LogInformation("Validate ${@scopes} for @{email} and @{clientId} ", scopes, data.Email, clientId)
+
             let! validatedScopes = validateScopes dataContext data.Email clientId scopes
 
-            printfn "login:4 %s %A %A" clientId scopes validatedScopes
+            env.Logger.LogInformation("${@validatedScopes} validated", validatedScopes)
 
             let userId = data.UserId
 
-            let loginItem: LogIn.Item =
+            let loginItem: LogInKV =
                 { Code = code
                   ClientId = data.ClientId
                   Issuer = issuer
@@ -124,7 +146,7 @@ module Authorize =
                   UserId = userId
                   ExpiresAt = codeExpiresAt
                   RedirectUri = data.RedirectUri
-                  Social = None }
+                  Social = social }
 
             let ssoExpiresAt =
                 DateTime.UtcNow.AddMinutes(float env.SSOExpiresIn)
@@ -135,24 +157,48 @@ module Authorize =
                     Some
                         ({ Code = sso
                            UserId = userId
-                           // Used only in SSO login, user without tenant should not be able to sso login somewhere anyway
+                           // Used only in SSO login, user without tenant should not be able to sso login anyway
                            TenantId = tenantId
                            ExpiresAt = ssoExpiresAt
                            Email = data.Email
-                           Social = None }: SSO.Item)
+                           Social = social }: SSOKV)
                 // TODO : Handle case SSO enabled but sso token not found
                 | _ -> None
 
-            let evt =
-                UserLogInSuccessEvent(loginItem, ssoItem)
+            let successData = (loginItem, ssoItem)
 
-            return (result, evt)
+            env.Logger.LogInformation("${@successData} is ready", successData)
+
+            let env': OnSuccess.Env =
+                { Logger = env.Logger
+                  KeyValueStorage = env.KeyValueStorage }
+
+            do! onSuccess env' successData
+
+            env.Logger.LogInformation("Login user success")
+
+            return result
         }
 
 
     let logIn: LogIn =
-        fun sso env data ->
+        fun env sso data ->
+
+            env.Logger.LogInformation
+                ("LogIn with ${@data} and ${sso}",
+                 { data with
+                       Password = "***"
+                       Code_Challenge = "***" },
+                 sso.IsSome)
+
+            match validateData data with
+            | Some ex ->
+                env.Logger.LogWarning("Data validation failed {@ex}", ex)
+                raise ex
+            | None -> ()
+
             let dataContext = env.DataContext
+
             task {
 
                 let saltedPassword = env.PasswordSalter data.Password
@@ -171,7 +217,11 @@ module Authorize =
                           CodeChallenge = data.Code_Challenge
                           CodeChallengeMethod = data.Code_Challenge_Method }
 
-                    return! logInUser env sso loginData
+                    let! result = logInUser env sso loginData None
 
-                | None -> return! raise (unAuthorized "Wrong email or password")
+                    return result
+
+                | None ->
+                    env.Logger.LogWarning("Wrong email or password")
+                    return! raise (unAuthorized "Wrong email or password")
             }

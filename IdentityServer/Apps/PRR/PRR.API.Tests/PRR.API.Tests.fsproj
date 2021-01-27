@@ -67,15 +67,11 @@
         <Compile Include="Auth\LogInValidationTests.fs" />
         <Compile Include="Auth\SignInTests.fs" />
         <Compile Include="Auth\RefreshTokenTests.fs" />
-        <Compile Include="Auth\RefreshTokenPersistenceTests.fs" />
         <Compile Include="Auth\ResetPasswordTests.fs" />
         <Compile Include="Auth\SignUpPasswordValidationTests.fs" />
         <Compile Include="Auth\SocialTests.fs" />
         <Compile Include="Me\DomainsTests.fs" />
         <Compile Include="BadRequestValidatorsTest.fs" />
-        <Content Include="akka.hocon">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
         <Content Include="appsettings.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
@@ -83,8 +79,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Akka.Persistence.MongoDb" Version="1.4.5" />
-        <PackageReference Include="Akkling" Version="0.10.0" />
         <PackageReference Include="EntityFramework" Version="6.4.4" />
         <PackageReference Include="FsUnit" Version="3.9.0" />
         <PackageReference Include="Json.Net" Version="1.0.23" />

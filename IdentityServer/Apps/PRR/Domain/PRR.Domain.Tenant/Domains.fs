@@ -75,7 +75,7 @@ module Domains =
            (validateIntRange (1, 100000) "accessTokenExpiresIn" data.AccessTokenExpiresIn) |]
         |> Array.choose id
 
-    let create (env: Env) (authStringsProvider: AuthStringsProvider) (domainPoolId, dto: PostLike, userId) =
+    let create (env: Env) (authStringsProvider: AuthStringsGetter) (domainPoolId, dto: PostLike, userId) =
 
         let dataContext = env.DataContext
 

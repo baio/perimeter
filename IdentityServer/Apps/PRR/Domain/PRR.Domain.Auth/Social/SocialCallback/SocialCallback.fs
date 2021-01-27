@@ -1,20 +1,16 @@
 ﻿namespace PRR.Domain.Auth.Social.SocialCallback
 
 open Common.Domain.Models
-open System.Net.Http
 open System.Threading.Tasks
 open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open HttpFs.Client
-open Newtonsoft.Json
 open PRR.Data.DataContext
 open Common.Domain.Utils
 open PRR.Data.Entities
+open PRR.Domain.Auth.Common.KeyValueModels
 open PRR.Domain.Auth.LogIn.Authorize
-open PRR.Sys.Models.Social
-open Hopac
-open PRR.System.Models
 open System.Linq
+open Microsoft.Extensions.Logging
 
 [<AutoOpen>]
 module Social =
@@ -89,15 +85,20 @@ module Social =
 
     let private getSocialLoginItem env state =
         task {
-            match! env.GetSocialLoginItem state with
-            | Some item -> return item
-            | None -> return raise NotFound
+            match! env.KeyValueStorage.GetValue<SocialLoginKV> state None with
+            | Ok item ->
+                env.Logger.LogInformation("SocialLoginItem ${@item} found", item)
+                return item
+            | Error err ->
+                env.Logger.LogWarning("SocialLoginItem is not found for ${state} with ${@error}", state, err)
+                return raise (unAuthorized "state is not found")
         }
 
-    let socialCallback (env: Env, data: Data, ssoToken: string option) =
 
+    let socialCallback (env: Env) (data: Data) (ssoToken: string option) =
+        let logger = env.Logger
         task {
-
+            logger.LogInformation("SocialCallback starts ${@data}", data)
             // Get stored before social login item
             let! item = getSocialLoginItem env data.State
 
@@ -121,6 +122,8 @@ module Social =
             // create user and social identity (if still not created)
             let! userId = createUserAndSocialIdentity env.DataContext ident
 
+            logger.LogInformation("User with ${userId} and social identity created", userId)
+
             // login user as usual with data from social provider
             let loginData: LoginData =
                 { UserId = userId
@@ -133,35 +136,53 @@ module Social =
                   CodeChallenge = item.CodeChallenge
                   CodeChallengeMethod = item.CodeChallengeMethod }
 
+            logger.LogInformation("${@loginData} created", { loginData with CodeChallenge = "***" })
+
             let env': PRR.Domain.Auth.LogIn.Models.Env =
                 { DataContext = env.DataContext
                   CodeGenerator = env.CodeGenerator
                   PasswordSalter = env.PasswordSalter
                   CodeExpiresIn = env.CodeExpiresIn
-                  SSOExpiresIn = env.SSOExpiresIn }
-
-            let! (res, evt) = logInUser env' ssoToken loginData
-
-            // get redirect url
-            let redirectUrl = getSuccessRedirectUrl res
-
-            // prepare result
-            let (loginItem, ssoItem) =
-                match evt with
-                | UserLogInSuccessEvent (loginItem, ssoItem) -> (loginItem, ssoItem)
-                | _ -> raise Unexpected'
+                  SSOExpiresIn = env.SSOExpiresIn
+                  Logger = env.Logger
+                  KeyValueStorage = env.KeyValueStorage }
 
             let social: Social =
                 { Id = ident.SocialId
                   Type = item.Type }
 
+            let! res = logInUser env' ssoToken loginData (Some social)
+
+            logger.LogInformation("loginUser success ${@res}", res)
+
+            // get redirect url
+            let redirectUrl = getSuccessRedirectUrl res
+
+            logger.LogInformation("${@redirectUrl} is ready", redirectUrl)
+
+            (*
+            let loginItem = { loginItem with Social = Some social }
+
+            let ssoItem =
+                ssoItem
+                |> Option.map (fun ssoItem -> { ssoItem with Social = Some social })
+
+            let successData = loginItem, ssoItem
+
+            logger.LogInformation("${@successData} is ready", successData)
+
+            let env': PRR.Domain.Auth.LogIn.OnSuccess.Env =
+                { KeyValueStorage = env.KeyValueStorage
+                  Logger = env.Logger }
+
+            do! PRR.Domain.Auth.LogIn.OnSuccess.onSuccess env' (successData)
+            *)
+
             let result: Result =
                 { RedirectUrl = redirectUrl
-                  SocialLoginToken = item.Token
-                  LoginItem = { loginItem with Social = Some social }
-                  SSOItem =
-                      ssoItem
-                      |> Option.map (fun ssoItem -> { ssoItem with Social = Some social }) }
+                  SocialLoginToken = item.Token }
+
+            logger.LogInformation("${@result} is ready", { result with SocialLoginToken = "***" })
 
             return result
         }

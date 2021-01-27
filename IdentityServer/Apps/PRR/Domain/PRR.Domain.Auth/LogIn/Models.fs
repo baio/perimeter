@@ -1,9 +1,9 @@
 ﻿namespace PRR.Domain.Auth.LogIn
 
 open Common.Domain.Models
-
+open DataAvail.KeyValueStorage.Core
+open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
-open PRR.System.Models
 open System.Threading.Tasks
 
 [<AutoOpen>]
@@ -31,6 +31,8 @@ module Models =
           CodeGenerator: HashProvider
           PasswordSalter: StringSalter
           CodeExpiresIn: int<minutes>
-          SSOExpiresIn: int<minutes> }
+          SSOExpiresIn: int<minutes>
+          Logger: ILogger
+          KeyValueStorage: IKeyValueStorage }
 
-    type LogIn = string option -> Env -> Data -> Task<Result * Events>
+    type LogIn = Env -> string option -> Data -> Task<Result>

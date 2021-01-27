@@ -1,20 +1,22 @@
 ﻿namespace PRR.Domain.Auth.ResetPassword
 
 open Common.Domain.Models
+open DataAvail.KeyValueStorage.Core.KeyValueStorage
 open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
-open PRR.System.Models
 open System.Threading.Tasks
+open PRR.Domain.Auth.Common
 
 [<AutoOpen>]
 module Models =
 
-    type OnSuccess = string -> Task<unit>
-
     type Env =
         { DataContext: DbDataContext
           Logger: ILogger
-          OnSuccess: OnSuccess }
+          SendMail: SendMail
+          KeyValueStorage: IKeyValueStorage
+          TokenExpiresIn: int<minutes>
+          HashProvider: HashProvider }
 
     [<CLIMutable>]
     type Data = { Email: Email }
