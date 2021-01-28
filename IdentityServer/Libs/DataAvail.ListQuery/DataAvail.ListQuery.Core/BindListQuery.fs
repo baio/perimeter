@@ -1,17 +1,19 @@
-﻿namespace Common.Domain.Giraffe
+﻿namespace DataAvail.ListQuery.Core
 
 [<AutoOpen>]
 module BindListQuery =
 
-    open Common.Domain.Models
+    open DataAvail.Common
     open Microsoft.AspNetCore.Http
     open Microsoft.AspNetCore.Http.Extensions
-    open Giraffe
-    open FSharpx.Option
-    open Common.Utils
     open System.Text.RegularExpressions
 
     let getRequestUrl (ctx: HttpContext) = ctx.Request.GetEncodedUrl()
+
+    let tryGetQueryStringValue (ctx: HttpContext) (key: string) =
+        match ctx.Request.Query.TryGetValue key with
+        | true, value -> Some(value.ToString())
+        | _ -> None
 
     type SortBinder<'s> = string -> 's option
 
@@ -24,17 +26,21 @@ module BindListQuery =
         | false -> Asc
 
     let getSort<'s> (ctx: HttpContext) (sortBinder: SortBinder<'s>): Sort<'s> option =
-        maybe {
-            let! querySort = ctx.TryGetQueryStringValue "sort"
-            let! sortField = querySort |> trimStart "-" |> sortBinder
 
-            return { Field = sortField
-                     Order = getSortOrder querySort }
+        Option.maybe {
+            let! sort = tryGetQueryStringValue ctx "sort"
+
+            let! field = sort |> trimStart "-" |> sortBinder
+
+            let order = sort |> getSortOrder
+
+            return { Order = order; Field = field }
         }
+
 
     let getFilters<'f when 'f: comparison> (ctx: HttpContext) (filterBinder: FilterBinder<'f>): Map<'f, string> =
         let fqsRegex = Regex("filter\.(\w+)=([^&]*)")
-        let queryString = ctx.GetRequestUrl()
+        let queryString = getRequestUrl ctx
         fqsRegex.Matches(queryString)
         |> Seq.choose (fun mat ->
             let value = mat.Groups.[2].Value
@@ -60,7 +66,6 @@ module BindListQuery =
         let index = getPagerIndex ctx
         let size = getPagerSize ctx
         { Index = index; Size = size }
-
 
     let bindListQuery<'s, 'f when 'f: comparison> ((sortBinder, filterBinder): SortBinder<'s> * FilterBinder<'f>)
                                                   (ctx: HttpContext)

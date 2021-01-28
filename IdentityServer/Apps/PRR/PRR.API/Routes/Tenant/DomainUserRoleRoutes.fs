@@ -23,7 +23,7 @@ module private DomainUserRolesHandlers =
                   <!> bindValidateAnnotatedJsonAsync<PostLike>)
              <*> dataContext)
 
-    let bindListQuery =
+    let private bindListQuery =
         bindListQuery
             ((function
              | "email" -> Some SortField.UserEmail

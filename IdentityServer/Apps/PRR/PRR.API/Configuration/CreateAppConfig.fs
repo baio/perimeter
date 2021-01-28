@@ -55,6 +55,11 @@ module CreateAppConfig =
             { ConnectionString = configuration.GetValue("MongoKeyValueStorage:ConnectionString")
               DbName = configuration.GetValue("MongoKeyValueStorage:DbName")
               CollectionName = configuration.GetValue("MongoKeyValueStorage:CollectionName") }
+            
+        let viewStorageConfig: ViewStorageConfig =
+            { ConnectionString = configuration.GetValue("MongoViewStorage:ConnectionString")
+              DbName = configuration.GetValue("MongoViewStorage:DbName") }
+            
 
         let ignoreObserveApiPaths = [ "/metrics"; "/health" ]
 
@@ -67,6 +72,7 @@ module CreateAppConfig =
         { SendGridApiKey = sendGridApiKey
           MailSender = mailSenderConfig
           KeyValueStorage = keyValueStorageConfig
+          ViewStorage = viewStorageConfig
           HealthCheck =
               { PsqlConnectionString = psqlConnectionString
                 MongoConnectionString = mongoConnectionString

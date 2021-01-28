@@ -5,6 +5,8 @@ open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 open OpenTelemetry.Trace
+open OpenTelemetry.Contrib.Instrumentation.MassTransit
+open MongoDB.Driver.Core.Extensions.OpenTelemetry
 
 type TracingConfig =
     { ServiceName: string
@@ -24,7 +26,7 @@ module private Tracing =
             Seq.contains path ignorePaths |> not)
 
 
-    let configureTracing (env: TracingEnv) (services: IServiceCollection) =        
+    let configureTracing (env: TracingEnv) (services: IServiceCollection) =
 
 #if !TEST
         // Change default activity format to OpenTelemetry
@@ -38,6 +40,7 @@ module private Tracing =
                    c.AgentHost <- env.Config.AgentHost // "localhost"
                    c.AgentPort <- env.Config.AgentPort) // 6831)
                    .AddEntityFrameworkCoreInstrumentation(fun ops -> ops.SetTextCommandContent <- true)
+                   .AddMassTransitInstrumentation().AddMongoDBInstrumentation()
             |> ignore)
         |> ignore
 #endif

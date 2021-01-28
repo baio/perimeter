@@ -14,9 +14,8 @@ open MongoDB.Driver
 [<AutoOpen>]
 module Setup =
 
-    let private dropDatabase (connectionString: string) =
+    let private dropDatabase (connectionString: string) (dbName: string) =
         let client = MongoClient(connectionString)
-        let dbName = connectionString.Split("/") |> Seq.last
         client.DropDatabase(dbName)
 
     let recreateDataContext (context: WebHostBuilderContext) (services: IServiceCollection) =
@@ -24,9 +23,12 @@ module Setup =
             context.Configuration.GetConnectionString "PostgreSQL"
 
         PRR.Data.DataContextMigrations.DataContextHelpers.RecreateDataContext(psqlConnectionString)
-        dropDatabase (context.Configuration.GetConnectionString "MongoJournal")
-        dropDatabase (context.Configuration.GetConnectionString "MongoSnapshot")
-        dropDatabase (context.Configuration.GetConnectionString "MongoViews")
+        dropDatabase
+            (context.Configuration.GetValue "MongoKeyValueStorage:ConnectionString")
+            (context.Configuration.GetValue "MongoKeyValueStorage:DbName")
+        dropDatabase
+            (context.Configuration.GetValue "MongoViewStorage:ConnectionString")
+            (context.Configuration.GetValue "MongoViewStorage:DbName")
         ()
 
 

@@ -27,6 +27,7 @@ module ConfigureServices =
           DataContext: DataContextConfig
           HealthCheck: HealthCheckConfig
           KeyValueStorage: KeyValueStorageConfig
+          ViewStorage: ViewStorageConfig
           MailSender: MailSenderConfig
           SendGridApiKey: string }
 
@@ -47,5 +48,7 @@ module ConfigureServices =
         configureHealthCheck config.HealthCheck services
         configureKeyValueStorage config.KeyValueStorage services
         configureSendMail config.SendGridApiKey config.MailSender services
+        configureViewStorage config.ViewStorage services
+        configureServiceBus services
         services.AddSingleton<IConfigProvider>(ConfigProvider config)
         |> ignore

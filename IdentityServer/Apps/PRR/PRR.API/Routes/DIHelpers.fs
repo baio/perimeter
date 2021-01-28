@@ -1,6 +1,7 @@
 ﻿namespace PRR.API.Routes
 
 open DataAvail.KeyValueStorage.Core
+open MassTransit
 open PRR.API.Configuration.ConfigureServices
 open PRR.API.Infra.Mail.Models
 open PRR.Data.DataContext
@@ -29,8 +30,8 @@ module DIHelpers =
     let getAuthStringsGetter (ctx: HttpContext) =
         ctx.GetService<IAuthStringsProvider>().AuthStringsGetter
 
-    let getViewsReaderDb (ctx: HttpContext) =
-        ctx.GetService<IViewsReaderDbProvider>().ViewsReaderDb
+    let getViewsDb (ctx: HttpContext) =
+        ctx.GetService<IViewsDbProvider>().Db
 
     let getHttpRequestFun (ctx: HttpContext) =
         ctx.GetService<IHttpRequestFunProvider>().HttpRequestFun
@@ -41,3 +42,5 @@ module DIHelpers =
 
     let getSendMail (ctx: HttpContext) =
         ctx.GetService<ISendMailProvider>().GetSendMail()
+
+    let getPublishEndpoint (ctx: HttpContext) = ctx.GetService<IPublishEndpoint>()

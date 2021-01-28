@@ -16,5 +16,5 @@ module private KeyValueStorage =
         let kvStorage =
             KeyValueStorageMongo(config.ConnectionString, config.DbName, config.CollectionName)
 
-        kvStorage.CreateIndexes()
+        kvStorage.CreateIndexes() |> ignore
         services.AddSingleton<IKeyValueStorage>(kvStorage)

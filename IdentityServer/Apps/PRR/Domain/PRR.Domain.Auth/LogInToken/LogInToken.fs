@@ -12,6 +12,7 @@ open System.Text.RegularExpressions
 open PRR.Domain.Auth
 open PRR.Domain.Auth.Common
 open Microsoft.Extensions.Logging
+open PRR.Domain.Common
 
 [<AutoOpen>]
 module LogInToken =
@@ -106,19 +107,10 @@ module LogInToken =
                           IsPerimeterClient = isPerimeterClient
                           SocialType = socialType }
 
-                    
+
                     env.Logger.LogInformation("Success with refreshToken ${@refreshToken}", refreshTokenItem)
 
-                    let! _ = env.KeyValueStorage.RemoveValue<LogInKV> item.Code None
-
-                    let! _ =
-                        env.KeyValueStorage.AddValue
-                            refreshTokenItem.Token
-                            refreshTokenItem
-                            (Some
-                                { PartitionName = null
-                                  ExpiresAt = (Some item.ExpiresAt)
-                                  Tag = (item.UserId.ToString()) })
+                    do! loginTokenSuccess env item refreshTokenItem isPerimeterClient
 
                     return result
                 | None ->

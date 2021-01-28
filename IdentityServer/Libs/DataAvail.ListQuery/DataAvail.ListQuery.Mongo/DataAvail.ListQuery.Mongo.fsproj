@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="HandleFilter.fs" />
+        <Compile Include="HandleSort.fs" />
+        <Compile Include="HandlePagination.fs" />
+        <Compile Include="HandleListQuery.fs" />
+        <Compile Include="ExecuteListQuery.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\FSharp\FSharp.MongoDB.Driver\FSharp.MongoDB.Driver.fsproj" />
+      <ProjectReference Include="..\DataAvail.ListQuery.Core\DataAvail.ListQuery.Core.fsproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FSharpx.Extras" Version="2.5.0" />
+    </ItemGroup>
+
+</Project>

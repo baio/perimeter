@@ -17,12 +17,19 @@
       <ProjectReference Include="..\..\..\..\Common\Common.Utils\Common.Utils.fsproj" />
       <ProjectReference Include="..\..\..\..\Common\Domain\Common.Domain.Models\Common.Domain.Models.fsproj" />
       <ProjectReference Include="..\..\..\..\Common\Domain\Common.Domain.Utils\Common.Domain.Utils.fsproj" />
+      <ProjectReference Include="..\..\..\..\FSharp\FSharp.MongoDB.Driver\FSharp.MongoDB.Driver.fsproj" />
+      <ProjectReference Include="..\..\..\..\Libs\DataAvail.ListQuery\DataAvail.ListQuery.Mongo\DataAvail.ListQuery.Mongo.fsproj" />
       <ProjectReference Include="..\..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
       <ProjectReference Include="..\..\Data\PRR.Data.Entities\PRR.Data.Entities.csproj" />
+      <ProjectReference Include="..\PRR.Domain.Common\PRR.Domain.Common.fsproj" />
     </ItemGroup>
 
     <ItemGroup>
       <Compile Include="Models.fs" />
+      <Compile Include="Views\LogInView\Constants.fs" />
+      <Compile Include="Views\LogInView\Init.fs" />
+      <Compile Include="Views\LogInView\Insert.fs" />
+      <Compile Include="Views\LogInView\GetList.fs" />
       <Compile Include="Helpers.fs" />
       <Compile Include="DomainPools.fs" />
       <Compile Include="Domains.fs" />

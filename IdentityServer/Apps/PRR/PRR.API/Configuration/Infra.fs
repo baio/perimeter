@@ -18,9 +18,6 @@ module private Infra =
         let hashProvider = HashProvider sha256
         let sha256Provider = SHA256Provider sha256
 
-        let viewsReaderDbProvider =
-            ViewsReaderDbProvider config.MongoViewsConnectionString
-
         services.AddSingleton<IPermissionsFromRoles, PermissionsFromRoles>()
         |> ignore
         services.AddSingleton<IHashProvider>(hashProvider)
@@ -30,8 +27,6 @@ module private Infra =
         services.AddSingleton<IPasswordSaltProvider>(PasswordSaltProvider config.PasswordSecret)
         |> ignore
         services.AddSingleton<IAuthStringsProvider, AuthStringsProvider>()
-        |> ignore
-        services.AddSingleton<IViewsReaderDbProvider>(viewsReaderDbProvider)
         |> ignore
         services.AddSingleton<IHttpRequestFunProvider>(HttpRequestFunProvider httpFsRequestFun)
         |> ignore
