@@ -6,6 +6,7 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 open OpenTelemetry.Trace
 open OpenTelemetry.Contrib.Instrumentation.MassTransit
+open MongoDB.Driver.Core.Extensions.OpenTelemetry
 
 type TracingConfig =
     { ServiceName: string
@@ -39,7 +40,7 @@ module private Tracing =
                    c.AgentHost <- env.Config.AgentHost // "localhost"
                    c.AgentPort <- env.Config.AgentPort) // 6831)
                    .AddEntityFrameworkCoreInstrumentation(fun ops -> ops.SetTextCommandContent <- true)
-                   .AddMassTransitInstrumentation()
+                   .AddMassTransitInstrumentation().AddMongoDBInstrumentation()
             |> ignore)
         |> ignore
 #endif
