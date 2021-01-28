@@ -5,6 +5,7 @@ open Common.Domain.Models
 
 module Events =
 
+    [<CLIMutable>]
     type LogIn =
         { Social: Social option
           DateTime: DateTime

@@ -94,7 +94,6 @@ module MultiTenantAdminTests =
                 let u2 = users.[1]
                 let! token = createUserNoTenant testContext.Value u2.Data
                 token |> should be (not' Empty)
-                printfn "!!! %s" token
                 users.[1] <- {| u2 with Token = Some token |}
             }
 

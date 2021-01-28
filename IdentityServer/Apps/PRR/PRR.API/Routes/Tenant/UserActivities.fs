@@ -1,22 +1,16 @@
 ﻿namespace PRR.API.Routes.Tenant
 
-open Common.Domain.Giraffe
 open Common.Domain.Models
-open Common.Utils
-open Common.Utils.ReaderTask
 open Giraffe
 open PRR.API.Routes
 open PRR.Domain.Auth.GetAudience
+open PRR.Domain.Tenant.Views.LogInView
+open FSharp.Control.Tasks.V2.ContextInsensitive
+open DataAvail.ListQuery.Core
 
-// open PRR.System.Views.LogInView
+module private UserActivitiesRoutesHandlers =
 
-
-module private UserActivitiesRoutesHandlers = ()
-
-    // TODO : Restore
-    
-    (*
-    let bindListQuery =
+    let private bindListQuery =
         bindListQuery
             ((function
              | "dateTime" -> Some SortField.DateTime
@@ -26,13 +20,14 @@ module private UserActivitiesRoutesHandlers = ()
              | "appIdentifier" -> Some FilterField.AppIdentifier
              | "dateTime" -> Some FilterField.DateTime
              | _ -> None))
-        |> ofReader
 
-    let getLogIns (isManagement: bool) (domainId: DomainId) =
-        wrap
-            (getList
-             <!> (ofReader getViewsReaderDb)
-             <*> (triplet domainId isManagement <!> bindListQuery))
+    let getLogIns (isManagement: bool) (domainId: DomainId) next ctx =
+        task {
+            let db = getViewsDb ctx
+            let lq = bindListQuery ctx
+            let! result = getLogInList db (domainId, isManagement, lq)
+            return! json result next ctx
+        }
 
 open UserActivitiesRoutesHandlers
 
@@ -41,12 +36,11 @@ module UsersActivities =
     let createRoutes () =
         choose [ GET
                  >=> routef "/tenant/domains/%i/user-activities" (fun domainId ->
-                         permissionGuard MANAGE_DOMAIN
+                         Common.Domain.Giraffe.Auth.permissionGuard MANAGE_DOMAIN
                          >=> wrapAudienceGuard fromDomainId domainId
                          >=> getLogIns false domainId)
                  GET
                  >=> routef "/tenant/domains/%i/admin-activities" (fun domainId ->
-                         permissionGuard MANAGE_DOMAIN
+                         Common.Domain.Giraffe.Auth.permissionGuard MANAGE_DOMAIN
                          >=> wrapAudienceGuard fromDomainId domainId
                          >=> getLogIns true domainId) ]
-*)

@@ -22,7 +22,7 @@ module private GetLogInEvent =
                 }
                 |> toSingleExnAsync (Unexpected')
 
-            if clientId = PERIMETER_CLIENT_ID then
+            if isPerimeterClient then
                 let result: Events.LogIn =
                     { DomainId = PERIMETER_DOMAIN_ID
                       Social = social

@@ -1,13 +1,15 @@
 ﻿namespace PRR.Domain.Tenant.Views.LogInView
 
+open System.Threading.Tasks
 open Common.Domain.Models
 open MongoDB.Driver
-open FSharp.Mongo.ListQuery
 open FSharp.MongoDB.Driver
-open MongoDB.Driver
 open PRR.Domain.Common.Events
+open DataAvail.ListQuery.Core
+open DataAvail.ListQuery.Mongo
 
-module GetList = 
+[<AutoOpen>]
+module GetList =
 
     type SortField = DateTime
 
@@ -19,7 +21,7 @@ module GetList =
     type ListQuery = ListQuery<SortField, FilterField>
 
     [<CLIMutable>]
-    type ListResponse = ListResponse<LogIn>
+    type ListResponse = ListQueryResult<LogIn>
 
     type GetList = IMongoDatabase -> (DomainId * bool * ListQuery) -> Task<ListResponse>
 
@@ -35,12 +37,13 @@ module GetList =
 
     let getSortFieldExpr =
         function
-        | SortField.DateTime -> SortDate <@ fun (doc: Doc) -> doc.dateTime @>
+        | SortField.DateTime -> SortDate <@ fun (doc: LogIn) -> doc.DateTime @>
 
-    let getList: GetList =
+    let getLogInList: GetList =
         fun db (domainId, isManagement, prms) ->
             let col =
                 db.GetCollection<LogIn>(LOGIN_VIEW_COLLECTION_NAME)
+
             handleListQuery col getFilterFieldExpr getSortFieldExpr prms
             |> andWhere
                 <@ fun doc ->

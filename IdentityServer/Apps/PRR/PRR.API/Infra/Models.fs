@@ -22,8 +22,8 @@ module Models =
     type IAuthStringsProvider =
         abstract AuthStringsGetter: AuthStringsGetter
 
-    type IViewsReaderDbProvider =
-        abstract ViewsReaderDb: IMongoDatabase
+    type IViewsDbProvider =
+        abstract Db: IMongoDatabase
 
 
     type IHttpRequestFunProvider =

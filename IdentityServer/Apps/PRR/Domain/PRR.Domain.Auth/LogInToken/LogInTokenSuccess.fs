@@ -38,7 +38,7 @@ module private LogInTokenSuccess =
                 env.Logger.LogInformation
                     ("Add refresh ${token} token to kv storage gives error ${@err}", refreshTokenItem.Token, err)
 
-            let event =
+            let! event =
                 getLoginEvent env.DataContext loginItem.ClientId loginItem.UserId loginItem.Social isPerimeterClient
 
             do! env.PublishEndpoint.Publish(event)

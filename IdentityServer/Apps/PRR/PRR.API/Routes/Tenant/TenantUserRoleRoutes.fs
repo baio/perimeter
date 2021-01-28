@@ -24,7 +24,7 @@ module private TenantUserRolesHandlers =
              <!> (doublet tenantId <!> bindJsonAsync<PostLike>)
              <*> dataContext)
 
-    let bindListQuery =
+    let private bindListQuery =
         bindListQuery
             ((function
              | "email" -> Some SortField.UserEmail
