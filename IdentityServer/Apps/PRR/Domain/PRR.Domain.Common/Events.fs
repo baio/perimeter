@@ -9,4 +9,8 @@ module Events =
         { Social: Social option
           DateTime: DateTime
           UserId: int
-          ClientId: string }
+          ClientId: string
+          DomainId: int
+          IsManagementClient: bool
+          AppIdentifier: string
+          UserEmail: string }

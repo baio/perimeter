@@ -17,8 +17,10 @@
       <ProjectReference Include="..\..\..\..\Common\Common.Utils\Common.Utils.fsproj" />
       <ProjectReference Include="..\..\..\..\Common\Domain\Common.Domain.Models\Common.Domain.Models.fsproj" />
       <ProjectReference Include="..\..\..\..\Common\Domain\Common.Domain.Utils\Common.Domain.Utils.fsproj" />
+      <ProjectReference Include="..\..\..\..\FSharp\FSharp.MongoDB.Driver\FSharp.MongoDB.Driver.fsproj" />
       <ProjectReference Include="..\..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
       <ProjectReference Include="..\..\Data\PRR.Data.Entities\PRR.Data.Entities.csproj" />
+      <ProjectReference Include="..\PRR.Domain.Common\PRR.Domain.Common.fsproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -37,6 +39,10 @@
       <Compile Include="UserDomains.fs" />
       <Compile Include="Tenants.fs" />
       <Compile Include="CreateUserTenant.fs" />
+      <Compile Include="Views\LogInView\Constants.fs" />
+      <Compile Include="Views\LogInView\Init.fs" />
+      <Compile Include="Views\LogInView\Insert.fs" />
+      <Compile Include="Views\LogInView\GetList.fs" />
     </ItemGroup>
 
     <ItemGroup>

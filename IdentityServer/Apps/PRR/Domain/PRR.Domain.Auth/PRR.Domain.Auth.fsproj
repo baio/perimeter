@@ -34,6 +34,8 @@
         <Compile Include="LogInToken\CreateClaims.fs" />
         <Compile Include="LogInToken\CreateToken.fs" />
         <Compile Include="LogInToken\LogInTokenUser.fs" />
+        <Compile Include="LogInToken\GetLogInEvent.fs" />
+        <Compile Include="LogInToken\LogInTokenSuccess.fs" />
         <Compile Include="LogInToken\LogInToken.fs" />
         <Compile Include="LogInToken\LogInEmail.fs" />
         <Compile Include="validatePassword.fs" />

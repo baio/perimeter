@@ -110,24 +110,7 @@ module LogInToken =
 
                     env.Logger.LogInformation("Success with refreshToken ${@refreshToken}", refreshTokenItem)
 
-                    let! _ = env.KeyValueStorage.RemoveValue<LogInKV> item.Code None
-
-                    let! _ =
-                        env.KeyValueStorage.AddValue
-                            refreshTokenItem.Token
-                            refreshTokenItem
-                            (Some
-                                { PartitionName = null
-                                  ExpiresAt = (Some item.ExpiresAt)
-                                  Tag = (item.UserId.ToString()) })
-
-                    let event: Events.LogIn =
-                        { Social = item.Social
-                          DateTime = DateTime.UtcNow
-                          UserId = item.UserId
-                          ClientId = item.ClientId }
-
-                    do! env.PublishEndpoint.Publish(event)
+                    do! loginTokenSuccess env item refreshTokenItem isPerimeterClient
 
                     return result
                 | None ->
