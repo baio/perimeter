@@ -26,16 +26,18 @@ type ReinitData = { LoginAsDomain: bool }
 
 module E2E =
 
-    let private dropDatabase (connectionString: string) =
+    let private dropDatabase (connectionString: string) (dbName: string) =
         let client = MongoClient(connectionString)
-        let dbName = connectionString.Split("/") |> Seq.last
         client.DropDatabase(dbName)
 
     let private recreateMongoDb (ctx: HttpContext) =
         let config = ctx.GetService<IConfiguration>()
-        dropDatabase (config.GetConnectionString "MongoJournal")
-        dropDatabase (config.GetConnectionString "MongoSnapshot")
-        dropDatabase (config.GetConnectionString "MongoViews")
+        dropDatabase
+            (config.GetValue "MongoKeyValueStorage:ConnectionString")
+            (config.GetValue "MongoKeyValueStorage:DbName")
+        dropDatabase
+            (config.GetValue "MongoViewStorage:ConnectionString")
+            (config.GetValue "MongoViewStorage:DbName")
 
     let private recreatedDataContextDb ctx =
         let dataContext = getDataContext ctx
