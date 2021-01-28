@@ -2,6 +2,7 @@
 
 open System.Threading.Tasks
 open Common.Domain.Models
+open MongoDB.Bson
 open MongoDB.Driver
 open FSharp.MongoDB.Driver
 open PRR.Domain.Common.Events
@@ -20,6 +21,19 @@ module GetList =
 
     type ListQuery = ListQuery<SortField, FilterField>
 
+    [<CLIMutable>]
+    type LogIn =
+        {
+          Id: BsonObjectId
+          Social: Social option
+          DateTime: System.DateTime
+          UserId: int
+          ClientId: string
+          DomainId: int
+          IsManagementClient: bool
+          AppIdentifier: string
+          UserEmail: string }
+    
     [<CLIMutable>]
     type ListResponse = ListQueryResult<LogIn>
 

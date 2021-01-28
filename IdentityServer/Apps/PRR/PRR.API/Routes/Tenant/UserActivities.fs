@@ -7,6 +7,7 @@ open PRR.Domain.Auth.GetAudience
 open PRR.Domain.Tenant.Views.LogInView
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open DataAvail.ListQuery.Core
+open Microsoft.Extensions.Logging
 
 module private UserActivitiesRoutesHandlers =
 
@@ -22,10 +23,14 @@ module private UserActivitiesRoutesHandlers =
              | _ -> None))
 
     let getLogIns (isManagement: bool) (domainId: DomainId) next ctx =
+        let logger = getLogger ctx
+        logger.LogInformation("getLogIns ${isManagement} ${domainId}", isManagement, domainId)
         task {
             let db = getViewsDb ctx
             let lq = bindListQuery ctx
+            logger.LogInformation("ListQuery ${@listQuery}", lq)
             let! result = getLogInList db (domainId, isManagement, lq)
+            logger.LogInformation("ListQuery success")
             return! json result next ctx
         }
 

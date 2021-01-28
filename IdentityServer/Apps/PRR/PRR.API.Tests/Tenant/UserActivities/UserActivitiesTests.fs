@@ -2,20 +2,20 @@
 
 open System.Threading
 open Common.Test.Utils
+open DataAvail.ListQuery.Core.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.SignUp
 //open PRR.System.Views.LogInView
+open PRR.Domain.Common.Events
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
 //open PRR.System.Views.LogInView
 
-// TODO : Restore !!! via bus
-module CRUD = ()
+module CRUD = 
 
-    (*
     let userData: Data =
         { FirstName = "First"
           LastName = "Last"
@@ -49,18 +49,17 @@ module CRUD = ()
         do setConsoleOutput output
         interface IClassFixture<TestFixture>
 
-        //[<Fact>]
+        [<Fact>]
         [<Priority(-1)>]
         member __.``0 BEFORE ALL``() =
             task {
                 testContext <- Some(createUserTestContext testFixture)
                 let! userToken' = createUser' true testContext.Value userData
                 userToken <- userToken'
-                printf "%s" userToken
-                Thread.Sleep(100)
+                Thread.Sleep(100)               
             }
 
-        //[<Fact>]
+        [<Fact>]
         [<Priority(1)>]
         member __.``A Get user activities must be success``() =
             task {
@@ -74,14 +73,14 @@ module CRUD = ()
 
                 do! ensureSuccessAsync result
 
-                let! resultDto = readAsJsonAsync<ListResponse> result
+                let! resultDto = readAsJsonAsync<ListQueryResult<LogIn>> result
 
                 resultDto.Items |> should haveCount 1
 
                 ()
             }
 
-        //[<Fact>]
+        [<Fact>]
         [<Priority(1)>]
         member __.``B Get user activities with filter give correct result``() =
             task {
@@ -95,7 +94,7 @@ module CRUD = ()
 
                 do! ensureSuccessAsync result
 
-                let! resultDto = readAsJsonAsync<ListResponse> result
+                let! resultDto = readAsJsonAsync<ListQueryResult<LogIn>> result
 
                 resultDto.Items |> should haveCount 0
 
@@ -103,9 +102,9 @@ module CRUD = ()
             }
 
 
-        //[<Fact>]
+        [<Fact>]
         [<Priority(1)>]
-        member __.``С Get user activities with existent filter give correct result``() =
+        member __.``C Get user activities with existent filter give correct result``() =
             task {
 
                 let tenant = testContext.Value.GetTenant()
@@ -117,10 +116,9 @@ module CRUD = ()
 
                 do! ensureSuccessAsync result
 
-                let! resultDto = readAsJsonAsync<ListResponse> result
+                let! resultDto = readAsJsonAsync<ListQueryResult<LogIn>> result
 
                 resultDto.Items |> should haveCount 1
 
                 ()
             }
-            *)

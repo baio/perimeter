@@ -16,4 +16,4 @@ module Tenant =
                  DomainPool.createRoutes ()
                  TenantUserRole.createRoutes ()
                  DomainUserRole.createRoutes ()                 
-                 (*UsersActivities.createRoutes ()*) ]
+                 UsersActivities.createRoutes () ]
