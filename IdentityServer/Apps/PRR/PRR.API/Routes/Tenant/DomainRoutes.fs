@@ -1,23 +1,23 @@
 ﻿namespace PRR.API.Routes.Tenant
 
-open Common.Domain.Giraffe
 open Common.Domain.Models
-open Common.Utils
-open Common.Utils.ReaderTask
-open FSharp.Control.Tasks.V2.ContextInsensitive
 open Giraffe
-open Microsoft.AspNetCore.Http
 open PRR.API.Routes
+open PRR.Domain.Auth
 open PRR.Domain.Auth.GetAudience
-open PRR.Domain.Tenant.Models
 open PRR.Domain.Tenant.Domains
+open PRR.Domain.Tenant.Models
+open DataAvail.ListQuery.Core
+open DataAvail.Giraffe.Common
+open DataAvail.Common
+open DataAvail.Common.ReaderTask
 
 [<AutoOpen>]
 module private DomainHandlers =
 
     let private dataContext = getDataContext |> ofReader
 
-    let getEnv (ctx: HttpContext) =
+    let getEnv ctx =
         let config = getConfig ctx
         let authStringsProvider = getAuthStringsGetter ctx
         let dataContext = getDataContext ctx
@@ -48,8 +48,8 @@ module private DomainHandlers =
 
     let getOne (id: DomainId) = wrap (getOne id <!> dataContext)
 
-    // restore !!!
-    (*
+// restore !!!
+(*
     open PRR.System.Views.LogInView
 
     let bindListQuery =
@@ -69,7 +69,7 @@ module private DomainHandlers =
             (getList
              <!> (ofReader getViewsReaderDb)
              <*> (triplet domainId isManagement <!> bindListQuery))
-   *)             
+   *)
 
 module Domain =
 
@@ -84,8 +84,4 @@ module Domain =
                          >=> wrapAudienceGuard fromDomainId domainId
                          >=> choose [ PUT >=> updateHandler domainId
                                       DELETE >=> removeHandler domainId
-                                      GET >=> getOne domainId
-                              (*
-                              GET
-                              >=> route "user-activities"
-                              >=> (getLogIns false domainId)*) ]) ])
+                                      GET >=> getOne domainId ]) ])
