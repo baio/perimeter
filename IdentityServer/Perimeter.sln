@@ -9,11 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PRR.Data.DataContext", "App
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PRR.Data.DataContextMigrations", "Apps\PRR\Data\PRR.Data.DataContextMigrations\PRR.Data.DataContextMigrations.csproj", "{CEA75C4C-50BA-4815-A0A8-F6086F539CA3}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "DataAvail.Test.Common", "Common\DataAvail.Test.Common\DataAvail.Test.Common.fsproj", "{8D69BEA0-F3A9-45C4-8E00-6F25433B9ACD}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "DataAvail.Test.Common", "Libs\DataAvail.Test.Common\DataAvail.Test.Common.fsproj", "{8D69BEA0-F3A9-45C4-8E00-6F25433B9ACD}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PRR.Domain.Auth", "Apps\PRR\Domain\PRR.Domain.Auth\PRR.Domain.Auth.fsproj", "{4A1ABF9E-3395-4980-98B2-6E23E2B53046}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PRR.Domain.Models", "Common\Domain\PRR.Domain.Models\PRR.Domain.Models.fsproj", "{68FB0CFF-F3AB-4AF5-BF5D-330C704AF9A6}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PRR.Domain.Models", "Apps\PRR\Domain\PRR.Domain.Models\PRR.Domain.Models.fsproj", "{68FB0CFF-F3AB-4AF5-BF5D-330C704AF9A6}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PRR.API", "Apps\PRR\PRR.API\PRR.API.fsproj", "{C9EE0F56-675E-4611-84D7-0927EC6D50F7}"
 EndProject
@@ -26,7 +26,7 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PRR.API.Tests", "Apps\PRR\P
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PRR.Domain.Tenant", "Apps\PRR\Domain\PRR.Domain.Tenant\PRR.Domain.Tenant.fsproj", "{D8987677-30CD-4CAB-9CC2-7F0306CB2237}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.MongoDB.Driver", "FSharp\FSharp.MongoDB.Driver\FSharp.MongoDB.Driver.fsproj", "{6295F578-1EA8-45E4-8588-39CF9F24E016}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharp.MongoDB.Driver", "Libs\FSharp.MongoDB.Driver\FSharp.MongoDB.Driver.fsproj", "{6295F578-1EA8-45E4-8588-39CF9F24E016}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "DataAvail.KeyValueStorage.Mongo", "Libs\DataAvail.KeyValueStorage.Mongo\DataAvail.KeyValueStorage.Mongo.fsproj", "{EEE1B0C4-DA15-433D-9A85-8DE74E77F174}"
 EndProject

@@ -14,15 +14,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\..\Common\Domain\PRR.Domain.Models\PRR.Domain.Models.fsproj" />
-      <ProjectReference Include="..\..\..\..\FSharp\FSharp.MongoDB.Driver\FSharp.MongoDB.Driver.fsproj" />
       <ProjectReference Include="..\..\..\..\Libs\DataAvail.EntityFramework.Common\DataAvail.EntityFramework.Common.fsproj" />
       <ProjectReference Include="..\..\..\..\Libs\DataAvail.Http.Exceptions\DataAvail.Http.Exceptions.fsproj" />
       <ProjectReference Include="..\..\..\..\Libs\DataAvail.ListQuery\DataAvail.ListQuery.EntityFramework\DataAvail.ListQuery.EntityFramework.fsproj" />
       <ProjectReference Include="..\..\..\..\Libs\DataAvail.ListQuery\DataAvail.ListQuery.Mongo\DataAvail.ListQuery.Mongo.fsproj" />
+      <ProjectReference Include="..\..\..\..\Libs\FSharp.MongoDB.Driver\FSharp.MongoDB.Driver.fsproj" />
       <ProjectReference Include="..\..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
       <ProjectReference Include="..\..\Data\PRR.Data.Entities\PRR.Data.Entities.csproj" />
       <ProjectReference Include="..\PRR.Domain.Common\PRR.Domain.Common.fsproj" />
+      <ProjectReference Include="..\PRR.Domain.Models\PRR.Domain.Models.fsproj" />
     </ItemGroup>
 
     <ItemGroup>

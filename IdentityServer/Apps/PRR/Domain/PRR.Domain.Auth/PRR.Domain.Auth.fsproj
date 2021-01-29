@@ -74,13 +74,13 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\..\Common\Domain\PRR.Domain.Models\PRR.Domain.Models.fsproj" />
         <ProjectReference Include="..\..\..\..\Libs\DataAvail.EntityFramework.Common\DataAvail.EntityFramework.Common.fsproj" />
         <ProjectReference Include="..\..\..\..\Libs\DataAvail.Http.Exceptions\DataAvail.Http.Exceptions.fsproj" />
         <ProjectReference Include="..\..\..\..\Libs\DataAvail.HttpRequest\DataAvail.HttpRequest.Core\DataAvail.HttpRequest.Core.fsproj" />
         <ProjectReference Include="..\..\..\..\Libs\DataAvail.KeyValueStorage.Mongo\DataAvail.KeyValueStorage.Mongo.fsproj" />
         <ProjectReference Include="..\..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
         <ProjectReference Include="..\PRR.Domain.Common\PRR.Domain.Common.fsproj" />
+        <ProjectReference Include="..\PRR.Domain.Models\PRR.Domain.Models.fsproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -11,7 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\..\Common\Domain\PRR.Domain.Models\PRR.Domain.Models.fsproj" />
+      <ProjectReference Include="..\PRR.Domain.Models\PRR.Domain.Models.fsproj" />
     </ItemGroup>
 
 </Project>

@@ -95,7 +95,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\Common\DataAvail.Test.Common\DataAvail.Test.Common.fsproj" />
+      <ProjectReference Include="..\..\..\Libs\DataAvail.Test.Common\DataAvail.Test.Common.fsproj" />
       <ProjectReference Include="..\Data\PRR.Data.DataContextMigrations\PRR.Data.DataContextMigrations.csproj" />
       <ProjectReference Include="..\PRR.API\PRR.API.fsproj" />
     </ItemGroup>
