@@ -1,7 +1,6 @@
 ﻿namespace PRR.Domain.Auth.SignUpConfirm
 
 open Common.Domain.Models
-open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Models
 open PRR.Data.Entities
@@ -9,6 +8,7 @@ open PRR.Domain.Auth.Common
 open System
 open Microsoft.Extensions.Logging
 open DataAvail.EntityFramework.Common
+open DataAvail.Http.Exceptions
 
 [<AutoOpen>]
 module SignUpConfirm =

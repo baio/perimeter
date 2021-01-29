@@ -1,13 +1,11 @@
 ﻿namespace PRR.API.Routes.Tenant
 
-open Common.Domain.Giraffe
-open Common.Utils
-open Common.Utils.ReaderTask
 open Giraffe
 open PRR.API.Routes
-open PRR.Data.DataContext
-open PRR.Domain.Auth
 open PRR.Domain.Tenant.SocialConnections
+open DataAvail.Giraffe.Common
+open DataAvail.Common
+open DataAvail.Common.ReaderTask
 
 [<AutoOpen>]
 module private SocialConnectionHandlers =

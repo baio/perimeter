@@ -4,7 +4,6 @@ open System.Security.Cryptography
 open System.Threading.Tasks
 open Common.Domain.Models
 
-open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Microsoft.Extensions.Logging
 open Microsoft.IdentityModel.Tokens
@@ -16,6 +15,7 @@ open PRR.Domain.Auth.LogIn.UserHelpers
 open PRR.Domain.Auth.LogInToken
 open DataAvail.EntityFramework.Common
 open PRR.Domain.Auth.Common
+open DataAvail.Http.Exceptions
 
 type SignInUserEnv =
     { DataContext: DbDataContext

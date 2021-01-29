@@ -1,7 +1,6 @@
 ﻿namespace PRR.Domain.Auth.Common
 
-open Common.Domain.Models.BadRequestErrors
-open Common.Domain.Models.Exceptions
+open DataAvail.Http.Exceptions
 
 [<AutoOpen>]
 module MapBadRequest =

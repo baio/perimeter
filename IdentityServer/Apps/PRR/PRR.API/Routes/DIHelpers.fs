@@ -7,7 +7,7 @@ open PRR.API.Infra.Mail.Models
 open PRR.Data.DataContext
 open Giraffe
 open Microsoft.AspNetCore.Http
-open Common.Utils.ReaderTask
+open DataAvail.Common.ReaderTask
 open PRR.API.Infra.Models
 
 [<AutoOpen>]

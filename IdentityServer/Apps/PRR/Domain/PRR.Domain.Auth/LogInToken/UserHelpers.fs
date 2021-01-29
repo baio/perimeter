@@ -1,10 +1,9 @@
 ﻿namespace PRR.Domain.Auth.LogInToken
 
 open Common.Domain.Models
-open Common.Domain.Utils
-open Common.Utils
+open DataAvail.Common
+open DataAvail.Http.Exceptions
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open FSharpx
 open Microsoft.FSharp.Linq
 open Models
 open PRR.Data.DataContext

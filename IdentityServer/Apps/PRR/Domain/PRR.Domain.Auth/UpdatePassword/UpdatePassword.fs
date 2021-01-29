@@ -1,11 +1,11 @@
 ﻿namespace PRR.Domain.Auth.UpdatePassword
 
 open Common.Domain.Models
-open Common.Domain.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
 open PRR.Domain.Auth.Utils
 open DataAvail.EntityFramework.Common
+open DataAvail.Http.Exceptions
 
 [<AutoOpen>]
 module UpdatePassword =

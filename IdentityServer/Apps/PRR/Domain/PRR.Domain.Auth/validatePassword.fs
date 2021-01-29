@@ -1,7 +1,6 @@
 ﻿namespace PRR.Domain.Auth.Utils
 
-open Common.Domain.Models
-open Common.Domain.Utils
+open DataAvail.Http.Exceptions
 
 [<AutoOpen>]
 module Utils =

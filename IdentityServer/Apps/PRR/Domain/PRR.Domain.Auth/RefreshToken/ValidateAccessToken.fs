@@ -1,7 +1,6 @@
 ﻿namespace PRR.Domain.Auth.RefreshToken
 
 open Common.Domain.Models
-open Common.Utils
 open Microsoft.IdentityModel.Tokens
 open System
 open System.IdentityModel.Tokens.Jwt
@@ -34,7 +33,8 @@ module internal ValidateAccessToken =
 
     let private principalClaims (principal: ClaimsPrincipal) = principal.Claims
 
-    open FSharpx.Option
+    open DataAvail.Common
+    open DataAvail.Common.Option
 
     let getClaim' f claimType (claims: Claim seq) =
         claims

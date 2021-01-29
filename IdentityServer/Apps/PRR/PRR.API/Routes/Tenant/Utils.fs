@@ -1,5 +1,5 @@
 ﻿namespace PRR.API.Routes.Tenant
-open Common.Domain.Giraffe
+open DataAvail.Giraffe.Common
 open PRR.API.Routes.DIHelpers
 
 [<AutoOpen>]

@@ -2,9 +2,7 @@
 
 open System
 open System.Threading.Tasks
-open Common.Domain.Utils
 open Common.Domain.Models
-open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Helpers
 open PRR.Data.DataContext
@@ -14,7 +12,7 @@ open PRR.Data.Entities
 open PRR.Data.DataContext
 open DataAvail.EntityFramework.Common
 open DataAvail.EntityFramework.Common.CRUD
-
+open DataAvail.Http.Exceptions
 open PRR.Data.DataContext.Seed
 open PRR.Data.Entities
 

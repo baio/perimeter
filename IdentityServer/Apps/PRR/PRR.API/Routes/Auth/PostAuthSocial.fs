@@ -3,7 +3,7 @@
 open Microsoft.AspNetCore.Http
 open Giraffe
 open PRR.API.Routes
-open Common.Domain.Giraffe
+open DataAvail.Giraffe.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Domain.Auth.Social.SocialAuth
 open PRR.API.Routes.Auth.Helpers

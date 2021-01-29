@@ -1,8 +1,6 @@
 ﻿namespace PRR.Domain.Tenant
 
 open Common.Domain.Models
-open Common.Domain.Models.Exceptions
-open Common.Domain.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
 open PRR.Data.Entities

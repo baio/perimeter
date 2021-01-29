@@ -1,8 +1,7 @@
 ﻿namespace PRR.Domain.Tenant
 
 open Common.Domain.Models
-open Common.Domain.Utils
-open Common.Utils
+open DataAvail.Common
 open PRR.Data.DataContext
 open PRR.Data.DataContext.Seed
 open PRR.Data.Entities
@@ -13,6 +12,7 @@ open DataAvail.ListQuery.Core
 open DataAvail.ListQuery.EntityFramework
 open DataAvail.EntityFramework.Common
 open DataAvail.EntityFramework.Common.CRUD
+open DataAvail.Http.Exceptions
 
 module Roles =
 
@@ -48,7 +48,7 @@ module Roles =
                 select p.Id
         }
         |> toCountAsync
-        |> map (fun cnt ->
+        |> TaskUtils.map (fun cnt ->
             if cnt > 0 then raise Forbidden')
 
     let create: Create<DomainId * PostLike, int, DbDataContext> =

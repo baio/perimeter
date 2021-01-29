@@ -41,6 +41,17 @@ module Option =
             this.Using(sequence.GetEnumerator(),
                                  fun enum -> this.While(enum.MoveNext, this.Delay(fun () -> body enum.Current)))
     let maybe = MaybeBuilder()
-
-    /// Option wrapper monoid
     
+    let noneFails ex =
+        function
+        | Some r ->
+            r
+        | None ->
+            raise ex    
+
+    let inline (<!>) f m = Option.map f m
+     
+    /// Option wrapper monoid
+    let inline (>>=) m f = Option.bind f m  
+    
+    let inline (>=>) f g = fun x -> f x >>= g 

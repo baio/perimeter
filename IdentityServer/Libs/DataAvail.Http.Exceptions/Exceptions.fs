@@ -1,4 +1,4 @@
-﻿namespace Common.Domain.Models
+﻿namespace DataAvail.Http.Exceptions
 
 [<AutoOpen>]
 module Exceptions =

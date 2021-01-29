@@ -3,8 +3,8 @@
 open Microsoft.Extensions.Logging
 open PRR.Domain.Auth.Common
 open DataAvail.KeyValueStorage.Core
-open Common.Domain.Models.Exceptions
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open DataAvail.Http.Exceptions
 
 [<AutoOpen>]
 module internal OnSuccess =

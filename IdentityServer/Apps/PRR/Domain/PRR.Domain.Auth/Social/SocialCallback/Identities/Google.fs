@@ -6,6 +6,7 @@ open Newtonsoft.Json
 open PRR.Data.Entities
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Domain.Auth.Common
+open DataAvail.Http.Exceptions
 
 // https://developers.google.com/identity/protocols/oauth2/web-server
 

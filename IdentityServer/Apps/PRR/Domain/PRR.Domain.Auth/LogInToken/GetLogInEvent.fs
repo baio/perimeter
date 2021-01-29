@@ -1,13 +1,13 @@
 ﻿namespace PRR.Domain.Auth.LogInToken
 
 open Common.Domain.Models
-open Common.Domain.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
 open System
 open PRR.Domain.Auth.Common
 open PRR.Domain.Common
 open DataAvail.EntityFramework.Common
+open DataAvail.Http.Exceptions
 
 [<AutoOpen>]
 module private GetLogInEvent =

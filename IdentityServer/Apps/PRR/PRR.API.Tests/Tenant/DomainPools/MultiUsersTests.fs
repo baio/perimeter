@@ -1,7 +1,6 @@
 ﻿namespace PRR.API.Tests.Tenant.DomainPools
 
 open Common.Test.Utils
-open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.SignUp

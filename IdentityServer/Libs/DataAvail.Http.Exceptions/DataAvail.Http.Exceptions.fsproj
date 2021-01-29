@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="BadRequestErrors.fs" />
+        <Compile Include="Exceptions.fs" />
+        <Compile Include="BadRequestValidators.fs" />
+    </ItemGroup>
+
+</Project>

@@ -1,7 +1,7 @@
 ﻿namespace PRR.API.Routes.Auth
 
 open Giraffe
-open Common.Domain.Giraffe
+open DataAvail.Giraffe.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.API.Routes
 open PRR.Domain.Auth.ResetPasswordConfirm

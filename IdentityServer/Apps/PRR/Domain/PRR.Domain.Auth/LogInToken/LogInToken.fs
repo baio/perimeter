@@ -1,10 +1,7 @@
 ﻿namespace PRR.Domain.Auth.LogInToken
 
 open Common.Domain.Models
-open Common.Domain.Utils
-open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open FSharpx
 open Models
 open PRR.Data.DataContext
 open System
@@ -13,6 +10,7 @@ open PRR.Domain.Auth
 open PRR.Domain.Auth.Common
 open Microsoft.Extensions.Logging
 open PRR.Domain.Common
+open DataAvail.Http.Exceptions
 
 [<AutoOpen>]
 module LogInToken =
@@ -116,5 +114,5 @@ module LogInToken =
                 | None ->
                     env.Logger.LogWarning
                         ("$tokenData for ${userId} and ${socialType} is not found", item.UserId, socialType)
-                    return! raiseTask (unAuthorized "user is not found")
+                    return raise (unAuthorized "user is not found")
             }

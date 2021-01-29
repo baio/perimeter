@@ -1,7 +1,6 @@
 ﻿namespace PRR.API.Tests.Tenant.Permissions
 
 open Common.Test.Utils
-open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx
 open FsUnit
@@ -15,7 +14,7 @@ open PRR.Domain.Tenant.Permissions
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
-open TaskUtils
+open DataAvail.Common.TaskUtils
 
 module DefaultPermissions =
 

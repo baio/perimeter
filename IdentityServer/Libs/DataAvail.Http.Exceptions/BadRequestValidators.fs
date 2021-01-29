@@ -1,7 +1,5 @@
-﻿namespace Common.Domain.Utils
+﻿namespace DataAvail.Http.Exceptions
 
-open Common.Domain.Models
-open FSharpx
 open System
 open System.Net.Mail
 open System.Text.RegularExpressions
@@ -75,11 +73,12 @@ module BadRequestValidators =
         >> ofBool (name, MIN_LENGTH min)
         >> Option.map BadRequestFieldError
 
-    let validateContains' (list: string seq) name =
-        flip (Seq.contains) list
-        >> not
-        >> ofBool (name, list |> seqJoin |> NOT_CONTAINS_STRING)
-        >> Option.map BadRequestFieldError
+    let validateContains' (list: string seq) name x =
+        list
+        |> Seq.contains x
+        |> not
+        |> ofBool (name, list |> seqJoin |> NOT_CONTAINS_STRING)
+        |> Option.map BadRequestFieldError
 
     let validateContainsAll'' (expect: string seq) (input: string seq) =
         Seq.forall (fun x -> Seq.contains x input) expect

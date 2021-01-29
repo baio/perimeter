@@ -1,9 +1,7 @@
 ﻿namespace PRR.Domain.Tenant
 
 open Common.Domain.Models
-open Common.Domain.Utils
 open DataAvail.EntityFramework.Common
-open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx.Linq
 open Microsoft.EntityFrameworkCore
@@ -17,6 +15,7 @@ open Helpers
 open DataAvail.ListQuery.Core
 open DataAvail.ListQuery.EntityFramework
 open DataAvail.EntityFramework.Common.CRUD
+open DataAvail.Http.Exceptions
 
 module DomainPools =
 

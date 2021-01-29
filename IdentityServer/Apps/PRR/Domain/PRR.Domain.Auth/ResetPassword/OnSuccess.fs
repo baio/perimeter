@@ -1,12 +1,12 @@
 ﻿namespace PRR.Domain.Auth.ResetPassword
 
-open Common.Domain.Models.Exceptions
 open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
 open PRR.Domain.Auth.Common.KeyValueModels
 open PRR.Domain.Auth.ResetPassword
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Domain.Auth.Common
+open DataAvail.Http.Exceptions
 
 [<AutoOpen>]
 module private OnSuccess =

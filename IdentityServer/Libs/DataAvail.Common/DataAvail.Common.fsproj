@@ -8,6 +8,8 @@
         <Compile Include="StringUtils.fs" />
         <Compile Include="Option.fs" />
         <Compile Include="TaskUtils.fs" />
+        <Compile Include="ReaderTask.fs" />
+        <Compile Include="Tuples.fs" />
     </ItemGroup>
 
     <ItemGroup>

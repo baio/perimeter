@@ -1,7 +1,6 @@
 ﻿namespace PRR.Domain.Auth.ResetPassword
 
 open Common.Domain.Models
-open Common.Domain.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open HttpFs.Logging
 open PRR.Domain.Auth.ResetPassword.Models

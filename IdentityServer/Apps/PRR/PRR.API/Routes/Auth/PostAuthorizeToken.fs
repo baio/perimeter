@@ -2,7 +2,7 @@
 
 open System
 open Giraffe
-open Common.Domain.Giraffe
+open DataAvail.Giraffe.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open MassTransit
 open PRR.API.Routes

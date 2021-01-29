@@ -2,14 +2,13 @@
 
 open System.Diagnostics
 open Common.Domain.Models
-open Common.Domain.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open HttpFs.Logging
 open Models
 open PRR.Domain.Auth.Common
 open PRR.Domain.Auth.Utils
 open Microsoft.Extensions.Logging
 open DataAvail.EntityFramework.Common
+open DataAvail.Http.Exceptions
 
 [<AutoOpen>]
 module SignUp =

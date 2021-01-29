@@ -1,7 +1,6 @@
 ﻿namespace PRR.Domain.Auth.LogOut
 
 open Common.Domain.Models
-open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Microsoft.IdentityModel.Tokens
 open PRR.Domain.Auth.Common.KeyValueModels
@@ -9,6 +8,8 @@ open PRR.Domain.Auth.RefreshToken
 open System.Security.Claims
 open System.Text
 open System.Threading.Tasks
+open DataAvail.Http.Exceptions
+open DataAvail.Common.Option
 
 [<AutoOpen>]
 module LogOut =
@@ -34,7 +35,7 @@ module LogOut =
                 let sub =
                     token.Claims
                     |> getClaimInt CLAIM_TYPE_UID
-                    |> Options.noneFails (unAuthorized "sub is not found")
+                    |> noneFails (unAuthorized "sub is not found")
 
                 let result = { ReturnUri = data.ReturnUri }
                 task {

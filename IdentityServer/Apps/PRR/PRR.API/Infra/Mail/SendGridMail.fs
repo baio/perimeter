@@ -1,7 +1,6 @@
 ﻿namespace PRR.API.Infra.Mail
 
 open System.Threading.Tasks
-open Common.Utils
 open SendGrid
 open SendGrid.Helpers.Mail
 

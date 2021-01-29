@@ -18,7 +18,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
 open Microsoft.Extensions.DependencyInjection
 open PRR.API.Infra
-open Common.Utils
+open DataAvail.Common
 open System.Security.Cryptography
 
 module SocialTests =

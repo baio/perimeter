@@ -1,13 +1,12 @@
 ﻿namespace PRR.Domain.Auth.RefreshToken
 
 open System
-open System
-open Common.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.Entities
 open PRR.Domain.Auth.LogInToken
 open PRR.Domain.Auth.Common
 open Microsoft.Extensions.Logging
+open DataAvail.Http.Exceptions
 
 [<AutoOpen>]
 module RefreshToken =

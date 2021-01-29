@@ -1,6 +1,6 @@
 ﻿namespace PRR.API.Tests.Tenant.Apis
 open Common.Test.Utils
-open Common.Utils
+open DataAvail.Common.TaskUtils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
 open PRR.API.Tests.Utils

@@ -2,16 +2,16 @@
 
 open Common.Domain.Models
 open System.Threading.Tasks
-open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
-open Common.Domain.Utils
 open PRR.Data.Entities
 open PRR.Domain.Auth.Common.KeyValueModels
 open PRR.Domain.Auth.LogIn.Authorize
 open System.Linq
 open Microsoft.Extensions.Logging
 open DataAvail.EntityFramework.Common
+open DataAvail.Http.Exceptions
+open DataAvail.Common.StringUtils
 
 [<AutoOpen>]
 module Social =

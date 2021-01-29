@@ -4,7 +4,7 @@ open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
 open Common.Test.Utils
-open Common.Domain.Utils.BadRequestValidators
+open DataAvail.Http.Exceptions
 open FsUnit
 
 

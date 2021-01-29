@@ -1,11 +1,9 @@
 ﻿namespace PRR.API.Routes.Tenant
 
-open Common.Domain.Giraffe
-open Common.Domain.Models
-open Common.Utils
-open Common.Utils.ReaderTask
+open DataAvail.Common
+open DataAvail.Common.ReaderTask
+open DataAvail.Giraffe.Common
 open Giraffe
-open Giraffe.HttpStatusCodeHandlers
 open PRR.API.Routes
 open PRR.Data.DataContext
 open PRR.Domain.Auth.GetAudience

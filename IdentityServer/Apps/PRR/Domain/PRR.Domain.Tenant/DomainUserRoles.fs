@@ -1,9 +1,7 @@
 ﻿namespace PRR.Domain.Tenant
 
 open Common.Domain.Models
-open Common.Domain.Models.Exceptions
-open Common.Domain.Utils
-open Common.Utils
+open DataAvail.Http.Exceptions
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Microsoft.EntityFrameworkCore
 open PRR.Data.DataContext
@@ -15,6 +13,7 @@ open System.Threading.Tasks
 open DataAvail.EntityFramework.Common
 open DataAvail.ListQuery.Core
 open DataAvail.ListQuery.EntityFramework
+open DataAvail.Common.TaskUtils
 
 module DomainUserRoles =
 

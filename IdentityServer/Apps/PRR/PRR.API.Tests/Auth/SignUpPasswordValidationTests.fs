@@ -1,6 +1,7 @@
 ﻿namespace PRR.API.Tests
 open Common.Domain.Models
 open Common.Test.Utils
+open DataAvail.Http.Exceptions
 open FsUnit
 open Xunit
 open Xunit.Abstractions

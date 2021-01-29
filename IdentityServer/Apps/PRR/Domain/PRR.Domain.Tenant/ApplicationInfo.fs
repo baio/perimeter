@@ -1,9 +1,8 @@
 ﻿namespace PRR.Domain.Tenant
 
 open Common.Domain.Models
-open Common.Utils
+open DataAvail.Common
 open PRR.Data.DataContext
-open Common.Domain.Utils
 open System.Linq
 open DataAvail.EntityFramework.Common
 

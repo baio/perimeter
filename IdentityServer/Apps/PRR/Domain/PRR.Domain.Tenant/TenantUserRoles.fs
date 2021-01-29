@@ -1,14 +1,14 @@
 ﻿namespace PRR.Domain.Tenant
 
 open Common.Domain.Models
-open Common.Domain.Utils
-open Common.Utils.TaskUtils
+open DataAvail.Common.TaskUtils
 open DomainUserRoles
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
 open System
 open System.Threading.Tasks
 open DataAvail.EntityFramework.Common
+open DataAvail.Http.Exceptions
 
 module TenantUserRoles =
 

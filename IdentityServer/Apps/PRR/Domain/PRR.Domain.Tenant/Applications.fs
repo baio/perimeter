@@ -1,7 +1,6 @@
 ﻿namespace PRR.Domain.Tenant
 
 open Common.Domain.Models
-open Common.Domain.Utils
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
@@ -10,6 +9,7 @@ open DataAvail.ListQuery.Core
 open DataAvail.ListQuery.EntityFramework
 open DataAvail.EntityFramework.Common
 open DataAvail.EntityFramework.Common.CRUD
+open DataAvail.Http.Exceptions
 
 module Applications =
 

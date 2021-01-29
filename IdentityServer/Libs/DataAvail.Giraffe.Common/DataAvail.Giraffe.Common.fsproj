@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Bindings\Headers.fs" />
+        <Compile Include="Bindings\Cookies.fs" />
+        <Compile Include="Bindings\Queries.fs" />
+        <Compile Include="Bindings\Payload.fs" />
+        <Compile Include="Bindings\User.fs" />
+        <Compile Include="Auth\Auth.fs" />
+        <Compile Include="Auth\Audience.fs" />
+        <Compile Include="RequestWrappers\WrapNoArgs.fs" />
+        <Compile Include="RequestWrappers\Wrap.fs" />
+        <Compile Include="RequestWrappers\WrapHandler.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Giraffe" Version="4.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DataAvail.Common\DataAvail.Common.fsproj" />
+      <ProjectReference Include="..\DataAvail.Http.Exceptions\DataAvail.Http.Exceptions.fsproj" />
+    </ItemGroup>
+
+</Project>

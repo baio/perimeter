@@ -1,13 +1,13 @@
 ﻿module PRR.API.Routes.Me
 
-open Common.Domain.Giraffe
 open Common.Domain.Models
-open Common.Utils
-open Common.Utils.ReaderTask
+open DataAvail.Common
+open DataAvail.Common.ReaderTask
 open Giraffe
 open PRR.API.Routes
 open PRR.Domain.Auth.UpdatePassword
 open PRR.Domain.Tenant.UserDomains
+open DataAvail.Giraffe.Common
 
 module private Handlers =
 

@@ -1,6 +1,7 @@
 ﻿namespace PRR.API.Routes.Auth.Helpers
 
-open Common.Domain.Giraffe
+open DataAvail.Giraffe.Common
+
 
 [<AutoOpen>]
 module internal GetRefererUrl =

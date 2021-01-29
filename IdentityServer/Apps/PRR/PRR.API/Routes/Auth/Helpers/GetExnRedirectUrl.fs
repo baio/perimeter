@@ -1,8 +1,7 @@
 namespace PRR.API.Routes.Auth.Helpers
 
 open System.Web
-open Common.Domain.Models
-open Common.Domain.Giraffe
+open DataAvail.Http.Exceptions
 
 [<AutoOpen>]
 module internal GetExnRedirectUrl =

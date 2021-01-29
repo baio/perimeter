@@ -1,8 +1,5 @@
 ﻿namespace PRR.API.Routes.Tenant
 
-open Common.Domain.Giraffe
-open Common.Utils
-open Common.Utils.ReaderTask
 open Giraffe
 open PRR.API.Routes
 open PRR.Domain.Auth
@@ -10,6 +7,10 @@ open PRR.Domain.Auth.GetAudience
 open PRR.Domain.Tenant.DomainPools
 open PRR.Domain.Tenant.Models
 open DataAvail.ListQuery.Core
+open DataAvail.Giraffe.Common
+open DataAvail.Common
+open DataAvail.Common.ReaderTask
+
 [<AutoOpen>]
 module private DomainPoolHandlers =
 

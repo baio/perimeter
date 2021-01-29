@@ -1,6 +1,6 @@
 ﻿namespace PRR.API.Tests.Tenants
 open Common.Test.Utils
-open Common.Utils
+open DataAvail.Common.TaskUtils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx
 open FsUnit
@@ -12,7 +12,6 @@ open PRR.Domain.Auth.SignUp
 open PRR.Domain.Tenant
 open PRR.Domain.Tenant.DomainUserRoles
 open PRR.Domain.Tenant.UserDomains
-open TaskUtils
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
