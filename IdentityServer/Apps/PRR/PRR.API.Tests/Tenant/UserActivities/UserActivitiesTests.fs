@@ -1,7 +1,7 @@
 ﻿namespace PRR.API.Tests.UserActivities
 
 open System.Threading
-open Common.Test.Utils
+open DataAvail.Test.Common
 open DataAvail.ListQuery.Core.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit

@@ -3,7 +3,7 @@
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
-open Common.Test.Utils
+open DataAvail.Test.Common
 open DataAvail.Http.Exceptions
 open FsUnit
 

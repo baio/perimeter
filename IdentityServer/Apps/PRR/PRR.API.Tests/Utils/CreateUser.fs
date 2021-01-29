@@ -1,6 +1,6 @@
 ﻿namespace PRR.API.Tests.Utils
 
-open Common.Test.Utils
+open DataAvail.Test.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx
 open Microsoft.Azure.Documents

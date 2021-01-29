@@ -1,4 +1,4 @@
-namespace Common.Test.Utils
+namespace DataAvail.Test.Common
 
 // Don't autoformat it, fantomas will strip override keyword !
 

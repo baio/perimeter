@@ -1,4 +1,4 @@
-﻿namespace Common.Test.Utils
+﻿namespace DataAvail.Test.Common
 
 open PRR.Domain.Models
 open Microsoft.Extensions.DependencyInjection

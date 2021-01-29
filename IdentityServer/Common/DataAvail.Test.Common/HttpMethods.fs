@@ -1,4 +1,4 @@
-﻿namespace Common.Test.Utils
+﻿namespace DataAvail.Test.Common
 
 open Json.Net
 open Newtonsoft.Json
