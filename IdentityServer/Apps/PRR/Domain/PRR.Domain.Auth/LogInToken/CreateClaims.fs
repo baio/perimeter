@@ -1,6 +1,6 @@
 ﻿namespace PRR.Domain.Auth.LogInToken
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open System.Security.Claims
 
 [<AutoOpen>]

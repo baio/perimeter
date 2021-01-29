@@ -1,6 +1,6 @@
 ﻿namespace PRR.Domain.Auth.Social.SocialCallback
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open System.Threading.Tasks
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext

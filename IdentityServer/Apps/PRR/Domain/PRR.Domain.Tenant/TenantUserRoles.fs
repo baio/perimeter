@@ -1,6 +1,6 @@
 ﻿namespace PRR.Domain.Tenant
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open DataAvail.Common.TaskUtils
 open DomainUserRoles
 open FSharp.Control.Tasks.V2.ContextInsensitive

@@ -1,6 +1,6 @@
 ﻿namespace PRR.API.Routes.Tenant
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open DataAvail.Common
 open DataAvail.Common.ReaderTask
 open DataAvail.Giraffe.Common

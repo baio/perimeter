@@ -6,7 +6,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.API.Routes
 open PRR.Domain.Auth.LogOut
 open Microsoft.Extensions.Logging
-open Common.Domain.Models
+open PRR.Domain.Models
 open PRR.API.Routes.Auth.Helpers
 open DataAvail.Http.Exceptions
 

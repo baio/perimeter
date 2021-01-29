@@ -1,6 +1,6 @@
 ﻿module PRR.API.Routes.Me
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open DataAvail.Common
 open DataAvail.Common.ReaderTask
 open Giraffe

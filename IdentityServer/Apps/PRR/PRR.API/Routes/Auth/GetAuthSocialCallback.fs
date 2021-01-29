@@ -1,6 +1,6 @@
 ﻿namespace PRR.API.Routes.Auth
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open Microsoft.AspNetCore.Http
 open Giraffe
 open PRR.API.Routes

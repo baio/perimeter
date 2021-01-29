@@ -1,6 +1,6 @@
 ﻿namespace PRR.API.Routes
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open DataAvail.Giraffe.Common
 open DataAvail.KeyValueStorage.Core
 open FSharp.Control.Tasks.V2.ContextInsensitive

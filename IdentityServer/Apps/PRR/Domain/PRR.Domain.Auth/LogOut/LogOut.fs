@@ -1,6 +1,6 @@
 ﻿namespace PRR.Domain.Auth.LogOut
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Microsoft.IdentityModel.Tokens
 open PRR.Domain.Auth.Common.KeyValueModels

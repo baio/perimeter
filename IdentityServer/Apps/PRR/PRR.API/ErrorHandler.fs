@@ -1,7 +1,7 @@
 ﻿namespace PRR.API
 
 open System.Diagnostics
-open Common.Domain.Models
+open PRR.Domain.Models
 open Giraffe
 open Microsoft.Extensions.Logging
 open System

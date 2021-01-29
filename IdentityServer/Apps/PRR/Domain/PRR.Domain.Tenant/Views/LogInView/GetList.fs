@@ -1,7 +1,7 @@
 ﻿namespace PRR.Domain.Tenant.Views.LogInView
 
 open System.Threading.Tasks
-open Common.Domain.Models
+open PRR.Domain.Models
 open MongoDB.Bson
 open MongoDB.Driver
 open FSharp.MongoDB.Driver

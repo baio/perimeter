@@ -1,7 +1,7 @@
 ﻿namespace PRR.Domain.Auth.SignUp
 
 open System.Diagnostics
-open Common.Domain.Models
+open PRR.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Models
 open PRR.Domain.Auth.Common

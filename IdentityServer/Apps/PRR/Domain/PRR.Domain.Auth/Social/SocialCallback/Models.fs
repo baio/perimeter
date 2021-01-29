@@ -1,6 +1,6 @@
 ﻿namespace PRR.Domain.Auth.Social.SocialCallback
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open DataAvail.HttpRequest.Core
 open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging

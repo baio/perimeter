@@ -1,6 +1,6 @@
 ﻿namespace PRR.API.Routes.Tenant
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open Giraffe
 open PRR.API.Routes
 open PRR.Domain.Auth.GetAudience

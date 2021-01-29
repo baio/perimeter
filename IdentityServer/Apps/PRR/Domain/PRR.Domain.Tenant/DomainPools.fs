@@ -1,6 +1,6 @@
 ﻿namespace PRR.Domain.Tenant
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open DataAvail.EntityFramework.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx.Linq

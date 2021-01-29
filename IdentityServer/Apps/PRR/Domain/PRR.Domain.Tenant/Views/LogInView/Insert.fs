@@ -1,6 +1,6 @@
 ﻿namespace PRR.Domain.Tenant.Views.LogInView
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open FSharp.MongoDB.Driver
 open MongoDB.Driver
 open PRR.Domain.Common.Events

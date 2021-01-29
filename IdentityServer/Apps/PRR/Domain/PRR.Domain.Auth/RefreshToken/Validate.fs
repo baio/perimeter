@@ -1,6 +1,6 @@
 ﻿namespace PRR.Domain.Auth.RefreshToken
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open System
 open System.Threading.Tasks
 open PRR.Domain.Auth.LogInToken

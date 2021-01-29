@@ -1,6 +1,6 @@
 ﻿namespace PRR.Domain.Auth.RefreshToken
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open Microsoft.IdentityModel.Tokens
 open System
 open System.IdentityModel.Tokens.Jwt

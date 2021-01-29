@@ -1,4 +1,4 @@
-﻿namespace Common.Domain.Models
+﻿namespace PRR.Domain.Models
 
 [<AutoOpen>]
 module Social =

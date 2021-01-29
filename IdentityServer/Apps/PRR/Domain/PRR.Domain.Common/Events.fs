@@ -1,7 +1,7 @@
 ﻿namespace PRR.Domain.Common
 
 open System
-open Common.Domain.Models
+open PRR.Domain.Models
 
 module Events =
 

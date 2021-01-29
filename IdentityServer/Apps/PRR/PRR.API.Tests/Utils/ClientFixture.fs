@@ -1,6 +1,6 @@
 ﻿namespace Common.Test.Utils
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open Microsoft.Extensions.DependencyInjection
 open System
 

@@ -1,6 +1,6 @@
 ﻿namespace PRR.Domain.Auth.LogOut
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open DataAvail.KeyValueStorage.Core
 open PRR.Data.DataContext
 open System.Threading.Tasks

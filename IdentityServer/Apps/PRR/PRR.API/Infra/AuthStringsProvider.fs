@@ -1,7 +1,7 @@
 ﻿namespace PRR.API.Infra
 
 open System
-open Common.Domain.Models
+open PRR.Domain.Models
 open System.Security.Cryptography
 
 [<AutoOpen>]

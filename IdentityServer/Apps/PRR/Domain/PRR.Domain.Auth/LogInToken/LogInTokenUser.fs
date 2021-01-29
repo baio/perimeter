@@ -2,7 +2,7 @@
 
 open System.Security.Cryptography
 open System.Threading.Tasks
-open Common.Domain.Models
+open PRR.Domain.Models
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Microsoft.Extensions.Logging

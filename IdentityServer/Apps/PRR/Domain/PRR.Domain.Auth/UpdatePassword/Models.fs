@@ -1,7 +1,7 @@
 ﻿namespace PRR.Domain.Auth.UpdatePassword
 
 open System.Threading.Tasks
-open Common.Domain.Models
+open PRR.Domain.Models
 open PRR.Data.DataContext
 
 [<AutoOpen>]

@@ -1,6 +1,6 @@
 ﻿namespace PRR.Domain.Auth.ResetPassword
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open DataAvail.KeyValueStorage.Core.KeyValueStorage
 open Microsoft.Extensions.Logging
 open PRR.Data.DataContext

@@ -1,6 +1,6 @@
 ﻿namespace PRR.API.Routes.Auth
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open PRR.Domain.Auth
 open PRR.Domain.Auth.LogIn
 open Giraffe

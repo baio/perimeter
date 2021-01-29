@@ -1,7 +1,7 @@
 ﻿namespace PRR.Domain.Auth.Common
 
 open System
-open Common.Domain.Models
+open PRR.Domain.Models
 open DataAvail.KeyValueStorage.Core
 
 [<AutoOpen>]

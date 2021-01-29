@@ -1,6 +1,6 @@
 ﻿namespace PRR.API.Infra
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open MongoDB.Driver
 open DataAvail.HttpRequest.Core
 

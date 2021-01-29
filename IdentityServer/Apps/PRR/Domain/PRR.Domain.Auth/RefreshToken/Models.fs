@@ -1,6 +1,6 @@
 ﻿namespace PRR.Domain.Auth.RefreshToken
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open DataAvail.KeyValueStorage.Core
 open PRR.Data.DataContext
 open PRR.Domain.Auth

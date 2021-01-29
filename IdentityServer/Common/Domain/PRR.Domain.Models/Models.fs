@@ -1,4 +1,4 @@
-﻿namespace Common.Domain.Models
+﻿namespace PRR.Domain.Models
 
 open System.Threading.Tasks
 

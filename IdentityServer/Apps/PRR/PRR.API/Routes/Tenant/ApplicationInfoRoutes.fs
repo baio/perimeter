@@ -5,7 +5,7 @@ open DataAvail.Common
 open DataAvail.Common.ReaderTask
 open DataAvail.Giraffe.Common
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open PRR.Domain.Tenant.ApplicationInfo
 open PRR.API.Routes
 

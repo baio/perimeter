@@ -1,7 +1,7 @@
 ﻿namespace PRR.Domain.Auth.Social.SocialCallback
-// TODO : Common.Domain.Models -> PRR.Common.Domain.Models
+// TODO : PRR.Domain.Models -> PRR.PRR.Domain.Models
 open System
-open Common.Domain.Models
+open PRR.Domain.Models
 open PRR.Domain.Auth.Social.SocialCallback.Identities
 
 [<AutoOpen>]

@@ -1,6 +1,6 @@
 ﻿namespace PRR.Domain.Auth.Social.SocialAuth
 
-open Common.Domain.Models
+open PRR.Domain.Models
 
 [<AutoOpen>]
 module internal GetRedirectUrl =

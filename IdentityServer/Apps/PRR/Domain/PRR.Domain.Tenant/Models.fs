@@ -1,6 +1,6 @@
 ﻿namespace PRR.Domain.Tenant
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open PRR.Data.DataContext
 
 [<AutoOpen>]

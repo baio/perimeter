@@ -1,7 +1,7 @@
 ﻿namespace PRR.Domain.Tenant
 
 open System.Security.Cryptography
-open Common.Domain.Models
+open PRR.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx
 open Newtonsoft.Json

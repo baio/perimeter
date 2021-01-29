@@ -1,7 +1,7 @@
 ﻿namespace PRR.Domain.Auth.Social.SocialAuth
 
 open System.Threading.Tasks
-open Common.Domain.Models
+open PRR.Domain.Models
 open DataAvail.KeyValueStorage.Core.KeyValueStorage
 open Microsoft.Extensions.Logging
 open PRR.Data.DataContext

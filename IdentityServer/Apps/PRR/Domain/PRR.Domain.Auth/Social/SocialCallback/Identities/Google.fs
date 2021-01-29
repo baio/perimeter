@@ -1,7 +1,7 @@
 ﻿namespace PRR.Domain.Auth.Social.SocialCallback.Identities.Google
 
 open System.Security.Claims
-open Common.Domain.Models
+open PRR.Domain.Models
 open DataAvail.HttpRequest.Core
 open Newtonsoft.Json
 open PRR.Data.Entities

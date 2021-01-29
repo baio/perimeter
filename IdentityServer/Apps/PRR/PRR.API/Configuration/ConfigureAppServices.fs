@@ -1,6 +1,6 @@
 ﻿namespace PRR.API.Configuration
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 open PRR.API.Infra.Mail.Models

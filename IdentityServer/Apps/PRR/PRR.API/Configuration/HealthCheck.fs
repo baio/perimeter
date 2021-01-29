@@ -2,7 +2,7 @@
 
 open System
 open System.Collections.Generic
-open Common.Domain.Models
+open PRR.Domain.Models
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Diagnostics.HealthChecks
 open MassTransit

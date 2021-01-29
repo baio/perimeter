@@ -1,6 +1,6 @@
 ﻿namespace PRR.Domain.Tenant
 
-open Common.Domain.Models
+open PRR.Domain.Models
 open DataAvail.Common
 open PRR.Data.DataContext
 open System.Linq
