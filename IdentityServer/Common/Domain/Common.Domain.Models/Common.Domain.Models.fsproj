@@ -18,7 +18,6 @@
         <Compile Include="Models.fs" />
         <Compile Include="Claims.fs" />
         <Compile Include="Social.fs" />
-        <Compile Include="HttRequest.fs" />
     </ItemGroup>
 
 </Project>

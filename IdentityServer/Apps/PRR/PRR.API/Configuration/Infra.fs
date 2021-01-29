@@ -4,6 +4,7 @@ open Microsoft.Extensions.DependencyInjection
 open PRR.API
 open PRR.API.Infra
 open System.Security.Cryptography
+open DataAvail.HttpRequest.HttpFs
 
 type InfraConfig =
     { MongoViewsConnectionString: string
@@ -20,13 +21,18 @@ module private Infra =
 
         services.AddSingleton<IPermissionsFromRoles, PermissionsFromRoles>()
         |> ignore
+
         services.AddSingleton<IHashProvider>(hashProvider)
         |> ignore
+
         services.AddSingleton<ISHA256Provider>(sha256Provider)
         |> ignore
+
         services.AddSingleton<IPasswordSaltProvider>(PasswordSaltProvider config.PasswordSecret)
         |> ignore
+
         services.AddSingleton<IAuthStringsProvider, AuthStringsProvider>()
         |> ignore
-        services.AddSingleton<IHttpRequestFunProvider>(HttpRequestFunProvider httpFsRequestFun)
+
+        services.AddSingleton<IHttpRequestFunProvider>(HttpRequestFunProvider(httpFsRequestFun))
         |> ignore

@@ -3,6 +3,7 @@
 open System.Text.RegularExpressions
 open System.Threading.Tasks
 open Common.Domain.Models
+open DataAvail.HttpRequest.Core
 open FSharpx
 open Newtonsoft.Json
 open PRR.API.Tests.Utils

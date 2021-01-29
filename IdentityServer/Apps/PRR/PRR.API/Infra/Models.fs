@@ -2,6 +2,7 @@
 
 open Common.Domain.Models
 open MongoDB.Driver
+open DataAvail.HttpRequest.Core
 
 [<AutoOpen>]
 module Models =
@@ -28,6 +29,3 @@ module Models =
 
     type IHttpRequestFunProvider =
         abstract HttpRequestFun: HttpRequestFun
-
-
-   

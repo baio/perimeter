@@ -1,9 +1,9 @@
-﻿namespace Common.Domain.Models
-
-open System.Threading.Tasks
+﻿namespace DataAvail.HttpRequest.Core
 
 [<AutoOpen>]
-module HttRequest =
+module Models =
+
+    open System.Threading.Tasks
 
     type HttpRequestMethod =
         | HttpRequestMethodPOST

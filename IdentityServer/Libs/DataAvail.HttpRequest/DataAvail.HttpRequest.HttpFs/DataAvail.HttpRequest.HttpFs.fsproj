@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="HttpFs.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Http.fs" Version="5.4.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DataAvail.HttpRequest.Core\DataAvail.HttpRequest.Core.fsproj" />
+    </ItemGroup>
+
+</Project>

@@ -2,6 +2,7 @@
 
 open System.Security.Claims
 open Common.Domain.Models
+open DataAvail.HttpRequest.Core
 open Newtonsoft.Json
 open PRR.Data.Entities
 open FSharp.Control.Tasks.V2.ContextInsensitive
