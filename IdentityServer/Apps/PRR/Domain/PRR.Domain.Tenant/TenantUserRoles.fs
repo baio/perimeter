@@ -8,6 +8,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
 open System
 open System.Threading.Tasks
+open DataAvail.EntityFramework.Common
 
 module TenantUserRoles =
 
@@ -82,12 +83,12 @@ module TenantUserRoles =
     let getOne tenantId userEmail (dataContext: DbDataContext) =
         task {
             let! domainId = getTenantManagementDomain tenantId dataContext
-            return! getOne userEmail domainId dataContext
+            return! DomainUserRoles.getOne userEmail domainId dataContext
         }
 
     let remove tenantId userEmail (dataContext: DbDataContext) =
         task {
             let! domainId = getTenantManagementDomain tenantId dataContext
             do! checkUserNotTenantOwner domainId userEmail dataContext
-            return! remove domainId userEmail dataContext
+            return! DomainUserRoles.remove domainId userEmail dataContext
         }

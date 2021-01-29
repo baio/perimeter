@@ -5,6 +5,7 @@ open Common.Domain.Models
 open Giraffe
 open Microsoft.Extensions.Logging
 open System
+open DataAvail.EntityFramework.Common
 
 [<AutoOpen>]
 module ErrorHandler =

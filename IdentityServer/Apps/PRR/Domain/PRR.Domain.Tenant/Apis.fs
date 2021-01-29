@@ -2,7 +2,6 @@
 
 open Common.Domain.Models
 open Common.Domain.Utils
-open Common.Domain.Utils.CRUD
 open Common.Utils
 open Newtonsoft.Json
 open Newtonsoft.Json.Converters
@@ -12,6 +11,10 @@ open System
 open System.Linq
 open System.Threading.Tasks
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open DataAvail.ListQuery.Core
+open DataAvail.ListQuery.EntityFramework
+open DataAvail.EntityFramework.Common
+open DataAvail.EntityFramework.Common.CRUD
 
 module Apis =
 
@@ -115,7 +118,7 @@ module Apis =
     type ListQuery = ListQuery<SortField, FilterField>
 
     [<CLIMutable>]
-    type ListResponse = ListResponse<GetLike>
+    type ListResponse = ListQueryResult<GetLike>
 
     type GetList = DbDataContext -> (TenantId * ListQuery) -> Task<ListResponse>
 

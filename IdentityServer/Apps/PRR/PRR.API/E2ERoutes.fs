@@ -20,6 +20,7 @@ open System
 open System.Linq
 open System.Threading
 open System.Threading.Tasks
+open DataAvail.EntityFramework.Common
 
 [<CLIMutable>]
 type ReinitData = { LoginAsDomain: bool }
@@ -154,7 +155,7 @@ module E2E =
                                              select
                                                  (dur.Domain.Applications.Single(fun p -> p.IsDomainManagement).ClientId)
                                      }
-                                     |> LinqHelpers.toSingleAsync
+                                     |> toSingleAsync
                                  | _ -> Task.FromResult "__DEFAULT_CLIENT_ID__"
 
 

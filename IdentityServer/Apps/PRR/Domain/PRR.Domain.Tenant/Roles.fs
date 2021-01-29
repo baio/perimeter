@@ -2,7 +2,6 @@
 
 open Common.Domain.Models
 open Common.Domain.Utils
-open Common.Domain.Utils.CRUD
 open Common.Utils
 open PRR.Data.DataContext
 open PRR.Data.DataContext.Seed
@@ -10,6 +9,10 @@ open PRR.Data.Entities
 open System
 open System.Linq
 open System.Threading.Tasks
+open DataAvail.ListQuery.Core
+open DataAvail.ListQuery.EntityFramework
+open DataAvail.EntityFramework.Common
+open DataAvail.EntityFramework.Common.CRUD
 
 module Roles =
 
@@ -99,7 +102,7 @@ module Roles =
     type ListQuery = ListQuery<SortField, FilterField>
 
     [<CLIMutable>]
-    type ListResponse = ListResponse<GetLike>
+    type ListResponse = ListQueryResult<GetLike>
 
     type GetList = DbDataContext -> (DomainId * ListQuery) -> Task<ListResponse>
 

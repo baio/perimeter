@@ -9,6 +9,7 @@ open Models
 open PRR.Domain.Auth.Common
 open PRR.Domain.Auth.Utils
 open Microsoft.Extensions.Logging
+open DataAvail.EntityFramework.Common
 
 [<AutoOpen>]
 module SignUp =

@@ -5,6 +5,7 @@ open Common.Utils
 open PRR.Data.DataContext
 open Common.Domain.Utils
 open System.Linq
+open DataAvail.EntityFramework.Common
 
 [<AutoOpen>]
 module ApplicationInfo =

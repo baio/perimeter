@@ -9,6 +9,7 @@ open PRR.API.Routes
 open PRR.Domain.Tenant
 open PRR.Domain.Tenant.Permissions
 open PRR.Domain.Auth.GetAudience
+open DataAvail.ListQuery.Core
 
 [<AutoOpen>]
 module private PermissionHandlers =

@@ -9,6 +9,7 @@ open PRR.Data.DataContext
 open System
 open System.Linq
 open System.Threading.Tasks
+open DataAvail.EntityFramework.Common
 
 module UserDomains =
 

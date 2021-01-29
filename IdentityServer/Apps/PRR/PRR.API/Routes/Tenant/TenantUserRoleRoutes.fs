@@ -12,6 +12,7 @@ open PRR.Domain.Auth
 open PRR.Domain.Auth.GetAudience
 open PRR.Domain.Tenant.DomainUserRoles
 open PRR.Domain.Tenant.TenantUserRoles
+open DataAvail.ListQuery.Core
 
 [<AutoOpen>]
 module private TenantUserRolesHandlers =

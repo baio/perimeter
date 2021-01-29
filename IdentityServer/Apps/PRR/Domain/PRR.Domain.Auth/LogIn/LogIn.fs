@@ -8,6 +8,7 @@ open PRR.Data.DataContext
 open System
 open PRR.Domain.Auth.Common
 open Microsoft.Extensions.Logging
+open DataAvail.EntityFramework.Common
 
 [<AutoOpen>]
 module Authorize =

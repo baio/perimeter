@@ -7,6 +7,7 @@ open Giraffe
 open PRR.API.Routes
 open PRR.Domain.Tenant.Apis
 open PRR.Domain.Auth.GetAudience
+open DataAvail.ListQuery.Core
 
 [<AutoOpen>]
 module private ApiHandlers =

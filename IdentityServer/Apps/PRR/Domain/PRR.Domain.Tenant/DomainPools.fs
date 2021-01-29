@@ -2,8 +2,7 @@
 
 open Common.Domain.Models
 open Common.Domain.Utils
-open Common.Domain.Utils.CRUD
-open Common.Domain.Utils.UniqueConstraintException
+open DataAvail.EntityFramework.Common
 open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx.Linq
@@ -15,6 +14,9 @@ open System.Linq
 open System.Linq.Expressions
 open System.Threading.Tasks
 open Helpers
+open DataAvail.ListQuery.Core
+open DataAvail.ListQuery.EntityFramework
+open DataAvail.EntityFramework.Common.CRUD
 
 module DomainPools =
 
@@ -163,7 +165,7 @@ module DomainPools =
     type ListQuery = ListQuery<SortField, FilterField>
 
     [<CLIMutable>]
-    type ListResponse = ListResponse<GetLike>
+    type ListResponse = ListQueryResult<GetLike>
 
     type GetList = DbDataContext -> (TenantId * ListQuery) -> Task<ListResponse>
 

@@ -3,7 +3,6 @@
 open Common.Domain.Models
 open Common.Domain.Models.Exceptions
 open Common.Domain.Utils
-open Common.Domain.Utils.CRUD
 open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Microsoft.EntityFrameworkCore
@@ -13,6 +12,9 @@ open System
 open System.ComponentModel.DataAnnotations
 open System.Linq
 open System.Threading.Tasks
+open DataAvail.EntityFramework.Common
+open DataAvail.ListQuery.Core
+open DataAvail.ListQuery.EntityFramework
 
 module DomainUserRoles =
 
@@ -119,7 +121,7 @@ module DomainUserRoles =
     type ListQuery = ListQuery<SortField, FilterField>
 
     [<CLIMutable>]
-    type ListResponse = ListResponse<GetLike>
+    type ListResponse = ListQueryResult<GetLike>
 
     type RoleType =
         | TenantManagement

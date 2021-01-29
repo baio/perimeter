@@ -11,10 +11,10 @@ open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
 open System.Linq
-
+open DataAvail.EntityFramework.Common
 [<AutoOpen>]
-module internal UserHelpers =
-
+module internal UserHelpers =    
+    
     [<CLIMutable>]
     type TokenData =
         { Id: int

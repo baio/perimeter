@@ -3,6 +3,7 @@
 open Common.Domain.Utils
 open PRR.Data.DataContext
 open PRR.Data.Entities
+open DataAvail.EntityFramework.Common
 
 module Helpers =
 

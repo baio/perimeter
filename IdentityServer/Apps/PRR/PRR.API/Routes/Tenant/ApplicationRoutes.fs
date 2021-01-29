@@ -8,6 +8,7 @@ open PRR.API.Infra
 open PRR.API.Routes
 open PRR.Domain.Tenant.Applications
 open PRR.Domain.Auth.GetAudience
+open DataAvail.ListQuery.Core
 
 [<AutoOpen>]
 module private ApplicationHandlers =

@@ -3,7 +3,6 @@
 open System.Security.Cryptography
 open Common.Domain.Models
 open Common.Domain.Utils
-open Common.Domain.Utils.CRUD
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx
 open Newtonsoft.Json
@@ -13,7 +12,8 @@ open System
 open System.Linq
 open Microsoft.EntityFrameworkCore
 open Newtonsoft.Json.Converters
-
+open DataAvail.EntityFramework.Common
+open DataAvail.EntityFramework.Common.CRUD
 
 module Domains =
 

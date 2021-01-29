@@ -10,6 +10,7 @@ open PRR.API.Routes
 open PRR.Data.DataContext
 open PRR.Domain.Auth.GetAudience
 open PRR.Domain.Tenant.DomainUserRoles
+open DataAvail.ListQuery.Core
 
 [<AutoOpen>]
 module private DomainUserRolesHandlers =

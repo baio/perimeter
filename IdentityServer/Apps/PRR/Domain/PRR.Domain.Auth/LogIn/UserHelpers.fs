@@ -9,6 +9,7 @@ open PRR.Data.DataContext
 open PRR.Domain.Auth
 open System.Linq
 open PRR.Domain.Auth.Common
+open DataAvail.EntityFramework.Common
 
 [<AutoOpen>]
 module internal UserHelpers =

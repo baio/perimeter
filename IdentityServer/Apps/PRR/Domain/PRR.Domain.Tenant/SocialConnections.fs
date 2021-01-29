@@ -12,7 +12,8 @@ open PRR.Data.DataContext
 open PRR.Data.DataContext.Seed
 open PRR.Data.Entities
 open PRR.Data.DataContext
-open Common.Domain.Utils.CRUD
+open DataAvail.EntityFramework.Common
+open DataAvail.EntityFramework.Common.CRUD
 
 open PRR.Data.DataContext.Seed
 open PRR.Data.Entities

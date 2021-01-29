@@ -1,4 +1,4 @@
-﻿namespace Common.Domain.Utils
+﻿namespace DataAvail.ListQuery.EntityFramework
 
 [<AutoOpen>]
 module HandleListQuery =
@@ -6,7 +6,7 @@ module HandleListQuery =
     open FSharpx.Reader
 
     let handleListQuery q getFilterFieldExpr getSortFieldExpr prms =
-        returnM q       
+        returnM q
         >>= handleSort getSortFieldExpr
         >>= handleFilter getFilterFieldExpr
         >>= handlePagination

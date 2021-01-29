@@ -2,7 +2,6 @@
 
 
 open Common.Domain.Models
-open Common.Domain.Utils.LinqHelpers
 open Common.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx.Reader
@@ -12,6 +11,9 @@ open System
 open System.Threading.Tasks
 open PRR.Domain.Tenant
 open PRR.Domain.Tenant.Helpers
+open DataAvail.EntityFramework.Common
+open DataAvail.ListQuery.Core
+open DataAvail.ListQuery.EntityFramework
 
 [<AutoOpen>]
 module CreateUserTenant =

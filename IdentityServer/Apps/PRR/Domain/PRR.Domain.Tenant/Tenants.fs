@@ -5,6 +5,7 @@ open Common.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Helpers
 open PRR.Data.DataContext.Seed
+open DataAvail.EntityFramework.Common
 
 module Tenants =
 

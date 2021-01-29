@@ -7,6 +7,7 @@ open PRR.Data.DataContext
 open System
 open PRR.Domain.Auth.Common
 open PRR.Domain.Common
+open DataAvail.EntityFramework.Common
 
 [<AutoOpen>]
 module private GetLogInEvent =

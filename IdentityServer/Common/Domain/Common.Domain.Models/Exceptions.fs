@@ -3,8 +3,6 @@
 [<AutoOpen>]
 module Exceptions =
 
-    exception NotFound
-
     exception UnAuthorized of string option
 
     let UnAuthorized' = UnAuthorized None
@@ -16,8 +14,6 @@ module Exceptions =
     let Forbidden' = Forbidden None
 
     let forbidden = Some >> Forbidden
-
-    exception Conflict of ConflictError
 
     exception Unexpected of string option
 

@@ -18,6 +18,8 @@
       <ProjectReference Include="..\..\..\..\Common\Domain\Common.Domain.Models\Common.Domain.Models.fsproj" />
       <ProjectReference Include="..\..\..\..\Common\Domain\Common.Domain.Utils\Common.Domain.Utils.fsproj" />
       <ProjectReference Include="..\..\..\..\FSharp\FSharp.MongoDB.Driver\FSharp.MongoDB.Driver.fsproj" />
+      <ProjectReference Include="..\..\..\..\Libs\DataAvail.EntityFramework.Common\DataAvail.EntityFramework.Common.fsproj" />
+      <ProjectReference Include="..\..\..\..\Libs\DataAvail.ListQuery\DataAvail.ListQuery.EntityFramework\DataAvail.ListQuery.EntityFramework.fsproj" />
       <ProjectReference Include="..\..\..\..\Libs\DataAvail.ListQuery\DataAvail.ListQuery.Mongo\DataAvail.ListQuery.Mongo.fsproj" />
       <ProjectReference Include="..\..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
       <ProjectReference Include="..\..\Data\PRR.Data.Entities\PRR.Data.Entities.csproj" />

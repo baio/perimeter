@@ -1,4 +1,4 @@
-﻿namespace Common.Domain.Utils
+﻿namespace DataAvail.ListQuery.EntityFramework
 
 open System
 open System.Linq
@@ -6,7 +6,7 @@ open System.Linq
 [<AutoOpen>]
 module HandleOrder =
 
-    open Common.Domain.Models
+    open DataAvail.ListQuery.Core
     open FSharpx.Reader
 
     type SortExpr<'a> =

@@ -3,6 +3,7 @@
 open PRR.Data.DataContext
 open Common.Domain.Utils
 open PRR.API
+open DataAvail.EntityFramework.Common
 
 [<AutoOpen>]
 module PermissionsFromRoles =

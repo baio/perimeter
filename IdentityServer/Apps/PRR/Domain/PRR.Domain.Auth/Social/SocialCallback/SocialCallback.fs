@@ -11,6 +11,7 @@ open PRR.Domain.Auth.Common.KeyValueModels
 open PRR.Domain.Auth.LogIn.Authorize
 open System.Linq
 open Microsoft.Extensions.Logging
+open DataAvail.EntityFramework.Common
 
 [<AutoOpen>]
 module Social =

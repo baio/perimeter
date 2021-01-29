@@ -14,7 +14,7 @@ open PRR.Data.Entities
 open PRR.Domain.Auth
 open PRR.Domain.Auth.LogIn.UserHelpers
 open PRR.Domain.Auth.LogInToken
-open Common.Domain.Utils.LinqHelpers
+open DataAvail.EntityFramework.Common
 open PRR.Domain.Auth.Common
 
 type SignInUserEnv =

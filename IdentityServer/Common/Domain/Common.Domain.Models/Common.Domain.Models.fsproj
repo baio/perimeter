@@ -16,10 +16,7 @@
     <ItemGroup>
         <Compile Include="Constants.fs" />
         <Compile Include="BadRequestErrors.fs" />
-        <Compile Include="ConflictError.fs" />
         <Compile Include="Exceptions.fs" />
-        <Compile Include="ListQuery.fs" />
-        <Compile Include="ListResult.fs" />
         <Compile Include="Models.fs" />
         <Compile Include="Claims.fs" />
         <Compile Include="Social.fs" />

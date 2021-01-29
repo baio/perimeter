@@ -2,15 +2,18 @@
 
 open Common.Domain.Models
 open Common.Domain.Models.Exceptions
-open Common.Domain.Models.ForbiddenError
 open Common.Domain.Utils
-open Common.Domain.Utils.CRUD
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
 open System.Linq
 open System.Threading.Tasks
+open DataAvail.EntityFramework.Common
+open DataAvail.EntityFramework.Common.CRUD
+open DataAvail.ListQuery.Core
+open DataAvail.ListQuery.EntityFramework
+
 
 module Permissions =
 
@@ -93,7 +96,7 @@ module Permissions =
     type ListQuery = ListQuery<SortField, FilterField>
 
     [<CLIMutable>]
-    type ListResponse = ListResponse<GetLike>
+    type ListResponse = ListQueryResult<GetLike>
 
     type GetList = DbDataContext -> (int * ListQuery) -> Task<ListResponse>
 

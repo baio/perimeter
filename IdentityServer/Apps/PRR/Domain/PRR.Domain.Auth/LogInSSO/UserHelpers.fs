@@ -4,6 +4,7 @@ open Common.Domain.Models
 open Common.Domain.Utils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
+open DataAvail.EntityFramework.Common
 
 [<AutoOpen>]
 module internal UserHelpers =

@@ -4,6 +4,7 @@ open Common.Domain.Utils
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open System.Linq
+open DataAvail.EntityFramework.Common
 
 module GetAudience =
 

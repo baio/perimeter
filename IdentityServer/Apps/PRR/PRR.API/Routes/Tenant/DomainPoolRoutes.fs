@@ -9,7 +9,7 @@ open PRR.Domain.Auth
 open PRR.Domain.Auth.GetAudience
 open PRR.Domain.Tenant.DomainPools
 open PRR.Domain.Tenant.Models
-
+open DataAvail.ListQuery.Core
 [<AutoOpen>]
 module private DomainPoolHandlers =
 

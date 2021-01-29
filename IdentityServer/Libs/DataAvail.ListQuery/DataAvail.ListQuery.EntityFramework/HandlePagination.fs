@@ -1,10 +1,9 @@
-﻿namespace Common.Domain.Utils
-
-open Common.Domain.Models
+﻿namespace DataAvail.ListQuery.EntityFramework
 
 [<AutoOpen>]
 module HandlePager =
 
+    open DataAvail.ListQuery.Core
     open FSharpx.Reader
 
     let handlePagination' (pagination: Pager) q =

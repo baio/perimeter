@@ -7,6 +7,7 @@ open HttpFs.Logging
 open PRR.Domain.Auth.ResetPassword.Models
 open Microsoft.Extensions.Logging
 open System
+open DataAvail.EntityFramework.Common
 
 [<AutoOpen>]
 module ResetPassword =

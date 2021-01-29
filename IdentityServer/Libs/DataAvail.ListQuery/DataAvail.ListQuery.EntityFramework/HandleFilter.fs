@@ -1,11 +1,10 @@
-﻿namespace Common.Domain.Utils
-
-open System.Collections.Generic
+﻿namespace DataAvail.ListQuery.EntityFramework
 
 [<AutoOpen>]
 module HandleFilter =
 
-    open Common.Domain.Models
+    open DataAvail.ListQuery.Core
+    open System.Collections.Generic
     open FSharpx.Reader
 
     let composeFilterExpr filterFn (filters: Map<'x, string>) =

@@ -1,13 +1,11 @@
 ﻿namespace PRR.Domain.Auth.Common
 
 open System
-open System
 open Common.Utils
 open PRR.Data.DataContext
-open Common.Domain.Utils
 open Common.Domain.Models
-open FSharp.Control.Tasks.V2
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open DataAvail.EntityFramework.Common
 
 [<AutoOpen>]
 module ValidateScopes =

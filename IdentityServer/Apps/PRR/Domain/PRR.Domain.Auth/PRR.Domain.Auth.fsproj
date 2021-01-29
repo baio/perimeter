@@ -76,6 +76,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\..\..\Common\Domain\Common.Domain.Models\Common.Domain.Models.fsproj" />
         <ProjectReference Include="..\..\..\..\Common\Domain\Common.Domain.Utils\Common.Domain.Utils.fsproj" />
+        <ProjectReference Include="..\..\..\..\Libs\DataAvail.EntityFramework.Common\DataAvail.EntityFramework.Common.fsproj" />
         <ProjectReference Include="..\..\..\..\Libs\DataAvail.KeyValueStorage.Mongo\DataAvail.KeyValueStorage.Mongo.fsproj" />
         <ProjectReference Include="..\..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
         <ProjectReference Include="..\PRR.Domain.Common\PRR.Domain.Common.fsproj" />
