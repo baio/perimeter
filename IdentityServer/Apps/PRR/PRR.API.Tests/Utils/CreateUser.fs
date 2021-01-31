@@ -4,6 +4,7 @@ open DataAvail.Test.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx
 open Microsoft.Azure.Documents
+open Microsoft.Extensions.Configuration
 open PRR.API.Configuration.ConfigureServices
 open PRR.API.Infra
 open PRR.Data.DataContext
@@ -13,7 +14,7 @@ open System.Security.Cryptography
 open System.Threading
 open System.Web
 open PRR.API.Routes.E2E
-
+open PRR.Domain.Tenant
 
 [<AutoOpen>]
 module CreateUser =
@@ -39,7 +40,11 @@ module CreateUser =
             let! result = logIn' testFixture data
             let location = readResponseHader "Location" result
             let uri = Uri(location)
-            return HttpUtility.ParseQueryString(uri.Query).Get("code")
+
+            return
+                HttpUtility
+                    .ParseQueryString(uri.Query)
+                    .Get("code")
         }
 
     let sha256 = SHA256.Create()
@@ -134,15 +139,25 @@ module CreateUser =
             let dataContext =
                 services.GetService(typeof<DbDataContext>) :?> DbDataContext
 
-            let authStringsProvider =
-                services.GetService(typeof<IAuthStringsProvider>) :?> IAuthStringsProvider
+            let config =
+                services.GetService(typeof<IConfiguration>) :?> IConfiguration
 
-            let env' =
-                { DataContext = dataContext
-                  AuthStringsGetter = authStringsProvider.AuthStringsGetter
-                  Config = configProvider.GetConfig() }
 
-            let! tenant = createUserTenant env' userId userData.Email
+            let config' =
+                PRR.API.Tenant.Configuration.CreateAppConfig.createAppConfig (config)
+
+            let env': PRR.Domain.Tenant.CreateUserTenant.Env =
+                { DbDataContext = dataContext
+                  AuthStringsGetter =
+                      ((PRR.API.Tenant.Infra.AuthStringsGetterProvider.AuthStringsProvider() :> PRR.API.Tenant.Infra.IAuthStringsGetterProvider)
+                          .AuthStringsGetter)
+                  AuthConfig = config'.TenantAuth }
+
+            let! tenant =
+                createUserTenant
+                    env'
+                    { UserId = userId
+                      Email = userData.Email }
 
             env.SetTenant tenant
 
@@ -150,6 +165,7 @@ module CreateUser =
                 if signInUnderSampleDomain
                 then tenant.DomainManagementApplicationClientId
                 else tenant.TenantManagementApplicationClientId
+
 
             let! result = logInUser env.TestFixture clientId userData.Email userData.Password
 

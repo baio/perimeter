@@ -75,7 +75,7 @@ module Domains =
            (validateIntRange (1, 100000) "accessTokenExpiresIn" data.AccessTokenExpiresIn) |]
         |> Array.choose id
 
-    let create (env: Env) (authStringsProvider: AuthStringsGetter) (domainPoolId, dto: PostLike, userId) =
+    let create (env: Env) (domainPoolId, dto: PostLike, userId) =
 
         let dataContext = env.DataContext
 
@@ -108,8 +108,8 @@ module Domains =
                              pool.Tenant.Name,
                      AccessTokenExpiresIn = (int env.AuthConfig.AccessTokenExpiresIn),
                      SigningAlgorithm = SigningAlgorithmType.RS256,
-                     HS256SigningSecret = authStringsProvider.HS256SigningSecret(),
-                     RS256Params = authStringsProvider.RS256XMLParams())
+                     HS256SigningSecret = env.AuthStringsProvider.HS256SigningSecret(),
+                     RS256Params = env.AuthStringsProvider.RS256XMLParams())
                 |> add'
 
             createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain

@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Tenant
+﻿namespace PRR.Domain.Auth
 
 open PRR.Domain.Models
 open DataAvail.Common

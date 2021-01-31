@@ -4,7 +4,6 @@ open DataAvail.Common.TaskUtils
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx
 open FsUnit
-open PRR.API.Routes.Tenant
 open PRR.API.Tests.Utils
 open PRR.Data.Entities
 open PRR.Domain.Auth

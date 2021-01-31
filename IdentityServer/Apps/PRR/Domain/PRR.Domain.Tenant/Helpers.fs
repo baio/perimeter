@@ -1,6 +1,6 @@
 ﻿namespace PRR.Domain.Tenant
 
-open PRR.Domain.Models
+// open PRR.Domain.Models
 open PRR.Data.Entities
 
 [<AutoOpen>]
@@ -21,7 +21,7 @@ module Helpers =
              SigningAlgorithm = SigningAlgorithmType.HS256,
              HS256SigningSecret = authConfig.AccessTokenSecret)
 
-    let createTenantManagementApp (authStringProvider: AuthStringsGetter) (authConfig: AuthConfig) domain =
+    let createTenantManagementApp (authStringProvider: IAuthStringsGetter) (authConfig: AuthConfig) domain =
         Application
             (Domain = domain,
              Name = "Tenant domains management application",
@@ -33,7 +33,6 @@ module Helpers =
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
              RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
              SSOEnabled = true,
-             // TODO : It should be false !
              IsDomainManagement = true)
 
     let createTenantManagementApi authConfig (domain: Domain) =
@@ -44,7 +43,7 @@ module Helpers =
              IsDomainManagement = false)
 
     //
-    let createMainDomain (authStringProviders: AuthStringsGetter) authConfig (domainPool: DomainPool) =
+    let createMainDomain (authStringProviders: IAuthStringsGetter) authConfig (domainPool: DomainPool) =
         Domain
             (Pool = domainPool,
              EnvName = "dev",
@@ -56,7 +55,7 @@ module Helpers =
              Issuer =
                  sprintf "https://dev.%s.%s.perimeter.com/domain/issuer" domainPool.Identifier domainPool.Tenant.Name)
 
-    let createDomainApp (authStringProvider: AuthStringsGetter) (authConfig: AuthConfig) domain name =
+    let createDomainApp (authStringProvider: IAuthStringsGetter) (authConfig: AuthConfig) domain name =
         Application
             (Domain = domain,
              Name = name,
@@ -69,7 +68,7 @@ module Helpers =
              Flow = FlowType.PKCE,
              IsDomainManagement = false)
 
-    let createDomainManagementApp (authStringProvider: AuthStringsGetter) (authConfig: AuthConfig) domain =
+    let createDomainManagementApp (authStringProvider: IAuthStringsGetter) (authConfig: AuthConfig) domain =
         Application
             (Domain = domain,
              Name = "Domain management application",
@@ -83,7 +82,7 @@ module Helpers =
              SSOEnabled = true,
              IsDomainManagement = true)
 
-    let createDomainApi (authStringProvider: AuthStringsGetter)
+    let createDomainApi (authStringProvider: IAuthStringsGetter)
                         (authConfig: AuthConfig)
                         (domain: Domain)
                         name

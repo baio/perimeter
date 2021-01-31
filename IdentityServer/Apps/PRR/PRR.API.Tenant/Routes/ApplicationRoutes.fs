@@ -4,10 +4,8 @@ open DataAvail.Common
 open DataAvail.Common.ReaderTask
 open DataAvail.Giraffe.Common
 open Giraffe
-open PRR.API.Infra
 open PRR.API.Routes
 open PRR.Domain.Tenant.Applications
-open PRR.Domain.Auth.GetAudience
 open DataAvail.ListQuery.Core
 
 [<AutoOpen>]
@@ -20,8 +18,8 @@ module private ApplicationHandlers =
             (create
              <!> ((fun ctx ->
                       let config = getConfig ctx
-                      { RefreshTokenExpiresIn = config.Auth.Jwt.RefreshTokenExpiresIn
-                        IdTokenExpiresIn = config.Auth.Jwt.IdTokenExpiresIn
+                      { RefreshTokenExpiresIn = config.TenantAuth.RefreshTokenExpiresIn
+                        IdTokenExpiresIn = config.TenantAuth.IdTokenExpiresIn
                         AuthStringsProvider = getAuthStringsGetter ctx })
                   |> ofReader)
              <*> ((doublet domainId)

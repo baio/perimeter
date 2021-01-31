@@ -71,6 +71,7 @@
         <Compile Include="Social\SocialCallback\Identities\Google.fs" />
         <Compile Include="Social\SocialCallback\GetSocialIdentity.fs" />
         <Compile Include="Social\SocialCallback\SocialCallback.fs" />
+        <Compile Include="ApplicationInfo.fs" />
     </ItemGroup>
 
     <ItemGroup>

@@ -33,4 +33,6 @@ module AuthRoutes =
                       >=> PostRefreshToken.handler
                       GET
                       >=> route "/logout"
-                      >=> LogOut.GetLogout.handler ])
+                      >=> LogOut.GetLogout.handler
+                      GET
+                      >=> routef "/applications/%s" GetApplicationInfo.handler ])

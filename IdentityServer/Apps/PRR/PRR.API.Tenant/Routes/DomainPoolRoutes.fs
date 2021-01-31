@@ -2,8 +2,6 @@
 
 open Giraffe
 open PRR.API.Routes
-open PRR.Domain.Auth
-open PRR.Domain.Auth.GetAudience
 open PRR.Domain.Tenant.DomainPools
 open PRR.Domain.Tenant.Models
 open DataAvail.ListQuery.Core
@@ -19,18 +17,14 @@ module private DomainPoolHandlers =
     let createHandler tenantId =
         wrap
             (create
-             <!> (triplet tenantId
-                  <!> bindUserClaimId
+             <!> (triplet tenantId <!> bindUserClaimId
                   <*> bindValidateJsonAsync validatePostData)
              <*> ofReader (fun ctx ->
                      let config = getConfig ctx
+
                      { AuthStringsProvider = getAuthStringsGetter ctx
                        DataContext = getDataContext ctx
-                       AuthConfig =
-                           { AccessTokenSecret = config.Auth.Jwt.AccessTokenSecret
-                             AccessTokenExpiresIn = config.Auth.Jwt.AccessTokenExpiresIn
-                             IdTokenExpiresIn = config.Auth.Jwt.IdTokenExpiresIn
-                             RefreshTokenExpiresIn = config.Auth.Jwt.RefreshTokenExpiresIn } }))
+                       AuthConfig = config.TenantAuth }))
 
     let updateHandler id =
         wrap
@@ -56,8 +50,7 @@ module private DomainPoolHandlers =
 
     let getList tenantId =
         wrap
-            (getList
-             <!> getDataContext'
+            (getList <!> getDataContext'
              <*> (doublet tenantId <!> bindListQuery))
 
 module DomainPool =

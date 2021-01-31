@@ -6,6 +6,13 @@ open PRR.Data.DataContext
 [<AutoOpen>]
 module Models =
 
+    type IAuthStringsGetter =
+        { ClientId: unit -> string
+          ClientSecret: unit -> string
+          AuthorizationCode: unit -> string
+          HS256SigningSecret: unit -> string
+          RS256XMLParams: unit -> string }
+
     type AuthConfig =
         { IdTokenExpiresIn: int<minutes>
           AccessTokenSecret: string
@@ -14,5 +21,5 @@ module Models =
 
     type Env =
         { DataContext: DbDataContext
-          AuthStringsProvider: AuthStringsGetter
+          AuthStringsProvider: IAuthStringsGetter
           AuthConfig: AuthConfig }

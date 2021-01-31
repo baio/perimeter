@@ -3,8 +3,6 @@
 open PRR.Domain.Models
 open Giraffe
 open PRR.API.Routes
-open PRR.Domain.Auth
-open PRR.Domain.Auth.GetAudience
 open PRR.Domain.Tenant.Domains
 open PRR.Domain.Tenant.Models
 open DataAvail.ListQuery.Core
@@ -21,19 +19,14 @@ module private DomainHandlers =
         let config = getConfig ctx
         let authStringsProvider = getAuthStringsGetter ctx
         let dataContext = getDataContext ctx
+
         { DataContext = dataContext
-          AuthConfig =
-              { AccessTokenSecret = config.Auth.Jwt.AccessTokenSecret
-                IdTokenExpiresIn = config.Auth.Jwt.IdTokenExpiresIn
-                AccessTokenExpiresIn = config.Auth.Jwt.AccessTokenExpiresIn
-                RefreshTokenExpiresIn = config.Auth.Jwt.RefreshTokenExpiresIn }
+          AuthConfig = config.TenantAuth
           AuthStringsProvider = authStringsProvider }
 
     let createHandler domainPoolId =
         wrap
-            (create
-             <!> ofReader (getEnv)
-             <*> ofReader (getAuthStringsGetter)
+            (create <!> ofReader (getEnv)
              <*> ((triplet domainPoolId)
                   <!> bindValidateJsonAsync validatePostData
                   <*> bindUserClaimId))

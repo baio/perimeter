@@ -48,11 +48,13 @@ module E2E =
         recreatedDataContextDb ctx
         recreateMongoDb ctx
 
+    (*
     type CreateUserTenantEnv =
         { DataContext: DbDataContext
           Config: AppConfig
           AuthStringsGetter: AuthStringsGetter }
 
+    TODO : Restore !!!
     let createUserTenant (env: CreateUserTenantEnv) userId email =
 
         let config = env.Config
@@ -69,7 +71,7 @@ module E2E =
               AuthStringsGetter = env.AuthStringsGetter }
 
             { Email = email; UserId = userId }
-
+    *)
 
     let createRoutes () =
 
@@ -132,13 +134,16 @@ module E2E =
                              //
                              Thread.Sleep(100)
 
-                             //
+                             // TODO : Restore !!!
+                             (*
                              let env =
                                  { DataContext = getDataContext ctx
                                    AuthStringsGetter = getAuthStringsGetter ctx
                                    Config = getConfig ctx }
 
-                             let! _ = createUserTenant env userId signUpConfirmItem.Email
+                             
+                             //let! _ = createUserTenant env userId signUpConfirmItem.Email
+                             *)
 
                              let! data = ctx |> bindJsonAsync<ReinitData>
 

@@ -6,7 +6,6 @@ open DataAvail.Giraffe.Common
 open Giraffe
 open PRR.API.Routes
 open PRR.Data.DataContext
-open PRR.Domain.Auth.GetAudience
 open PRR.Domain.Tenant.DomainUserRoles
 open DataAvail.ListQuery.Core
 

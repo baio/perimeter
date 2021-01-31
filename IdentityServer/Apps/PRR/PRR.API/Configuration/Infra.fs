@@ -7,8 +7,7 @@ open System.Security.Cryptography
 open DataAvail.HttpRequest.HttpFs
 
 type InfraConfig =
-    { MongoViewsConnectionString: string
-      PasswordSecret: string }
+    { PasswordSecret: string }
 
 [<AutoOpen>]
 module private Infra =

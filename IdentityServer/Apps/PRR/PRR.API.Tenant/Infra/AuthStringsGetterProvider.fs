@@ -1,13 +1,17 @@
-﻿namespace PRR.API.Infra
+﻿namespace PRR.API.Tenant.Infra
 
-open System
-open PRR.Domain.Models
-open System.Security.Cryptography
+open PRR.Domain.Tenant
 
-// RM from auth
+
+type IAuthStringsGetterProvider =
+    abstract AuthStringsGetter: IAuthStringsGetter
 
 [<AutoOpen>]
-module RandomStringProvider =
+module AuthStringsGetterProvider =
+
+    open System
+    open System.Security.Cryptography
+
     let private random = Random()
 
     let private getRandomString length =
@@ -19,7 +23,7 @@ module RandomStringProvider =
         |> System.String.Concat
 
 
-    let private authStringsGetter: AuthStringsGetter =
+    let private authStringsGetter: IAuthStringsGetter =
         { ClientId = fun () -> getRandomString 33
           ClientSecret = fun () -> getRandomString 50
           // TODO : Read ???
@@ -31,5 +35,5 @@ module RandomStringProvider =
                   rsa.ToXmlString(true) }
 
     type AuthStringsProvider() =
-        interface IAuthStringsProvider with
+        interface IAuthStringsGetterProvider with
             member __.AuthStringsGetter = authStringsGetter

@@ -39,7 +39,7 @@ module CreateUserTenant =
     type Env =
         { DbDataContext: DbDataContext
           AuthConfig: AuthConfig
-          AuthStringsGetter: AuthStringsGetter }
+          AuthStringsGetter: IAuthStringsGetter }
 
     type UserTenantData = { UserId: UserId; Email: string }
 

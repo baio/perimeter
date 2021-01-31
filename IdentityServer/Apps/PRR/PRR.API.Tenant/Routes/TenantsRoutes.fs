@@ -2,7 +2,6 @@
 
 open Giraffe
 open PRR.API.Routes
-open PRR.Domain.Auth
 open PRR.Domain.Tenant
 open PRR.Domain.Tenant.Tenants
 open DataAvail.Giraffe.Common
@@ -14,20 +13,15 @@ module private TenantHandlers =
 
     let private getEnv ctx =
         let config = getConfig ctx
+
         { AuthStringsProvider = getAuthStringsGetter ctx
           DataContext = getDataContext ctx
-          AuthConfig =
-              { AccessTokenSecret = config.Auth.Jwt.AccessTokenSecret
-                AccessTokenExpiresIn = config.Auth.Jwt.AccessTokenExpiresIn
-                IdTokenExpiresIn = config.Auth.Jwt.IdTokenExpiresIn
-                RefreshTokenExpiresIn = config.Auth.Jwt.RefreshTokenExpiresIn } }
+          AuthConfig = config.TenantAuth }
 
     let createHandler =
         wrap
-            (create
-             <!> (ofReader getEnv)
-             <*> (doublet
-                  <!> bindUserClaimId
+            (create <!> (ofReader getEnv)
+             <*> (doublet <!> bindUserClaimId
                   <*> bindValidateJsonAsync validateData))
 
 module Tenants =

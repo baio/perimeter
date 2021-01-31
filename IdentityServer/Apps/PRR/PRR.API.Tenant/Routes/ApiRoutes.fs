@@ -6,7 +6,6 @@ open DataAvail.Giraffe.Common
 open Giraffe
 open PRR.API.Routes
 open PRR.Domain.Tenant.Apis
-open PRR.Domain.Auth.GetAudience
 open DataAvail.ListQuery.Core
 
 [<AutoOpen>]
@@ -17,7 +16,7 @@ module private ApiHandlers =
     let getEnv ctx =
         let config = getConfig ctx
         let authStringsProvider = getAuthStringsGetter ctx
-        { AccessTokenExpiresIn = config.Auth.Jwt.AccessTokenExpiresIn
+        { AccessTokenExpiresIn = config.TenantAuth.AccessTokenExpiresIn
           HS256SigningSecret = authStringsProvider.HS256SigningSecret }
 
     let createHandler domainId =

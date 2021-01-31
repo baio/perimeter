@@ -55,11 +55,11 @@ module CreateAppConfig =
             { ConnectionString = configuration.GetValue("MongoKeyValueStorage:ConnectionString")
               DbName = configuration.GetValue("MongoKeyValueStorage:DbName")
               CollectionName = configuration.GetValue("MongoKeyValueStorage:CollectionName") }
-            
+
         let viewStorageConfig: ViewStorageConfig =
             { ConnectionString = configuration.GetValue("MongoViewStorage:ConnectionString")
               DbName = configuration.GetValue("MongoViewStorage:DbName") }
-            
+
 
         let ignoreObserveApiPaths = [ "/metrics"; "/health" ]
 
@@ -78,9 +78,7 @@ module CreateAppConfig =
                 MongoConnectionString = mongoConnectionString
                 AllocatedMemory = 5<gigabytes> }
           DataContext = { ConnectionString = psqlConnectionString }
-          Infra =
-              { MongoViewsConnectionString = configuration.GetConnectionString("MongoViews")
-                PasswordSecret = configuration.GetValue<string>("Auth:PasswordSecret") }
+          Infra = { PasswordSecret = configuration.GetValue<string>("Auth:PasswordSecret") }
           Auth = authConfig
           Logging =
               { Config = { ServiceUrl = configuration.GetValue("Logging:Seq:ServiceUrl") }
