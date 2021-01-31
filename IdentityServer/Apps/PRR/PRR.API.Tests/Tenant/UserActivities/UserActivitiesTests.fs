@@ -67,7 +67,7 @@ module CRUD =
                 let tenant = testContext.Value.GetTenant()
 
                 let! result =
-                    testFixture.HttpGetAsync
+                    testFixture.Server2.HttpGetAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/admin-activities" tenant.DomainId)
 
@@ -88,7 +88,7 @@ module CRUD =
                 let tenant = testContext.Value.GetTenant()
 
                 let! result =
-                    testFixture.HttpGetAsync
+                    testFixture.Server2.HttpGetAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/admin-activities?filter.email=xxx" tenant.DomainId)
 
@@ -110,7 +110,7 @@ module CRUD =
                 let tenant = testContext.Value.GetTenant()
 
                 let! result =
-                    testFixture.HttpGetAsync
+                    testFixture.Server2.HttpGetAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/admin-activities?filter.email=user.c" tenant.DomainId)
 

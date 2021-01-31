@@ -68,7 +68,7 @@ module UserTestContext =
             services.AddSingleton<IKeyValueStorage>(kvStorage')
 
 
-        testFixture.OverrideServices(fun services ->
+        testFixture.Server1.OverrideServices(fun services ->
 
             let sp = services.BuildServiceProvider()
 

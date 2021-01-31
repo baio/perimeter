@@ -1,4 +1,5 @@
 ﻿namespace PRR.API.Tests.Tenants
+
 open DataAvail.Test.Common
 open DataAvail.Common.TaskUtils
 open FSharp.Control.Tasks.V2.ContextInsensitive
@@ -66,7 +67,6 @@ module MultiTenantAdminTests =
                 let! userToken = createUser' false testContext.Value u1.Data
 
                 let tenant = testContext.Value.GetTenant()
-
                 users.[0] <- {| u1 with
                                     Token = Some(userToken)
                                     Tenant = Some(tenant) |}
@@ -79,7 +79,10 @@ module MultiTenantAdminTests =
                 let u1 = users.[0]
 
                 let! _ =
-                    testFixture.HttpPostAsync u1.Token.Value (sprintf "/api/tenants/%i/admins" tenant.TenantId) data
+                    testFixture.Server2.HttpPostAsync
+                        u1.Token.Value
+                        (sprintf "/api/tenants/%i/admins" tenant.TenantId)
+                        data
 
                 return ()
             }
@@ -101,7 +104,7 @@ module MultiTenantAdminTests =
             // 4. Get user2 domains should return tenant1 management domain
             task {
                 let u2 = users.[1]
-                let! result = testFixture.HttpGetAsync u2.Token.Value "/api/me/management/domains"
+                let! result = testFixture.Server1.HttpGetAsync u2.Token.Value "/api/me/management/domains"
                 do! ensureSuccessAsync result
 
                 let! data = result |> readAsJsonAsync<TenantDomain []>
@@ -123,7 +126,7 @@ module MultiTenantAdminTests =
                 let info: CreatedTenantInfo = users.[0].Tenant.Value
 
                 let! result =
-                    testFixture.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         users.[1].Token.Value
                         (sprintf "/api/tenants/%i/domain-pools" info.TenantId)
                         data
@@ -136,7 +139,7 @@ module MultiTenantAdminTests =
         member __.``D Get user2 domains should return tenant1 and created domain``() =
             task {
                 let u2 = users.[1]
-                let! result = testFixture.HttpGetAsync u2.Token.Value "/api/me/management/domains"
+                let! result = testFixture.Server1.HttpGetAsync u2.Token.Value "/api/me/management/domains"
                 do! ensureSuccessAsync result
 
                 let! data = result |> readAsJsonAsync<TenantDomain []>
@@ -165,9 +168,9 @@ module MultiTenantAdminTests =
                 let data: PostLike =
                     { UserEmail = users.[1].Data.Email
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
-                
+
                 let! result =
-                    testFixture.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         loginResult.access_token
                         (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
                         data
@@ -181,7 +184,7 @@ module MultiTenantAdminTests =
         member __.``F Get user2 domains should return tenant1 and sample1 management domain``() =
             task {
                 let u2 = users.[1]
-                let! result = testFixture.HttpGetAsync u2.Token.Value "/api/me/management/domains"
+                let! result = testFixture.Server1.HttpGetAsync u2.Token.Value "/api/me/management/domains"
                 do! ensureSuccessAsync result
 
                 let! data = result |> readAsJsonAsync<TenantDomain []>

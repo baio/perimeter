@@ -58,7 +58,7 @@ module CRUD =
         member __.``A Create tenant must be success``() =
             task {
                 let data: PostLike = { Name = "tenant-a" }
-                let! result = testFixture.HttpPostAsync userToken "/api/tenants" data
+                let! result = testFixture.Server2.HttpPostAsync userToken "/api/tenants" data
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<int> result
                 ()

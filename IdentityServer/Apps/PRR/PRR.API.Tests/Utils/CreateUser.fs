@@ -20,7 +20,7 @@ open PRR.Domain.Tenant
 module CreateUser =
 
     let logIn' (testFixture: TestFixture) (data: PRR.Domain.Auth.LogIn.Models.Data) =
-        testFixture.HttpPostFormAsync'
+        testFixture.Server1.HttpPostFormAsync'
             "/api/auth/authorize"
             (Map
                 (seq {
@@ -108,7 +108,7 @@ module CreateUser =
                   Client_Id = clientId
                   Code_Verifier = codeVerifier }
 
-            let! result = fixture.HttpPostAsync' "/api/auth/token" loginTokenData
+            let! result = fixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
 
             let! result =
                 result
@@ -121,17 +121,17 @@ module CreateUser =
 
     let createUser'' signInUnderSampleDomain (env: UserTestContext) (userData: SignUp.Models.Data) =
         task {
-            let! _ = env.TestFixture.HttpPostAsync' "/api/auth/sign-up" userData
+            let! _ = env.TestFixture.Server1.HttpPostAsync' "/api/auth/sign-up" userData
             env.ConfirmTokenWaitHandle.WaitOne() |> ignore
             let confirmData: SignUpConfirm.Models.Data = { Token = env.GetConfirmToken() }
 
-            let! result = env.TestFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
+            let! result = env.TestFixture.Server1.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
 
             let! userId = readAsJsonAsync<int> result
 
 
             //
-            let services = env.TestFixture.Server.Services
+            let services = env.TestFixture.Server1.Server.Services
 
             let configProvider =
                 services.GetService(typeof<IConfigProvider>) :?> IConfigProvider
@@ -182,11 +182,11 @@ module CreateUser =
 
     let createUserNoTenant (env: UserTestContext) (userData: SignUp.Models.Data) =
         task {
-            let! _ = env.TestFixture.HttpPostAsync' "/api/auth/sign-up" userData
+            let! _ = env.TestFixture.Server1.HttpPostAsync' "/api/auth/sign-up" userData
             env.ConfirmTokenWaitHandle.WaitOne() |> ignore
             let confirmData: SignUpConfirm.Models.Data = { Token = env.GetConfirmToken() }
 
-            let! _ = env.TestFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
+            let! _ = env.TestFixture.Server1.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
 
             let clientId = "__DEFAULT_CLIENT_ID__"
 

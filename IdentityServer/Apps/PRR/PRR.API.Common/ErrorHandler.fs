@@ -1,4 +1,4 @@
-﻿namespace PRR.API
+﻿namespace PRR.API.Common
 
 open Giraffe
 open Microsoft.Extensions.Logging
@@ -6,7 +6,6 @@ open System
 open DataAvail.EntityFramework.Common
 open DataAvail.Http.Exceptions
 
-[<AutoOpen>]
 module ErrorHandler =
 
     type ErrorDTO =

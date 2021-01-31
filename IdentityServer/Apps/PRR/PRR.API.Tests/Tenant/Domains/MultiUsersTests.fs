@@ -90,7 +90,7 @@ module MultiUsers =
                       SigningAlgorithm = "HS256" }
 
                 let! result =
-                    testFixture.HttpPutAsync
+                    testFixture.Server2.HttpPutAsync
                         u2.Token.Value
                         (sprintf
                             "/api/tenant/domain-pools/%i/domains/%i"
@@ -110,7 +110,7 @@ module MultiUsers =
                 let data: PostLike = { EnvName = "New Domain" }
 
                 let! result =
-                    testFixture.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         u2.Token.Value
                         (sprintf "/api/tenant/domain-pools/%i/domains" u1.Tenant.Value.DomainPoolId)
                         data
@@ -130,7 +130,7 @@ module MultiUsers =
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
 
                 let! res =
-                    testFixture.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         u1.Token.Value
                         (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
                         data
@@ -153,7 +153,7 @@ module MultiUsers =
                       SigningAlgorithm = "HS256" }
 
                 let! result =
-                    testFixture.HttpPutAsync
+                    testFixture.Server2.HttpPutAsync
                         res.access_token
                         (sprintf
                             "/api/tenant/domain-pools/%i/domains/%i"

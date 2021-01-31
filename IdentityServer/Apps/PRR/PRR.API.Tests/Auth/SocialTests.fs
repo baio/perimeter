@@ -87,6 +87,7 @@ module SocialTests =
             |> Seq.find (fun f -> f.ServiceType = typeof<IHttpRequestFunProvider>)
 
         services.Remove(serv) |> ignore
+
         services.AddSingleton<IHttpRequestFunProvider>(HttpRequestFunProvider httpRequestFun)
         |> ignore
 
@@ -101,6 +102,7 @@ module SocialTests =
 
             task {
                 testContext <- Some(createUserTestContextWithServicesOverrides overrideServices testFixture)
+
                 let! userToken' = createUser' true testContext.Value userData
                 userToken <- userToken'
                 // create github social connection
@@ -113,7 +115,10 @@ module SocialTests =
                 let domainId = testContext.Value.GetTenant().DomainId
 
                 let! _ =
-                    testFixture.HttpPostAsync userToken (sprintf "/api/tenant/domains/%i/social/github" domainId) data
+                    testFixture.Server1.HttpPostAsync
+                        userToken
+                        (sprintf "/api/tenant/domains/%i/social/github" domainId)
+                        data
 
                 ()
             }
@@ -150,7 +155,7 @@ module SocialTests =
                             ("Code_Challenge_Method", data.Code_Challenge_Method)
                          }))
 
-                let! result = testFixture.HttpPostFormAsync' url data
+                let! result = testFixture.Server1.HttpPostFormAsync' url data
                 do! ensureRedirectSuccessAsync result
                 let location = result.Headers.Location.ToString()
 
@@ -181,7 +186,7 @@ module SocialTests =
                 let url =
                     sprintf "/api/auth/social/callback?code=111&state=%s" state
 
-                let! result = testFixture.HttpGetAsync' url
+                let! result = testFixture.Server1.HttpGetAsync' url
 
                 do! ensureRedirectSuccessAsync result
 
@@ -212,7 +217,7 @@ module SocialTests =
                       Client_Id = clientId
                       Code_Verifier = codeVerifier }
 
-                let! result' = testFixture.HttpPostAsync' "/api/auth/token" loginTokenData
+                let! result' = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
 
                 do! ensureSuccessAsync result'
 

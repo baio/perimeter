@@ -70,7 +70,7 @@ module MultiUsers =
                 let u1 = users.[0]
 
                 let! _ =
-                    testFixture.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         u1.Token.Value
                         (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
                         data
@@ -97,7 +97,7 @@ module MultiUsers =
 
 
                 let! result =
-                    testFixture.HttpPutAsync
+                    testFixture.Server2.HttpPutAsync
                         u2.Token.Value
                         (sprintf "/api/tenants/%i/domain-pools/%i" u2.Tenant.Value.TenantId u2.Tenant.Value.DomainPoolId)
                         data
@@ -133,7 +133,7 @@ module MultiUsers =
                 let token = u1.Token.Value
 
                 let! res =
-                    testFixture.HttpPostAsync token (sprintf "/api/tenants/%i/admins" u1.Tenant.Value.TenantId) data
+                    testFixture.Server2.HttpPostAsync token (sprintf "/api/tenants/%i/admins" u1.Tenant.Value.TenantId) data
 
                 do! ensureSuccessAsync res
 
@@ -164,7 +164,7 @@ module MultiUsers =
                 let data: DomainPools.PutLike = { Name = "Domain pool 2" }
 
                 let! result =
-                    testFixture.HttpPutAsync
+                    testFixture.Server2.HttpPutAsync
                         u2.Token.Value
                         (sprintf "/api/tenants/%i/domain-pools/%i" u1.Tenant.Value.TenantId u1.Tenant.Value.DomainPoolId)
                         data
@@ -184,7 +184,7 @@ module MultiUsers =
             task {
 
                 let! res =
-                    testFixture.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         users.[1].Token.Value
                         (sprintf "/api/tenants/%i/admins" users.[1].Tenant.Value.TenantId)
                         data
@@ -198,7 +198,7 @@ module MultiUsers =
             let u1 = users.[0]
             task {
                 let! result =
-                    testFixture.HttpDeleteAsync
+                    testFixture.Server2.HttpDeleteAsync
                         u1.Token.Value
                         (sprintf "/api/tenants/%i/admins/%s" u1.Tenant.Value.TenantId u1.Data.Email)
 
@@ -215,7 +215,7 @@ module MultiUsers =
                       RolesIds = [ PRR.Data.DataContext.Seed.Roles.DomainAdmin.Id ] }
 
                 let! result =
-                    testFixture.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         u1.Token.Value
                         (sprintf "/api/tenants/%i/admins" u1.Tenant.Value.TenantId)
                         data

@@ -6,7 +6,7 @@ open DataAvail.Test.Common
 module TestFixture =
     
     type TestFixture() =                    
-        inherit ClientFixture((fun () -> createHost' true))
+        inherit ClientFixture((fun () -> createHost' true), (fun () -> createHost' true))
 
 
 

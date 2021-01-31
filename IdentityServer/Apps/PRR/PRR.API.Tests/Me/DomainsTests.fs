@@ -35,6 +35,7 @@ module Domains =
         member __.``0 BEFORE ALL``() =
             task {
                 testContext <- Some(createUserTestContext testFixture)
+
                 let! userToken' = createUser' false testContext.Value userData
                 userToken <- userToken'
             }
@@ -43,7 +44,7 @@ module Domains =
         [<Priority(1)>]
         member __.``A Get user domains``() =
             task {
-                let! result = testFixture.HttpGetAsync userToken "/api/me/management/domains"
+                let! result = testFixture.Server1.HttpGetAsync userToken "/api/me/management/domains"
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<TenantDomain array> result
                 result |> should haveLength 2

@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes.Tenants
+﻿namespace PRR.API.Routes.Tenant
 
 open Giraffe
 open PRR.API.Routes

@@ -38,6 +38,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Utils\Host.fs" />
         <Compile Include="Utils\ClientFixture.fs" />
         <Compile Include="Utils\EFLogger.fs" />
         <Compile Include="Utils\Setup.fs" />

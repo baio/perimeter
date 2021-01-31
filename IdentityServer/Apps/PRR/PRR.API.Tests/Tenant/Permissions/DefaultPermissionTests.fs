@@ -80,7 +80,7 @@ module DefaultPermissions =
                 let tenant = testContext.Value.GetTenant()
 
                 let! permissionId1 =
-                    (testFixture.HttpPostAsync
+                    (testFixture.Server2.HttpPostAsync
                         userToken
                          (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
                          { testPermission with
@@ -88,7 +88,7 @@ module DefaultPermissions =
                     >>= (readAsJsonAsync<int>)
 
                 let! permissionId2 =
-                    (testFixture.HttpPostAsync
+                    (testFixture.Server2.HttpPostAsync
                         userToken
                          (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
                          { testPermission with
@@ -112,7 +112,7 @@ module DefaultPermissions =
                 let tenant = testContext.Value.GetTenant()
 
                 let! permissionId =
-                    testFixture.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         userToken
                         (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
                         { testPermission with
@@ -176,7 +176,7 @@ module DefaultPermissions =
                       PermissionIds = [ u1.PermissionIds |> Seq.item 1 ] }
 
                 let! result =
-                    testFixture.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         u1.Token.Value
                         (sprintf "/api/tenant/domains/%i/roles" u1.Tenant.Value.DomainId)
                         data
@@ -191,7 +191,7 @@ module DefaultPermissions =
                       RolesIds = [ roleId ] }
 
                 let! result =
-                    testFixture.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         u1.Token.Value
                         (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
                         data

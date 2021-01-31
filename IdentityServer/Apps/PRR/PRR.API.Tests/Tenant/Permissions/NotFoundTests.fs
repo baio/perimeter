@@ -68,7 +68,7 @@ module NotFound =
                       Description = "test description"
                       IsDefault = false }
 
-                let! result = testFixture.HttpPostAsync u1.Token.Value (sprintf "/api/tenant/apis/100/permissions") data
+                let! result = testFixture.Server2.HttpPostAsync u1.Token.Value (sprintf "/api/tenant/apis/100/permissions") data
                 ensureNotFound result
             }
 
@@ -82,7 +82,7 @@ module NotFound =
                       IsDefault = false }
 
                 let! result =
-                    testFixture.HttpPutAsync
+                    testFixture.Server2.HttpPutAsync
                         u1.Token.Value
                         (sprintf "/api/tenant/apis/%i/permissions/%i" u1.Tenant.Value.SampleApiId 100)
                         data
@@ -95,7 +95,7 @@ module NotFound =
             let u1 = users.[0]
             task {
                 let! result =
-                    testFixture.HttpGetAsync
+                    testFixture.Server2.HttpGetAsync
                         u1.Token.Value
                         (sprintf "/api/tenant/apis/%i/permissions/%i" u1.Tenant.Value.SampleApiId 100)
 
@@ -108,7 +108,7 @@ module NotFound =
             let u1 = users.[0]
             task {
                 let! result =
-                    testFixture.HttpDeleteAsync
+                    testFixture.Server2.HttpDeleteAsync
                         u1.Token.Value
                         (sprintf "/api/tenant/apis/%i/permissions/%i" u1.Tenant.Value.SampleApiId 100)
 

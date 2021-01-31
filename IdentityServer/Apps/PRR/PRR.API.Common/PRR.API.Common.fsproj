@@ -16,6 +16,7 @@
         <Compile Include="Configuration\ServiceBus.fs" />
         <Compile Include="Configuration\ConfigProvider.fs" />
         <Compile Include="Configuration\CreateCommonAppConfig.fs" />
+        <Compile Include="ErrorHandler.fs" />
     </ItemGroup>
 
     <ItemGroup>
@@ -24,6 +25,7 @@
         <PackageReference Include="AspNetCore.HealthChecks.Prometheus.Metrics" Version="3.1.4" />
         <PackageReference Include="AspNetCore.HealthChecks.Publisher.Prometheus" Version="3.1.3" />
         <PackageReference Include="AspNetCore.HealthChecks.System" Version="3.1.2" />
+        <PackageReference Include="Giraffe" Version="4.1.0" />
         <PackageReference Include="Http.fs" Version="5.4.0" />
         <PackageReference Include="MassTransit.AspNetCore" Version="7.1.4" />
         <PackageReference Include="MassTransit.RabbitMQ" Version="7.1.4" />
@@ -44,6 +46,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\Libs\DataAvail.EntityFramework.Common\DataAvail.EntityFramework.Common.fsproj" />
+      <ProjectReference Include="..\..\..\Libs\DataAvail.Http.Exceptions\DataAvail.Http.Exceptions.fsproj" />
       <ProjectReference Include="..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
     </ItemGroup>
 </Project>
