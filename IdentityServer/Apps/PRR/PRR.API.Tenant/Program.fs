@@ -4,12 +4,14 @@ open Giraffe
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.AspNetCore.Hosting
+open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open System
 open PRR.API.Tenant.Configuration
 open PRR.API.Common.ErrorHandler
 open PRR.API.Tenant.Routes
+open Prometheus
 
 let webApp =
     subRoute
@@ -71,7 +73,7 @@ let main args =
         WebHostBuilder()
             .UseConfiguration(config)
             .UseKestrel()
-            .UseUrls("http://*:5000", "https://*:5001")
+            .UseUrls("http://*:6000", "https://*:6001")
             .UseIISIntegration()
             .ConfigureAppConfiguration(configureAppConfiguration)
             .Configure(Action<IApplicationBuilder> configureApp)
