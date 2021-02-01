@@ -17,6 +17,7 @@
         <Compile Include="Routes\GetAudience.fs" />
         <Compile Include="Routes\PermissionConstants.fs" />
         <Compile Include="Routes\Utils.fs" />
+        <Compile Include="Routes\Version.fs" />
         <Compile Include="Routes\TenantsRoutes.fs" />
         <Compile Include="Routes\SocialConnectionRoutes.fs" />
         <Compile Include="Routes\DomainPoolRoutes.fs" />
@@ -29,6 +30,7 @@
         <Compile Include="Routes\TenantUserRoleRoutes.fs" />
         <Compile Include="Routes\UserActivities.fs" />
         <Compile Include="Routes\GetManagementDomainRoutes.fs" />
+        <Compile Include="Routes\E2ERoutes.fs" />
         <Compile Include="Routes\TenantRoutes.fs" />
         <Compile Include="Program.fs" />
         <Content Include="appsettings.e2e.json">

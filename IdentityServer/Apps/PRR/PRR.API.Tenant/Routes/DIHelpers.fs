@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes
+﻿namespace PRR.API.Tenant.Routes
 
 open PRR.API.Common.Infra
 open PRR.API.Tenant.Configuration

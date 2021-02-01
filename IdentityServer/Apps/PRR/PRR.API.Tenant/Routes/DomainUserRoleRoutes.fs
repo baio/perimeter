@@ -4,7 +4,6 @@ open DataAvail.Common
 open DataAvail.Common.ReaderTask
 open DataAvail.Giraffe.Common
 open Giraffe
-open PRR.API.Routes
 open PRR.Data.DataContext
 open PRR.Domain.Tenant.DomainUserRoles
 open DataAvail.ListQuery.Core

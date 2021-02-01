@@ -1,1 +1,11 @@
-{}
+{
+    "logLevel": "debug",
+    "/api/auth": {
+        "target": "https://localhost:5001",
+        "secure": false
+    },
+    "/api/tenant": {
+        "target": "https://localhost:6001",
+        "secure": false
+    }
+}

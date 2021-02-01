@@ -1,12 +1,9 @@
 ﻿namespace PRR.API.Tenant.Routes
 
 open Giraffe
-open PRR.API.Routes
 open DataAvail.Common.ReaderTask
 open PRR.Domain.Tenant.UserDomains
-
 open DataAvail.Giraffe.Common
-
 
 module GetManagementDomainRoutes =
 

@@ -9,6 +9,6 @@ export class TenantsDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
     createItem(data: { name: string }): Observable<any> {
-        return this.http.post('tenants', data);
+        return this.http.post('tenant/tenants', data);
     }
 }

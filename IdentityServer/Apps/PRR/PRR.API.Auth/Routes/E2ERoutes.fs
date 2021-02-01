@@ -1,6 +1,5 @@
 ﻿namespace PRR.API.Auth.Routes
 
-open PRR.Domain.Models
 open DataAvail.Giraffe.Common
 open DataAvail.KeyValueStorage.Core
 open FSharp.Control.Tasks.V2.ContextInsensitive
@@ -12,7 +11,6 @@ open MongoDB.Driver
 open PRR.API.Auth.Configuration
 
 open PRR.API.Auth.Routes
-open PRR.Data.DataContext
 open PRR.Domain.Auth.Common.KeyValueModels
 open PRR.Domain.Auth.SignUpConfirm
 open System
@@ -32,12 +30,12 @@ module E2E =
 
     let private recreateMongoDb (ctx: HttpContext) =
         let config = ctx.GetService<IConfiguration>()
+
         dropDatabase
             (config.GetValue "MongoKeyValueStorage:ConnectionString")
             (config.GetValue "MongoKeyValueStorage:DbName")
-        dropDatabase
-            (config.GetValue "MongoViewStorage:ConnectionString")
-            (config.GetValue "MongoViewStorage:DbName")
+
+        dropDatabase (config.GetValue "MongoViewStorage:ConnectionString") (config.GetValue "MongoViewStorage:DbName")
 
     let private recreatedDataContextDb ctx =
         let dataContext = getDataContext ctx
@@ -47,31 +45,6 @@ module E2E =
     let private recreatedDbs ctx =
         recreatedDataContextDb ctx
         recreateMongoDb ctx
-
-    (*
-    type CreateUserTenantEnv =
-        { DataContext: DbDataContext
-          Config: AppConfig
-          AuthStringsGetter: AuthStringsGetter }
-
-    TODO : Restore !!!
-    let createUserTenant (env: CreateUserTenantEnv) userId email =
-
-        let config = env.Config
-
-        let authConfig: PRR.Domain.Tenant.Models.AuthConfig =
-            { AccessTokenSecret = config.Auth.Jwt.AccessTokenSecret
-              AccessTokenExpiresIn = config.Auth.Jwt.AccessTokenExpiresIn
-              IdTokenExpiresIn = config.Auth.Jwt.IdTokenExpiresIn
-              RefreshTokenExpiresIn = config.Auth.Jwt.RefreshTokenExpiresIn }
-
-        PRR.Domain.Tenant.CreateUserTenant.createUserTenant
-            { DbDataContext = env.DataContext
-              AuthConfig = authConfig
-              AuthStringsGetter = env.AuthStringsGetter }
-
-            { Email = email; UserId = userId }
-    *)
 
     let createRoutes () =
 
@@ -107,6 +80,7 @@ module E2E =
                          let kvStorage' =
                              { new IKeyValueStorage with
                                  member __.AddValue k (v: 'a) x = kvStorage.AddValue<'a> k v x
+
                                  member __.GetValue<'a> k x =
                                      (Task.FromResult(Result.Ok((box signUpConfirmItem) :?> 'a)))
 
@@ -134,17 +108,6 @@ module E2E =
                              //
                              Thread.Sleep(100)
 
-                             // TODO : Restore !!!
-                             (*
-                             let env =
-                                 { DataContext = getDataContext ctx
-                                   AuthStringsGetter = getAuthStringsGetter ctx
-                                   Config = getConfig ctx }
-
-                             
-                             //let! _ = createUserTenant env userId signUpConfirmItem.Email
-                             *)
-
                              let! data = ctx |> bindJsonAsync<ReinitData>
 
                              let! clientId =
@@ -157,7 +120,11 @@ module E2E =
                                                   && dur.UserEmail = signUpConfirmItem.Email)
 
                                              select
-                                                 (dur.Domain.Applications.Single(fun p -> p.IsDomainManagement).ClientId)
+                                                 (dur
+                                                     .Domain
+                                                     .Applications
+                                                     .Single(fun p -> p.IsDomainManagement)
+                                                     .ClientId)
                                      }
                                      |> toSingleAsync
                                  | _ -> Task.FromResult "__DEFAULT_CLIENT_ID__"

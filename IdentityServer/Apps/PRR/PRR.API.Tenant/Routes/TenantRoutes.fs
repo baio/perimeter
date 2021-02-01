@@ -1,6 +1,7 @@
 ﻿namespace PRR.API.Tenant.Routes
 
 open Giraffe
+open DataAvail.Giraffe.Common
 
 [<AutoOpen>]
 module CreateRoutes =
@@ -16,4 +17,11 @@ module CreateRoutes =
                  TenantUserRole.createRoutes ()
                  DomainUserRole.createRoutes ()
                  UsersActivities.createRoutes ()
-                 GetManagementDomainRoutes.createRoutes () ]
+                 GetManagementDomainRoutes.createRoutes ()
+                 GET >=> route "/version" >=> Version.handler
+#if E2E
+                 POST
+                 >=> route "/e2e/create-user-tenant"
+                 >=> wrapHandlerOK E2ERoutes.createUserTenant
+#endif
+                  ]

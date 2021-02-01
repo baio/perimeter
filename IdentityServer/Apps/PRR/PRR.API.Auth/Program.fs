@@ -21,10 +21,8 @@ open HealthChecks.Prometheus
 
 let webApp =
     subRoute
-        "/api"
-        (choose [ 
-                  PingRoutes.createRoutes ()
-                  createRoutes ()
+        "/api/auth"
+        (choose [ createRoutes ()
 #if E2E
                   E2E.createRoutes ()
 #endif

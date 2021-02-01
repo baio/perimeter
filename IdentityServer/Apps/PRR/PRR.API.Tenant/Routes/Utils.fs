@@ -1,6 +1,5 @@
 ﻿namespace PRR.API.Tenant.Routes
 open DataAvail.Giraffe.Common
-open PRR.API.Routes.DIHelpers
 
 [<AutoOpen>]
 module private Utils = 

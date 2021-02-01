@@ -1,7 +1,6 @@
 ﻿namespace PRR.API.Tenant.Routes
 
 open Giraffe
-open PRR.API.Routes
 open PRR.Domain.Tenant.SocialConnections
 open DataAvail.Giraffe.Common
 open DataAvail.Common

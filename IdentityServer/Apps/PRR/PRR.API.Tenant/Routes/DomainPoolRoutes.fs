@@ -1,7 +1,6 @@
 ﻿namespace PRR.API.Tenant.Routes
 
 open Giraffe
-open PRR.API.Routes
 open PRR.Domain.Tenant.DomainPools
 open PRR.Domain.Tenant.Models
 open DataAvail.ListQuery.Core

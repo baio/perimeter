@@ -10,7 +10,9 @@ export class AppComponent implements OnInit {
     constructor(private readonly http: HttpClient) {}
 
     async ngOnInit() {
-        const result = await this.http.get('version').toPromise();
-        console.log('API', result);
+        const authResult = await this.http.get('auth/version').toPromise();
+        console.log('auth API', authResult);
+        const tenantResult = await this.http.get('tenant/version').toPromise();
+        console.log('tenant API', tenantResult);
     }
 }

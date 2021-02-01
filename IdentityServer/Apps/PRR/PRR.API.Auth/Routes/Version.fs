@@ -1,15 +1,13 @@
 ﻿namespace PRR.API.Auth.Routes
 
 open Giraffe
+open Microsoft.AspNetCore.Http
 
-module PingRoutes =
-
-    let createRoutes () =
-        route "/auth/version"
-        >=> GET
-        >=> (fun next ctx ->
+module Version =
+    let handler =
+        fun next (ctx: HttpContext) ->
             json
                 {| Version = 20
                    Environment = ctx.GetHostingEnvironment().EnvironmentName |}
                 next
-                ctx)
+                ctx

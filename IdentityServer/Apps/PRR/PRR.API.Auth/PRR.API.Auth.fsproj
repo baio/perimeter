@@ -47,9 +47,9 @@
         <Compile Include="Configuration\ConfigureAppServices.fs" />
         <Compile Include="Configuration\CreateAppConfig.fs" />
         <Compile Include="Routes\DIHelpers.fs" />
-        <Compile Include="Routes\PingRoutes.fs" />
         <Compile Include="Routes\Helpers\GetRefererUrl.fs" />
         <Compile Include="Routes\Helpers\GetExnRedirectUrl.fs" />
+        <Compile Include="Routes\Version.fs" />
         <Compile Include="Routes\PostSignUp.fs" />
         <Compile Include="Routes\PostSignUpConfirm.fs" />
         <Compile Include="Routes\PostResetPassword.fs" />
@@ -64,8 +64,8 @@
         <Compile Include="Routes\PostAuthSocial.fs" />
         <Compile Include="Routes\GetAuthSocialCallback.fs" />
         <Compile Include="Routes\GetApplicationInfo.fs" />
+        <Compile Include="Routes\E2ERoutes.fs" />
         <Compile Include="Routes\AuthRoutes.fs" />
-        <Compile Include="E2ERoutes.fs" />
         <Compile Include="Program.fs" />
         <Content Include="appsettings.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>

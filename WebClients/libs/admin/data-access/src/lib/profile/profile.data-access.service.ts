@@ -8,6 +8,6 @@ export class ProfileDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
     loadManagementDomains(): Observable<Domain[]> {
-        return this.http.get<Domain[]>('/me/management/domains');
+        return this.http.get<Domain[]>('/tenant/management/domains');
     }
 }
