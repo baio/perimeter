@@ -15,7 +15,7 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PRR.Domain.Auth", "Apps\PRR
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PRR.Domain.Models", "Apps\PRR\Domain\PRR.Domain.Models\PRR.Domain.Models.fsproj", "{68FB0CFF-F3AB-4AF5-BF5D-330C704AF9A6}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PRR.API", "Apps\PRR\PRR.API\PRR.API.fsproj", "{C9EE0F56-675E-4611-84D7-0927EC6D50F7}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "PRR.API.Auth", "Apps\PRR\PRR.API.Auth\PRR.API.Auth.fsproj", "{C9EE0F56-675E-4611-84D7-0927EC6D50F7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{792FA996-D568-45C0-A471-89CAFA29BBD2}"
 	ProjectSection(SolutionItems) = preProject
