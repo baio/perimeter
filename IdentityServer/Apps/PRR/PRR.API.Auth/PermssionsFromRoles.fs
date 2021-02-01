@@ -1,4 +1,4 @@
-﻿namespace PRR.API
+﻿namespace PRR.API.Auth
 
 open System.Threading.Tasks
 

@@ -5,15 +5,15 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open FSharpx
 open Microsoft.Azure.Documents
 open Microsoft.Extensions.Configuration
-open PRR.API.Configuration.ConfigureServices
-open PRR.API.Infra
+open PRR.API.Auth.Configuration.ConfigureServices
+open PRR.API.Auth.Infra
 open PRR.Data.DataContext
 open PRR.Domain.Auth
 open System
 open System.Security.Cryptography
 open System.Threading
 open System.Web
-open PRR.API.Routes.E2E
+open PRR.API.Auth.Routes.E2E
 open PRR.Domain.Tenant
 
 [<AutoOpen>]

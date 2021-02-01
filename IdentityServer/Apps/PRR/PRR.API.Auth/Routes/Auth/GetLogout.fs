@@ -1,14 +1,12 @@
-namespace PRR.API.Routes.Auth.LogOut
+namespace PRR.API.Auth.Routes
 
 open Giraffe
 open DataAvail.Giraffe.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open PRR.API.Routes
 open PRR.Domain.Auth.LogOut
 open Microsoft.Extensions.Logging
-open PRR.Domain.Models
-open PRR.API.Routes.Auth.Helpers
 open DataAvail.Http.Exceptions
+open PRR.API.Auth.Routes.Helpers
 
 module internal GetLogout =
 
@@ -65,4 +63,3 @@ module internal GetLogout =
 
                 return! redirectTo false redirectUrlError next ctx
         }
-

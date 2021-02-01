@@ -2,7 +2,6 @@
 
 open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.DependencyInjection
-open PRR.API.Infra
 open System.Threading
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Domain.Tenant

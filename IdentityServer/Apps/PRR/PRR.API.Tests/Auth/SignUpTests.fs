@@ -4,7 +4,7 @@ open DataAvail.Test.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
 open Microsoft.Extensions.DependencyInjection
-open PRR.API.Infra.Mail.Models
+open PRR.API.Auth.Infra.Mail.Models
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth
 open PRR.Domain.Auth.Common

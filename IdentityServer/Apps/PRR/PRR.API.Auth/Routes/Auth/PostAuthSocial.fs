@@ -1,12 +1,11 @@
-﻿namespace PRR.API.Routes.Auth
+﻿namespace PRR.API.Auth.Routes
 
 open Microsoft.AspNetCore.Http
 open Giraffe
-open PRR.API.Routes
 open DataAvail.Giraffe.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Domain.Auth.Social.SocialAuth
-open PRR.API.Routes.Auth.Helpers
+open PRR.API.Auth.Routes.Helpers
 open Microsoft.Extensions.Logging
 
 module PostAuthSocial =
@@ -27,6 +26,7 @@ module PostAuthSocial =
 
     let handler next ctx =
         let env = getEnv ctx
+
         task {
             let! data = bindFormAsync ctx
 

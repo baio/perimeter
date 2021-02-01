@@ -1,12 +1,8 @@
-﻿namespace PRR.API.Routes.Auth
+﻿namespace PRR.API.Auth.Routes
 
-open System
 open Giraffe
 open DataAvail.Giraffe.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open MassTransit
-open PRR.API.Routes
-open PRR.Domain.Auth.Common.KeyValueModels
 open PRR.Domain.Auth.LogInToken
 
 module PostAuthorizeToken =

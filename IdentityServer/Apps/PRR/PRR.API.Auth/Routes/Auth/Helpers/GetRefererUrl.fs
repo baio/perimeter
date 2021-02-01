@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes.Auth.Helpers
+﻿namespace PRR.API.Auth.Routes.Helpers
 
 open DataAvail.Giraffe.Common
 

@@ -1,9 +1,8 @@
-﻿namespace PRR.API.Configuration
+﻿namespace PRR.API.Auth.Configuration
 
 open Microsoft.Extensions.DependencyInjection
-open PRR.API.Infra.Mail
-open PRR.API.Infra.Mail.Models
-open PRR.API.Infra.SendMail
+open PRR.API.Auth.Infra.Mail
+open PRR.API.Auth.Infra.SendMail
 
 [<AutoOpen>]
 module MailSender =

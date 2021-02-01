@@ -1,13 +1,11 @@
-﻿namespace PRR.API.Routes.Auth
+﻿namespace PRR.API.Auth.Routes
 
 open Giraffe
 open DataAvail.Giraffe.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Microsoft.AspNetCore.Http
-open PRR.API.Routes
 open PRR.Domain.Auth.LogInSSO
 open Microsoft.Extensions.Logging
-open PRR.API.Routes.Auth
 
 module PostAuthorize =
 

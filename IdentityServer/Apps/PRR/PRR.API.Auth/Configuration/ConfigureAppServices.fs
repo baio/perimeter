@@ -1,10 +1,10 @@
-﻿namespace PRR.API.Configuration
+﻿namespace PRR.API.Auth.Configuration
 
 open PRR.Domain.Models
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
-open PRR.API.Infra.Mail.Models
-open PRR.API.Infra.Models
+open PRR.API.Auth.Infra.Mail.Models
+open PRR.API.Auth.Infra.Models
 open PRR.Domain.Auth
 open PRR.API.Common.Configuration
 

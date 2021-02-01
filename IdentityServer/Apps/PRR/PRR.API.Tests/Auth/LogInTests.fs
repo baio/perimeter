@@ -3,8 +3,7 @@
 open DataAvail.Test.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
-open Microsoft.VisualBasic
-open PRR.API.Infra
+open PRR.API.Auth.Infra
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.LogInToken
 open PRR.Domain.Auth.SignUp

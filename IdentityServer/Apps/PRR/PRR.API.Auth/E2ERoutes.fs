@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes
+﻿namespace PRR.API.Auth.Routes
 
 open PRR.Domain.Models
 open DataAvail.Giraffe.Common
@@ -9,9 +9,9 @@ open Microsoft.AspNetCore.Http
 open Microsoft.EntityFrameworkCore
 open Microsoft.Extensions.Configuration
 open MongoDB.Driver
-open PRR.API.Configuration
+open PRR.API.Auth.Configuration
 
-open PRR.API.Routes.Auth
+open PRR.API.Auth.Routes
 open PRR.Data.DataContext
 open PRR.Domain.Auth.Common.KeyValueModels
 open PRR.Domain.Auth.SignUpConfirm

@@ -1,8 +1,8 @@
-﻿namespace PRR.API.Configuration
+﻿namespace PRR.API.Auth.Configuration
 
 open Microsoft.Extensions.DependencyInjection
-open PRR.API
-open PRR.API.Infra
+open PRR.API.Auth
+open PRR.API.Auth.Infra
 open System.Security.Cryptography
 open DataAvail.HttpRequest.HttpFs
 

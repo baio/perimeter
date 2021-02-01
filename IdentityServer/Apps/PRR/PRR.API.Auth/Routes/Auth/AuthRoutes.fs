@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes.Auth
+﻿namespace PRR.API.Auth.Routes
 
 [<AutoOpen>]
 module AuthRoutes =
@@ -31,9 +31,7 @@ module AuthRoutes =
                       POST
                       >=> route "/refresh-token"
                       >=> PostRefreshToken.handler
-                      GET
-                      >=> route "/logout"
-                      >=> LogOut.GetLogout.handler
+                      GET >=> route "/logout" >=> GetLogout.handler
                       GET
                       >=> routef "/applications/%s" GetApplicationInfo.handler
-                      PUT >=> route "/password" >=> PutPassword.handler])
+                      PUT >=> route "/password" >=> PutPassword.handler ])

@@ -1,14 +1,11 @@
 ﻿namespace PRR.API.Tests.Utils
 
 open Microsoft.AspNetCore.Hosting
-open Microsoft.AspNetCore.TestHost
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Npgsql.Logging
 open System
 open System.IO
-open Xunit
-open PRR.API.Infra
 open MongoDB.Driver
 
 [<AutoOpen>]
@@ -42,9 +39,9 @@ module Setup =
     let createAuthHost () =
         WebHostBuilder()
             .UseContentRoot(Directory.GetCurrentDirectory())
-            .Configure(Action<_> PRR.API.App.configureApp)
-            .ConfigureAppConfiguration(PRR.API.App.configureAppConfiguration)
-            .ConfigureServices(Action<_, _> PRR.API.App.configureServices)
+            .Configure(Action<_> PRR.API.Auth.App.configureApp)
+            .ConfigureAppConfiguration(PRR.API.Auth.App.configureAppConfiguration)
+            .ConfigureServices(Action<_, _> PRR.API.Auth.App.configureServices)
         |> fun builder ->            
             builder.ConfigureServices(Action<_, _> recreateDataContext)            
 

@@ -1,13 +1,12 @@
-﻿namespace PRR.API.Routes.Auth
+﻿namespace PRR.API.Auth.Routes
 
 open PRR.Domain.Models
 open PRR.Domain.Auth
 open PRR.Domain.Auth.LogIn
 open Giraffe
 open DataAvail.Giraffe.Common
-open PRR.API.Routes
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open PRR.API.Routes.Auth.Helpers
+open PRR.API.Auth.Routes.Helpers
 open Microsoft.Extensions.Logging
 
 module internal PostLogIn =

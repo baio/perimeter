@@ -1,6 +1,6 @@
-﻿namespace PRR.API.Infra
+﻿namespace PRR.API.Auth.Infra
 
-open PRR.API.Infra.Mail
+open PRR.API.Auth.Infra.Mail
 open PRR.Domain.Auth.Common
 
 [<AutoOpen>]

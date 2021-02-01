@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Infra.Mail
+﻿namespace PRR.API.Auth.Infra.Mail
 
 open System.Threading.Tasks
 open PRR.Domain.Auth.Common

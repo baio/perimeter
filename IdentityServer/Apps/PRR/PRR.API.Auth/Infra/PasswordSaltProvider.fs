@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Infra
+﻿namespace PRR.API.Auth.Infra
 
 [<AutoOpen>]
 module PasswordSaltProvider =

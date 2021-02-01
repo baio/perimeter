@@ -1,4 +1,4 @@
-module PRR.API.App
+module PRR.API.Auth.App
 
 open System.Net
 open Giraffe
@@ -12,10 +12,10 @@ open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Diagnostics.HealthChecks
 open Microsoft.Extensions.Logging
 open PRR.API
-open PRR.API.Routes
+open PRR.API.Auth.Routes
 open PRR.Data.DataContext
 open System
-open PRR.API.Configuration
+open PRR.API.Auth.Configuration
 open Prometheus
 open HealthChecks.Prometheus
 
@@ -24,7 +24,7 @@ let webApp =
         "/api"
         (choose [ 
                   PingRoutes.createRoutes ()
-                  Auth.AuthRoutes.createRoutes ()
+                  createRoutes ()
 #if E2E
                   E2E.createRoutes ()
 #endif

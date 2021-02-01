@@ -1,14 +1,14 @@
-﻿namespace PRR.API.Routes
+﻿namespace PRR.API.Auth.Routes
 
 open DataAvail.KeyValueStorage.Core
 open MassTransit
-open PRR.API.Configuration.ConfigureServices
-open PRR.API.Infra.Mail.Models
+open PRR.API.Auth.Configuration.ConfigureServices
+open PRR.API.Auth.Infra.Mail.Models
 open PRR.Data.DataContext
 open Giraffe
 open Microsoft.AspNetCore.Http
 open DataAvail.Common.ReaderTask
-open PRR.API.Infra.Models
+open PRR.API.Auth.Infra.Models
 
 [<AutoOpen>]
 module DIHelpers =

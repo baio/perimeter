@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes
+﻿namespace PRR.API.Auth.Routes
 
 open Giraffe
 

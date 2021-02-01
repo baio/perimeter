@@ -1,9 +1,8 @@
-﻿namespace PRR.API.Routes.Auth
+﻿namespace PRR.API.Auth.Routes
 
 open Giraffe
 open DataAvail.Giraffe.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open PRR.API.Routes
 open PRR.Domain.Auth.ResetPasswordConfirm
 
 module PostResetPasswordConfirm =

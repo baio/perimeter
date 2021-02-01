@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes.Auth
+﻿namespace PRR.API.Auth.Routes
 
 open Giraffe
 open DataAvail.Common
@@ -7,8 +7,6 @@ open DataAvail.Giraffe.Common
 
 open PRR.Domain.Models
 open PRR.Domain.Auth.ApplicationInfo
-open PRR.API.Routes
-
 
 module internal GetApplicationInfo =
 

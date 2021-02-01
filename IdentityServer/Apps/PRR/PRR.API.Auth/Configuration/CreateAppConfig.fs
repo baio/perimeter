@@ -1,8 +1,8 @@
-﻿namespace PRR.API.Configuration
+﻿namespace PRR.API.Auth.Configuration
 
 open PRR.Domain.Models
 open Microsoft.Extensions.Configuration
-open PRR.API.Infra.Mail
+open PRR.API.Auth.Infra.Mail
 open PRR.Domain.Auth
 open PRR.API.Common.Configuration
 

@@ -1,7 +1,7 @@
-﻿namespace PRR.API.Infra
+﻿namespace PRR.API.Auth.Infra
 
 open PRR.Data.DataContext
-open PRR.API
+open PRR.API.Auth
 open DataAvail.EntityFramework.Common
 
 [<AutoOpen>]

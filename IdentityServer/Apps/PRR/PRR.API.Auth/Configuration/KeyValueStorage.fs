@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Configuration
+﻿namespace PRR.API.Auth.Configuration
 
 open DataAvail.KeyValueStorage.Mongo
 open DataAvail.KeyValueStorage.Core

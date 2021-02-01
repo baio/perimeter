@@ -1,7 +1,7 @@
-﻿namespace PRR.API.Infra
+﻿namespace PRR.API.Auth.Infra
 
 open DataAvail.HttpRequest.Core
-open PRR.API.Infra
+open PRR.API.Auth.Infra
 
 [<AutoOpen>]
 module HttpRequestFun =
