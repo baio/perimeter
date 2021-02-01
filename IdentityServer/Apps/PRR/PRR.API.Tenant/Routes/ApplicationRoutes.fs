@@ -58,7 +58,7 @@ module private ApplicationHandlers =
 module Application =
 
     let createRoutes () =
-        subRoutef "/tenant/domains/%i/applications" (fun domainId ->
+        subRoutef "/domains/%i/applications" (fun domainId ->
             permissionGuard MANAGE_DOMAIN
             >=> wrapAudienceGuard fromDomainId domainId
             >=> (choose [ POST >=> createHandler domainId

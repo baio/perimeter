@@ -41,15 +41,15 @@ module private SocialConnectionHandlers =
 
         let createRoutes () =
 
-            choose [ routef "/tenant/domains/%i/social" (fun domainId ->
+            choose [ routef "/domains/%i/social" (fun domainId ->
                          permissionGuard MANAGE_DOMAIN
                          >=> GET
                          >=> getAllHandler domainId)
-                     routef "/tenant/domains/%i/social/order" (fun domainId ->
+                     routef "/domains/%i/social/order" (fun domainId ->
                          permissionGuard MANAGE_DOMAIN
                          >=> PUT
                          >=> reorderHandler domainId)
-                     routef "/tenant/domains/%i/social/%s" (fun (domainId, name) ->
+                     routef "/domains/%i/social/%s" (fun (domainId, name) ->
                          permissionGuard MANAGE_DOMAIN
                          >=> choose [ POST >=> (createHandler domainId name)
                                       PUT >=> (updateHandler domainId name)

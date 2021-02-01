@@ -53,15 +53,15 @@ module DomainUserRole =
 
     let createRoutes () =
         choose [ DELETE
-                 >=> routef "/tenant/domains/%i/users/%s" remove
+                 >=> routef "/domains/%i/users/%s" remove
                  GET
-                 >=> routef "/tenant/domains/%i/users/%s" getOne
+                 >=> routef "/domains/%i/users/%s" getOne
                  GET
-                 >=> routef "/tenant/domains/%i/users" getUsersList
+                 >=> routef "/domains/%i/users" getUsersList
                  GET
-                 >=> routef "/tenant/domains/%i/admins" getDomainAdminsList
+                 >=> routef "/domains/%i/admins" getDomainAdminsList
                  POST
-                 >=> routef "/tenant/domains/%i/users" (fun domainId ->
+                 >=> routef "/domains/%i/users" (fun domainId ->
                          // check access token contains audience from the same domain
                          wrapAudienceGuard fromDomainId domainId
                          >=> choose [ permissionOptGuard MANAGE_DOMAIN_SUPER_ADMINS

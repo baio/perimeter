@@ -51,8 +51,8 @@ module Permission =
 
     let createRoutes() =
         choose [
-            GET >=> routef "/tenant/domains/%i/permissions/all" getAllPermissions 
-            subRoutef "/tenant/apis/%i/permissions" (fun apiId ->
+            GET >=> routef "/domains/%i/permissions/all" getAllPermissions 
+            subRoutef "/apis/%i/permissions" (fun apiId ->
                 wrapAudienceGuard fromApiId apiId >=>
                 choose
                     [ POST >=> permissionGuard MANAGE_PERMISSIONS >=>  createHandler apiId

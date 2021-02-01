@@ -81,7 +81,7 @@ module MultiTenantAdminTests =
                 let! _ =
                     testFixture.Server2.HttpPostAsync
                         u1.Token.Value
-                        (sprintf "/api/tenants/%i/admins" tenant.TenantId)
+                        (sprintf "/api/tenant/tenants/%i/admins" tenant.TenantId)
                         data
 
                 return ()
@@ -128,7 +128,7 @@ module MultiTenantAdminTests =
                 let! result =
                     testFixture.Server2.HttpPostAsync
                         users.[1].Token.Value
-                        (sprintf "/api/tenants/%i/domain-pools" info.TenantId)
+                        (sprintf "/api/tenant/tenants/%i/domain-pools" info.TenantId)
                         data
 
                 do! ensureSuccessAsync result

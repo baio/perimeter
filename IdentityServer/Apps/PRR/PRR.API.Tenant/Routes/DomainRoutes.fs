@@ -67,7 +67,7 @@ module private DomainHandlers =
 module Domain =
 
     let createRoutes () =
-        subRoutef "/tenant/domain-pools/%i/domains" (fun domainPoolId ->
+        subRoutef "/domain-pools/%i/domains" (fun domainPoolId ->
             choose [ POST
                      >=> permissionGuard MANAGE_TENANT_DOMAINS
                      >=> wrapAudienceGuard fromDomainPoolId domainPoolId

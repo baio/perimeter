@@ -60,7 +60,7 @@ module private ApiHandlers =
 module Api =
 
     let createRoutes () =
-        subRoutef "/tenant/domains/%i/apis" (fun domainId ->
+        subRoutef "/domains/%i/apis" (fun domainId ->
             permissionGuard MANAGE_DOMAIN
             >=> wrapAudienceGuard fromDomainId domainId
             >=> (choose [ POST >=> createHandler domainId

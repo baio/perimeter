@@ -17,6 +17,6 @@ module GetManagementDomainRoutes =
 
 
     let createRoutes () =
-        route "/tenant/management/domains"
+        route "/management/domains"
         >=> GET
         >=> getDomainsHandler

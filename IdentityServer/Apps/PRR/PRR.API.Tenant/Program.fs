@@ -14,7 +14,7 @@ open PRR.API.Tenant.EventHandlers
 
 let webApp =
     subRoute
-        "/api"
+        "/api/tenant"
         (choose [ Routes.Tenant.CreateRoutes.createRoutes ()
                   setStatusCode 404 >=> text "Not Found" ])
 

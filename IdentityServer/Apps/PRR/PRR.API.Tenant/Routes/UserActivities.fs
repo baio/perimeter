@@ -39,12 +39,12 @@ module UsersActivities =
 
     let createRoutes () =
         choose [ GET
-                 >=> routef "/tenant/domains/%i/user-activities" (fun domainId ->
+                 >=> routef "/domains/%i/user-activities" (fun domainId ->
                          DataAvail.Giraffe.Common.Auth.permissionGuard MANAGE_DOMAIN
                          >=> wrapAudienceGuard fromDomainId domainId
                          >=> getLogIns false domainId)
                  GET
-                 >=> routef "/tenant/domains/%i/admin-activities" (fun domainId ->
+                 >=> routef "/domains/%i/admin-activities" (fun domainId ->
                          DataAvail.Giraffe.Common.Auth.permissionGuard MANAGE_DOMAIN
                          >=> wrapAudienceGuard fromDomainId domainId
                          >=> getLogIns true domainId) ]

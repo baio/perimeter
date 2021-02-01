@@ -81,7 +81,7 @@ module MultiUsers =
                 let! result =
                     testFixture.Server2.HttpPutAsync
                         u2.Token.Value
-                        (sprintf "/api/tenants/%i/domain-pools/%i" u1.Tenant.Value.TenantId u1.Tenant.Value.DomainPoolId)
+                        (sprintf "/api/tenant/tenants/%i/domain-pools/%i" u1.Tenant.Value.TenantId u1.Tenant.Value.DomainPoolId)
                         data
 
                 ensureForbidden result
@@ -100,7 +100,7 @@ module MultiUsers =
                 let! result =
                     testFixture.Server2.HttpPostAsync
                         u2.Token.Value
-                        (sprintf "/api/tenants/%i/domain-pools" u1.Tenant.Value.TenantId)
+                        (sprintf "/api/tenant/tenants/%i/domain-pools" u1.Tenant.Value.TenantId)
                         data
 
                 ensureForbidden result

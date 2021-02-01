@@ -99,7 +99,7 @@ module MultiUsers =
                 let! result =
                     testFixture.Server2.HttpPutAsync
                         u2.Token.Value
-                        (sprintf "/api/tenants/%i/domain-pools/%i" u2.Tenant.Value.TenantId u2.Tenant.Value.DomainPoolId)
+                        (sprintf "/api/tenant/tenants/%i/domain-pools/%i" u2.Tenant.Value.TenantId u2.Tenant.Value.DomainPoolId)
                         data
 
                 // Regular domain token will give unauthorized for management domain endpoints since they use different token sign configs
@@ -133,7 +133,7 @@ module MultiUsers =
                 let token = u1.Token.Value
 
                 let! res =
-                    testFixture.Server2.HttpPostAsync token (sprintf "/api/tenants/%i/admins" u1.Tenant.Value.TenantId) data
+                    testFixture.Server2.HttpPostAsync token (sprintf "/api/tenant/tenants/%i/admins" u1.Tenant.Value.TenantId) data
 
                 do! ensureSuccessAsync res
 
@@ -166,7 +166,7 @@ module MultiUsers =
                 let! result =
                     testFixture.Server2.HttpPutAsync
                         u2.Token.Value
-                        (sprintf "/api/tenants/%i/domain-pools/%i" u1.Tenant.Value.TenantId u1.Tenant.Value.DomainPoolId)
+                        (sprintf "/api/tenant/tenants/%i/domain-pools/%i" u1.Tenant.Value.TenantId u1.Tenant.Value.DomainPoolId)
                         data
 
                 do! ensureSuccessAsync result
@@ -186,7 +186,7 @@ module MultiUsers =
                 let! res =
                     testFixture.Server2.HttpPostAsync
                         users.[1].Token.Value
-                        (sprintf "/api/tenants/%i/admins" users.[1].Tenant.Value.TenantId)
+                        (sprintf "/api/tenant/tenants/%i/admins" users.[1].Tenant.Value.TenantId)
                         data
 
                 ensureForbidden res
@@ -200,7 +200,7 @@ module MultiUsers =
                 let! result =
                     testFixture.Server2.HttpDeleteAsync
                         u1.Token.Value
-                        (sprintf "/api/tenants/%i/admins/%s" u1.Tenant.Value.TenantId u1.Data.Email)
+                        (sprintf "/api/tenant/tenants/%i/admins/%s" u1.Tenant.Value.TenantId u1.Data.Email)
 
                 do ensureForbidden result
             }
@@ -217,7 +217,7 @@ module MultiUsers =
                 let! result =
                     testFixture.Server2.HttpPostAsync
                         u1.Token.Value
-                        (sprintf "/api/tenants/%i/admins" u1.Tenant.Value.TenantId)
+                        (sprintf "/api/tenant/tenants/%i/admins" u1.Tenant.Value.TenantId)
                         data
 
                 do ensureForbidden result

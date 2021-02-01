@@ -73,7 +73,7 @@ module Role =
                  GET
                  >=> route "/roles/tenant-admins"
                  >=> getAllTenantAdminsRoles ()
-                 subRoutef "/tenant/domains/%i/roles" (fun domainId ->
+                 subRoutef "/domains/%i/roles" (fun domainId ->
                      wrapAudienceGuard fromDomainId domainId
                      >=> choose [ POST >=> createHandler domainId
                                   PUT >=> routef "/%i" (updateHandler domainId)

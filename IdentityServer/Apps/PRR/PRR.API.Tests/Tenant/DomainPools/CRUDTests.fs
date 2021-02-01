@@ -67,7 +67,7 @@ module CRUD =
                       Identifier = "domain-1" }
 
                 let! result =
-                    testFixture.Server2.HttpPostAsync userToken (sprintf "/api/tenants/%i/domain-pools" tenantId.Value) data
+                    testFixture.Server2.HttpPostAsync userToken (sprintf "/api/tenant/tenants/%i/domain-pools" tenantId.Value) data
 
                 do! ensureSuccessAsync result
 
@@ -87,7 +87,7 @@ module CRUD =
                 let! result =
                     testFixture.Server2.HttpPutAsync
                         userToken
-                        (sprintf "/api/tenants/%i/domain-pools/%i" tenantId.Value domainPoolId.Value)
+                        (sprintf "/api/tenant/tenants/%i/domain-pools/%i" tenantId.Value domainPoolId.Value)
                         data
 
                 do! ensureSuccessAsync result
@@ -104,7 +104,7 @@ module CRUD =
                 let! result =
                     testFixture.Server2.HttpGetAsync
                         userToken
-                        (sprintf "/api/tenants/%i/domain-pools/%i" tenantId.Value domainPoolId.Value)
+                        (sprintf "/api/tenant/tenants/%i/domain-pools/%i" tenantId.Value domainPoolId.Value)
 
                 do! ensureSuccessAsync result
 
@@ -120,7 +120,7 @@ module CRUD =
         [<Priority(3)>]
         member __.``C.2 Get domains list be success``() =
             task {
-                let! result = testFixture.Server2.HttpGetAsync userToken (sprintf "/api/tenants/%i/domain-pools" tenantId.Value)
+                let! result = testFixture.Server2.HttpGetAsync userToken (sprintf "/api/tenant/tenants/%i/domain-pools" tenantId.Value)
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<ListResponse> result
                 result |> should be (not' null)
@@ -139,7 +139,7 @@ module CRUD =
                 let! result =
                     testFixture.Server2.HttpDeleteAsync
                         userToken
-                        (sprintf "/api/tenants/%i/domain-pools/%i" tenantId.Value domainPoolId.Value)
+                        (sprintf "/api/tenant/tenants/%i/domain-pools/%i" tenantId.Value domainPoolId.Value)
 
                 do! ensureSuccessAsync result
             }
