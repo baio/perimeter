@@ -104,7 +104,7 @@ module MultiTenantAdminTests =
             // 4. Get user2 domains should return tenant1 management domain
             task {
                 let u2 = users.[1]
-                let! result = testFixture.Server1.HttpGetAsync u2.Token.Value "/api/me/management/domains"
+                let! result = testFixture.Server2.HttpGetAsync u2.Token.Value "/api/tenant/management/domains"
                 do! ensureSuccessAsync result
 
                 let! data = result |> readAsJsonAsync<TenantDomain []>
@@ -139,7 +139,7 @@ module MultiTenantAdminTests =
         member __.``D Get user2 domains should return tenant1 and created domain``() =
             task {
                 let u2 = users.[1]
-                let! result = testFixture.Server1.HttpGetAsync u2.Token.Value "/api/me/management/domains"
+                let! result = testFixture.Server2.HttpGetAsync u2.Token.Value "/api/tenant/management/domains"
                 do! ensureSuccessAsync result
 
                 let! data = result |> readAsJsonAsync<TenantDomain []>
@@ -184,7 +184,7 @@ module MultiTenantAdminTests =
         member __.``F Get user2 domains should return tenant1 and sample1 management domain``() =
             task {
                 let u2 = users.[1]
-                let! result = testFixture.Server1.HttpGetAsync u2.Token.Value "/api/me/management/domains"
+                let! result = testFixture.Server2.HttpGetAsync u2.Token.Value "/api/tenant/management/domains"
                 do! ensureSuccessAsync result
 
                 let! data = result |> readAsJsonAsync<TenantDomain []>

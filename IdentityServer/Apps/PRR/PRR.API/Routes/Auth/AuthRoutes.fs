@@ -35,4 +35,5 @@ module AuthRoutes =
                       >=> route "/logout"
                       >=> LogOut.GetLogout.handler
                       GET
-                      >=> routef "/applications/%s" GetApplicationInfo.handler ])
+                      >=> routef "/applications/%s" GetApplicationInfo.handler
+                      PUT >=> route "/password" >=> PutPassword.handler])

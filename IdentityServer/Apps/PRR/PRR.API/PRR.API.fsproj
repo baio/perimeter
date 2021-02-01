@@ -47,7 +47,6 @@
         <Compile Include="Configuration\ConfigureAppServices.fs" />
         <Compile Include="Configuration\CreateAppConfig.fs" />
         <Compile Include="Routes\DIHelpers.fs" />
-        <Compile Include="Routes\MeRoutes.fs" />
         <Compile Include="Routes\PingRoutes.fs" />
         <Compile Include="Routes\Auth\Helpers\GetRefererUrl.fs" />
         <Compile Include="Routes\Auth\Helpers\GetExnRedirectUrl.fs" />
@@ -55,6 +54,7 @@
         <Compile Include="Routes\Auth\PostSignUpConfirm.fs" />
         <Compile Include="Routes\Auth\PostResetPassword.fs" />
         <Compile Include="Routes\Auth\PostResetPasswordConfirm.fs" />
+        <Compile Include="Routes\Auth\PutPassword.fs" />
         <Compile Include="Routes\Auth\PostLogIn.fs" />
         <Compile Include="Routes\Auth\LogInSSO.fs" />
         <Compile Include="Routes\Auth\PostAuthorize.fs" />
@@ -112,7 +112,6 @@
       <ProjectReference Include="..\Data\PRR.Data.DataContextMigrations\PRR.Data.DataContextMigrations.csproj" />
       <ProjectReference Include="..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
       <ProjectReference Include="..\Domain\PRR.Domain.Auth\PRR.Domain.Auth.fsproj" />
-      <ProjectReference Include="..\Domain\PRR.Domain.Tenant\PRR.Domain.Tenant.fsproj" />
       <ProjectReference Include="..\PRR.API.Common\PRR.API.Common.fsproj" />
     </ItemGroup>
 

@@ -5,7 +5,7 @@ open Giraffe
 module PingRoutes =
 
     let createRoutes () =
-        route "/version"
+        route "/auth/version"
         >=> GET
         >=> (fun next ctx ->
             json

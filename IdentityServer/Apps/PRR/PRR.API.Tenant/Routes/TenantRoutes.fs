@@ -4,8 +4,7 @@ open Giraffe
 
 module CreateRoutes =
     let createRoutes () =
-        choose [
-                 SocialConnections.createRoutes ()
+        choose [ SocialConnections.createRoutes ()
                  Tenants.createRoutes ()
                  Permission.createRoutes ()
                  Role.createRoutes ()
@@ -14,5 +13,6 @@ module CreateRoutes =
                  Domain.createRoutes ()
                  DomainPool.createRoutes ()
                  TenantUserRole.createRoutes ()
-                 DomainUserRole.createRoutes ()                 
-                 UsersActivities.createRoutes () ]
+                 DomainUserRole.createRoutes ()
+                 UsersActivities.createRoutes ()
+                 GetManagementDomainRoutes.createRoutes () ]

@@ -90,7 +90,7 @@ module ResetPasswordTests =
                 let resetPasswordData: PRR.Domain.Auth.UpdatePassword.Models.Data =
                     { OldPassword = "1234A!sd"
                       Password = "1234A!sd8" }
-                let! res = testFixture.Server1.HttpPutAsync accessToken.Value "/api/me/password" resetPasswordData
+                let! res = testFixture.Server1.HttpPutAsync accessToken.Value "/api/auth/password" resetPasswordData
                 do! ensureSuccessAsync res
             }
 
@@ -101,6 +101,6 @@ module ResetPasswordTests =
                 let resetPasswordData: PRR.Domain.Auth.UpdatePassword.Models.Data =
                     { OldPassword = "1234A!sd"
                       Password = "1234A!sd8+" }
-                let! res = testFixture.Server1.HttpPutAsync accessToken.Value "/api/me/password" resetPasswordData
+                let! res = testFixture.Server1.HttpPutAsync accessToken.Value "/api/auth/password" resetPasswordData
                 ensureUnauthorized res
             }
