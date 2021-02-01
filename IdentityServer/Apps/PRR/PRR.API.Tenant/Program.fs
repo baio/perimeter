@@ -1,24 +1,16 @@
-﻿module PRR.API.App
+﻿module PRR.API.Tenant.App
 
-open System.Net
 open Giraffe
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.AspNetCore.Hosting
-open Microsoft.AspNetCore.Http
-open Microsoft.EntityFrameworkCore
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
-open Microsoft.Extensions.Diagnostics.HealthChecks
-open Microsoft.Extensions.Logging
 open PRR.API
-open PRR.API.Routes
-open PRR.Data.DataContext
 open System
 open PRR.API.Tenant.Configuration
-open Prometheus
-open HealthChecks.Prometheus
 open PRR.API.Common.ErrorHandler
+open PRR.API.Tenant.EventHandlers
 
 let webApp =
     subRoute
@@ -54,7 +46,8 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
 
     let appConfig = createAppConfig context.Configuration
 
-    configureAppServices appConfig services |> ignore
+    configureAppServices appConfig services
+   
 
 let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigurationBuilder) =
 

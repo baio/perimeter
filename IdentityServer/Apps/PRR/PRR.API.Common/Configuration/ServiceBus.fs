@@ -16,5 +16,6 @@ module ServiceBus =
             x.UsingRabbitMq(fun ctx cfg ->
                 cfg.ReceiveEndpoint
                     ("event-listener", (fun (e: IRabbitMqReceiveEndpointConfigurator) -> e.ConfigureConsumers(ctx)))))
+        |> ignore
 
-        services.AddMassTransitHostedService()
+        services.AddMassTransitHostedService() |> ignore

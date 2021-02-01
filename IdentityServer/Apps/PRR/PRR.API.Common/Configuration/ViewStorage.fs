@@ -15,5 +15,6 @@ module ViewsStorage =
         let dbProvider =
             ViewsDbProvider(config.ConnectionString, config.DbName) :> IViewsDbProvider
 
-        services.AddSingleton<IViewsDbProvider> dbProvider
-        ()
+        services.AddSingleton<IViewsDbProvider> dbProvider |> ignore
+        
+        dbProvider

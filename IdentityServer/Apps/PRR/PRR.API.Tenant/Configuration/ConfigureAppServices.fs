@@ -4,11 +4,12 @@ open Microsoft.Extensions.DependencyInjection
 open PRR.API.Common.Configuration
 open PRR.Domain.Tenant
 open PRR.API.Tenant.Infra
+open PRR.API.Tenant.EventHandlers
 
 type AppConfig =
     { Common: CommonAppConfig
       AccessTokenSecret: string
-      TenantAuth: AuthConfig  }
+      TenantAuth: AuthConfig }
 
 [<AutoOpen>]
 module ConfigureAppServices =
@@ -20,9 +21,15 @@ module ConfigureAppServices =
         configureLogging config.Common.Logging services
         configureTracing config.Common.Tracing services
         configureHealthCheck config.Common.HealthCheck services
-        configureViewStorage config.Common.ViewStorage services
+
+        let viewDbProvider =
+            configureViewStorage config.Common.ViewStorage services
+
         configureConfigProvider config services
-        configureServiceBus [] services
+        configureServiceBus [ typeof<LogInEventHandler> ] services
         // tenant
         services.AddSingleton<IAuthStringsGetterProvider>(AuthStringsProvider())
-        
+        |> ignore
+        // event handlers
+        let viewDb = viewDbProvider.Db
+        initEventHandlers viewDb

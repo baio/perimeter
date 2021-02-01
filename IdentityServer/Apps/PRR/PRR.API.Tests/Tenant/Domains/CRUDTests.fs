@@ -69,7 +69,7 @@ module CRUD =
 
             task {
 
-                let! result = testFixture.Server2.HttpGetAsync userToken "/api/me/management/domains"
+                let! result = testFixture.Server1.HttpGetAsync userToken "/api/me/management/domains"
 
                 do! ensureSuccessAsync result
 

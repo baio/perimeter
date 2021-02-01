@@ -115,7 +115,7 @@ module SocialTests =
                 let domainId = testContext.Value.GetTenant().DomainId
 
                 let! _ =
-                    testFixture.Server1.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/social/github" domainId)
                         data

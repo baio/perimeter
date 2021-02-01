@@ -8,3 +8,4 @@ module ConfigProvider =
 
     let configureConfigProvider (config: 'a) (services: IServiceCollection) =
         services.AddSingleton<IConfigProvider<'a>>(ConfigProvider config)
+        |> ignore

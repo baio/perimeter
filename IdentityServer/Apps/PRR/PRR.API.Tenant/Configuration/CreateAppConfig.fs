@@ -19,7 +19,7 @@ module CreateAppConfig =
         let auth: AuthConfig =
             { AccessTokenSecret = configuration.GetValue<string>("TenantAuth:AccessTokenSecret")
               IdTokenExpiresIn = configuration.GetValue<int<minutes>>("TenantAuth:IdTokenExpiresInMinutes")
-              AccessTokenExpiresIn = configuration.GetValue<int<minutes>>("TenantAuth:AccessTokenExpiresInInMinutes")
+              AccessTokenExpiresIn = configuration.GetValue<int<minutes>>("TenantAuth:AccessTokenExpiresInMinutes")
               RefreshTokenExpiresIn = configuration.GetValue<int<minutes>>("TenantAuth:RefreshTokenExpiresInMinutes") }
 
         { Common = common

@@ -3,9 +3,13 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp3.1</TargetFramework>
+        <Configurations>Debug;Release;Test</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="EventHandlers\Init.fs" />
+        <Compile Include="EventHandlers\LogInEventHandler.fs" />
         <Compile Include="Infra\AuthStringsGetterProvider.fs" />
         <Compile Include="Configuration\ConfigureAppServices.fs" />
         <Compile Include="Configuration\CreateAppConfig.fs" />
