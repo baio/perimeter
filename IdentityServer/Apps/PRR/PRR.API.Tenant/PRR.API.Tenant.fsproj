@@ -13,7 +13,7 @@
         <Compile Include="Infra\AuthStringsGetterProvider.fs" />
         <Compile Include="Configuration\ConfigureAppServices.fs" />
         <Compile Include="Configuration\CreateAppConfig.fs" />
-        <Compile Include="DIHelpers.fs" />
+        <Compile Include="Routes\DIHelpers.fs" />
         <Compile Include="Routes\GetAudience.fs" />
         <Compile Include="Routes\PermissionConstants.fs" />
         <Compile Include="Routes\Utils.fs" />
