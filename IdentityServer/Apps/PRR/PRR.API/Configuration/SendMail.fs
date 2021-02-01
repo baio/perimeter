@@ -16,3 +16,4 @@ module MailSender =
         let sendMail = createSendMail config mailSender
 
         services.AddSingleton<ISendMailProvider>(SendMailProvider sendMail)
+        |> ignore

@@ -38,24 +38,12 @@
         <Compile Include="Infra\Mail\SendGridMail.fs" />
         <Compile Include="Infra\PermissionsFromRoles.fs" />
         <Compile Include="Infra\PasswordSaltProvider.fs" />
-        <Compile Include="Infra\ViewDbProvider.fs" />
         <Compile Include="Infra\HashProvider.fs" />
         <Compile Include="Infra\SHA256.fs" />
-        <Compile Include="Infra\AuthStringsProvider.fs" />
         <Compile Include="Infra\HttpRequestFun.fs" />
-        <Compile Include="ErrorHandler.fs" />
-        <Compile Include="EventHandlers\Init.fs" />
-        <Compile Include="EventHandlers\LogInEventHandler.fs" />
-        <Compile Include="Configuration\Tracing.fs" />
-        <Compile Include="Configuration\Logging.fs" />
-        <Compile Include="Configuration\Authorization.fs" />
         <Compile Include="Configuration\Infra.fs" />
-        <Compile Include="Configuration\DataContext.fs" />
-        <Compile Include="Configuration\HealthCheck.fs" />
         <Compile Include="Configuration\SendMail.fs" />
         <Compile Include="Configuration\KeyValueStorage.fs" />
-        <Compile Include="Configuration\ViewStorage.fs" />
-        <Compile Include="Configuration\ServiceBus.fs" />
         <Compile Include="Configuration\ConfigureAppServices.fs" />
         <Compile Include="Configuration\CreateAppConfig.fs" />
         <Compile Include="Routes\DIHelpers.fs" />
@@ -125,6 +113,7 @@
       <ProjectReference Include="..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
       <ProjectReference Include="..\Domain\PRR.Domain.Auth\PRR.Domain.Auth.fsproj" />
       <ProjectReference Include="..\Domain\PRR.Domain.Tenant\PRR.Domain.Tenant.fsproj" />
+      <ProjectReference Include="..\PRR.API.Common\PRR.API.Common.fsproj" />
     </ItemGroup>
 
     <ItemGroup>

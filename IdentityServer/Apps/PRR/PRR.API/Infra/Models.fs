@@ -20,12 +20,5 @@ module Models =
     type ISHA256Provider =
         abstract GetSHA256: (string -> string)
 
-    type IAuthStringsProvider =
-        abstract AuthStringsGetter: AuthStringsGetter
-
-    type IViewsDbProvider =
-        abstract Db: IMongoDatabase
-
-
     type IHttpRequestFunProvider =
         abstract HttpRequestFun: HttpRequestFun

@@ -55,15 +55,18 @@ module CRUD =
             task {
                 testContext <- Some(createUserTestContext testFixture)
                 let! userToken' = createUser' true testContext.Value userData
-                userToken <- userToken'
-                Thread.Sleep(100)               
+                userToken <- userToken'                
+                // test server must be started before make any request, in order to bus can receive message !
+                let! _ = testFixture.Server2.HttpGetAsync' "/api/version"
+                Thread.Sleep(300)
+                ()
             }
 
         [<Fact>]
         [<Priority(1)>]
-        member __.``A Get user activities must be success``() =
+        member __.``A Get user activities must be success``() =            
             task {
-
+                               
                 let tenant = testContext.Value.GetTenant()
 
                 let! result =
@@ -81,7 +84,7 @@ module CRUD =
             }
 
         [<Fact>]
-        [<Priority(1)>]
+        [<Priority(2)>]
         member __.``B Get user activities with filter give correct result``() =
             task {
 
@@ -103,7 +106,7 @@ module CRUD =
 
 
         [<Fact>]
-        [<Priority(1)>]
+        [<Priority(2)>]
         member __.``C Get user activities with existent filter give correct result``() =
             task {
 

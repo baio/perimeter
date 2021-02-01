@@ -30,8 +30,5 @@ module private Infra =
         services.AddSingleton<IPasswordSaltProvider>(PasswordSaltProvider config.PasswordSecret)
         |> ignore
 
-        services.AddSingleton<IAuthStringsProvider, AuthStringsProvider>()
-        |> ignore
-
         services.AddSingleton<IHttpRequestFunProvider>(HttpRequestFunProvider(httpFsRequestFun))
         |> ignore

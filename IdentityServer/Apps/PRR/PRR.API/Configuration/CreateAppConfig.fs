@@ -4,11 +4,14 @@ open PRR.Domain.Models
 open Microsoft.Extensions.Configuration
 open PRR.API.Infra.Mail
 open PRR.Domain.Auth
+open PRR.API.Common.Configuration
 
 [<AutoOpen>]
 module CreateAppConfig =
 
     let createAppConfig envName (configuration: IConfiguration) =
+
+        let common = createCommonAppConfig configuration
 
         let jwt =
             { IdTokenSecret = configuration.GetValue<string>("Auth:Jwt:AccessTokenSecret")
@@ -56,36 +59,9 @@ module CreateAppConfig =
               DbName = configuration.GetValue("MongoKeyValueStorage:DbName")
               CollectionName = configuration.GetValue("MongoKeyValueStorage:CollectionName") }
 
-        let viewStorageConfig: ViewStorageConfig =
-            { ConnectionString = configuration.GetValue("MongoViewStorage:ConnectionString")
-              DbName = configuration.GetValue("MongoViewStorage:DbName") }
-
-
-        let ignoreObserveApiPaths = [ "/metrics"; "/health" ]
-
-        let psqlConnectionString =
-            configuration.GetConnectionString "PostgreSQL"
-
-        let mongoConnectionString =
-            configuration.GetConnectionString "Mongo"
-
-        { SendGridApiKey = sendGridApiKey
+        { Common = common
+          SendGridApiKey = sendGridApiKey
           MailSender = mailSenderConfig
           KeyValueStorage = keyValueStorageConfig
-          ViewStorage = viewStorageConfig
-          HealthCheck =
-              { PsqlConnectionString = psqlConnectionString
-                MongoConnectionString = mongoConnectionString
-                AllocatedMemory = 5<gigabytes> }
-          DataContext = { ConnectionString = psqlConnectionString }
           Infra = { PasswordSecret = configuration.GetValue<string>("Auth:PasswordSecret") }
-          Auth = authConfig
-          Logging =
-              { Config = { ServiceUrl = configuration.GetValue("Logging:Seq:ServiceUrl") }
-                IgnoreApiPaths = ignoreObserveApiPaths }
-          Tracing =
-              { Config =
-                    { ServiceName = configuration.GetValue("Tracing:Jaeger:ServiceName")
-                      AgentHost = configuration.GetValue("Tracing:Jaeger:AgentHost")
-                      AgentPort = configuration.GetValue<int>("Tracing:Jaeger:AgentPort") }
-                IgnoreApiPaths = ignoreObserveApiPaths } }
+          Auth = authConfig }

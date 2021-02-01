@@ -27,12 +27,6 @@ module DIHelpers =
     let getConfig (ctx: HttpContext) =
         ctx.GetService<IConfigProvider>().GetConfig()
 
-    let getAuthStringsGetter (ctx: HttpContext) =
-        ctx.GetService<IAuthStringsProvider>().AuthStringsGetter
-
-    let getViewsDb (ctx: HttpContext) =
-        ctx.GetService<IViewsDbProvider>().Db
-
     let getHttpRequestFun (ctx: HttpContext) =
         ctx.GetService<IHttpRequestFunProvider>().HttpRequestFun
 

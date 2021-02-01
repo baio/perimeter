@@ -6,13 +6,29 @@ open PRR.Domain.Tenant
 open PRR.API.Tenant.Infra
 open PRR.API.Tenant.EventHandlers
 
+open MassTransit
+open MassTransit.RabbitMqTransport
+
 type AppConfig =
     { Common: CommonAppConfig
       AccessTokenSecret: string
       TenantAuth: AuthConfig }
 
+
 [<AutoOpen>]
 module ConfigureAppServices =
+
+    let configureServiceBus' (services: IServiceCollection) =
+        services.AddMassTransit(fun x ->
+            x.AddConsumer<LogInEventHandler>() |> ignore
+
+            x.UsingRabbitMq(fun ctx cfg ->
+                cfg.ReceiveEndpoint
+                    ("event-listener",
+                     (fun (e: IRabbitMqReceiveEndpointConfigurator) -> e.ConfigureConsumer<LogInEventHandler>(ctx)))))
+        |> ignore
+
+        services.AddMassTransitHostedService() |> ignore
 
     let configureAppServices (config: AppConfig) (services: IServiceCollection) =
         // common
@@ -26,7 +42,8 @@ module ConfigureAppServices =
             configureViewStorage config.Common.ViewStorage services
 
         configureConfigProvider config services
-        configureServiceBus [ typeof<LogInEventHandler> ] services
+        //configureServiceBus [ typeof<LogInEventHandler> ] services
+        configureServiceBus' services
         // tenant
         services.AddSingleton<IAuthStringsGetterProvider>(AuthStringsProvider())
         |> ignore

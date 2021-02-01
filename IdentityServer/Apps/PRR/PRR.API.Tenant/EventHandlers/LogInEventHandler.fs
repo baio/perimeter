@@ -11,5 +11,6 @@ module LogInEventHandler =
 
     type LogInEventHandler(dbProvider: IViewsDbProvider) =
         interface IConsumer<Events.LogIn> with
-            member __.Consume context =
+            member __.Consume context = 
+                printfn "wtf ???"
                 insertLoginEvent dbProvider.Db context.Message

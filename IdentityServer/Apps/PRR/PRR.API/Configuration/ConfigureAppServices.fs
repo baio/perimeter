@@ -6,6 +6,7 @@ open Microsoft.Extensions.Logging
 open PRR.API.Infra.Mail.Models
 open PRR.API.Infra.Models
 open PRR.Domain.Auth
+open PRR.API.Common.Configuration
 
 [<AutoOpen>]
 module ConfigureServices =
@@ -20,14 +21,10 @@ module ConfigureServices =
           Social: SocialConfig }
 
     type AppConfig =
-        { Logging: LoggingEnv
-          Tracing: TracingEnv
+        { Common: CommonAppConfig
           Auth: AuthConfig
           Infra: InfraConfig
-          DataContext: DataContextConfig
-          HealthCheck: HealthCheckConfig
           KeyValueStorage: KeyValueStorageConfig
-          ViewStorage: ViewStorageConfig
           MailSender: MailSenderConfig
           SendGridApiKey: string }
 
@@ -40,15 +37,18 @@ module ConfigureServices =
 
     let configureAppServices (config: AppConfig) (services: IServiceCollection) =
 
-        configureAuthorization config.Auth.Jwt services
-        configureDataContext config.DataContext services
+        // common
+        configureAuthorization config.Auth.Jwt.AccessTokenSecret services
+        configureDataContext config.Common.DataContext services
+        configureLogging config.Common.Logging services
+        configureTracing config.Common.Tracing services
+        configureHealthCheck config.Common.HealthCheck services
+        configureConfigProvider config services
+        configureServiceBus [] services
+
         configureInfra config.Infra services
-        configureLogging config.Logging services
-        configureTracing config.Tracing services
-        configureHealthCheck config.HealthCheck services
         configureKeyValueStorage config.KeyValueStorage services
         configureSendMail config.SendGridApiKey config.MailSender services
-        configureViewStorage config.ViewStorage services
-        configureServiceBus services
+
         services.AddSingleton<IConfigProvider>(ConfigProvider config)
         |> ignore

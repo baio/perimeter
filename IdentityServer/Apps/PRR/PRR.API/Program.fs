@@ -57,7 +57,7 @@ let configureCors (builder: CorsPolicyBuilder) =
 
 let configureApp (app: IApplicationBuilder) =
     app
-        .UseGiraffeErrorHandler(errorHandler)
+        .UseGiraffeErrorHandler(PRR.API.Common.ErrorHandler.errorHandler)
         .UseAuthentication()
         .UseAuthorization()
         .UseCors(configureCors)

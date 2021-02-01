@@ -3,7 +3,6 @@
 open DataAvail.Test.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
-open PRR.API.ErrorHandler
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.SignUp
 open Xunit
