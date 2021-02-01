@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes.Tenant
+﻿namespace PRR.API.Tenant.Routes
 
 open DataAvail.Common
 open DataAvail.Common.ReaderTask

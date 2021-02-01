@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes.Tenant
+﻿namespace PRR.API.Tenant.Routes
 open DataAvail.Giraffe.Common
 open PRR.API.Routes.DIHelpers
 

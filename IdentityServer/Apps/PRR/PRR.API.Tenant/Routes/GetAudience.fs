@@ -1,4 +1,4 @@
-﻿namespace PRR.API.Routes
+﻿namespace PRR.API.Tenant.Routes
 
 open PRR.Data.DataContext
 open PRR.Data.Entities

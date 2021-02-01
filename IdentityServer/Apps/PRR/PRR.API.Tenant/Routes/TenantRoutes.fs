@@ -1,7 +1,8 @@
-﻿namespace PRR.API.Routes.Tenant
+﻿namespace PRR.API.Tenant.Routes
 
 open Giraffe
 
+[<AutoOpen>]
 module CreateRoutes =
     let createRoutes () =
         choose [ SocialConnections.createRoutes ()

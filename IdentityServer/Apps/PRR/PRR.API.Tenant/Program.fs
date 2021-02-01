@@ -6,16 +6,15 @@ open Microsoft.AspNetCore.Cors.Infrastructure
 open Microsoft.AspNetCore.Hosting
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
-open PRR.API
 open System
 open PRR.API.Tenant.Configuration
 open PRR.API.Common.ErrorHandler
-open PRR.API.Tenant.EventHandlers
+open PRR.API.Tenant.Routes
 
 let webApp =
     subRoute
         "/api/tenant"
-        (choose [ Routes.Tenant.CreateRoutes.createRoutes ()
+        (choose [ createRoutes ()
                   setStatusCode 404 >=> text "Not Found" ])
 
 let configureCors (builder: CorsPolicyBuilder) =
@@ -47,7 +46,7 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
     let appConfig = createAppConfig context.Configuration
 
     configureAppServices appConfig services
-   
+
 
 let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigurationBuilder) =
 
