@@ -11,6 +11,7 @@ import {
     HttpErrorMessageInterceptorModule,
 } from '@perimeter/common';
 import { environment } from '../environments/environment';
+import { AuthModule } from '@perimeter/ngx-auth';
 
 const antDesignIcons = AllIcons as {
     [key: string]: IconDefinition;
@@ -27,6 +28,7 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(
         AppRoutingModule,
         HttpErrorMessageInterceptorModule,
         HttpBaseUrlInterceptorModule.forRoot({ baseUrl: environment.baseUrl }),
+        AuthModule.forRoot(environment.baseUrl, environment.auth),
     ],
     providers: [{ provide: NZ_ICONS, useValue: icons }],
     bootstrap: [AppComponent],

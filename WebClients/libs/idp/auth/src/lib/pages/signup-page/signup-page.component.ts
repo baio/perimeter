@@ -2,7 +2,7 @@ import {
     FormValidators,
     mapBadRequestResponseToFormValidationErrors,
 } from '@perimeter/common';
-import { AuthDataAccessService } from '@ip/data-access';
+import { AuthDataAccessService } from '@idp/data-access';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
     ChangeDetectionStrategy,

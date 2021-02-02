@@ -7,7 +7,7 @@ import {
     ForgotPasswordPageComponent,
     ForgotPasswordSentPageComponent,
     ForgotPasswordResetPageComponent,
-} from '@ip/auth';
+} from '@idp/auth';
 import {
     Routes,
     RouterModule,
@@ -59,7 +59,7 @@ export class AuthRoutingModule {
                 switch (event.reason) {
                     case ROUTE_NOT_AUTHENTICATED:
                         // navigate to login page
-                        router.navigate(['/auth/login']);
+                        router.navigate(['/home']);
                         break;
                 }
             });

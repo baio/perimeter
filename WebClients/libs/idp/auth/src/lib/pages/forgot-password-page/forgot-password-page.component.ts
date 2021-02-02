@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { FormValidators } from '@perimeter/common';
-import { AuthDataAccessService } from '@ip/data-access';
+import { AuthDataAccessService } from '@idp/data-access';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 
