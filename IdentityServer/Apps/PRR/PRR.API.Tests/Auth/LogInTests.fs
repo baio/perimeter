@@ -3,9 +3,7 @@
 open DataAvail.Test.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
-open Microsoft.VisualBasic
-open PRR.API.ErrorHandler
-open PRR.API.Infra
+open PRR.API.Auth.Infra
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.LogInToken
 open PRR.Domain.Auth.SignUp
@@ -30,7 +28,9 @@ module LogIn =
 
     let randomString length =
 
-        let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~"
+        let chars =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~"
+
         [ 0 .. length ]
         |> Seq.map (fun x -> chars.[random.Next(chars.Length)])
         |> System.String.Concat
@@ -39,7 +39,10 @@ module LogIn =
     let codeVerfier = randomString 128
 
     let sha256 = SHA256.Create()
-    let codeChellenge = SHA256.getSha256Base64Hash sha256 codeVerfier |> LogInToken.cleanupCodeChallenge
+
+    let codeChellenge =
+        SHA256.getSha256Base64Hash sha256 codeVerfier
+        |> LogInToken.cleanupCodeChallenge
 
     let mutable testContext: UserTestContext option = None
 
@@ -58,6 +61,7 @@ module LogIn =
         member __.``0 BeforeAll``() =
             task {
                 testContext <- Some(createUserTestContext testFixture)
+
                 let! _ = createUser testContext.Value signUpData
                 ()
             }
@@ -82,13 +86,18 @@ module LogIn =
 
             task {
                 let! result = logIn' testFixture logInData
-                do ensureUnauthorized result }
+                do ensureUnauthorized result
+            }
 
         [<Fact>]
         [<Priority(2)>]
         member __.``B Login with wrong Code_Verifier should give error``() =
 
-            let clientId = testContext.Value.GetTenant().TenantManagementApplicationClientId
+            let clientId =
+                testContext
+                    .Value
+                    .GetTenant()
+                    .TenantManagementApplicationClientId
 
             let logInData: PRR.Domain.Auth.LogIn.Models.Data =
                 { Client_Id = clientId
@@ -112,7 +121,7 @@ module LogIn =
                       Client_Id = clientId
                       Code_Verifier = sprintf "%s1" codeVerfier }
 
-                let! result = testFixture.HttpPostAsync' "/api/auth/token" loginTokenData
+                let! result = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
                 do ensureUnauthorized result
             }
 
@@ -121,7 +130,11 @@ module LogIn =
         [<Priority(3)>]
         member __.``C Login with correct data should success``() =
 
-            let clientId = testContext.Value.GetTenant().TenantManagementApplicationClientId
+            let clientId =
+                testContext
+                    .Value
+                    .GetTenant()
+                    .TenantManagementApplicationClientId
 
             let logInData: PRR.Domain.Auth.LogIn.Models.Data =
                 { Client_Id = clientId
@@ -145,9 +158,13 @@ module LogIn =
                       Client_Id = clientId
                       Code_Verifier = codeVerfier }
 
-                let! result' = testFixture.HttpPostAsync' "/api/auth/token" loginTokenData
+                let! result' = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
                 do! ensureSuccessAsync result'
-                let! result = result' |> readAsJsonAsync<PRR.Domain.Auth.LogInToken.Models.Result>
+
+                let! result =
+                    result'
+                    |> readAsJsonAsync<PRR.Domain.Auth.LogInToken.Models.Result>
+
                 result.access_token |> should be (not' Empty)
                 result.id_token |> should be (not' Empty)
                 result.refresh_token |> should be (not' Empty)
@@ -161,8 +178,14 @@ module LogIn =
                 { Grant_Type = "code"
                   Code = authCode
                   Redirect_Uri = redirectUri
-                  Client_Id = testContext.Value.GetTenant().TenantManagementApplicationClientId
+                  Client_Id =
+                      testContext
+                          .Value
+                          .GetTenant()
+                          .TenantManagementApplicationClientId
                   Code_Verifier = codeVerfier }
+
             task {
-                let! result = testFixture.HttpPostAsync' "/api/auth/token" loginTokenData
-                do ensureUnauthorized result }
+                let! result = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
+                do ensureUnauthorized result
+            }

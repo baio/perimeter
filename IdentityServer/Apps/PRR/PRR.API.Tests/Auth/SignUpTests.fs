@@ -4,7 +4,7 @@ open DataAvail.Test.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
 open Microsoft.Extensions.DependencyInjection
-open PRR.API.Infra.Mail.Models
+open PRR.API.Auth.Infra.Mail.Models
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth
 open PRR.Domain.Auth.Common
@@ -33,8 +33,10 @@ module SignUp =
     let sendMail: SendMail =
         fun data ->
             actualEmail <- Some data
+
             match data.Template with
             | ConfirmSignUpMail x -> userToken <- x.Token
+
             task { waitHandle.Set() }
 
     let mutable tenant: CreatedTenantInfo option = None
@@ -50,7 +52,8 @@ module SignUp =
         [<Fact>]
         [<Priority(-1)>]
         member __.``0 BeforeAll``() =
-            testFixture.OverrideServices(fun services ->
+
+            testFixture.Server1.OverrideServices(fun services ->
                 services.AddSingleton<ISendMailProvider>(SendMailProvider sendMail)
                 |> ignore)
 
@@ -66,7 +69,7 @@ module SignUp =
                       Password = "#6VvR&^"
                       QueryString = null }
 
-                let! result = testFixture.HttpPostAsync' "/api/auth/sign-up" invalidUserData
+                let! result = testFixture.Server1.HttpPostAsync' "/api/auth/sign-up" invalidUserData
 
                 ensureBadRequest result
             }
@@ -77,7 +80,7 @@ module SignUp =
 
             task {
 
-                let! result = testFixture.HttpPostAsync' "/api/auth/sign-up" userData
+                let! result = testFixture.Server1.HttpPostAsync' "/api/auth/sign-up" userData
 
                 do! ensureSuccessAsync result
 
@@ -113,7 +116,7 @@ module SignUp =
 
                 let confirmData: SignUpConfirm.Models.Data = { Token = userToken }
 
-                let! result = testFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
+                let! result = testFixture.Server1.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
 
                 do! ensureSuccessAsync result
             }
@@ -126,7 +129,7 @@ module SignUp =
 
                 let confirmData: SignUpConfirm.Models.Data = { Token = userToken }
 
-                let! result = testFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
+                let! result = testFixture.Server1.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
 
                 ensureUnauthorized result
             }
@@ -137,7 +140,7 @@ module SignUp =
 
             task {
 
-                let! result = testFixture.HttpPostAsync' "/api/auth/sign-up" userData
+                let! result = testFixture.Server1.HttpPostAsync' "/api/auth/sign-up" userData
 
                 ensureConflict result
             }
@@ -149,7 +152,7 @@ module SignUp =
             task {
 
                 let! _ =
-                    testFixture.HttpPostAsync'
+                    testFixture.Server1.HttpPostAsync'
                         "/api/auth/sign-up"
                         { userData with
                               Email = "user2@user.com" }
@@ -158,7 +161,7 @@ module SignUp =
 
                 let confirmData: SignUpConfirm.Models.Data = { Token = userToken }
 
-                let! result = testFixture.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
+                let! result = testFixture.Server1.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
 
                 do! ensureSuccessAsync result
             }

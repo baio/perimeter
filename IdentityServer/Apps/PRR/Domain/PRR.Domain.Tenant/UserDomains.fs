@@ -53,6 +53,7 @@ module UserDomains =
                             (p.UserEmail = userEmail
                              && (p.Role.IsDomainManagement
                                  || p.Role.IsTenantManagement))
+
                         select
                             { Id = p.Domain.Id
                               Tenant =
@@ -63,26 +64,16 @@ module UserDomains =
                                       { Id = p.Domain.Pool.Tenant.Id
                                         Name = p.Domain.Pool.Tenant.Name }
                               Pool =
-                                  // TODO : Fucking json converter, make it convert as null !
                                   { Id = p.Domain.Pool.Id
                                     Name = p.Domain.Pool.Name }
-                              (*
-                                  if p.Domain.Pool <> null then
-                                      Some
-                                          { Id = p.Domain.Pool.Id
-                                            Name = p.Domain.Pool.Name }
-                                  else
-                                      None
-                                  *)
                               EnvName = p.Domain.EnvName
                               ManagementClientId =
-                                  (p.Domain.Applications.FirstOrDefault(fun p -> p.IsDomainManagement = true)).ClientId
+                                  (p.Domain.Applications.FirstOrDefault(fun p -> p.IsDomainManagement = true))
+                                      .ClientId
                               IsTenantManagement = p.Domain.Pool = null
                               Role = { Id = p.Role.Id; Name = p.Role.Name } }
                 }
                 |> toListAsync
-
-            let nl: Object = null
 
             let res =
                 items

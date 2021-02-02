@@ -67,7 +67,7 @@ module CRUD =
                       Permissions = [| "bbb" |] }
 
                 let! result =
-                    testFixture.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/social/github" domainId.Value)
                         data
@@ -88,7 +88,7 @@ module CRUD =
                       Permissions = [||] }
 
                 let! result =
-                    testFixture.HttpPutAsync
+                    testFixture.Server2.HttpPutAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/social/github" domainId.Value)
                         data
@@ -105,7 +105,7 @@ module CRUD =
             task {
 
                 let! result =
-                    testFixture.HttpGetAsync userToken (sprintf "/api/tenant/domains/%i/social" domainId.Value)
+                    testFixture.Server2.HttpGetAsync userToken (sprintf "/api/tenant/domains/%i/social" domainId.Value)
 
                 do! ensureSuccessAsync result
 
@@ -135,7 +135,7 @@ module CRUD =
                       Permissions = [| "bbb" |] }
 
                 let! result =
-                    testFixture.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/social/google" domainId.Value)
                         data
@@ -149,7 +149,7 @@ module CRUD =
                 data.Add("github", 0)
 
                 let! result =
-                    testFixture.HttpPutAsync
+                    testFixture.Server2.HttpPutAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/social/order" domainId.Value)
                         data
@@ -164,7 +164,7 @@ module CRUD =
             task {
 
                 let! result =
-                    testFixture.HttpDeleteAsync
+                    testFixture.Server2.HttpDeleteAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/social/github" domainId.Value)
 

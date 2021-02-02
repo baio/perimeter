@@ -56,6 +56,7 @@ module Models =
     type gigabytes
 
 
+    // TODO : Remove !!!
     type AuthStringsGetter =
         { ClientId: unit -> string
           ClientSecret: unit -> string

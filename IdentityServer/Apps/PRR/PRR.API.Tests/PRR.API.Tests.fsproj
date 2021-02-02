@@ -38,6 +38,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Utils\Host.fs" />
         <Compile Include="Utils\ClientFixture.fs" />
         <Compile Include="Utils\EFLogger.fs" />
         <Compile Include="Utils\Setup.fs" />
@@ -97,7 +98,8 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\Libs\DataAvail.Test.Common\DataAvail.Test.Common.fsproj" />
       <ProjectReference Include="..\Data\PRR.Data.DataContextMigrations\PRR.Data.DataContextMigrations.csproj" />
-      <ProjectReference Include="..\PRR.API\PRR.API.fsproj" />
+      <ProjectReference Include="..\PRR.API.Auth\PRR.API.Auth.fsproj" />
+      <ProjectReference Include="..\PRR.API.Tenant\PRR.API.Tenant.fsproj" />
     </ItemGroup>
 
 </Project>

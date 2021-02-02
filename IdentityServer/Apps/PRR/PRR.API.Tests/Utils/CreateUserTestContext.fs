@@ -2,7 +2,6 @@
 
 open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.DependencyInjection
-open PRR.API.Infra
 open System.Threading
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Domain.Tenant
@@ -68,7 +67,7 @@ module UserTestContext =
             services.AddSingleton<IKeyValueStorage>(kvStorage')
 
 
-        testFixture.OverrideServices(fun services ->
+        testFixture.Server1.OverrideServices(fun services ->
 
             let sp = services.BuildServiceProvider()
 

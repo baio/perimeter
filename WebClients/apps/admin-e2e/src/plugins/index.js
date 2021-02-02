@@ -19,4 +19,14 @@ module.exports = (on, config) => {
 
   // Preprocess Typescript file using Nx helper
   on('file:preprocessor', preprocessTypescript(config));
+
+  
+  on('before:browser:launch', (browser = {}, launchOptions) => {
+    if (browser.name === 'chrome') {
+        launchOptions.args.push('--disable-site-isolation-trials');
+  
+      return launchOptions;
+    }
+  });
+  
 };

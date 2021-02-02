@@ -61,7 +61,7 @@ module CRUD =
                       IsDefault = false }
 
                 let! permissionId' =
-                    testFixture.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         userToken
                         (sprintf "/api/tenant/apis/%i/permissions" (testContext.Value.GetTenant().SampleApiId))
                         data
@@ -75,7 +75,7 @@ module CRUD =
                       IsDefault = false }
 
                 let! permissionId' =
-                    testFixture.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         userToken
                         (sprintf "/api/tenant/apis/%i/permissions" (testContext.Value.GetTenant().SampleApiId))
                         data
@@ -95,7 +95,7 @@ module CRUD =
                       Description = "role description"
                       PermissionIds = [ permissionId1.Value ] }
 
-                let! result = testFixture.HttpPostAsync userToken (sprintf "/api/tenant/domains/%i/roles" domainId) data
+                let! result = testFixture.Server2.HttpPostAsync userToken (sprintf "/api/tenant/domains/%i/roles" domainId) data
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<int> result
                 roleId <- Some(result)
@@ -111,7 +111,7 @@ module CRUD =
                       Description = "role description"
                       PermissionIds = [ permissionId1.Value ] }
 
-                let! result = testFixture.HttpPostAsync userToken (sprintf "/api/tenant/domains/%i/roles" domainId) data
+                let! result = testFixture.Server2.HttpPostAsync userToken (sprintf "/api/tenant/domains/%i/roles" domainId) data
                 ensureConflict result
             }
 
@@ -130,7 +130,7 @@ module CRUD =
                       dateCreated = DateTime.UtcNow }
 
                 let! result =
-                    testFixture.HttpGetAsync userToken (sprintf "/api/tenant/domains/%i/roles/%i" domainId roleId.Value)
+                    testFixture.Server2.HttpGetAsync userToken (sprintf "/api/tenant/domains/%i/roles/%i" domainId roleId.Value)
 
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
@@ -158,7 +158,7 @@ module CRUD =
                       PermissionIds = [ permissionId2.Value ] }
 
                 let! result =
-                    testFixture.HttpPutAsync
+                    testFixture.Server2.HttpPutAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/roles/%i" apiId roleId.Value)
                         data
@@ -182,7 +182,7 @@ module CRUD =
                       dateCreated = DateTime.UtcNow }
 
                 let! result =
-                    testFixture.HttpGetAsync userToken (sprintf "/api/tenant/domains/%i/roles/%i" domainId roleId.Value)
+                    testFixture.Server2.HttpGetAsync userToken (sprintf "/api/tenant/domains/%i/roles/%i" domainId roleId.Value)
 
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<GetLikeDto> result
@@ -205,7 +205,7 @@ module CRUD =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
                 let! result =
-                    testFixture.HttpDeleteAsync
+                    testFixture.Server2.HttpDeleteAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/roles/%i" domainId roleId.Value)
 

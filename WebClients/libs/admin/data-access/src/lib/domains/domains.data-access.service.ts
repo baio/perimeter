@@ -32,18 +32,18 @@ export class DomainsDataAccessService {
             params['filter.name'] = searchParams.filter.text;
         }
         return this.http
-            .get(`tenants/${tenantId}/domain-pools`, { params })
+            .get(`tenant/tenants/${tenantId}/domain-pools`, { params })
             .pipe(map(mapListResponse(mapItem, searchParams)));
     }
 
     loadItem(tenantId: number, id: number): Observable<DomainItem> {
         return this.http
-            .get(`tenants/${tenantId}/domain-pools/${id}`)
+            .get(`tenant/tenants/${tenantId}/domain-pools/${id}`)
             .pipe(map(mapItem));
     }
 
     createItem(tenantId: number, data: { name: string }): Observable<any> {
-        return this.http.post(`tenants/${tenantId}/domain-pools`, data);
+        return this.http.post(`tenant/tenants/${tenantId}/domain-pools`, data);
     }
 
     createEnvItem(
@@ -78,10 +78,10 @@ export class DomainsDataAccessService {
         id: number,
         data: { name: string }
     ): Observable<any> {
-        return this.http.put(`tenants/${tenantId}/domain-pools/${id}`, data);
+        return this.http.put(`tenant/tenants/${tenantId}/domain-pools/${id}`, data);
     }
 
     removeItem(tenantId: number, id: number): Observable<any> {
-        return this.http.delete(`tenants/${tenantId}/domain-pools/${id}`);
+        return this.http.delete(`tenant/tenants/${tenantId}/domain-pools/${id}`);
     }
 }

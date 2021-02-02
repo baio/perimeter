@@ -43,6 +43,7 @@ module CRUD =
         member __.``0 BeforeAll``() =
             task {
                 testContext <- Some(createUserTestContext testFixture)
+
                 let! userToken' = createUser testContext.Value userData
                 userToken <- userToken'
             }
@@ -59,7 +60,9 @@ module CRUD =
                       Description = "test description"
                       IsDefault = false }
 
-                let! result = testFixture.HttpPostAsync userToken (sprintf "/api/tenant/apis/%i/permissions" apiId) data
+                let! result =
+                    testFixture.Server2.HttpPostAsync userToken (sprintf "/api/tenant/apis/%i/permissions" apiId) data
+
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<int> result
                 permissionId <- Some(result)
@@ -77,7 +80,9 @@ module CRUD =
                       Description = "test description"
                       IsDefault = false }
 
-                let! result = testFixture.HttpPostAsync userToken (sprintf "/api/tenant/apis/%i/permissions" apiId) data
+                let! result =
+                    testFixture.Server2.HttpPostAsync userToken (sprintf "/api/tenant/apis/%i/permissions" apiId) data
+
                 do ensureConflict result
             }
 
@@ -95,7 +100,7 @@ module CRUD =
                       IsDefault = false }
 
                 let! result =
-                    testFixture.HttpPutAsync
+                    testFixture.Server2.HttpPutAsync
                         userToken
                         (sprintf "/api/tenant/apis/%i/permissions/%i" apiId permissionId.Value)
                         data
@@ -116,7 +121,7 @@ module CRUD =
                       IsDefault = false }
 
                 let! result =
-                    testFixture.HttpGetAsync
+                    testFixture.Server2.HttpGetAsync
                         userToken
                         (sprintf "/api/tenant/apis/%i/permissions/%i" apiId permissionId.Value)
 
@@ -140,7 +145,7 @@ module CRUD =
 
             task {
                 let! result =
-                    testFixture.HttpDeleteAsync
+                    testFixture.Server2.HttpDeleteAsync
                         userToken
                         (sprintf "/api/tenant/apis/%i/permissions/%i" apiId permissionId.Value)
 

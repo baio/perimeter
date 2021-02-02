@@ -102,29 +102,46 @@ Cypress.Commands.add('confirmYesButton', () => {
 });
 
 Cypress.Commands.add('resetDb', () => {
-    const baseUrl = Cypress.env('apiBaseUrl');
+    const baseUrl = Cypress.env('authApiBaseUrl');
 
     const refreshDbUrl = Cypress.env('resetDbUrl');
 
     const url = resolve(baseUrl, refreshDbUrl);
 
-    return cy.request('POST', url);
+    return cy.request('POST', url).then(() => cy.wait(1000));
 });
 
 Cypress.Commands.add('reinitDb', (loginAsDomain) => {
-    const baseUrl = Cypress.env('apiBaseUrl');
+    const baseUrl = Cypress.env('authApiBaseUrl');
+    const baseUrl2 = Cypress.env('tenantApiBaseUrl');
 
     const refreshDbUrl = Cypress.env('reinitDbUrl');
+    const createTenantDbUrl = Cypress.env('createTenantDbUrl');
 
     const url = resolve(baseUrl, refreshDbUrl);
+    const url2 = resolve(baseUrl2, createTenantDbUrl);
 
-    return cy.request('POST', url, { loginAsDomain }).then((resp) => {
-        console.log('+++', resp);
-        return cy.window().then((win) => {
-            win.localStorage.setItem('access_token', resp.body.access_token);
-            win.localStorage.setItem('id_token', resp.body.id_token);
-        });
-    });
+    return cy
+        .request('POST', url, { loginAsDomain })
+        .then((resp) => {
+            return cy
+                .window()
+                .then((win) => {
+                    win.localStorage.setItem(
+                        'access_token',
+                        resp.body.access_token
+                    );
+                    win.localStorage.setItem('id_token', resp.body.id_token);
+                })
+                .then(() => resp);
+        });/*
+        .then((resp) =>
+            cy.request({
+                method: 'POST',
+                url: url2,
+                headers: { Authorization: `Bearer ${resp.body.access_token}` },
+            })
+        );*/
 });
 
 Cypress.Commands.add('login', () => {

@@ -1,14 +1,11 @@
 ﻿namespace PRR.API.Tests.Utils
 
 open Microsoft.AspNetCore.Hosting
-open Microsoft.AspNetCore.TestHost
 open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Npgsql.Logging
 open System
 open System.IO
-open Xunit
-open PRR.API.Infra
 open MongoDB.Driver
 
 [<AutoOpen>]
@@ -23,12 +20,15 @@ module Setup =
             context.Configuration.GetConnectionString "PostgreSQL"
 
         PRR.Data.DataContextMigrations.DataContextHelpers.RecreateDataContext(psqlConnectionString)
+
         dropDatabase
             (context.Configuration.GetValue "MongoKeyValueStorage:ConnectionString")
             (context.Configuration.GetValue "MongoKeyValueStorage:DbName")
+
         dropDatabase
             (context.Configuration.GetValue "MongoViewStorage:ConnectionString")
             (context.Configuration.GetValue "MongoViewStorage:DbName")
+
         ()
 
 
@@ -36,16 +36,22 @@ module Setup =
     let setupEFLogging () =
         NpgsqlLogManager.Provider <- EFLogger.ConsoleLoggerProvider()
 
-    let createHost' (resetDb: bool) =
-        WebHostBuilder().UseContentRoot(Directory.GetCurrentDirectory()).Configure(Action<_> PRR.API.App.configureApp)
-            .ConfigureAppConfiguration(PRR.API.App.configureAppConfiguration)
-            .ConfigureServices(Action<_, _> PRR.API.App.configureServices)
-        |> fun builder ->
-            if resetDb
-            then builder.ConfigureServices(Action<_, _> recreateDataContext)
-            else builder
+    let createAuthHost () =
+        WebHostBuilder()
+            .UseContentRoot(Directory.GetCurrentDirectory())
+            .Configure(Action<_> PRR.API.Auth.App.configureApp)
+            .ConfigureAppConfiguration(PRR.API.Auth.App.configureAppConfiguration)
+            .ConfigureServices(Action<_, _> PRR.API.Auth.App.configureServices)
+        |> fun builder ->            
+            builder.ConfigureServices(Action<_, _> recreateDataContext)            
 
+    let createTenantHost () =
+        WebHostBuilder()
+            .UseContentRoot(Directory.GetCurrentDirectory())
+            .Configure(Action<_> PRR.API.Tenant.App.configureApp)
+            .ConfigureAppConfiguration(PRR.API.Tenant.App.configureAppConfiguration)
+            .ConfigureServices(Action<_, _> PRR.API.Tenant.App.configureServices)
 
-    let createServer' = createHost' >> TestServer
+// let createServer' = createHost' >> TestServer
 
-    let createServer () = createServer' false
+// let createServer () = createServer' false

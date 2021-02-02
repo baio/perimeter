@@ -23,7 +23,7 @@ export class AdminsDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
     getAllRoles(): Observable<{ id: number; name: string }[]> {
-        return this.http.get<any[]>(`/roles/admins`);
+        return this.http.get<any[]>(`/tenant/roles/admins`);
     }
 
     loadItem(domainId: number, userEmail: string): Observable<UserRole> {

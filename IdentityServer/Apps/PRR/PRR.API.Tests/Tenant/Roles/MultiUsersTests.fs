@@ -61,7 +61,7 @@ module MultiUsers =
                 let tenant = testContext.Value.GetTenant()
 
                 let! permissionId =
-                    (testFixture.HttpPostAsync
+                    (testFixture.Server2.HttpPostAsync
                         userToken
                          (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
                          { testPermission with
@@ -80,7 +80,7 @@ module MultiUsers =
                 let tenant = testContext.Value.GetTenant()
 
                 let! permissionId =
-                    testFixture.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         userToken
                         (sprintf "/api/tenant/apis/%i/permissions" tenant.SampleApiId)
                         { testPermission with
@@ -105,7 +105,7 @@ module MultiUsers =
                       PermissionIds = [ u2.PermissionId.Value ] }
 
                 let! result =
-                    testFixture.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         u1.Token.Value
                         (sprintf "/api/tenant/domains/%i/roles" u1.Tenant.Value.DomainId)
                         data

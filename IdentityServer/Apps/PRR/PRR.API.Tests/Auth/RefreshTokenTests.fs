@@ -65,7 +65,7 @@ module RefreshToken =
 
                 let data: RefreshToken.Models.Data = { RefreshToken = "xxxx" }
 
-                let! result = testFixture.HttpPostAsync accessToken "/api/auth/refresh-token" data
+                let! result = testFixture.Server1.HttpPostAsync accessToken "/api/auth/refresh-token" data
 
                 ensureUnauthorized result
             }
@@ -78,7 +78,7 @@ module RefreshToken =
 
                 let data: RefreshToken.Models.Data = { RefreshToken = refreshToken }
 
-                let! result = testFixture.HttpPostAsync "xxx" "/api/auth/refresh-token" data
+                let! result = testFixture.Server1.HttpPostAsync "xxx" "/api/auth/refresh-token" data
 
                 ensureUnauthorized result
             }
@@ -94,7 +94,7 @@ module RefreshToken =
                 // Wait in order to get updated access token
                 do! System.Threading.Tasks.Task.Delay(1000)
 
-                let! result = testFixture.HttpPostAsync accessToken "/api/auth/refresh-token" data
+                let! result = testFixture.Server1.HttpPostAsync accessToken "/api/auth/refresh-token" data
 
                 do! ensureSuccessAsync result
 
@@ -124,7 +124,7 @@ module RefreshToken =
 
                 let data: RefreshToken.Models.Data = { RefreshToken = refreshToken }
 
-                let! result = testFixture.HttpPostAsync accessToken "/api/auth/refresh-token" data
+                let! result = testFixture.Server1.HttpPostAsync accessToken "/api/auth/refresh-token" data
 
                 ensureUnauthorized result
             }
@@ -140,7 +140,7 @@ module RefreshToken =
                 // Wait in order to get updated access token
                 do! System.Threading.Tasks.Task.Delay(1000)
 
-                let! result = testFixture.HttpPostAsync accessToken2 "/api/auth/refresh-token" data
+                let! result = testFixture.Server1.HttpPostAsync accessToken2 "/api/auth/refresh-token" data
 
                 do! ensureSuccessAsync result
 
@@ -177,7 +177,7 @@ module RefreshToken =
             task {
 
                 let! logoutResult =
-                    testFixture.HttpGetAsync'
+                    testFixture.Server1.HttpGetAsync'
                         (sprintf "/api/auth/logout?return_uri=%s&access_token=%s" "http://localhost:4200" accessToken2)
 
                 do! ensureRedirectSuccessAsync logoutResult
@@ -186,7 +186,7 @@ module RefreshToken =
 
                 do! System.Threading.Tasks.Task.Delay(100)
 
-                let! result = testFixture.HttpPostAsync accessToken2 "/api/auth/refresh-token" data
+                let! result = testFixture.Server1.HttpPostAsync accessToken2 "/api/auth/refresh-token" data
 
                 ensureUnauthorized result
             }

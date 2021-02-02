@@ -55,19 +55,22 @@ module CRUD =
             task {
                 testContext <- Some(createUserTestContext testFixture)
                 let! userToken' = createUser' true testContext.Value userData
-                userToken <- userToken'
-                Thread.Sleep(100)               
+                userToken <- userToken'                
+                // test server must be started before make any request, in order to bus can receive message !
+                let! _ = testFixture.Server2.HttpGetAsync' "/api/auth/version"
+                Thread.Sleep(100)
+                ()
             }
 
         [<Fact>]
         [<Priority(1)>]
-        member __.``A Get user activities must be success``() =
+        member __.``A Get user activities must be success``() =            
             task {
-
+                               
                 let tenant = testContext.Value.GetTenant()
 
                 let! result =
-                    testFixture.HttpGetAsync
+                    testFixture.Server2.HttpGetAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/admin-activities" tenant.DomainId)
 
@@ -81,14 +84,14 @@ module CRUD =
             }
 
         [<Fact>]
-        [<Priority(1)>]
+        [<Priority(2)>]
         member __.``B Get user activities with filter give correct result``() =
             task {
 
                 let tenant = testContext.Value.GetTenant()
 
                 let! result =
-                    testFixture.HttpGetAsync
+                    testFixture.Server2.HttpGetAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/admin-activities?filter.email=xxx" tenant.DomainId)
 
@@ -103,14 +106,14 @@ module CRUD =
 
 
         [<Fact>]
-        [<Priority(1)>]
+        [<Priority(2)>]
         member __.``C Get user activities with existent filter give correct result``() =
             task {
 
                 let tenant = testContext.Value.GetTenant()
 
                 let! result =
-                    testFixture.HttpGetAsync
+                    testFixture.Server2.HttpGetAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/admin-activities?filter.email=user.c" tenant.DomainId)
 

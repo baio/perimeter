@@ -51,7 +51,7 @@ module CRUD =
                 let data: PostLike = { EnvName = "stage" }
 
                 let! result =
-                    testFixture.HttpPostAsync
+                    testFixture.Server2.HttpPostAsync
                         userToken
                         (sprintf "/api/tenant/domain-pools/%i/domains" domainPoolId)
                         data
@@ -69,7 +69,7 @@ module CRUD =
 
             task {
 
-                let! result = testFixture.HttpGetAsync userToken "/api/me/management/domains"
+                let! result = testFixture.Server2.HttpGetAsync userToken "/api/tenant/management/domains"
 
                 do! ensureSuccessAsync result
 
@@ -96,7 +96,7 @@ module CRUD =
             task {
 
                 let! result =
-                    testFixture.HttpGetAsync
+                    testFixture.Server2.HttpGetAsync
                         userToken
                         (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
 
@@ -132,7 +132,7 @@ module CRUD =
                       AccessTokenExpiresIn = 500 }
 
                 let! result =
-                    testFixture.HttpPutAsync
+                    testFixture.Server2.HttpPutAsync
                         userToken
                         (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
                         data
@@ -149,7 +149,7 @@ module CRUD =
             task {
 
                 let! result =
-                    testFixture.HttpGetAsync
+                    testFixture.Server2.HttpGetAsync
                         userToken
                         (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
 
@@ -184,7 +184,7 @@ module CRUD =
                       AccessTokenExpiresIn = 700 }
 
                 let! result =
-                    testFixture.HttpPutAsync
+                    testFixture.Server2.HttpPutAsync
                         userToken
                         (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
                         data
@@ -201,7 +201,7 @@ module CRUD =
             task {
 
                 let! result =
-                    testFixture.HttpGetAsync
+                    testFixture.Server2.HttpGetAsync
                         userToken
                         (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
 
@@ -231,7 +231,7 @@ module CRUD =
 
             task {
                 let! result =
-                    testFixture.HttpGetAsync
+                    testFixture.Server2.HttpGetAsync
                         userToken
                         (sprintf "/api/tenant/domain-pools/%i/domains/%i" domainPoolId domainId.Value)
 

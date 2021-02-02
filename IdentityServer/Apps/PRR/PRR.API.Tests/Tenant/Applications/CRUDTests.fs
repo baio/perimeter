@@ -64,7 +64,7 @@ module CRUD =
                 let data: PostLike = { Name = "App 1" }
 
                 let! result =
-                    testFixture.HttpPostAsync userToken (sprintf "/api/tenant/domains/%i/applications" domainId) data
+                    testFixture.Server2.HttpPostAsync userToken (sprintf "/api/tenant/domains/%i/applications" domainId) data
 
                 do! ensureSuccessAsync result
 
@@ -79,7 +79,7 @@ module CRUD =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
                 let! result =
-                    testFixture.HttpGetAsync
+                    testFixture.Server2.HttpGetAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/applications/%i" domainId applicationId.Value)
 
@@ -117,7 +117,7 @@ module CRUD =
                       SSOEnabled = true }
 
                 let! result =
-                    testFixture.HttpPutAsync
+                    testFixture.Server2.HttpPutAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/applications/%i" domainId applicationId.Value)
                         data
@@ -131,7 +131,7 @@ module CRUD =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
                 let! result =
-                    testFixture.HttpGetAsync
+                    testFixture.Server2.HttpGetAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/applications/%i" domainId applicationId.Value)
 
@@ -157,7 +157,7 @@ module CRUD =
             let domainId = testContext.Value.GetTenant().DomainId
             task {
                 let! result =
-                    testFixture.HttpDeleteAsync
+                    testFixture.Server2.HttpDeleteAsync
                         userToken
                         (sprintf "/api/tenant/domains/%i/applications/%i" domainId applicationId.Value)
 
