@@ -63,6 +63,6 @@ export class AuthDataAccessService {
     }
 
     getAppInfo(clientId: string): Observable<any> {
-        return this.http.get<AppInfo>(`tenant/applications/${clientId}`);
+        return this.http.get<AppInfo>(`auth/applications/${clientId}`);
     }
 }

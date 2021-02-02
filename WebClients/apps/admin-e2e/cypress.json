@@ -13,11 +13,12 @@
     "taskTimeout": 100000,
     "pageLoadTimeout": 100000,
     "env": {
-        "authApiBaseUrl": "https://localhost:5001/api/auth",
-        "tenantApiBaseUrl": "https://localhost:6001/api/tenant",
+        "authApiBaseUrl": "https://localhost:5001/api/auth/",
+        "tenantApiBaseUrl": "https://localhost:6001/api/tenant/",
         "authBaseUrl": "http://localhost:4201",
         "resetDbUrl": "e2e/reset",
         "reinitDbUrl": "e2e/reinit",
+        "createTenantDbUrl": "e2e/create-user-tenant",
         "confirmSignupToken": "HASH"
     }
 }

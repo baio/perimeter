@@ -33,7 +33,7 @@ module CreateCommonAppConfig =
                 AllocatedMemoryGb = 5 }
           DataContext =
               { ConnectionString = psqlConnectionString
-                MigrationAssembly = None }
+                MigrationAssembly = Some "PRR.Data.DataContextMigrations" }
           Logging =
               { Config = { ServiceUrl = configuration.GetValue("Logging:Seq:ServiceUrl") }
                 IgnoreApiPaths = ignoreObserveApiPaths }

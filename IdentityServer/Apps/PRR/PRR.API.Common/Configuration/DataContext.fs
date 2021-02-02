@@ -30,6 +30,7 @@ module DataContext =
                     (o',
                      connectionString,
                      (fun b ->
+                         let b = b.EnableRetryOnFailure(1)
                          match config.MigrationAssembly with
                          | Some migrationAssembly -> b.MigrationsAssembly(migrationAssembly) |> ignore
                          | None -> ()))

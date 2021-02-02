@@ -34,14 +34,17 @@ let migrateDatabase (webHost: IWebHost) =
     use scope = webHost.Services.CreateScope()
     let services = scope.ServiceProvider
 
+    let logger =
+        webHost.Services.GetRequiredService<ILogger<_>>()
+
+    logger.LogCritical("Start migrate data base")
+
     try
         let db =
             services.GetRequiredService<DbDataContext>()
 
         db.Database.Migrate()
     with ex ->
-        let logger =
-            webHost.Services.GetRequiredService<ILogger<_>>()
 
         logger.LogCritical("An error occurred while migrating the database. {ex}", ex)
 

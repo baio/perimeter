@@ -112,6 +112,7 @@
       <ProjectReference Include="..\Data\PRR.Data.DataContextMigrations\PRR.Data.DataContextMigrations.csproj" />
       <ProjectReference Include="..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
       <ProjectReference Include="..\Domain\PRR.Domain.Auth\PRR.Domain.Auth.fsproj" />
+      <ProjectReference Include="..\Domain\PRR.Domain.Tenant\PRR.Domain.Tenant.fsproj" />
       <ProjectReference Include="..\PRR.API.Common\PRR.API.Common.fsproj" />
     </ItemGroup>
 

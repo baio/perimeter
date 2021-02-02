@@ -23,12 +23,12 @@ export class TenantAdminsDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
     getAllRoles(): Observable<{ id: number; name: string }[]> {
-        return this.http.get<any[]>(`/roles/tenant-admins`);
+        return this.http.get<any[]>(`/tenant/roles/tenant-admins`);
     }
 
     loadItem(tenantId: number, userEmail: string): Observable<UserRole> {
         return this.http
-            .get(`/tenants/${tenantId}/admins/${userEmail}`)
+            .get(`/tenant/tenants/${tenantId}/admins/${userEmail}`)
             .pipe(map(mapItem));
     }
 
@@ -41,12 +41,12 @@ export class TenantAdminsDataAccessService {
             params['filter.email'] = searchParams.filter.text;
         }
         return this.http
-            .get(`/tenants/${tenantId}/admins`, { params })
+            .get(`/tenant/tenants/${tenantId}/admins`, { params })
             .pipe(map(mapListResponse(mapItem, searchParams)));
     }
 
     removeItem(tenantId: number, userEmail: string): Observable<any> {
-        return this.http.delete(`/tenants/${tenantId}/admins/${userEmail}`);
+        return this.http.delete(`/tenant/tenants/${tenantId}/admins/${userEmail}`);
     }
 
     updateItem(
@@ -54,7 +54,7 @@ export class TenantAdminsDataAccessService {
         data: Partial<UserRole>
     ): Observable<UserRole> {
         return this.http.post<UserRole>(
-            `/tenants/${tenantId}/admins`,
+            `/tenant/tenants/${tenantId}/admins`,
             mapPayload(data)
         );
     }

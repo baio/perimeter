@@ -73,7 +73,7 @@ describe('signup flow', () => {
 
             cy.url().should('include', '/login-cb');
 
-            cy.url().should('not.include', '/login-cb');
+            cy.url().should('not.include', '/login-cb');            
 
             cy.window().then((win) => {
                 assert.isTrue(!!win.localStorage.getItem('id_token'));

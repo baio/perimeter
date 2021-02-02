@@ -1,6 +1,9 @@
 ﻿namespace PRR.API.Auth.Routes
 
+#if E2E
+
 open DataAvail.Giraffe.Common
+open DataAvail.Http.Exceptions
 open DataAvail.KeyValueStorage.Core
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Giraffe
@@ -18,11 +21,55 @@ open System.Linq
 open System.Threading
 open System.Threading.Tasks
 open DataAvail.EntityFramework.Common
+open Microsoft.Extensions.Logging
+open PRR.Domain.Models
 
 [<CLIMutable>]
 type ReinitData = { LoginAsDomain: bool }
 
 module E2E =
+
+    // TODO : Either separate E2E.API project either create tenants from client tests directly !!!
+    open System.Security.Cryptography
+    let private random = Random()
+
+    let private getRandomString length =
+        let chars =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+
+        [ 0 .. length ]
+        |> Seq.map (fun x -> chars.[random.Next(chars.Length)])
+        |> System.String.Concat
+
+    let private authStringsGetter: PRR.Domain.Tenant.Models.IAuthStringsGetter =
+        { ClientId = fun () -> getRandomString 33
+          ClientSecret = fun () -> getRandomString 50
+          AuthorizationCode = fun () -> getRandomString 35
+          HS256SigningSecret = fun () -> getRandomString 35
+          RS256XMLParams =
+              fun () ->
+                  let rsa = RSA.Create(2048)
+                  rsa.ToXmlString(true) }
+
+    let private createUserTenant (ctx: HttpContext) userId userEmail =
+
+        let configuration = ctx.GetService<IConfiguration>()
+
+        let authConfig: PRR.Domain.Tenant.Models.AuthConfig =
+            { AccessTokenSecret = configuration.GetValue<string>("TenantAuth:AccessTokenSecret")
+              IdTokenExpiresIn = configuration.GetValue<int<minutes>>("TenantAuth:IdTokenExpiresInMinutes")
+              AccessTokenExpiresIn = configuration.GetValue<int<minutes>>("TenantAuth:AccessTokenExpiresInMinutes")
+              RefreshTokenExpiresIn = configuration.GetValue<int<minutes>>("TenantAuth:RefreshTokenExpiresInMinutes") }
+
+
+        // Code for which PRR.Domain.Tenant was included not allowed to use PRR.Domain.Tenant anywhere else in this project !!!
+        let env: PRR.Domain.Tenant.CreateUserTenant.Env =
+            { DbDataContext = getDataContext ctx
+              AuthConfig = authConfig
+              AuthStringsGetter = authStringsGetter }
+
+        PRR.Domain.Tenant.CreateUserTenant.createUserTenant env { UserId = userId; Email = userEmail }
+    //
 
     let private dropDatabase (connectionString: string) (dbName: string) =
         let client = MongoClient(connectionString)
@@ -60,8 +107,10 @@ module E2E =
                  >=> fun next ctx ->
                          let dataContext = getDataContext ctx
 
-
                          recreatedDbs ctx
+
+                         Thread.Sleep(1000)
+
                          // signup
                          let signUpConfirmItem: SignUpKV =
                              { FirstName = "test"
@@ -108,6 +157,8 @@ module E2E =
                              //
                              Thread.Sleep(100)
 
+                             let! _ = createUserTenant ctx userId signUpConfirmItem.Email
+
                              let! data = ctx |> bindJsonAsync<ReinitData>
 
                              let! clientId =
@@ -143,3 +194,4 @@ module E2E =
 
                              return! Successful.OK result next ctx
                          } ]
+#endif
