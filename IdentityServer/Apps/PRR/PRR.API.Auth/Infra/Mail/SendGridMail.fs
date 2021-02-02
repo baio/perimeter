@@ -3,6 +3,7 @@
 open System.Threading.Tasks
 open SendGrid
 open SendGrid.Helpers.Mail
+open DataAvail.Common
 
 module SendGridMail =
 

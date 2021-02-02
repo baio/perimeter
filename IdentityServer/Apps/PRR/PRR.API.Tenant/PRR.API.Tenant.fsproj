@@ -32,6 +32,9 @@
         <Compile Include="Routes\GetManagementDomainRoutes.fs" />
         <Compile Include="Routes\TenantRoutes.fs" />
         <Compile Include="Program.fs" />
+        <Content Include="appsettings.json">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
         <Content Include="appsettings.e2e.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>

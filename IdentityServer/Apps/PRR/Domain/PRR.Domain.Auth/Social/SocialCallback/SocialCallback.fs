@@ -161,24 +161,6 @@ module Social =
 
             logger.LogInformation("${@redirectUrl} is ready", redirectUrl)
 
-            (*
-            let loginItem = { loginItem with Social = Some social }
-
-            let ssoItem =
-                ssoItem
-                |> Option.map (fun ssoItem -> { ssoItem with Social = Some social })
-
-            let successData = loginItem, ssoItem
-
-            logger.LogInformation("${@successData} is ready", successData)
-
-            let env': PRR.Domain.Auth.LogIn.OnSuccess.Env =
-                { KeyValueStorage = env.KeyValueStorage
-                  Logger = env.Logger }
-
-            do! PRR.Domain.Auth.LogIn.OnSuccess.onSuccess env' (successData)
-            *)
-
             let result: Result =
                 { RedirectUrl = redirectUrl
                   SocialLoginToken = item.Token }
