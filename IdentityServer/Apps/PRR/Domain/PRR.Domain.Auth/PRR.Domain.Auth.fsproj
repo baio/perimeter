@@ -19,12 +19,12 @@
 
     <ItemGroup>
         <Compile Include="Common\Constants.fs" />
-        <Compile Include="Common\ReadToken.fs" />
         <Compile Include="Common\ValidateScopes.fs" />
         <Compile Include="Common\JwtConfig.fs" />
         <Compile Include="Common\MapBadRequest.fs" />
         <Compile Include="Common\KeyValueModels.fs" />
         <Compile Include="Common\SendMail.fs" />
+        <Compile Include="Common\Security.fs" />
         <Compile Include="LogIn\Models.fs" />
         <Compile Include="LogIn\UserHelpers.fs" />
         <Compile Include="LogIn\OnSuccess.fs" />
