@@ -77,10 +77,6 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ClientSecret")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")

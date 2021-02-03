@@ -156,7 +156,6 @@ namespace PRR.Data.DataContextMigrations.Migrations
                     Name = table.Column<string>(nullable: false),
                     DomainId = table.Column<int>(nullable: false),
                     ClientId = table.Column<string>(nullable: false),
-                    ClientSecret = table.Column<string>(nullable: false),
                     DateCreated = table.Column<DateTime>(nullable: false, defaultValueSql: "now()"),
                     IdTokenExpiresIn = table.Column<int>(nullable: false),
                     RefreshTokenExpiresIn = table.Column<int>(nullable: false),

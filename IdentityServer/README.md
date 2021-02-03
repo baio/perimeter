@@ -16,7 +16,7 @@ dotnet ef database update --project Apps/PRR/Data/PRR.Data.DataContextMigrations
 ## Infra
 
 AzureStorageEmulator for akka persistence 
-
+f
 
 ## Tests
 

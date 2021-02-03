@@ -22,7 +22,7 @@ namespace PRR.Data.Entities
 
         [Required] public string ClientId { get; set; }
 
-        [Required] public string ClientSecret { get; set; }
+        // [Required] public string ClientSecret { get; set; }
 
         [Required] public DateTime DateCreated { get; set; }
 
