@@ -68,7 +68,7 @@ module CreateUserTenant =
 
             //
             let tenantManagementDomain =
-                createTenantManagementDomain authConfig tenant
+                createTenantManagementDomain env.AuthStringsGetter authConfig tenant
                 |> add'
 
             let tenantManagementApp =

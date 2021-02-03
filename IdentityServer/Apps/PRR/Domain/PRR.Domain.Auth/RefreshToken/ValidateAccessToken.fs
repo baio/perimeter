@@ -11,28 +11,6 @@ open PRR.Domain.Auth.Common
 [<AutoOpen>]
 module internal ValidateAccessToken =
 
-    let validateToken (token: string) tokenValidationParameters =
-        let tokenHandler = JwtSecurityTokenHandler()
-        try
-            let (principal, securityToken) =
-                tokenHandler.ValidateToken(token, tokenValidationParameters)
-
-            let jwtSecurityToken = securityToken :?> JwtSecurityToken
-            if (jwtSecurityToken = null) then
-                (*                || (jwtSecurityToken.Header.Alg.Equals
-                        (SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase)
-                    |> not)) then
-                *)
-                None
-            else
-                Some principal
-        with :? Exception as ex ->
-            printfn "Validate token fails %O" ex
-            None
-
-
-    let private principalClaims (principal: ClaimsPrincipal) = principal.Claims
-
     open DataAvail.Common
     open DataAvail.Common.Option
 
@@ -52,13 +30,12 @@ module internal ValidateAccessToken =
                 (ValidateAudience = false,
                  ValidateIssuer = false,
                  ValidateIssuerSigningKey = true,
-                 IssuerSigningKey = key,  //SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+                 IssuerSigningKey = key,
                  ValidateLifetime = false)
 
         (principalClaims
          <!> validateToken token tokenValidationParameters)
         >>= getClaimInt CLAIM_TYPE_UID
-
 
     let getTokenIssuer =
         readToken >> Option.map (fun x -> x.Issuer)

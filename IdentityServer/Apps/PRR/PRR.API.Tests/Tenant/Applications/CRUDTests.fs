@@ -36,7 +36,6 @@ module CRUD =
         { id: int
           name: string
           clientId: string
-          clientSecret: string
           dateCreated: DateTime
           idTokenExpiresIn: int
           refreshTokenExpiresIn: int }
@@ -94,8 +93,6 @@ module CRUD =
 
                 result.clientId |> should be (not' null)
 
-                result.clientSecret |> should be (not' null)
-
                 result.dateCreated |> should be (not' null)
                 result.idTokenExpiresIn |> should be (not' null)
 
@@ -143,7 +140,6 @@ module CRUD =
                 result.id |> should equal applicationId.Value
                 result.name |> should equal "App 1 Updated"
                 result.clientId |> should be (not' null)
-                result.clientSecret |> should be (not' null)
                 result.dateCreated |> should be (not' null)
                 result.idTokenExpiresIn |> should be (not' null)
 

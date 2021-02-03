@@ -8,6 +8,7 @@ open DataAvail.Http.Exceptions
 
 module ErrorHandler =
 
+    [<CLIMutable>]
     type ErrorDTO =
         { Message: string
           Field: string
@@ -21,7 +22,10 @@ module ErrorHandler =
             let errMessage =
                 match err with
                 | CUSTOM msg -> (sprintf "CUSTOM:%s" msg)
-                | _ -> (sprintf "%O" err).Replace(" ", ":").Replace("\"", "")
+                | _ ->
+                    (sprintf "%O" err)
+                        .Replace(" ", ":")
+                        .Replace("\"", "")
 
             (field, errMessage)
         | BadRequestCommonError x -> ("__", x)
@@ -40,6 +44,7 @@ module ErrorHandler =
 
     let matchException (logger: ILogger) (ex: Exception) =
         logger.LogWarning("Handle exception {@exception}", ex)
+
         match ex with
         | :? Unexpected as e ->
             let msg =
@@ -47,7 +52,7 @@ module ErrorHandler =
                 | Some x -> x
                 | None -> "Unexpected error"
 
-            RequestErrors.NOT_ACCEPTABLE
+            ServerErrors.INTERNAL_ERROR
                 { Message = msg
                   Field = null
                   Code = null }

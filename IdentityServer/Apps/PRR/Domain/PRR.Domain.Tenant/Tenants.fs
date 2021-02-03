@@ -44,7 +44,7 @@ module Tenants =
 
             // tenant management
             let tenantManagementDomain =
-                createTenantManagementDomain env.AuthConfig tenant
+                createTenantManagementDomain env.AuthStringsProvider env.AuthConfig tenant
                 |> add'
 
             createTenantManagementApp env.AuthStringsProvider env.AuthConfig tenantManagementDomain

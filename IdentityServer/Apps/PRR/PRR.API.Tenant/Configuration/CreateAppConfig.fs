@@ -17,7 +17,7 @@ module CreateAppConfig =
             configuration.GetValue<string>("Auth:Jwt:AccessTokenSecret")
 
         let auth: AuthConfig =
-            { AccessTokenSecret = configuration.GetValue<string>("TenantAuth:AccessTokenSecret")
+            { // AccessTokenSecret = configuration.GetValue<string>("TenantAuth:AccessTokenSecret")
               IdTokenExpiresIn = configuration.GetValue<int<minutes>>("TenantAuth:IdTokenExpiresInMinutes")
               AccessTokenExpiresIn = configuration.GetValue<int<minutes>>("TenantAuth:AccessTokenExpiresInMinutes")
               RefreshTokenExpiresIn = configuration.GetValue<int<minutes>>("TenantAuth:RefreshTokenExpiresInMinutes") }

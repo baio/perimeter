@@ -10,7 +10,7 @@ using PRR.Data.DataContext;
 namespace PRR.Data.DataContextMigrations.Migrations
 {
     [DbContext(typeof(DbDataContext))]
-    [Migration("20201113210923_Initial")]
+    [Migration("20210203071303_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -76,10 +76,6 @@ namespace PRR.Data.DataContextMigrations.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("ClientId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ClientSecret")
                         .IsRequired()
                         .HasColumnType("text");
 

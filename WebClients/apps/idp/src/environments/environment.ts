@@ -4,7 +4,21 @@
 
 export const environment = {
     production: false,
-    baseUrl: 'https://localhost:5001',
+    baseUrl: 'https://localhost:5001/api',
+    auth: {
+        loginUrl: 'http://localhost:4200/auth/login',
+        signupUrl: 'http://localhost:4200/auth/register',
+        tokenUrl: 'https://localhost:5001/api/auth/token',
+        logoutUrl: 'https://localhost:5000/api/auth/logout',
+        returnLoginUri: 'http://localhost:4200/login-cb',
+        returnLoginPath: '/',
+        returnLogoutUri: 'http://localhost:4200',
+        clientId: '__DEFAULT_CLIENT_ID__',
+        scope: 'openid profile',
+        stateStringLength: 64,
+        pkceCodeVerifierLength: 128,
+        refreshTokenUrl: `https://localhost:5001/api/auth/refresh-token`,
+    },
 };
 
 /*

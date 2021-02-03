@@ -69,7 +69,8 @@ module internal SignInUser =
             let! domainAudiences = getClientDomainAudiences dataContext clientId
 
             match domainAudiences with
-            | Some { DomainId = domainId; Audiences = audiences } ->
+            | Some { DomainId = domainId
+                     Audiences = audiences } ->
                 let! rolesPermissions = getUserDomainRolesPermissions dataContext (domainId, email)
                 return (audiences, (rolesPermissions :> seq<_>))
             | None -> return raise (unAuthorized "Client is not found")
@@ -92,8 +93,9 @@ module internal SignInUser =
             else
                 let! (audiences, rolesPermissions) = getClientAudiencesRolePermissions' dataContext clientId email
 
-                return (Seq.append audiences perimeterAudiences),
-                       (Seq.append rolesPermissions perimeterUserRolePermissions)
+                return
+                    (Seq.append audiences perimeterAudiences),
+                    (Seq.append rolesPermissions perimeterUserRolePermissions)
         }
 
     type SignInScopes =
@@ -107,22 +109,12 @@ module internal SignInUser =
             | ValidatedScopes scopes -> return scopes
         }
 
-    let private createSymmetricKey (secret: string) =
-        secret
-        |> System.Text.Encoding.ASCII.GetBytes
-        |> SymmetricSecurityKey
 
     let private createHS256Credentials (secret: string) =
-        SigningCredentials((createSymmetricKey secret), SecurityAlgorithms.HmacSha256Signature)
+        SigningCredentials((createHS256Key secret), SecurityAlgorithms.HmacSha256Signature)
 
     let private createRS256Credentials (xmlParams: string) =
-        let rsa = RSA.Create()
-        rsa.FromXmlString(xmlParams)
-
-        let rsaKey =
-            RsaSecurityKey(rsa.ExportParameters(true))
-
-        SigningCredentials(rsaKey, SecurityAlgorithms.RsaSha256)
+        SigningCredentials((createRS256Key xmlParams), SecurityAlgorithms.RsaSha256)
 
     type DomainSecretData =
         { AccessTokenExpiresIn: int
@@ -133,13 +125,15 @@ module internal SignInUser =
             // perimeter clients should always use internal credentials
             match isPerimeterClient with
             | true ->
-                return { AccessTokenExpiresIn = int env.JwtConfig.AccessTokenExpiresIn
-                         SigningCredentials = createHS256Credentials env.JwtConfig.AccessTokenSecret }
+                return
+                    { AccessTokenExpiresIn = int env.JwtConfig.AccessTokenExpiresIn
+                      SigningCredentials = createHS256Credentials env.JwtConfig.AccessTokenSecret }
             | false ->
                 let! (expiresIn, algo, hs256key, rs256params) =
                     query {
                         for domain in env.DataContext.Domains do
                             where (domain.Issuer = issuer)
+
                             select
                                 (domain.AccessTokenExpiresIn,
                                  domain.SigningAlgorithm,
@@ -148,19 +142,23 @@ module internal SignInUser =
                     }
                     |> toSingleAsync
 
-                return { AccessTokenExpiresIn = expiresIn
-                         SigningCredentials =
-                             if algo = SigningAlgorithmType.HS256 then
-                                 createHS256Credentials hs256key
-                             else
-                                 createRS256Credentials rs256params }
+                return
+                    { AccessTokenExpiresIn = expiresIn
+                      SigningCredentials =
+                          if algo = SigningAlgorithmType.HS256 then
+                              createHS256Credentials hs256key
+                          else
+                              createRS256Credentials rs256params }
         }
 
 
     let signInUser env (tokenData: TokenData) clientId (scopes: SignInScopes) =
         task {
 
-            let! { ClientId = clientId; Issuer = issuer; IdTokenExpiresIn = idTokenExpiresIn; Type = clientType } =
+            let! { ClientId = clientId
+                   Issuer = issuer
+                   IdTokenExpiresIn = idTokenExpiresIn
+                   Type = clientType } =
                 getAppInfo env.DataContext clientId tokenData.Email env.JwtConfig.IdTokenExpiresIn
 
             let! validatedScopes = getValidatedScopes env.DataContext tokenData.Email clientId scopes

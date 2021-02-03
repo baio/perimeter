@@ -9,7 +9,7 @@ import {
     ForgotPasswordPageComponent,
     ForgotPasswordSentPageComponent,
     ForgotPasswordResetPageComponent,
-} from '@ip/auth';
+} from '@idp/auth';
 
 export const routes: Routes = [
     {

@@ -142,7 +142,7 @@ module DefaultPermissions =
 
                 result.access_token |> should be (not' Empty)
 
-                let jwtToken = ReadToken.readToken result.access_token
+                let jwtToken = readToken result.access_token
 
                 jwtToken.IsSome |> should be True
 
@@ -210,7 +210,7 @@ module DefaultPermissions =
 
                 result.access_token |> should be (not' Empty)
 
-                let jwtToken = ReadToken.readToken result.access_token
+                let jwtToken = readToken result.access_token
 
                 jwtToken.IsSome |> should be True
 
@@ -243,7 +243,7 @@ module DefaultPermissions =
 
                 result.access_token |> should be (not' Empty)
 
-                let jwtToken = ReadToken.readToken result.access_token
+                let jwtToken = readToken result.access_token
 
                 jwtToken.IsSome |> should be True
 

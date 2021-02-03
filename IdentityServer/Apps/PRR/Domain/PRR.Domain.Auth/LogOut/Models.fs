@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.LogOut
 
+open PRR.Domain.Auth
 open PRR.Domain.Models
 open DataAvail.KeyValueStorage.Core
 open PRR.Data.DataContext
@@ -20,7 +21,7 @@ module Models =
 
     type Env =
         { DataContext: DbDataContext
-          AccessTokenSecret: string
+          JwtConfig: JwtConfig
           KeyValueStorage: IKeyValueStorage
           Logger: ILogger }
 

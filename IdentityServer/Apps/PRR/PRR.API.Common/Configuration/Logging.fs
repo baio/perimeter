@@ -33,8 +33,10 @@ module Logging =
 
 
         Log.Logger <-
-            LoggerConfiguration().Enrich.FromLogContext()//.WriteTo.Console().WriteTo.Debug()
+            LoggerConfiguration().Enrich.FromLogContext()
                 #if !TEST
                 .WriteTo.Seq(env.Config.ServiceUrl)
+                #else
+                .WriteTo.Console().WriteTo.Debug()
                 #endif
                 .Filter.ByExcluding(filterIgnoredEndpoints env.IgnoreApiPaths).CreateLogger()

@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { AppInfo, AuthDataAccessService, LoginParams } from '@ip/data-access';
+import { AppInfo, AuthDataAccessService, LoginParams } from '@idp/data-access';
 import { FormValidators, HTTP_BASE_URL_CONFIG } from '@perimeter/common';
 
 @Component({

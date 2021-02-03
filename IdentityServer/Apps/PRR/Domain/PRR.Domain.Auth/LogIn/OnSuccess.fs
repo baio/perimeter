@@ -43,6 +43,9 @@ module internal OnSuccess =
             task {
                 do! storeLogIn env loginItem
                 match ssoItem with
-                | Some ssoItem -> do! storeSSO env ssoItem
+                | Some ssoItem ->
+                    // Update SSO item 
+                    let! _ = env.KeyValueStorage.RemoveValue<SSOKV> ssoItem.Code None
+                    do! storeSSO env ssoItem
                 | _ -> ()
             }

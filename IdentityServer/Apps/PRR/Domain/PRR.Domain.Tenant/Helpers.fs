@@ -11,7 +11,7 @@ module Helpers =
     let createDomainPool tenant name identifier =
         DomainPool(Tenant = tenant, Name = name, Identifier = identifier)
 
-    let createTenantManagementDomain authConfig (tenant: Tenant) =
+    let createTenantManagementDomain (authStringProvider: IAuthStringsGetter) authConfig (tenant: Tenant) =
         Domain
             (Tenant = tenant,
              EnvName = "management",
@@ -19,14 +19,14 @@ module Helpers =
              Issuer = sprintf "https://management.%s.perimeter.com/tenant/issuer" tenant.Name,
              AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn),
              SigningAlgorithm = SigningAlgorithmType.HS256,
-             HS256SigningSecret = authConfig.AccessTokenSecret)
+             HS256SigningSecret = authStringProvider.HS256SigningSecret())
 
     let createTenantManagementApp (authStringProvider: IAuthStringsGetter) (authConfig: AuthConfig) domain =
         Application
             (Domain = domain,
              Name = "Tenant domains management application",
              ClientId = authStringProvider.ClientId(),
-             ClientSecret = authStringProvider.ClientSecret(),
+             // ClientSecret = authStringProvider.ClientSecret(),
              Flow = FlowType.PKCE,
              AllowedCallbackUrls = "*",
              AllowedLogoutCallbackUrls = "*",
@@ -50,7 +50,7 @@ module Helpers =
              IsMain = true,
              AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn),
              SigningAlgorithm = SigningAlgorithmType.RS256,
-             HS256SigningSecret = authConfig.AccessTokenSecret,
+             HS256SigningSecret = authStringProviders.HS256SigningSecret(),
              RS256Params = authStringProviders.RS256XMLParams(),
              Issuer =
                  sprintf "https://dev.%s.%s.perimeter.com/domain/issuer" domainPool.Identifier domainPool.Tenant.Name)
@@ -60,7 +60,7 @@ module Helpers =
             (Domain = domain,
              Name = name,
              ClientId = authStringProvider.ClientId(),
-             ClientSecret = authStringProvider.ClientSecret(),
+             // ClientSecret = authStringProvider.ClientSecret(),
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
              RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
              AllowedCallbackUrls = "*",
@@ -73,7 +73,7 @@ module Helpers =
             (Domain = domain,
              Name = "Domain management application",
              ClientId = authStringProvider.ClientId(),
-             ClientSecret = authConfig.AccessTokenSecret,
+             // ClientSecret = authStringProvider.ClientSecret(),
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
              RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
              AllowedCallbackUrls = "*",

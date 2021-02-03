@@ -31,9 +31,9 @@ module RefreshToken =
                   Logger = env.Logger
                   HashProvider = env.HashProvider }
 
-            logger.LogInformation("refreshToken begins")
-
             let accessToken = token
+
+            logger.LogInformation("refreshToken begins with access token ${accessToken}", accessToken)
 
             task {
                 let! item = env.KeyValueStorage.GetValue<RefreshTokenKV> data.RefreshToken None
@@ -48,6 +48,7 @@ module RefreshToken =
                             ("Refresh token item is not found for refresh token {token} with error ${@error}",
                              data.RefreshToken,
                              err)
+
                         raise UnAuthorized'
 
                 let issuer = getTokenIssuer accessToken
@@ -59,7 +60,6 @@ module RefreshToken =
                 match validate env accessToken (item.ExpiresAt, item.UserId, domainSecret.SigningCredentials.Key) with
                 | Success ->
                     logger.LogInformation("Domain and token validated for refresh token item")
-
                     match! getUserDataForToken env.DataContext item.UserId item.SocialType with
                     | Some tokenData ->
                         logger.LogInformation("${@tokenData} for token found", tokenData)

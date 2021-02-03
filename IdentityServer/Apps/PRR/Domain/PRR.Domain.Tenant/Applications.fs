@@ -29,7 +29,7 @@ module Applications =
         { Id: int
           Name: string
           ClientId: string
-          ClientSecret: string
+          // ClientSecret: string
           DateCreated: DateTime
           IdTokenExpiresIn: int
           RefreshTokenExpiresIn: int
@@ -66,7 +66,7 @@ module Applications =
                 (Name = dto.Name,
                  ClientId = env.AuthStringsProvider.ClientId(),
                  DomainId = domainId,
-                 ClientSecret = env.AuthStringsProvider.ClientSecret(),
+                 // ClientSecret = env.AuthStringsProvider.ClientSecret(),
                  IdTokenExpiresIn = int env.IdTokenExpiresIn,
                  RefreshTokenExpiresIn = int env.RefreshTokenExpiresIn,
                  Flow = FlowType.PKCE,
@@ -89,7 +89,7 @@ module Applications =
             { Id = p.Id
               Name = p.Name
               ClientId = p.ClientId
-              ClientSecret = p.ClientSecret
+              // ClientSecret = p.ClientSecret
               DateCreated = p.DateCreated
               IdTokenExpiresIn = p.IdTokenExpiresIn
               RefreshTokenExpiresIn = p.RefreshTokenExpiresIn

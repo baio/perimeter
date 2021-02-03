@@ -35,17 +35,17 @@
     "perimeter-ng-auth": {
       "tags": []
     },
-    "ip": {
+    "idp": {
       "tags": []
     },
-    "ip-e2e": {
+    "idp-e2e": {
       "tags": [],
-      "implicitDependencies": ["ip"]
+      "implicitDependencies": ["idp"]
     },
-    "ip-auth": {
+    "idp-auth": {
       "tags": []
     },
-    "ip-data-access": {
+    "idp-data-access": {
       "tags": []
     },
     "perimeter-common": {

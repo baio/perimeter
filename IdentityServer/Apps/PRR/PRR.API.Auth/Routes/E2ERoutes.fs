@@ -43,7 +43,7 @@ module E2E =
 
     let private authStringsGetter: PRR.Domain.Tenant.Models.IAuthStringsGetter =
         { ClientId = fun () -> getRandomString 33
-          ClientSecret = fun () -> getRandomString 50
+          // ClientSecret = fun () -> getRandomString 50
           AuthorizationCode = fun () -> getRandomString 35
           HS256SigningSecret = fun () -> getRandomString 35
           RS256XMLParams =
@@ -56,7 +56,7 @@ module E2E =
         let configuration = ctx.GetService<IConfiguration>()
 
         let authConfig: PRR.Domain.Tenant.Models.AuthConfig =
-            { AccessTokenSecret = configuration.GetValue<string>("TenantAuth:AccessTokenSecret")
+            { // AccessTokenSecret = configuration.GetValue<string>("TenantAuth:AccessTokenSecret")
               IdTokenExpiresIn = configuration.GetValue<int<minutes>>("TenantAuth:IdTokenExpiresInMinutes")
               AccessTokenExpiresIn = configuration.GetValue<int<minutes>>("TenantAuth:AccessTokenExpiresInMinutes")
               RefreshTokenExpiresIn = configuration.GetValue<int<minutes>>("TenantAuth:RefreshTokenExpiresInMinutes") }

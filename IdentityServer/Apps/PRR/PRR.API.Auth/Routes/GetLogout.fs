@@ -12,9 +12,9 @@ module internal GetLogout =
 
     let getEnv ctx =
         { DataContext = getDataContext ctx
-          AccessTokenSecret = (getConfig ctx).Auth.Jwt.AccessTokenSecret
           Logger = getLogger ctx
-          KeyValueStorage = getKeyValueStorage ctx }
+          KeyValueStorage = getKeyValueStorage ctx
+          JwtConfig = (getConfig ctx).Auth.Jwt }
 
     let handler next ctx =
 
