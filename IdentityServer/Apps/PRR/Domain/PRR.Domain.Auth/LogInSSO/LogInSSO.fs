@@ -42,6 +42,7 @@ module Authorize =
             | None -> ()
 
             let dataContext = env.DataContext
+
             task {
 
                 let! ssoItem = env.KeyValueStorage.GetValue<SSOKV> ssoToken None
@@ -57,34 +58,39 @@ module Authorize =
 
                 if ssoItem.ExpiresAt < DateTime.UtcNow then raise (unAuthorized "sso expired")
 
-                let! { ClientId = clientId; Issuer = issuer } =
-                    PRR.Domain.Auth.LogIn.UserHelpers.getAppInfo env.DataContext data.Client_Id ssoItem.Email 1<minutes>
+                let! appInfo = getAppInfo env.DataContext data.Client_Id ssoItem.Email 1<minutes>
 
-                env.Logger.LogInformation("AppInfo found ${clientId} ${issuer}", clientId, issuer)
+                env.Logger.LogInformation("AppInfo found ${@appInfo}", appInfo)
 
                 let! app =
                     query {
                         for app in dataContext.Applications do
-                            where (app.ClientId = clientId)
+                            where (app.ClientId = appInfo.ClientId)
+
                             select
                                 (Tuple.Create
                                     (app.Domain.Pool.TenantId,
                                      app.Domain.TenantId,
                                      app.AllowedCallbackUrls,
-                                     app.IsDomainManagement))
+                                     app.IsDomainManagement,
+                                     app.SSOEnabled))
                     }
                     |> toSingleOptionAsync
 
                 let app =
                     match app with
                     | Some app ->
-                        env.Logger.LogInformation("Application ${@app} found for ${clientId}", app, clientId)
+                        env.Logger.LogInformation("Application ${@app} found for ${clientId}", app, appInfo.ClientId)
                         app
                     | None ->
-                        env.Logger.LogWarning("Application data is not found for ${clientId}", clientId)
+                        env.Logger.LogWarning("Application data is not found for ${clientId}", appInfo.ClientId)
                         raise (unAuthorized ("client_id not found"))
 
-                let (poolTenantId, managementDomainTenantId, callbackUrls, isDomainManagementClient) = app
+                let (poolTenantId, managementDomainTenantId, callbackUrls, isDomainManagementClient, ssoEnabled) = app
+
+                if not ssoEnabled then
+                    env.Logger.LogWarning("SSO is disabled for this app")
+                    return raise (unAuthorized "SSO Disabled")
 
                 let tenantId =
                     if managementDomainTenantId.HasValue then managementDomainTenantId.Value else poolTenantId
@@ -99,6 +105,7 @@ module Authorize =
                     // TODO : Add IsTenantManagement to app, anyway we can figure it out implicitly like so
 
                     let isTenantManagementClient = managementDomainTenantId.HasValue
+
                     if not
                         (isDomainManagementClient
                          || isTenantManagementClient) then
@@ -114,14 +121,14 @@ module Authorize =
                              tenantId,
                              ssoItem.TenantId)
 
-                if (callbackUrls
-                    <> "*"
+                if (callbackUrls <> "*"
                     && (callbackUrls.Split(",")
                         |> Seq.map (fun x -> x.Trim())
                         |> Seq.contains data.Redirect_Uri
                         |> not)) then
                     env.Logger.LogWarning
                         ("${@dataRedirectUri} is not contained in ${@callbackUrls}", data.Redirect_Uri, callbackUrls)
+
                     return! raise (unAuthorized "return_uri mismatch")
 
                 match! getUserId dataContext ssoItem.Email with
@@ -142,12 +149,12 @@ module Authorize =
 
                     let scopes = data.Scope.Split " "
 
-                    let! validatedScopes = validateScopes dataContext ssoItem.Email clientId scopes
+                    let! validatedScopes = validateScopes dataContext ssoItem.Email appInfo.ClientId scopes
 
                     let loginItem: LogInKV =
                         { Code = code
                           ClientId = data.Client_Id
-                          Issuer = issuer
+                          Issuer = appInfo.Issuer
                           CodeChallenge = data.Code_Challenge
                           RequestedScopes = scopes
                           ValidatedScopes = validatedScopes
