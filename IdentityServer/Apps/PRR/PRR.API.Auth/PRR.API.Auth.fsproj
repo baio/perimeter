@@ -73,7 +73,7 @@
         <Content Include="appsettings.e2e.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Include="appsettings.stage.json">
+        <Content Include="appsettings.local-k8s.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>

@@ -3,7 +3,7 @@ config:
     secure: AAABAKrewPUh1zDvTZhwRLeYqG+MzNS7iX94YoLvS0LRA4/C5exXv6ePWWq83BMUdmFFBL6T
   k8s:adminApp_Port: "80"
   k8s:adminApp_TargetPort: "80"
-  k8s:api_ENV_ASPNETCORE_ENVIRONMENT: STAGE
+  k8s:api_ENV_ASPNETCORE_ENVIRONMENT: "LOCAL-K8S"
   k8s:api_ENV_Auth__Jwt__AccessTokenSecret:
     secure: AAABAMYgGhzoHq2N6Bwimt1gr2EeWW/qZF666vryctA+yLNZkrplhau909nSiYrZpsb2RttA
   k8s:api_ENV_Auth__Jwt__IdTokenSecret:
@@ -30,6 +30,10 @@ config:
   k8s:api_ENV_MailSender__FromName: Perimeter (stage)
   k8s:api_ENV_MailSender__Project__BaseUrl: https://perimeter.azurefd.net
   k8s:api_ENV_MailSender__Project__Name: Perimeter (stage)
+  k8s:api_ENV_MongoKeyValueStorage__ConnectionString:
+    secure: AAABAEKOVv0INpnFpo0KiFEhVinl3zZLdW/55i090BesUnLnhe0eBPDorPJQwD9rQESVVMfELKTIDEzYPNW1ATR5KT2ftncqOw==
+  k8s:api_ENV_MongoViewStorage__ConnectionString:
+    secure: AAABAFCRHIoquD2NwOyg4IfgaEnfor/iBYHBhbrlEo0wAf4eRGMo+II1/YwmwUe8UVwC3kdHCuj36iBcsUGwI1YLhi1/p0EEYw==
   k8s:api_ENV_SendGridApiKey:
     secure: AAABAHVBV4jdHYEVFX5Gqsi9iSr/lIIHH4DvLqKPutGuLC/pr50H5seMc728CpfmaORmCiwYI/Ib0b0YohUX0XSLcNlwP/9NP4lruPLQ4kqz0DjDV5bncdKjcWChF1pN8P1T2Fw=
   k8s:api_Port: "81"

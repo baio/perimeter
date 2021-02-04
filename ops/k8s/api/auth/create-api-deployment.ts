@@ -1,6 +1,6 @@
 import * as k8s from '@pulumi/kubernetes';
 import { Output } from '@pulumi/pulumi';
-import { ApiEnv } from './models';
+import { ApiEnv } from '../models';
 
 export const createApiDeployment = (
     appName: string,
@@ -29,17 +29,12 @@ export const createApiDeployment = (
                                     value: apiEnv.ConnectionStrings__PostgreSQL,
                                 },
                                 {
-                                    name: 'ConnectionStrings__MongoJournal',
-                                    value:
-                                        apiEnv.ConnectionStrings__MongoJournal,
+                                    name: 'MongoKeyValueStorage__ConnectionString',
+                                    value: apiEnv.MongoKeyValueStorage__ConnectionString,
                                 },
                                 {
-                                    name: 'ConnectionStrings__MongoViews',
-                                    value: apiEnv.ConnectionStrings__MongoViews,
-                                },
-                                {
-                                    name: 'ConnectionStrings__MongoSnapshot',
-                                    value: apiEnv.ConnectionStrings__MongoSnapshot,
+                                    name: 'MongoViewStorage__ConnectionString',
+                                    value: apiEnv.MongoKeyValueStorage__ConnectionString,
                                 },
                                 {
                                     name: 'Auth__PasswordSecret',

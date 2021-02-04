@@ -1,11 +1,10 @@
-import { Output } from "@pulumi/pulumi";
+import { Output } from '@pulumi/pulumi';
 
 export interface ApiEnv {
     ASPNETCORE_ENVIRONMENT: string;
     ConnectionStrings__PostgreSQL: Output<string>;
-    ConnectionStrings__MongoJournal: Output<string>;
-    ConnectionStrings__MongoViews: Output<string>;
-    ConnectionStrings__MongoSnapshot: Output<string>;
+    MongoKeyValueStorage__ConnectionString: Output<string>;
+    MongoViewStorage__ConnectionString: Output<string>;
     Auth__PasswordSecret: Output<string>;
     Auth__Jwt__IdTokenSecret: Output<string>;
     Auth__Jwt__AccessTokenSecret: Output<string>;

@@ -1,29 +1,28 @@
 import { ImageRegistry } from '@pulumi/docker';
-import {
-    createApiDeployment,
-    createApiImage,
-    createApiLoadBalancer,
-    createApiNodePort,
-    ApiConfig,
-} from '.';
-
+import { ApiConfig } from '../models';
+import { createApiImage } from './create-api-image';
+import { createApiDeployment } from './create-api-deployment';
+import { createApiLoadBalancer } from './create-api-load-balancer';
+import { createApiNodePort } from './create-api-node-port';
 export const createApi = (
     version: string,
     config: ApiConfig,
     imageRegistry: ImageRegistry,
 ) => {
-    const apiImageFolder = '../../IdentityServer';
-    const apiImageName = 'baio/prr-api';
+    const dockerfileName = './../../IdentityServer/Apps/PRR/PRR.API.Auth/dockerfile';
+    const apiImageFolder = './../../IdentityServer';
+    const apiImageName = 'baio/prr-api-auth';
 
-    const apiImage = createApiImage(
+    const apiImage = createApiImage(        
         apiImageFolder,
+        dockerfileName,
         apiImageName,
         version,
         imageRegistry,
     );
 
-    const apiAppExtName = 'prr-api-ext';
-    const apiAppName = 'prr-api';
+    const apiAppExtName = 'prr-api-auth-ext';
+    const apiAppName = 'prr-api-auth';
 
     const apiDeployment = createApiDeployment(
         apiAppName,

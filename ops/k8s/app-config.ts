@@ -31,11 +31,8 @@ const apiConfig: ApiConfig = {
     env: {
         ASPNETCORE_ENVIRONMENT: rq('ASPNETCORE_ENVIRONMENT'),
         ConnectionStrings__PostgreSQL: rs('ConnectionStrings__PostgreSQL'),
-        ConnectionStrings__MongoJournal: rs('ConnectionStrings__MongoJournal'),
-        ConnectionStrings__MongoViews: rs('ConnectionStrings__MongoViews'),
-        ConnectionStrings__MongoSnapshot: rs(
-            'ConnectionStrings__MongoSnapshot',
-        ),
+        MongoKeyValueStorage__ConnectionString: rs('MongoKeyValueStorage__ConnectionString'),
+        MongoViewStorage__ConnectionString: rs('MongoViewStorage__ConnectionString'),
         Auth__PasswordSecret: rs('Auth__PasswordSecret'),
         Auth__Jwt__IdTokenSecret: rs('Auth__Jwt__IdTokenSecret'),
         Auth__Jwt__AccessTokenSecret: rs('Auth__Jwt__AccessTokenSecret'),
