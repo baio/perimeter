@@ -1,8 +1,6 @@
 import * as k8s from '@pulumi/kubernetes';
 
-export const createDeployment = (
-    appName: string,
-) => {
+export const createDeployment = (appName: string) => {
     const prrApiLabels = { app: appName };
     const prrApiDeployment = new k8s.apps.v1.Deployment(appName, {
         spec: {
@@ -13,11 +11,17 @@ export const createDeployment = (
                 spec: {
                     containers: [
                         {
-                            name: 'jaeger',
-                            image: 'jaegertracing/all-in-one:1.7',
-                            imagePullPolicy: 'IfNotPresent'
+                            name: 'seq',
+                            image: 'datalust/seq:latest',
+                            imagePullPolicy: 'IfNotPresent',
+                            env: [
+                                {
+                                    name: 'ACCEPT_EULA',
+                                    value: 'Y',
+                                },
+                            ],
                         },
-                    ],                
+                    ],
                 },
             },
         },

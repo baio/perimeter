@@ -3,13 +3,13 @@ import { createLoadBalancer } from './load-balancer';
 import { createNodePorts } from './node-ports';
 
 export const create = () => {
-    const name = 'jaeger';
+    const name = 'seq';
     const deployment = createDeployment(name);
-    const nodePorts = createNodePorts(name);
     const loadBalancer = createLoadBalancer(name);
+    const nodePorts = createNodePorts(name);
     return {
         deployment: deployment.urn,
-        nodePorts: nodePorts.urn,
         loadBalancer: loadBalancer.urn,
+        nodePorts: nodePorts.urn,
     };
 };

@@ -106,7 +106,7 @@ let main args =
         WebHostBuilder()
             .UseConfiguration(config)
             .UseKestrel()
-            .UseUrls("http://*:5000", "https://*:5001")
+            .UseUrls("http://*:5000")
             .UseIISIntegration()
             .ConfigureAppConfiguration(configureAppConfiguration)
             .Configure(Action<IApplicationBuilder> configureApp)
