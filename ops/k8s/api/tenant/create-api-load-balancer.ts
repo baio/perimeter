@@ -1,8 +1,13 @@
 import * as k8s from '@pulumi/kubernetes';
 import { ApiConfigPorts } from '../models';
 
-export const createApiNodePort = (name: string, appName: string, config: ApiConfigPorts) => {
-    const volume = new k8s.core.v1.Service(name, {
+export const createApiLoadBalancer = (
+    name: string,
+    appName: string,
+    config: ApiConfigPorts,
+) => {
+    const prrApiLabels = { app: appName };
+    const prrIpLoadBalancer = new k8s.core.v1.Service(name, {
         metadata: {
             name: name,
             labels: {
@@ -11,17 +16,16 @@ export const createApiNodePort = (name: string, appName: string, config: ApiConf
             },
         },
         spec: {
-            type: 'NodePort',
+            type: 'LoadBalancer',
             ports: [
                 {
-                    port: 80,
+                    port: config.port,
                     targetPort: config.targetPort,
                 },
             ],
-            selector: {
-                app: appName,
-            },
+            selector: prrApiLabels,
         },
     });
-    return volume;
+
+    return prrIpLoadBalancer;
 };

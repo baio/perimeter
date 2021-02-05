@@ -75,13 +75,10 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
 
     services.AddCors().AddGiraffe() |> ignore
 
-    let envName =
-        (context.HostingEnvironment.EnvironmentName.ToLower())
+    let appConfig =
+        createAppConfig context.Configuration
 
-    let env =
-        createAppConfig envName context.Configuration
-
-    configureAppServices env services
+    configureAppServices appConfig services
 
 let configureAppConfiguration (context: WebHostBuilderContext) (config: IConfigurationBuilder) =
 

@@ -73,7 +73,7 @@ let main args =
         WebHostBuilder()
             .UseConfiguration(config)
             .UseKestrel()
-            .UseUrls("http://*:6000", "https://*:6001")
+            .UseUrls("http://*:6000")
             .UseIISIntegration()
             .ConfigureAppConfiguration(configureAppConfiguration)
             .Configure(Action<IApplicationBuilder> configureApp)

@@ -31,6 +31,8 @@ module ConfigureAppServices =
         services.AddMassTransitHostedService() |> ignore
 
     let configureAppServices (config: AppConfig) (services: IServiceCollection) =
+
+        printfn "Start app with config %O" config
         // common
         configureAuthorization config.AccessTokenSecret services
         configureDataContext config.Common.DataContext services

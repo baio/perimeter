@@ -13,4 +13,5 @@ export interface ApiEnv {
     Auth__PerimeterSocialProviders__Google__ClientId: Output<string>;
     Auth__PerimeterSocialProviders__Google__SecretKey: Output<string>;
     SendGridApiKey: Output<string>;
+    TenantAuth__AccessTokenSecret: Output<string>;
 }

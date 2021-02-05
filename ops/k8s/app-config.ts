@@ -23,16 +23,20 @@ const registry: docker.ImageRegistry = {
 const rq = (x: string) => pulumiConfig.require('api_ENV_' + x);
 const rs = (x: string) => pulumiConfig.requireSecret('api_ENV_' + x);
 
-const apiConfig: ApiConfig = {
+const authApiConfig: ApiConfig = {
     ports: {
-        port: pulumiConfig.requireNumber('api_Port'),
-        targetPort: pulumiConfig.requireNumber('api_TargetPort'),
+        port: pulumiConfig.requireNumber('auth_api_Port'),
+        targetPort: pulumiConfig.requireNumber('auth_api_TargetPort'),
     },
     env: {
         ASPNETCORE_ENVIRONMENT: rq('ASPNETCORE_ENVIRONMENT'),
         ConnectionStrings__PostgreSQL: rs('ConnectionStrings__PostgreSQL'),
-        MongoKeyValueStorage__ConnectionString: rs('MongoKeyValueStorage__ConnectionString'),
-        MongoViewStorage__ConnectionString: rs('MongoViewStorage__ConnectionString'),
+        MongoKeyValueStorage__ConnectionString: rs(
+            'MongoKeyValueStorage__ConnectionString',
+        ),
+        MongoViewStorage__ConnectionString: rs(
+            'MongoViewStorage__ConnectionString',
+        ),
         Auth__PasswordSecret: rs('Auth__PasswordSecret'),
         Auth__Jwt__IdTokenSecret: rs('Auth__Jwt__IdTokenSecret'),
         Auth__Jwt__AccessTokenSecret: rs('Auth__Jwt__AccessTokenSecret'),
@@ -49,8 +53,18 @@ const apiConfig: ApiConfig = {
             'Auth__PerimeterSocialProviders__Google__SecretKey',
         ),
         SendGridApiKey: rs('SendGridApiKey'),
+        TenantAuth__AccessTokenSecret: rs('TenantAuth__AccessTokenSecret'),
     },
 };
+
+const tenantApiConfig: ApiConfig = {
+    ports: {
+        port: pulumiConfig.requireNumber('tenant_api_Port'),
+        targetPort: pulumiConfig.requireNumber('tenant_api_TargetPort'),
+    },
+    env: authApiConfig.env
+};
+
 
 const psqlConfig: PsqlConfig = {
     POSTGRES_DB: pulumiConfig.require('psql_POSTGRES_DB'),
@@ -77,7 +91,8 @@ const adminAppConfig: AdminAppConfig = {
 //
 export interface AppConfig {
     registry: docker.ImageRegistry;
-    api: ApiConfig;
+    authApi: ApiConfig;
+    tenantApi: ApiConfig;
     psql: PsqlConfig;
     mongo: MongoConfig;
     adminApp: AdminAppConfig;
@@ -85,7 +100,8 @@ export interface AppConfig {
 //
 export const appConfig: AppConfig = {
     registry,
-    api: apiConfig,
+    authApi: authApiConfig,
+    tenantApi: tenantApiConfig,
     psql: psqlConfig,
     mongo: mongoConfig,
     adminApp: adminAppConfig,

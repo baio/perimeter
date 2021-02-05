@@ -9,12 +9,11 @@ export const createApi = (
     config: ApiConfig,
     imageRegistry: ImageRegistry,
 ) => {
-    const dockerfileName =
-        './../../IdentityServer/Apps/PRR/PRR.API.Auth/dockerfile';
+    const dockerfileName = './../../IdentityServer/Apps/PRR/PRR.API.Tenant/dockerfile';
     const apiImageFolder = './../../IdentityServer';
-    const apiImageName = 'baio/prr-api-auth';
+    const apiImageName = 'baio/prr-api-tenant';
 
-    const apiImage = createApiImage(
+    const apiImage = createApiImage(        
         apiImageFolder,
         dockerfileName,
         apiImageName,
@@ -22,8 +21,8 @@ export const createApi = (
         imageRegistry,
     );
 
-    const apiAppExtName = 'prr-api-auth-ext';
-    const apiAppName = 'prr-api-auth';
+    const apiAppExtName = 'prr-api-tenant-ext';
+    const apiAppName = 'prr-api-tenant';
 
     const apiDeployment = createApiDeployment(
         apiAppName,

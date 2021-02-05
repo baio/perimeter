@@ -37,6 +37,7 @@ module ConfigureServices =
 
     let configureAppServices (config: AppConfig) (services: IServiceCollection) =
 
+        printfn "Start app with config %O" config
         // common
         configureAuthorization config.Auth.Jwt.AccessTokenSecret services
         configureDataContext config.Common.DataContext services

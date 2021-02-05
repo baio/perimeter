@@ -9,7 +9,7 @@ open PRR.API.Common.Configuration
 [<AutoOpen>]
 module CreateAppConfig =
 
-    let createAppConfig envName (configuration: IConfiguration) =
+    let createAppConfig (configuration: IConfiguration) =
 
         let common = createCommonAppConfig configuration
 
