@@ -14,6 +14,7 @@ export const createK8sCluster = (version: string, config: AppConfig) => {
     const rabbit = createRabbit();
     const jaeger = createJaeger();
     const seq = createSeq();
+    // prometheus is not setup since it requires add whole persistent volume / claim story to config (insane shit)
     return {
         api,
         psql,
