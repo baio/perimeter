@@ -4,12 +4,14 @@ import { createMongo } from './mongo';
 import { create as createJaeger } from './observability/jaeger/create';
 import { create as createSeq } from './observability/seq/create';
 import { createPsql } from './psql';
+import { create as createRabbit } from './rabbit/create';
 
 export const createK8sCluster = (version: string, config: AppConfig) => {
     const api = createApi(version, config.api, config.registry);
     const psql = createPsql(config.psql);
     const mongo = createMongo(config.mongo);
     // const adminApp = createAdminApp(version, config.adminApp, config.registry);
+    const rabbit = createRabbit();
     const jaeger = createJaeger();
     const seq = createSeq();
     return {
@@ -18,6 +20,7 @@ export const createK8sCluster = (version: string, config: AppConfig) => {
         mongo,
         jaeger,
         seq,
+        rabbit,
         //adminApp,
     };
 };

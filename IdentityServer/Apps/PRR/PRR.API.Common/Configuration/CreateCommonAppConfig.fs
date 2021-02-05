@@ -7,7 +7,8 @@ type CommonAppConfig =
       Tracing: TracingEnv
       DataContext: DataContextConfig
       HealthCheck: HealthCheckConfig
-      ViewStorage: ViewStorageConfig }
+      ViewStorage: ViewStorageConfig
+      ServiceBus: ServiceBus.Config }
 
 [<AutoOpen>]
 module CreateCommonAppConfig =
@@ -26,7 +27,8 @@ module CreateCommonAppConfig =
         let mongoConnectionString =
             configuration.GetConnectionString "Mongo"
 
-        { ViewStorage = viewStorageConfig
+        { ServiceBus = { Host = configuration.GetValue("ServiceBus:Host") }
+          ViewStorage = viewStorageConfig
           HealthCheck =
               { PsqlConnectionString = psqlConnectionString
                 MongoConnectionString = mongoConnectionString

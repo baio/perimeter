@@ -9,11 +9,15 @@ open MongoDB.Driver
 [<AutoOpen>]
 module ServiceBus =
 
-    let configureServiceBus (consumers: Type seq) (services: IServiceCollection) =
+    type Config = {
+        Host: string
+    }
+
+    let configureServiceBus (config: Config) (consumers: Type seq) (services: IServiceCollection) =
         services.AddMassTransit(fun x ->
             consumers |> Seq.iter (x.AddConsumer)
-
             x.UsingRabbitMq(fun ctx cfg ->
+                cfg.Host(config.Host)
                 if (Seq.length consumers) > 0 then
                     cfg.ReceiveEndpoint
                         ("event-listener",

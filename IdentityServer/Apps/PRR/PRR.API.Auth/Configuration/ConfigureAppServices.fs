@@ -44,7 +44,7 @@ module ConfigureServices =
         configureTracing config.Common.Tracing services
         configureHealthCheck config.Common.HealthCheck services
         configureConfigProvider config services
-        configureServiceBus [] services
+        configureServiceBus config.Common.ServiceBus [] services
 
         configureInfra config.Infra services
         configureKeyValueStorage config.KeyValueStorage services

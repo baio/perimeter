@@ -42,8 +42,8 @@ module ConfigureAppServices =
             configureViewStorage config.Common.ViewStorage services
 
         configureConfigProvider config services
-        //configureServiceBus [ typeof<LogInEventHandler> ] services
-        configureServiceBus' services
+        configureServiceBus config.Common.ServiceBus [ typeof<LogInEventHandler> ] services
+        // configureServiceBus' services
         // tenant
         services.AddSingleton<IAuthStringsGetterProvider>(AuthStringsProvider())
         |> ignore
