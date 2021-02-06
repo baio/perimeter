@@ -50,6 +50,8 @@ module internal GetLogout =
 
                 let! result = logout env data
 
+                ctx.Response.Cookies.Delete("sso")
+
                 return! redirectTo false result.ReturnUri next ctx
 
             with ex ->

@@ -8,16 +8,16 @@ export const environment = {
     auth: {
         loginUrl: '/auth/login',
         signupUrl: '/auth/register',
-        tokenUrl: '/auth/token',
-        logoutUrl: '/auth/logout',
+        tokenUrl: 'http://localhost:70/api/auth/token',
+        logoutUrl: 'http://localhost:70/api/auth/logout',
+        refreshTokenUrl: 'http://localhost:70/api/auth/refresh-token',
         returnLoginUri: '/login-cb',
         returnLoginPath: '/',
         returnLogoutUri: '/',
         clientId: '__DEFAULT_CLIENT_ID__',
         scope: 'openid profile',
         stateStringLength: 64,
-        pkceCodeVerifierLength: 128,
-        refreshTokenUrl: '/auth/refresh-token',
+        pkceCodeVerifierLength: 128,        
     },
 };
 

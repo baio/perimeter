@@ -1,6 +1,7 @@
 import * as docker from '@pulumi/docker';
 import * as pulumi from '@pulumi/pulumi';
 import { Config as AdminAppConfig } from './admin-app';
+import { Config as IdpAppConfig } from './idp-app';
 import { ApiConfig } from './api';
 import { MongoConfig } from './mongo';
 import { PsqlConfig } from './psql';
@@ -62,9 +63,8 @@ const tenantApiConfig: ApiConfig = {
         port: pulumiConfig.requireNumber('tenant_api_Port'),
         targetPort: pulumiConfig.requireNumber('tenant_api_TargetPort'),
     },
-    env: authApiConfig.env
+    env: authApiConfig.env,
 };
-
 
 const psqlConfig: PsqlConfig = {
     POSTGRES_DB: pulumiConfig.require('psql_POSTGRES_DB'),
@@ -79,6 +79,13 @@ const mongoConfig: MongoConfig = {
     MONGO_PASSWORD: pulumiConfig.requireSecret('mongo_MONGODB_ROOT_PASSWORD'),
     storageSize: pulumiConfig.requireNumber('mongo_storageSize'),
     dataPath: pulumiConfig.require('mongo_dataPath'),
+};
+
+const idpAppConfig: AdminAppConfig = {
+    ports: {
+        port: pulumiConfig.requireNumber('idpApp_Port'),
+        targetPort: pulumiConfig.requireNumber('idpApp_TargetPort'),
+    },
 };
 
 const adminAppConfig: AdminAppConfig = {
@@ -96,6 +103,7 @@ export interface AppConfig {
     psql: PsqlConfig;
     mongo: MongoConfig;
     adminApp: AdminAppConfig;
+    idpApp: IdpAppConfig;
 }
 //
 export const appConfig: AppConfig = {
@@ -105,4 +113,5 @@ export const appConfig: AppConfig = {
     psql: psqlConfig,
     mongo: mongoConfig,
     adminApp: adminAppConfig,
+    idpApp: idpAppConfig,
 };

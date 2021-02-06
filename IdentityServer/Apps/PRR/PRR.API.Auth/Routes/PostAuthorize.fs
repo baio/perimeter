@@ -4,6 +4,7 @@ open Giraffe
 open DataAvail.Giraffe.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Microsoft.AspNetCore.Http
+open PRR.API.Auth.Routes.Helpers
 open PRR.Domain.Auth.LogInSSO
 open Microsoft.Extensions.Logging
 
@@ -30,6 +31,7 @@ module PostAuthorize =
                 | Some sso ->
                     logger.LogInformation
                         ("Prompt ${@prompt} and ${@ssoCookie}, use SSO handler", data.Prompt, ssoCookie)
+
                     let! returnUrl = PostLogInSSO.handler ctx sso
                     ctx.Response.Redirect(returnUrl, true)
                     return! redirectTo false returnUrl next ctx
@@ -37,18 +39,20 @@ module PostAuthorize =
                     // sso cookie not found just redirect back to itself with sso cookie
                     logger.LogInformation
                         ("Prompt ${@prompt} and no SSO cookie, redirect back to itself with new sso cookie", data.Prompt)
+
                     let hasher = getHash ctx
                     let token = hasher ()
                     // TODO : Secure = TRUE !!!
                     // TODO : Handle TOO many redirects when cookie couldn't be set
-                    ctx.Response.Cookies.Append("sso", token, CookieOptions(HttpOnly = true, Secure = false))
-                    let url = ctx.Request.HttpContext.GetRequestUrl()
+                    ctx.Response.Cookies.Append("sso", token, CookieOptions(HttpOnly = true, Secure = false)) 
+                    let url = getRefererUrl ctx
                     logger.LogInformation("Using ${url} redirect", url)
                     ctx.Response.Redirect(url, true)
                     ctx.SetStatusCode(307)
                     return Some ctx
             | _ ->
                 logger.LogInformation("No ${@prompt}, use regular login handler", data.Prompt)
+
                 let! returnUrl = PostLogIn.handler ctx ssoCookie
                 return! redirectTo false returnUrl next ctx
         }

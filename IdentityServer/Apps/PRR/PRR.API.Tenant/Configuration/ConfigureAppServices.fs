@@ -18,17 +18,6 @@ type AppConfig =
 [<AutoOpen>]
 module ConfigureAppServices =
 
-    let configureServiceBus' (services: IServiceCollection) =
-        services.AddMassTransit(fun x ->
-            x.AddConsumer<LogInEventHandler>() |> ignore
-
-            x.UsingRabbitMq(fun ctx cfg ->
-                cfg.ReceiveEndpoint
-                    ("event-listener",
-                     (fun (e: IRabbitMqReceiveEndpointConfigurator) -> e.ConfigureConsumer<LogInEventHandler>(ctx)))))
-        |> ignore
-
-        services.AddMassTransitHostedService() |> ignore
 
     let configureAppServices (config: AppConfig) (services: IServiceCollection) =
 
@@ -45,7 +34,6 @@ module ConfigureAppServices =
 
         configureConfigProvider config services
         configureServiceBus config.Common.ServiceBus [ typeof<LogInEventHandler> ] services
-        // configureServiceBus' services
         // tenant
         services.AddSingleton<IAuthStringsGetterProvider>(AuthStringsProvider())
         |> ignore

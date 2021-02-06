@@ -1,4 +1,5 @@
 import { createAdminApp } from './admin-app';
+import { createIdpApp } from './idp-app';
 import { createAuthApi, createTenantApi } from './api';
 import { AppConfig } from './app-config';
 import { createMongo } from './mongo';
@@ -15,6 +16,7 @@ export const createK8sCluster = (version: string, config: AppConfig) => {
         config.registry,
     );
     const adminApp = createAdminApp(version, config.adminApp, config.registry);
+    // const idpApp = createIdpApp(version, config.idpApp, config.registry);
     //
     const psql = createPsql(config.psql);
     const mongo = createMongo(config.mongo);
@@ -25,6 +27,7 @@ export const createK8sCluster = (version: string, config: AppConfig) => {
     const seq = createSeq();
     // prometheus is not setup since it requires add whole persistent volume / claim story to config (insane shit)
     return {
+        // idpApp,
         authApi,
         tenantApi,
         psql,

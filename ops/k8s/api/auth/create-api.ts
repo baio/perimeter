@@ -14,6 +14,7 @@ export const createApi = (
     const apiImageFolder = './../../IdentityServer';
     const apiImageName = 'baio/prr-api-auth';
 
+
     const apiImage = createApiImage(
         apiImageFolder,
         dockerfileName,
