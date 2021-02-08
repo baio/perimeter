@@ -6,8 +6,8 @@ export const environment = {
     production: false,
     baseUrl: '/api',
     auth: {
-        loginUrl: '/auth/login',
-        signupUrl: '/auth/register',
+        loginUrl: 'http://localhost/auth/login',
+        signupUrl: 'http://localhost/auth/register',
         tokenUrl: 'http://localhost:70/api/auth/token',
         logoutUrl: 'http://localhost:70/api/auth/logout',
         refreshTokenUrl: 'http://localhost:70/api/auth/refresh-token',
