@@ -24,8 +24,8 @@ export const createAdminApp = (
     */
    const imageName = `baio/prr-app-admin:${version}`;
 
-    const extName = 'prr-admin-app-ext';
-    const appName = 'prr-admin-app';
+    const extName = 'prr-app-admin-ext';
+    const appName = 'prr-app-admin';
 
     const deployment = createAdminAppDeployment(appName, imageName);
 

@@ -26,8 +26,8 @@ export const createIdpApp = (
     
     const imageName = `baio/prr-app-idp:${version}`;
 
-    const extName = 'prr-idp-app-ext';
-    const appName = 'prr-idp-app';
+    const extName = 'prr-app-idp-ext';
+    const appName = 'prr-app-idp';
 
     const deployment = createIdpAppDeployment(appName, imageName);
 
