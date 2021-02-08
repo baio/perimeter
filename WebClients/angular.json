@@ -46,8 +46,8 @@
                         "k8s": {
                             "fileReplacements": [
                                 {
-                                    "replace": "apps/idp/src/environments/environment.ts",
-                                    "with": "apps/idp/src/environments/environment.k8s.ts"
+                                    "replace": "apps/admin/src/environments/environment.ts",
+                                    "with": "apps/admin/src/environments/environment.k8s.ts"
                                 }
                             ],
                             "optimization": true,

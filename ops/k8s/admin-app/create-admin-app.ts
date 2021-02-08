@@ -9,6 +9,7 @@ export const createAdminApp = (
     config: Config,
     imageRegistry: ImageRegistry,
 ) => {
+    /*
     const imageDockerPath = '../../WebClients/apps/admin/dockerfile';
     const imageFolder = '../../WebClients';
     const imageName = 'baio/prr-admin-app';
@@ -20,11 +21,13 @@ export const createAdminApp = (
         version,
         imageRegistry,
     );
+    */
+   const imageName = `baio/prr-app-admin:${version}`;
 
     const extName = 'prr-admin-app-ext';
     const appName = 'prr-admin-app';
 
-    const deployment = createAdminAppDeployment(appName, image.imageName);
+    const deployment = createAdminAppDeployment(appName, imageName);
 
     const loadBalancer = createAdminAppLoadBalancer(
         extName,
@@ -33,7 +36,7 @@ export const createAdminApp = (
     );
 
     return {
-        imageName: image.imageName,
+        imageName: imageName,
         deploymentName: deployment.metadata.name,
         loadBalancerUrn: loadBalancer.urn,
     };

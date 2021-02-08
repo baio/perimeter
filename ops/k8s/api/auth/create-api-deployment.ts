@@ -5,7 +5,7 @@ import { ApiEnv } from '../models';
 export const createApiDeployment = (
     appName: string,
     apiEnv: ApiEnv,
-    imageName: Output<string>,
+    imageName: string,
 ) => {
     const prrApiLabels = { app: appName };
     const prrApiDeployment = new k8s.apps.v1.Deployment(appName, {

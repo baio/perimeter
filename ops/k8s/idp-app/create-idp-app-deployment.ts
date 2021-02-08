@@ -3,7 +3,7 @@ import { Output } from '@pulumi/pulumi';
 
 export const createIdpAppDeployment = (
     appName: string,
-    imageName: Output<string>,
+    imageName: Output<string> | string,
 ) => {
     const labels = { app: appName };
     const deployment = new k8s.apps.v1.Deployment(appName, {

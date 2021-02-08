@@ -9,9 +9,11 @@ export const createIdpApp = (
     config: Config,
     imageRegistry: ImageRegistry,
 ) => {
+
+    /*
     const imageDockerPath = '../../WebClients/apps/idp/dockerfile';
     const imageFolder = '../../WebClients';
-    const imageName = 'baio/prr-idp-app';
+    const imageName = 'baio/prr-app-idp';
 
     const image = createIdpAppImage(
         imageDockerPath,
@@ -20,11 +22,14 @@ export const createIdpApp = (
         version,
         imageRegistry,
     );
+    */
+    
+    const imageName = `baio/prr-app-idp:${version}`;
 
     const extName = 'prr-idp-app-ext';
     const appName = 'prr-idp-app';
 
-    const deployment = createIdpAppDeployment(appName, image.imageName);
+    const deployment = createIdpAppDeployment(appName, imageName);
 
     const loadBalancer = createIdpAppLoadBalancer(
         extName,
@@ -33,7 +38,7 @@ export const createIdpApp = (
     );
 
     return {
-        imageName: image.imageName,
+        imageName: imageName,
         deploymentName: deployment.metadata.name,
         loadBalancerUrn: loadBalancer.urn,
     };

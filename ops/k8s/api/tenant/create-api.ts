@@ -9,6 +9,7 @@ export const createApi = (
     config: ApiConfig,
     imageRegistry: ImageRegistry,
 ) => {
+    /*
     const dockerfileName = './../../IdentityServer/Apps/PRR/PRR.API.Tenant/dockerfile';
     const apiImageFolder = './../../IdentityServer';
     const apiImageName = 'baio/prr-api-tenant';
@@ -20,6 +21,8 @@ export const createApi = (
         version,
         imageRegistry,
     );
+    */
+    const imageName = `baio/prr-api-tenant:${version}`;
 
     const apiAppExtName = 'prr-api-tenant-ext';
     const apiAppName = 'prr-api-tenant';
@@ -27,7 +30,7 @@ export const createApi = (
     const apiDeployment = createApiDeployment(
         apiAppName,
         config.env,
-        apiImage.imageName,
+        imageName,
     );
     const apiLoadBalancer = createApiLoadBalancer(
         apiAppExtName,
@@ -36,7 +39,7 @@ export const createApi = (
     );
     const nodePort = createApiNodePort(apiAppName, apiAppName, config.ports);
     return {
-        apiImageName: apiImage.imageName,
+        apiImageName: imageName,
         apiDeploymentName: apiDeployment.metadata.name,
         apiLoadBalancerUrn: apiLoadBalancer.urn,
         apiNodePortUrn: nodePort.urn,
