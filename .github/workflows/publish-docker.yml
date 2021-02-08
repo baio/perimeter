@@ -15,7 +15,7 @@ jobs:
         id: docker_meta
         uses: crazy-max/ghaction-docker-meta@v1
         with:
-          images: name/app
+          images: baio/prr-idp-app
           tag-semver: |
             {{version}}
             {{major}}.{{minor}}        
