@@ -1,677 +1,731 @@
 {
-  "version": 1,
-  "projects": {
-    "admin": {
-      "projectType": "application",
-      "schematics": {
-        "@nrwl/angular:component": {
-          "style": "scss"
-        }
-      },
-      "root": "apps/admin",
-      "sourceRoot": "apps/admin/src",
-      "prefix": "admin",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:browser",
-          "options": {
-            "outputPath": "dist/apps/admin",
-            "index": "apps/admin/src/index.html",
-            "main": "apps/admin/src/main.ts",
-            "polyfills": "apps/admin/src/polyfills.ts",
-            "tsConfig": "apps/admin/tsconfig.app.json",
-            "aot": true,
-            "assets": ["apps/admin/src/favicon.ico", "apps/admin/src/assets"],
-            "styles": [
-              "node_modules/quill/dist/quill.snow.css",
-              "node_modules/ng-zorro-antd/src/ng-zorro-antd.min.css",
-              "node_modules/ng-zorro-antd/resizable/style/index.min.css",
-              "apps/admin/src/styles.scss"
-            ],
-            "scripts": [],
-            "preserveSymlinks": true
-          },
-          "configurations": {
-            "e2e": {
-              "fileReplacements": [
-                {
-                  "replace": "apps/admin/src/environments/environment.ts",
-                  "with": "apps/admin/src/environments/environment.e2e.ts"
+    "version": 1,
+    "projects": {
+        "admin": {
+            "projectType": "application",
+            "schematics": {
+                "@nrwl/angular:component": {
+                    "style": "scss"
                 }
-              ]
             },
-            "k8s": {
-              "fileReplacements": [
-                {
-                  "replace": "apps/admin/src/environments/environment.ts",
-                  "with": "apps/admin/src/environments/environment.k8s.ts"
-                }
-              ]
-            },
-            "production": {
-              "fileReplacements": [
-                {
-                  "replace": "apps/admin/src/environments/environment.ts",
-                  "with": "apps/admin/src/environments/environment.prod.ts"
-                }
-              ],
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "extractCss": true,
-              "namedChunks": false,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
+            "root": "apps/admin",
+            "sourceRoot": "apps/admin/src",
+            "prefix": "admin",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "outputPath": "dist/apps/admin",
+                        "index": "apps/admin/src/index.html",
+                        "main": "apps/admin/src/main.ts",
+                        "polyfills": "apps/admin/src/polyfills.ts",
+                        "tsConfig": "apps/admin/tsconfig.app.json",
+                        "aot": true,
+                        "assets": [
+                            "apps/admin/src/favicon.ico",
+                            "apps/admin/src/assets"
+                        ],
+                        "styles": [
+                            "node_modules/quill/dist/quill.snow.css",
+                            "node_modules/ng-zorro-antd/src/ng-zorro-antd.min.css",
+                            "node_modules/ng-zorro-antd/resizable/style/index.min.css",
+                            "apps/admin/src/styles.scss"
+                        ],
+                        "scripts": [],
+                        "preserveSymlinks": true
+                    },
+                    "configurations": {
+                        "e2e": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "apps/admin/src/environments/environment.ts",
+                                    "with": "apps/admin/src/environments/environment.e2e.ts"
+                                }
+                            ]
+                        },
+                        "k8s": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "apps/idp/src/environments/environment.ts",
+                                    "with": "apps/idp/src/environments/environment.k8s.ts"
+                                }
+                            ],
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true
+                        },
+                        "production": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "apps/admin/src/environments/environment.ts",
+                                    "with": "apps/admin/src/environments/environment.prod.ts"
+                                }
+                            ],
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true,
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "2mb",
+                                    "maximumError": "5mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb",
+                                    "maximumError": "10kb"
+                                }
+                            ]
+                        }
+                    }
                 },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb",
-                  "maximumError": "10kb"
-                }
-              ]
-            }
-          }
-        },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "browserTarget": "admin:build",
-            "proxyConfig": "apps/admin/proxy.conf.json",
-            "port": 4201
-          },
-          "configurations": {
-            "e2e": {
-              "browserTarget": "admin:build:e2e"
-            },
-            "production": {
-              "browserTarget": "admin:build:production"
-            }
-          }
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "admin:build"
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "apps/admin/tsconfig.app.json",
-              "apps/admin/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!apps/admin/**/*"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "apps/admin/jest.config.js",
-            "tsConfig": "apps/admin/tsconfig.spec.json",
-            "passWithNoTests": true,
-            "setupFile": "apps/admin/src/test-setup.ts"
-          }
-        }
-      }
-    },
-    "admin-e2e": {
-      "root": "apps/admin-e2e",
-      "sourceRoot": "apps/admin-e2e/src",
-      "projectType": "application",
-      "architect": {
-        "e2e": {
-          "builder": "@nrwl/cypress:cypress",
-          "options": {
-            "cypressConfig": "apps/admin-e2e/cypress.json",
-            "tsConfig": "apps/admin-e2e/tsconfig.e2e.json",
-            "devServerTarget": "admin:serve"
-          },
-          "configurations": {
-            "e2e": {
-              "devServerTarget": "admin:serve:e2e"
-            },
-            "production": {
-              "devServerTarget": "admin:serve:production"
-            }
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": ["apps/admin-e2e/tsconfig.e2e.json"],
-            "exclude": ["**/node_modules/**", "!apps/admin-e2e/**/*"]
-          }
-        }
-      }
-    },
-    "api": {
-      "root": "apps/api",
-      "sourceRoot": "apps/api/src",
-      "projectType": "application",
-      "prefix": "api",
-      "schematics": {},
-      "architect": {
-        "build": {
-          "builder": "@nrwl/node:build",
-          "options": {
-            "outputPath": "dist/apps/api",
-            "main": "apps/api/src/main.ts",
-            "tsConfig": "apps/api/tsconfig.app.json",
-            "assets": ["apps/api/src/assets"]
-          },
-          "configurations": {
-            "production": {
-              "optimization": true,
-              "extractLicenses": true,
-              "inspect": false,
-              "fileReplacements": [
-                {
-                  "replace": "apps/api/src/environments/environment.ts",
-                  "with": "apps/api/src/environments/environment.prod.ts"
-                }
-              ]
-            }
-          }
-        },
-        "serve": {
-          "builder": "@nrwl/node:execute",
-          "options": {
-            "buildTarget": "api:build"
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "apps/api/tsconfig.app.json",
-              "apps/api/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!apps/api/**/*"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "apps/api/jest.config.js",
-            "tsConfig": "apps/api/tsconfig.spec.json",
-            "passWithNoTests": true
-          }
-        }
-      }
-    },
-    "perimeter-ng-auth": {
-      "projectType": "library",
-      "root": "libs/perimeter/ng-auth",
-      "sourceRoot": "libs/perimeter/ng-auth/src",
-      "prefix": "data-avail",
-      "architect": {
-        "build": {
-          "builder": "@nrwl/angular:package",
-          "options": {
-            "tsConfig": "libs/perimeter/ng-auth/tsconfig.lib.json",
-            "project": "libs/perimeter/ng-auth/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "libs/perimeter/ng-auth/tsconfig.lib.prod.json"
-            }
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/perimeter/ng-auth/tsconfig.lib.json",
-              "libs/perimeter/ng-auth/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!libs/perimeter/ng-auth/**/*"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/perimeter/ng-auth/jest.config.js",
-            "tsConfig": "libs/perimeter/ng-auth/tsconfig.spec.json",
-            "passWithNoTests": true,
-            "setupFile": "libs/perimeter/ng-auth/src/test-setup.ts"
-          }
-        }
-      },
-      "schematics": {
-        "@nrwl/angular:component": {
-          "style": "scss"
-        }
-      }
-    },
-    "idp": {
-      "projectType": "application",
-      "schematics": {
-        "@schematics/angular:interceptor": {
-          "skipTests": true
-        },
-        "@nrwl/angular:class": {
-          "skipTests": true
-        },
-        "@nrwl/angular:component": {
-          "style": "scss",
-          "skipTests": true
-        },
-        "@nrwl/angular:directive": {
-          "skipTests": true
-        },
-        "@nrwl/angular:guard": {
-          "skipTests": true
-        },
-        "@nrwl/angular:module": {
-          "skipTests": true
-        },
-        "@nrwl/angular:pipe": {
-          "skipTests": true
-        },
-        "@nrwl/angular:service": {
-          "skipTests": true
-        }
-      },
-      "root": "apps/idp",
-      "sourceRoot": "apps/idp/src",
-      "prefix": "idp",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:browser",
-          "options": {
-            "outputPath": "dist/apps/idp",
-            "index": "apps/idp/src/index.html",
-            "main": "apps/idp/src/main.ts",
-            "polyfills": "apps/idp/src/polyfills.ts",
-            "tsConfig": "apps/idp/tsconfig.app.json",
-            "aot": true,
-            "assets": ["apps/idp/src/favicon.ico", "apps/idp/src/assets"],
-            "styles": [
-              "node_modules/ng-zorro-antd/src/ng-zorro-antd.min.css",
-              "node_modules/ng-zorro-antd/resizable/style/index.min.css",
-              "apps/idp/src/styles.scss"
-            ],
-            "scripts": []
-          },
-          "configurations": {
-            "production": {
-              "fileReplacements": [
-                {
-                  "replace": "apps/idp/src/environments/environment.ts",
-                  "with": "apps/idp/src/environments/environment.prod.ts"
-                }
-              ],
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "extractCss": true,
-              "namedChunks": false,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "options": {
+                        "browserTarget": "admin:build",
+                        "proxyConfig": "apps/admin/proxy.conf.json",
+                        "port": 4201
+                    },
+                    "configurations": {
+                        "e2e": {
+                            "browserTarget": "admin:build:e2e"
+                        },
+                        "production": {
+                            "browserTarget": "admin:build:production"
+                        }
+                    }
                 },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb",
-                  "maximumError": "10kb"
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "browserTarget": "admin:build"
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "apps/admin/tsconfig.app.json",
+                            "apps/admin/tsconfig.spec.json"
+                        ],
+                        "exclude": ["**/node_modules/**", "!apps/admin/**/*"]
+                    }
+                },
+                "test": {
+                    "builder": "@nrwl/jest:jest",
+                    "options": {
+                        "jestConfig": "apps/admin/jest.config.js",
+                        "tsConfig": "apps/admin/tsconfig.spec.json",
+                        "passWithNoTests": true,
+                        "setupFile": "apps/admin/src/test-setup.ts"
+                    }
                 }
-              ]
             }
-          }
         },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "browserTarget": "idp:build"
-          },
-          "configurations": {
-            "production": {
-              "browserTarget": "idp:build:production"
+        "admin-e2e": {
+            "root": "apps/admin-e2e",
+            "sourceRoot": "apps/admin-e2e/src",
+            "projectType": "application",
+            "architect": {
+                "e2e": {
+                    "builder": "@nrwl/cypress:cypress",
+                    "options": {
+                        "cypressConfig": "apps/admin-e2e/cypress.json",
+                        "tsConfig": "apps/admin-e2e/tsconfig.e2e.json",
+                        "devServerTarget": "admin:serve"
+                    },
+                    "configurations": {
+                        "e2e": {
+                            "devServerTarget": "admin:serve:e2e"
+                        },
+                        "production": {
+                            "devServerTarget": "admin:serve:production"
+                        }
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": ["apps/admin-e2e/tsconfig.e2e.json"],
+                        "exclude": [
+                            "**/node_modules/**",
+                            "!apps/admin-e2e/**/*"
+                        ]
+                    }
+                }
             }
-          }
         },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "idp:build"
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "apps/idp/tsconfig.app.json",
-              "apps/idp/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!apps/idp/**/*"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "apps/idp/jest.config.js",
-            "tsConfig": "apps/idp/tsconfig.spec.json",
-            "passWithNoTests": true,
-            "setupFile": "apps/idp/src/test-setup.ts"
-          }
-        }
-      }
-    },
-    "idp-e2e": {
-      "root": "apps/idp-e2e",
-      "sourceRoot": "apps/idp-e2e/src",
-      "projectType": "application",
-      "architect": {
-        "e2e": {
-          "builder": "@nrwl/cypress:cypress",
-          "options": {
-            "cypressConfig": "apps/ip-e2e/cypress.json",
-            "tsConfig": "apps/ip-e2e/tsconfig.e2e.json",
-            "devServerTarget": "idp:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "idp:serve:production"
+        "api": {
+            "root": "apps/api",
+            "sourceRoot": "apps/api/src",
+            "projectType": "application",
+            "prefix": "api",
+            "schematics": {},
+            "architect": {
+                "build": {
+                    "builder": "@nrwl/node:build",
+                    "options": {
+                        "outputPath": "dist/apps/api",
+                        "main": "apps/api/src/main.ts",
+                        "tsConfig": "apps/api/tsconfig.app.json",
+                        "assets": ["apps/api/src/assets"]
+                    },
+                    "configurations": {
+                        "production": {
+                            "optimization": true,
+                            "extractLicenses": true,
+                            "inspect": false,
+                            "fileReplacements": [
+                                {
+                                    "replace": "apps/api/src/environments/environment.ts",
+                                    "with": "apps/api/src/environments/environment.prod.ts"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "serve": {
+                    "builder": "@nrwl/node:execute",
+                    "options": {
+                        "buildTarget": "api:build"
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "apps/api/tsconfig.app.json",
+                            "apps/api/tsconfig.spec.json"
+                        ],
+                        "exclude": ["**/node_modules/**", "!apps/api/**/*"]
+                    }
+                },
+                "test": {
+                    "builder": "@nrwl/jest:jest",
+                    "options": {
+                        "jestConfig": "apps/api/jest.config.js",
+                        "tsConfig": "apps/api/tsconfig.spec.json",
+                        "passWithNoTests": true
+                    }
+                }
             }
-          }
         },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": ["apps/ip-e2e/tsconfig.e2e.json"],
-            "exclude": ["**/node_modules/**", "!apps/ip-e2e/**/*"]
-          }
+        "perimeter-ng-auth": {
+            "projectType": "library",
+            "root": "libs/perimeter/ng-auth",
+            "sourceRoot": "libs/perimeter/ng-auth/src",
+            "prefix": "data-avail",
+            "architect": {
+                "build": {
+                    "builder": "@nrwl/angular:package",
+                    "options": {
+                        "tsConfig": "libs/perimeter/ng-auth/tsconfig.lib.json",
+                        "project": "libs/perimeter/ng-auth/ng-package.json"
+                    },
+                    "configurations": {
+                        "production": {
+                            "tsConfig": "libs/perimeter/ng-auth/tsconfig.lib.prod.json"
+                        }
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "libs/perimeter/ng-auth/tsconfig.lib.json",
+                            "libs/perimeter/ng-auth/tsconfig.spec.json"
+                        ],
+                        "exclude": [
+                            "**/node_modules/**",
+                            "!libs/perimeter/ng-auth/**/*"
+                        ]
+                    }
+                },
+                "test": {
+                    "builder": "@nrwl/jest:jest",
+                    "options": {
+                        "jestConfig": "libs/perimeter/ng-auth/jest.config.js",
+                        "tsConfig": "libs/perimeter/ng-auth/tsconfig.spec.json",
+                        "passWithNoTests": true,
+                        "setupFile": "libs/perimeter/ng-auth/src/test-setup.ts"
+                    }
+                }
+            },
+            "schematics": {
+                "@nrwl/angular:component": {
+                    "style": "scss"
+                }
+            }
+        },
+        "idp": {
+            "projectType": "application",
+            "schematics": {
+                "@schematics/angular:interceptor": {
+                    "skipTests": true
+                },
+                "@nrwl/angular:class": {
+                    "skipTests": true
+                },
+                "@nrwl/angular:component": {
+                    "style": "scss",
+                    "skipTests": true
+                },
+                "@nrwl/angular:directive": {
+                    "skipTests": true
+                },
+                "@nrwl/angular:guard": {
+                    "skipTests": true
+                },
+                "@nrwl/angular:module": {
+                    "skipTests": true
+                },
+                "@nrwl/angular:pipe": {
+                    "skipTests": true
+                },
+                "@nrwl/angular:service": {
+                    "skipTests": true
+                }
+            },
+            "root": "apps/idp",
+            "sourceRoot": "apps/idp/src",
+            "prefix": "idp",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "outputPath": "dist/apps/idp",
+                        "index": "apps/idp/src/index.html",
+                        "main": "apps/idp/src/main.ts",
+                        "polyfills": "apps/idp/src/polyfills.ts",
+                        "tsConfig": "apps/idp/tsconfig.app.json",
+                        "aot": true,
+                        "assets": [
+                            "apps/idp/src/favicon.ico",
+                            "apps/idp/src/assets"
+                        ],
+                        "styles": [
+                            "node_modules/ng-zorro-antd/src/ng-zorro-antd.min.css",
+                            "node_modules/ng-zorro-antd/resizable/style/index.min.css",
+                            "apps/idp/src/styles.scss"
+                        ],
+                        "scripts": []
+                    },
+                    "configurations": {
+                        "k8s": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "apps/idp/src/environments/environment.ts",
+                                    "with": "apps/idp/src/environments/environment.k8s.ts"
+                                }
+                            ],
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true
+                        },
+                        "production": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "apps/idp/src/environments/environment.ts",
+                                    "with": "apps/idp/src/environments/environment.prod.ts"
+                                }
+                            ],
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true,
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "2mb",
+                                    "maximumError": "5mb"
+                                },
+                                {
+                                    "type": "anyComponentStyle",
+                                    "maximumWarning": "6kb",
+                                    "maximumError": "10kb"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "options": {
+                        "browserTarget": "idp:build"
+                    },
+                    "configurations": {
+                        "production": {
+                            "browserTarget": "idp:build:production"
+                        }
+                    }
+                },
+                "extract-i18n": {
+                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "options": {
+                        "browserTarget": "idp:build"
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "apps/idp/tsconfig.app.json",
+                            "apps/idp/tsconfig.spec.json"
+                        ],
+                        "exclude": ["**/node_modules/**", "!apps/idp/**/*"]
+                    }
+                },
+                "test": {
+                    "builder": "@nrwl/jest:jest",
+                    "options": {
+                        "jestConfig": "apps/idp/jest.config.js",
+                        "tsConfig": "apps/idp/tsconfig.spec.json",
+                        "passWithNoTests": true,
+                        "setupFile": "apps/idp/src/test-setup.ts"
+                    }
+                }
+            }
+        },
+        "idp-e2e": {
+            "root": "apps/idp-e2e",
+            "sourceRoot": "apps/idp-e2e/src",
+            "projectType": "application",
+            "architect": {
+                "e2e": {
+                    "builder": "@nrwl/cypress:cypress",
+                    "options": {
+                        "cypressConfig": "apps/ip-e2e/cypress.json",
+                        "tsConfig": "apps/ip-e2e/tsconfig.e2e.json",
+                        "devServerTarget": "idp:serve"
+                    },
+                    "configurations": {
+                        "production": {
+                            "devServerTarget": "idp:serve:production"
+                        }
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": ["apps/ip-e2e/tsconfig.e2e.json"],
+                        "exclude": ["**/node_modules/**", "!apps/ip-e2e/**/*"]
+                    }
+                }
+            }
+        },
+        "idp-auth": {
+            "projectType": "library",
+            "root": "libs/idp/auth",
+            "sourceRoot": "libs/idp/auth/src",
+            "prefix": "idp",
+            "architect": {
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "libs/idp/auth/tsconfig.lib.json",
+                            "libs/idp/auth/tsconfig.spec.json"
+                        ],
+                        "exclude": ["**/node_modules/**", "!libs/idp/auth/**/*"]
+                    }
+                },
+                "test": {
+                    "builder": "@nrwl/jest:jest",
+                    "options": {
+                        "jestConfig": "libs/idp/auth/jest.config.js",
+                        "tsConfig": "libs/idp/auth/tsconfig.spec.json",
+                        "passWithNoTests": true,
+                        "setupFile": "libs/idp/auth/src/test-setup.ts"
+                    }
+                }
+            },
+            "schematics": {
+                "@nrwl/angular:component": {
+                    "style": "scss"
+                }
+            }
+        },
+        "idp-data-access": {
+            "projectType": "library",
+            "root": "libs/idp/data-access",
+            "sourceRoot": "libs/idp/data-access/src",
+            "prefix": "idp",
+            "architect": {
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "libs/idp/data-access/tsconfig.lib.json",
+                            "libs/idp/data-access/tsconfig.spec.json"
+                        ],
+                        "exclude": [
+                            "**/node_modules/**",
+                            "!libs/idp/data-access/**/*"
+                        ]
+                    }
+                },
+                "test": {
+                    "builder": "@nrwl/jest:jest",
+                    "options": {
+                        "jestConfig": "libs/idp/data-access/jest.config.js",
+                        "tsConfig": "libs/idp/data-access/tsconfig.spec.json",
+                        "passWithNoTests": true,
+                        "setupFile": "libs/idp/data-access/src/test-setup.ts"
+                    }
+                }
+            },
+            "schematics": {
+                "@nrwl/angular:component": {
+                    "style": "scss"
+                }
+            }
+        },
+        "perimeter-common": {
+            "projectType": "library",
+            "root": "libs/perimeter/common",
+            "sourceRoot": "libs/perimeter/common/src",
+            "prefix": "perimeter",
+            "architect": {
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "libs/perimeter/common/tsconfig.lib.json",
+                            "libs/perimeter/common/tsconfig.spec.json"
+                        ],
+                        "exclude": [
+                            "**/node_modules/**",
+                            "!libs/perimeter/common/**/*"
+                        ]
+                    }
+                },
+                "test": {
+                    "builder": "@nrwl/jest:jest",
+                    "options": {
+                        "jestConfig": "libs/perimeter/common/jest.config.js",
+                        "tsConfig": "libs/perimeter/common/tsconfig.spec.json",
+                        "passWithNoTests": true,
+                        "setupFile": "libs/perimeter/common/src/test-setup.ts"
+                    }
+                }
+            },
+            "schematics": {
+                "@nrwl/angular:component": {
+                    "style": "scss"
+                }
+            }
+        },
+        "admin-domains": {
+            "projectType": "library",
+            "root": "libs/admin/domains",
+            "sourceRoot": "libs/admin/domains/src",
+            "prefix": "admin",
+            "architect": {
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "libs/admin/domains/tsconfig.lib.json",
+                            "libs/admin/domains/tsconfig.spec.json"
+                        ],
+                        "exclude": [
+                            "**/node_modules/**",
+                            "!libs/admin/domains/**/*"
+                        ]
+                    }
+                },
+                "test": {
+                    "builder": "@nrwl/jest:jest",
+                    "options": {
+                        "jestConfig": "libs/admin/domains/jest.config.js",
+                        "tsConfig": "libs/admin/domains/tsconfig.spec.json",
+                        "passWithNoTests": true,
+                        "setupFile": "libs/admin/domains/src/test-setup.ts"
+                    }
+                }
+            },
+            "schematics": {
+                "@nrwl/angular:component": {
+                    "style": "scss"
+                }
+            }
+        },
+        "admin-shared": {
+            "projectType": "library",
+            "root": "libs/admin/shared",
+            "sourceRoot": "libs/admin/shared/src",
+            "prefix": "data-avail",
+            "architect": {
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "libs/admin/shared/tsconfig.lib.json",
+                            "libs/admin/shared/tsconfig.spec.json"
+                        ],
+                        "exclude": [
+                            "**/node_modules/**",
+                            "!libs/admin/shared/**/*"
+                        ]
+                    }
+                },
+                "test": {
+                    "builder": "@nrwl/jest:jest",
+                    "options": {
+                        "jestConfig": "libs/admin/shared/jest.config.js",
+                        "tsConfig": "libs/admin/shared/tsconfig.spec.json",
+                        "passWithNoTests": true,
+                        "setupFile": "libs/admin/shared/src/test-setup.ts"
+                    }
+                }
+            },
+            "schematics": {
+                "@nrwl/angular:component": {
+                    "style": "scss"
+                }
+            }
+        },
+        "admin-data-access": {
+            "projectType": "library",
+            "root": "libs/admin/data-access",
+            "sourceRoot": "libs/admin/data-access/src",
+            "prefix": "data-avail",
+            "architect": {
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "libs/admin/data-access/tsconfig.lib.json",
+                            "libs/admin/data-access/tsconfig.spec.json"
+                        ],
+                        "exclude": [
+                            "**/node_modules/**",
+                            "!libs/admin/data-access/**/*"
+                        ]
+                    }
+                },
+                "test": {
+                    "builder": "@nrwl/jest:jest",
+                    "options": {
+                        "jestConfig": "libs/admin/data-access/jest.config.js",
+                        "tsConfig": "libs/admin/data-access/tsconfig.spec.json",
+                        "passWithNoTests": true,
+                        "setupFile": "libs/admin/data-access/src/test-setup.ts"
+                    }
+                }
+            },
+            "schematics": {
+                "@nrwl/angular:component": {
+                    "style": "scss"
+                }
+            }
+        },
+        "admin-profile": {
+            "projectType": "library",
+            "root": "libs/admin/profile",
+            "sourceRoot": "libs/admin/profile/src",
+            "prefix": "admin",
+            "architect": {
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "libs/admin/profile/tsconfig.lib.json",
+                            "libs/admin/profile/tsconfig.spec.json"
+                        ],
+                        "exclude": [
+                            "**/node_modules/**",
+                            "!libs/admin/profile/**/*"
+                        ]
+                    }
+                },
+                "test": {
+                    "builder": "@nrwl/jest:jest",
+                    "options": {
+                        "jestConfig": "libs/admin/profile/jest.config.js",
+                        "tsConfig": "libs/admin/profile/tsconfig.spec.json",
+                        "passWithNoTests": true,
+                        "setupFile": "libs/admin/profile/src/test-setup.ts"
+                    }
+                }
+            },
+            "schematics": {
+                "@nrwl/angular:component": {
+                    "style": "scss"
+                }
+            }
+        },
+        "perimeter-nestjs-auth": {
+            "root": "libs/perimeter/nestjs-auth",
+            "sourceRoot": "libs/perimeter/nestjs-auth/src",
+            "projectType": "library",
+            "schematics": {},
+            "architect": {
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "libs/perimeter/nestjs-auth/tsconfig.lib.json",
+                            "libs/perimeter/nestjs-auth/tsconfig.spec.json"
+                        ],
+                        "exclude": [
+                            "**/node_modules/**",
+                            "!libs/perimeter/nestjs-auth/**/*"
+                        ]
+                    }
+                },
+                "test": {
+                    "builder": "@nrwl/jest:jest",
+                    "options": {
+                        "jestConfig": "libs/perimeter/nestjs-auth/jest.config.js",
+                        "tsConfig": "libs/perimeter/nestjs-auth/tsconfig.spec.json",
+                        "passWithNoTests": true
+                    }
+                },
+                "build": {
+                    "builder": "@nrwl/node:package",
+                    "options": {
+                        "outputPath": "dist/libs/perimeter/nestjs-auth",
+                        "tsConfig": "libs/perimeter/nestjs-auth/tsconfig.lib.json",
+                        "packageJson": "libs/perimeter/nestjs-auth/package.json",
+                        "main": "libs/perimeter/nestjs-auth/src/index.ts",
+                        "assets": ["libs/perimeter/nestjs-auth/*.md"]
+                    }
+                }
+            }
         }
-      }
     },
-    "idp-auth": {
-      "projectType": "library",
-      "root": "libs/idp/auth",
-      "sourceRoot": "libs/idp/auth/src",
-      "prefix": "idp",
-      "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/idp/auth/tsconfig.lib.json",
-              "libs/idp/auth/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!libs/idp/auth/**/*"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/idp/auth/jest.config.js",
-            "tsConfig": "libs/idp/auth/tsconfig.spec.json",
-            "passWithNoTests": true,
-            "setupFile": "libs/idp/auth/src/test-setup.ts"
-          }
-        }
-      },
-      "schematics": {
-        "@nrwl/angular:component": {
-          "style": "scss"
-        }
-      }
+    "cli": {
+        "defaultCollection": "@nrwl/angular",
+        "analytics": false
     },
-    "idp-data-access": {
-      "projectType": "library",
-      "root": "libs/idp/data-access",
-      "sourceRoot": "libs/idp/data-access/src",
-      "prefix": "idp",
-      "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/idp/data-access/tsconfig.lib.json",
-              "libs/idp/data-access/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!libs/idp/data-access/**/*"]
-          }
+    "schematics": {
+        "@nrwl/angular:application": {
+            "unitTestRunner": "jest",
+            "e2eTestRunner": "cypress"
         },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/idp/data-access/jest.config.js",
-            "tsConfig": "libs/idp/data-access/tsconfig.spec.json",
-            "passWithNoTests": true,
-            "setupFile": "libs/idp/data-access/src/test-setup.ts"
-          }
+        "@nrwl/angular:library": {
+            "unitTestRunner": "jest"
         }
-      },
-      "schematics": {
-        "@nrwl/angular:component": {
-          "style": "scss"
-        }
-      }
     },
-    "perimeter-common": {
-      "projectType": "library",
-      "root": "libs/perimeter/common",
-      "sourceRoot": "libs/perimeter/common/src",
-      "prefix": "perimeter",
-      "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/perimeter/common/tsconfig.lib.json",
-              "libs/perimeter/common/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!libs/perimeter/common/**/*"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/perimeter/common/jest.config.js",
-            "tsConfig": "libs/perimeter/common/tsconfig.spec.json",
-            "passWithNoTests": true,
-            "setupFile": "libs/perimeter/common/src/test-setup.ts"
-          }
-        }
-      },
-      "schematics": {
-        "@nrwl/angular:component": {
-          "style": "scss"
-        }
-      }
-    },
-    "admin-domains": {
-      "projectType": "library",
-      "root": "libs/admin/domains",
-      "sourceRoot": "libs/admin/domains/src",
-      "prefix": "admin",
-      "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/admin/domains/tsconfig.lib.json",
-              "libs/admin/domains/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!libs/admin/domains/**/*"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/admin/domains/jest.config.js",
-            "tsConfig": "libs/admin/domains/tsconfig.spec.json",
-            "passWithNoTests": true,
-            "setupFile": "libs/admin/domains/src/test-setup.ts"
-          }
-        }
-      },
-      "schematics": {
-        "@nrwl/angular:component": {
-          "style": "scss"
-        }
-      }
-    },
-    "admin-shared": {
-      "projectType": "library",
-      "root": "libs/admin/shared",
-      "sourceRoot": "libs/admin/shared/src",
-      "prefix": "data-avail",
-      "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/admin/shared/tsconfig.lib.json",
-              "libs/admin/shared/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!libs/admin/shared/**/*"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/admin/shared/jest.config.js",
-            "tsConfig": "libs/admin/shared/tsconfig.spec.json",
-            "passWithNoTests": true,
-            "setupFile": "libs/admin/shared/src/test-setup.ts"
-          }
-        }
-      },
-      "schematics": {
-        "@nrwl/angular:component": {
-          "style": "scss"
-        }
-      }
-    },
-    "admin-data-access": {
-      "projectType": "library",
-      "root": "libs/admin/data-access",
-      "sourceRoot": "libs/admin/data-access/src",
-      "prefix": "data-avail",
-      "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/admin/data-access/tsconfig.lib.json",
-              "libs/admin/data-access/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!libs/admin/data-access/**/*"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/admin/data-access/jest.config.js",
-            "tsConfig": "libs/admin/data-access/tsconfig.spec.json",
-            "passWithNoTests": true,
-            "setupFile": "libs/admin/data-access/src/test-setup.ts"
-          }
-        }
-      },
-      "schematics": {
-        "@nrwl/angular:component": {
-          "style": "scss"
-        }
-      }
-    },
-    "admin-profile": {
-      "projectType": "library",
-      "root": "libs/admin/profile",
-      "sourceRoot": "libs/admin/profile/src",
-      "prefix": "admin",
-      "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/admin/profile/tsconfig.lib.json",
-              "libs/admin/profile/tsconfig.spec.json"
-            ],
-            "exclude": ["**/node_modules/**", "!libs/admin/profile/**/*"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/admin/profile/jest.config.js",
-            "tsConfig": "libs/admin/profile/tsconfig.spec.json",
-            "passWithNoTests": true,
-            "setupFile": "libs/admin/profile/src/test-setup.ts"
-          }
-        }
-      },
-      "schematics": {
-        "@nrwl/angular:component": {
-          "style": "scss"
-        }
-      }
-    },
-    "perimeter-nestjs-auth": {
-      "root": "libs/perimeter/nestjs-auth",
-      "sourceRoot": "libs/perimeter/nestjs-auth/src",
-      "projectType": "library",
-      "schematics": {},
-      "architect": {
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "libs/perimeter/nestjs-auth/tsconfig.lib.json",
-              "libs/perimeter/nestjs-auth/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/perimeter/nestjs-auth/**/*"
-            ]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/perimeter/nestjs-auth/jest.config.js",
-            "tsConfig": "libs/perimeter/nestjs-auth/tsconfig.spec.json",
-            "passWithNoTests": true
-          }
-        },
-        "build": {
-          "builder": "@nrwl/node:package",
-          "options": {
-            "outputPath": "dist/libs/perimeter/nestjs-auth",
-            "tsConfig": "libs/perimeter/nestjs-auth/tsconfig.lib.json",
-            "packageJson": "libs/perimeter/nestjs-auth/package.json",
-            "main": "libs/perimeter/nestjs-auth/src/index.ts",
-            "assets": ["libs/perimeter/nestjs-auth/*.md"]
-          }
-        }
-      }
-    }
-  },
-  "cli": {
-    "defaultCollection": "@nrwl/angular",
-    "analytics": false
-  },
-  "schematics": {
-    "@nrwl/angular:application": {
-      "unitTestRunner": "jest",
-      "e2eTestRunner": "cypress"
-    },
-    "@nrwl/angular:library": {
-      "unitTestRunner": "jest"
-    }
-  },
-  "defaultProject": "admin"
+    "defaultProject": "admin"
 }

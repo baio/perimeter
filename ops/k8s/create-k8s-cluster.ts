@@ -16,7 +16,7 @@ export const createK8sCluster = (version: string, config: AppConfig) => {
         config.registry,
     );
     const adminApp = createAdminApp(version, config.adminApp, config.registry);
-    // const idpApp = createIdpApp(version, config.idpApp, config.registry);
+    //const idpApp = createIdpApp(version, config.idpApp, config.registry);
     //
     const psql = createPsql(config.psql);
     const mongo = createMongo(config.mongo);
