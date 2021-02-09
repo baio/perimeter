@@ -43,11 +43,27 @@
                                 }
                             ]
                         },
-                        "k8s": {
+                        "local-k8s": {
                             "fileReplacements": [
                                 {
                                     "replace": "apps/admin/src/environments/environment.ts",
-                                    "with": "apps/admin/src/environments/environment.k8s.ts"
+                                    "with": "apps/admin/src/environments/environment.local-k8s.ts"
+                                }
+                            ],
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true
+                        },
+                        "qa-k8s": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "apps/admin/src/environments/environment.ts",
+                                    "with": "apps/admin/src/environments/environment.qa-k8s.ts"
                                 }
                             ],
                             "optimization": true,
@@ -321,11 +337,27 @@
                         "scripts": []
                     },
                     "configurations": {
-                        "k8s": {
+                        "local-k8s": {
                             "fileReplacements": [
                                 {
                                     "replace": "apps/idp/src/environments/environment.ts",
-                                    "with": "apps/idp/src/environments/environment.k8s.ts"
+                                    "with": "apps/idp/src/environments/environment.local-k8s.ts"
+                                }
+                            ],
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true
+                        },
+                        "qa-k8s": {
+                            "fileReplacements": [
+                                {
+                                    "replace": "apps/idp/src/environments/environment.ts",
+                                    "with": "apps/idp/src/environments/environment.qa-k8s.ts"
                                 }
                             ],
                             "optimization": true,
