@@ -9,6 +9,7 @@ import { createPsql } from './psql';
 import { create as createRabbit } from './rabbit/create';
 
 export const createK8sCluster = (version: string, config: AppConfig) => {
+    /*
     const authApi = createAuthApi(version, config.authApi, config.registry);
     const tenantApi = createTenantApi(
         version,
@@ -37,5 +38,10 @@ export const createK8sCluster = (version: string, config: AppConfig) => {
         seq,
         rabbit,
         adminApp,
+    };
+    */
+    const idpApp = createIdpApp(version, config.idpApp, config.registry);
+    return {
+        idpApp,
     };
 };

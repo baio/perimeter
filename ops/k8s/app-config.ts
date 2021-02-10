@@ -31,16 +31,16 @@ const authApiConfig: ApiConfig = {
     },
     env: {
         ASPNETCORE_ENVIRONMENT: rq('ASPNETCORE_ENVIRONMENT'),
-        ConnectionStrings__PostgreSQL: rs('ConnectionStrings__PostgreSQL'),
-        MongoKeyValueStorage__ConnectionString: rs(
+        ConnectionStrings__PostgreSQL: rq('ConnectionStrings__PostgreSQL'),
+        MongoKeyValueStorage__ConnectionString: rq(
             'MongoKeyValueStorage__ConnectionString',
         ),
-        MongoViewStorage__ConnectionString: rs(
+        MongoViewStorage__ConnectionString: rq(
             'MongoViewStorage__ConnectionString',
         ),
-        Auth__PasswordSecret: rs('Auth__PasswordSecret'),
-        Auth__Jwt__IdTokenSecret: rs('Auth__Jwt__IdTokenSecret'),
-        Auth__Jwt__AccessTokenSecret: rs('Auth__Jwt__AccessTokenSecret'),
+        Auth__PasswordSecret: rq('Auth__PasswordSecret'),
+        Auth__Jwt__IdTokenSecret: rq('Auth__Jwt__IdTokenSecret'),
+        Auth__Jwt__AccessTokenSecret: rq('Auth__Jwt__AccessTokenSecret'),
         Auth__PerimeterSocialProviders__Github__ClientId: rs(
             'Auth__PerimeterSocialProviders__Github__ClientId',
         ),
@@ -53,7 +53,7 @@ const authApiConfig: ApiConfig = {
         Auth__PerimeterSocialProviders__Google__SecretKey: rs(
             'Auth__PerimeterSocialProviders__Google__SecretKey',
         ),
-        SendGridApiKey: rs('SendGridApiKey'),
+        SendGridApiKey: rq('SendGridApiKey'),
         TenantAuth__AccessTokenSecret: rs('TenantAuth__AccessTokenSecret'),
     },
 };

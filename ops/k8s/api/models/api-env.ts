@@ -2,16 +2,16 @@ import { Output } from '@pulumi/pulumi';
 
 export interface ApiEnv {
     ASPNETCORE_ENVIRONMENT: string;
-    ConnectionStrings__PostgreSQL: Output<string>;
-    MongoKeyValueStorage__ConnectionString: Output<string>;
-    MongoViewStorage__ConnectionString: Output<string>;
-    Auth__PasswordSecret: Output<string>;
-    Auth__Jwt__IdTokenSecret: Output<string>;
-    Auth__Jwt__AccessTokenSecret: Output<string>;
-    Auth__PerimeterSocialProviders__Github__ClientId: Output<string>;
-    Auth__PerimeterSocialProviders__Github__SecretKey: Output<string>;
-    Auth__PerimeterSocialProviders__Google__ClientId: Output<string>;
-    Auth__PerimeterSocialProviders__Google__SecretKey: Output<string>;
-    SendGridApiKey: Output<string>;
-    TenantAuth__AccessTokenSecret: Output<string>;
+    ConnectionStrings__PostgreSQL: string | Output<string>;
+    MongoKeyValueStorage__ConnectionString: string | Output<string>;
+    MongoViewStorage__ConnectionString: string | Output<string>;
+    Auth__PasswordSecret: string | Output<string>;
+    Auth__Jwt__IdTokenSecret: string | Output<string>;
+    Auth__Jwt__AccessTokenSecret: string | Output<string>;
+    Auth__PerimeterSocialProviders__Github__ClientId: string | Output<string>;
+    Auth__PerimeterSocialProviders__Github__SecretKey: string | Output<string>;
+    Auth__PerimeterSocialProviders__Google__ClientId: string | Output<string>;
+    Auth__PerimeterSocialProviders__Google__SecretKey: string | Output<string>;
+    SendGridApiKey: string | Output<string>;
+    TenantAuth__AccessTokenSecret: string | Output<string>;
 }

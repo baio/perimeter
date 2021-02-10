@@ -1,0 +1,45 @@
+config:
+  k8s:Auth__Jwt__AccessTokenSecret: xxxABCD
+  k8s:adminApp_Port: "70"
+  k8s:adminApp_TargetPort: "80"
+  k8s:api_ENV_ASPNETCORE_ENVIRONMENT: QA-K8S
+  k8s:api_ENV_Auth__Jwt__AccessTokenSecret: DrJHgte6EPcv0fN_81BGH7_k
+  k8s:api_ENV_Auth__Jwt__IdTokenSecret: xxxABCD
+  k8s:api_ENV_Auth__PasswordSecret: xxxABCD
+  k8s:api_ENV_Auth__PerimeterSocialProviders__Github__ClientId:
+    secure: AAABAMVGJDwipASlZU/laugi5rnsxMho3/fZK0SiSVwlYs+bujprsleGpTuyS0LNxTfkUg==
+  k8s:api_ENV_Auth__PerimeterSocialProviders__Github__SecretKey:
+    secure: AAABADmKdtiKV5QJGoQ61R8LcraXbiPo5wkQBiejIdHIfJ6qcO7C5J1rIHFCXP1/rOoPgjL1FJgxeHMjubfu5xlUC0aUp/44
+  k8s:api_ENV_Auth__PerimeterSocialProviders__Google__ClientId:
+    secure: AAABAGP7yyzOp7aV9nuD9eKZMgNW0n2j/kXsVcRpuNPD0qXU7hFmnthTJS97SiUAVFp4y2G++Z/ZufMkkMIxJYpFsG7jfLbJwFUmdDy/SHVkDLcZi8xcllPLqkuMUVQ08efUYla8bGA=
+  k8s:api_ENV_Auth__PerimeterSocialProviders__Google__SecretKey:
+    secure: AAABACyj/4MvCudCeMeyEnCjFlkhE4UO6OvUu6meebLZz9ISRGBQDFe2byOZu6euPQa6Y/zfEIE=
+  k8s:api_ENV_ConnectionStrings__PostgreSQL: Host=psql;Database=prr_qa;Username=postgres;Password=123;
+  k8s:api_ENV_MailSender__FromEmail: Perimeter (qa)
+  k8s:api_ENV_MailSender__FromName: Perimeter (qa)
+  k8s:api_ENV_MailSender__Project__BaseUrl: http://perimeter.pw
+  k8s:api_ENV_MailSender__Project__Name: Perimeter (qa)
+  k8s:api_ENV_MongoKeyValueStorage__ConnectionString: mongodb://root:123@mongo?authSource=admin
+  k8s:api_ENV_MongoViewStorage__ConnectionString: mongodb://root:123@mongo?authSource=admin
+  k8s:api_ENV_SendGridApiKey:
+    secure: AAABAEgZlFQzpd2VY20t+AQvZQXz5RKDoGaGav90YB/+eFzfjcxqD53m9qA8ORfGd6AdRvdTDQxfZvVHwKpcXQO55WrqiJjWxwe6IUMGHGXf7IIMNUQ5beHlanue8L/2+CLLVeM=
+  k8s:api_ENV_TenantAuth__AccessTokenSecret: DrJHgte6EPcv0fN_81BGH7_k
+  k8s:auth_api_Port: "81"
+  k8s:auth_api_TargetPort: "5000"
+  k8s:idpApp_Port: "80"
+  k8s:idpApp_TargetPort: "80"
+  k8s:mongo_MONGODB_ROOT_PASSWORD: "123"
+  k8s:mongo_MONGODB_ROOT_USER: root
+  k8s:mongo_dataPath: /data/prr/mongo
+  k8s:mongo_storageSize: "5"
+  k8s:psql_POSTGRES_DB: prr-qa
+  k8s:psql_POSTGRES_PASSWORD: "123"
+  k8s:psql_POSTGRES_USER: postgres
+  k8s:psql_dataPath: /data/prr/psql
+  k8s:psql_storageSize: "5"
+  k8s:registryPassword:
+    secure: AAABAFnVDK81AG4GlzYjFuMJblUL3j4OBe3kJsYWNSLTMJFQosvvPC9e
+  k8s:registryServer: docker.io
+  k8s:registryUsername: baio
+  k8s:tenant_api_Port: "82"
+  k8s:tenant_api_TargetPort: "6000"
