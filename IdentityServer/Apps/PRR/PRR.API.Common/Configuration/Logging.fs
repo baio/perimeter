@@ -31,12 +31,12 @@ module Logging =
         services.AddLogging(fun (builder: ILoggingBuilder) -> builder.ClearProviders().AddSerilog() |> ignore)
         |> ignore
 
-
-        Log.Logger <-
-            LoggerConfiguration().Enrich.FromLogContext()
-                #if !TEST
-                .WriteTo.Seq(env.Config.ServiceUrl)
-                #else
-                .WriteTo.Console().WriteTo.Debug()
-                #endif
-                .Filter.ByExcluding(filterIgnoredEndpoints env.IgnoreApiPaths).CreateLogger()
+        if env.Config.ServiceUrl <> null then
+            Log.Logger <-
+                LoggerConfiguration().Enrich.FromLogContext()
+                    #if !TEST 
+                    .WriteTo.Seq(env.Config.ServiceUrl)
+                    #else
+                    .WriteTo.Console().WriteTo.Debug()
+                    #endif
+                    .Filter.ByExcluding(filterIgnoredEndpoints env.IgnoreApiPaths).CreateLogger()

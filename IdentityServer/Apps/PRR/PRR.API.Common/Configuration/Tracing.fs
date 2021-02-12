@@ -29,19 +29,22 @@ module Tracing =
     let configureTracing (env: TracingEnv) (services: IServiceCollection) =
 
 #if !TEST
-        // Change default activity format to OpenTelemetry
-        Activity.DefaultIdFormat <- ActivityIdFormat.W3C
-        Activity.ForceDefaultIdFormat <- true
+        if env.Config.AgentHost <> null then
+            // Change default activity format to OpenTelemetry
+            Activity.DefaultIdFormat <- ActivityIdFormat.W3C
+            Activity.ForceDefaultIdFormat <- true
 
-        services.AddOpenTelemetryTracing(fun (builder: TracerProviderBuilder) ->
-            builder.AddAspNetCoreInstrumentation(fun ops -> ops.Filter <- filterIgnoredEndpoints env.IgnoreApiPaths)
-                   .AddJaegerExporter(fun c ->
-                   c.ServiceName <- env.Config.ServiceName // "api"
-                   c.AgentHost <- env.Config.AgentHost // "localhost"
-                   c.AgentPort <- env.Config.AgentPort) // 6831)
-                   .AddEntityFrameworkCoreInstrumentation(fun ops -> ops.SetTextCommandContent <- true)
-                   .AddMassTransitInstrumentation().AddMongoDBInstrumentation()
-            |> ignore)
-        |> ignore
+            services.AddOpenTelemetryTracing(fun (builder: TracerProviderBuilder) ->
+                builder
+                    .AddAspNetCoreInstrumentation(fun ops -> ops.Filter <- filterIgnoredEndpoints env.IgnoreApiPaths)
+                    .AddJaegerExporter(fun c ->
+                        c.ServiceName <- env.Config.ServiceName // "api"
+                        c.AgentHost <- env.Config.AgentHost // "localhost"
+                        c.AgentPort <- env.Config.AgentPort) // 6831)
+                    .AddEntityFrameworkCoreInstrumentation(fun ops -> ops.SetTextCommandContent <- true)
+                    .AddMassTransitInstrumentation()
+                    .AddMongoDBInstrumentation()
+                |> ignore)
+            |> ignore
 #endif
         ()
