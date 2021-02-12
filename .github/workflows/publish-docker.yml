@@ -32,7 +32,7 @@ jobs:
               with:
                   context: ./WebClients
                   file: ./WebClients/apps/idp/dockerfile
-                  platforms: linux/arm/v6
+                  platforms: linux/amd64
                   push: true
                   tags: ${{ steps.docker_meta_app_idp.outputs.tags }}
                   labels: ${{ steps.docker_meta_app_idp.outputs.labels }}
