@@ -1,7 +1,7 @@
 FROM node:12.20-alpine AS build-image
 WORKDIR /app
 COPY decorate-angular-cli.js package.json yarn.lock ./
-RUN yarn cache clean
+#RUN yarn cache clean
 RUN yarn install --frozen-lockfile
 
 ENV PATH="./node_modules/.bin:$PATH" 
