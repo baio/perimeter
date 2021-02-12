@@ -1,7 +1,8 @@
-FROM node:14.15.5-alpine AS build-image
+FROM node:12.20-alpine AS build-image
 WORKDIR /app
-COPY decorate-angular-cli.js package.json yarn.lock npm-shrinkwrap.json ./
-RUN npm install
+COPY decorate-angular-cli.js package.json yarn.lock ./
+RUN yarn cache clean
+RUN yarn install --frozen-lockfile
 
 ENV PATH="./node_modules/.bin:$PATH" 
 
