@@ -12,7 +12,7 @@ export const createDeployment = (appName: string) => {
                     containers: [
                         {
                             name: 'rabbitmq',
-                            image: 'masstransit/rabbitmq',
+                            image: 'arm64v8/rabbitmq',
                             imagePullPolicy: 'IfNotPresent',
                         },
                     ],

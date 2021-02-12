@@ -5,11 +5,11 @@ import { createNodePorts } from './node-ports';
 export const create = () => {
     const name = 'rabbitmq';
     const deployment = createDeployment(name);
-    const loadBalancer = createLoadBalancer(name);
+    // const loadBalancer = createLoadBalancer(name);
     const nodePorts = createNodePorts(name);
     return {
         deployment: deployment.urn,
-        loadBalancer: loadBalancer.urn,
+        // loadBalancer: loadBalancer.urn,
         nodePorts: nodePorts.urn,
     };
 };

@@ -32,16 +32,18 @@ export const createApi = (
         config.env,
         imageName,
     );
+    /*
     const apiLoadBalancer = createApiLoadBalancer(
         apiAppExtName,
         apiAppName,
         config.ports,
     );
+    */
     const nodePort = createApiNodePort(apiAppName, apiAppName, config.ports);
     return {
         apiImageName: imageName,
         apiDeploymentName: apiDeployment.metadata.name,
-        apiLoadBalancerUrn: apiLoadBalancer.urn,
+        // apiLoadBalancerUrn: apiLoadBalancer.urn,
         apiNodePortUrn: nodePort.urn,
     };
 };

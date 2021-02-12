@@ -9,15 +9,15 @@ import { createPsql } from './psql';
 import { create as createRabbit } from './rabbit/create';
 
 export const createK8sCluster = (version: string, config: AppConfig) => {
-    /*
     const authApi = createAuthApi(version, config.authApi, config.registry);
+
     const tenantApi = createTenantApi(
         version,
         config.tenantApi,
         config.registry,
     );
-    const adminApp = createAdminApp(version, config.adminApp, config.registry);
-    const idpApp = createIdpApp(version, config.idpApp, config.registry);
+    // const adminApp = createAdminApp(version, config.adminApp, config.registry);
+    // const idpApp = createIdpApp(version, config.idpApp, config.registry);
     //
     const psql = createPsql(config.psql);
     const mongo = createMongo(config.mongo);
@@ -25,23 +25,18 @@ export const createK8sCluster = (version: string, config: AppConfig) => {
     const rabbit = createRabbit();
     //
     const jaeger = createJaeger();
-    const seq = createSeq();
+    // const seq = createSeq();
 
     // prometheus is not setup since it requires add whole persistent volume / claim story to config (insane shit)
     return {
         authApi,
-        idpApp,
+        // idpApp,
         tenantApi,
         psql,
         mongo,
         jaeger,
-        seq,
+        // seq,
         rabbit,
-        adminApp,
-    };
-    */
-    const idpApp = createIdpApp(version, config.idpApp, config.registry);
-    return {
-        idpApp,
+        // adminApp,
     };
 };

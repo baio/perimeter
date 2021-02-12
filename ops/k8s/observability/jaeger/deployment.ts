@@ -14,7 +14,7 @@ export const createDeployment = (
                     containers: [
                         {
                             name: 'jaeger',
-                            image: 'jaegertracing/all-in-one:1.7',
+                            image: 'jaegertracing/jaeger-operator:1.21',
                             imagePullPolicy: 'IfNotPresent'
                         },
                     ],                
