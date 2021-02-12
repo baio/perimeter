@@ -1,4 +1,4 @@
-FROM node:12.10.0-alpine AS build-image
+FROM node:14.15.5-alpine AS build-image
 WORKDIR /app
 RUN npm install -g yarn
 COPY decorate-angular-cli.js package.json yarn.lock ./
