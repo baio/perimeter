@@ -1,0 +1,89 @@
+name: Publish Docker image
+on:
+    push:
+        tags:
+            - v*
+jobs:
+    push_to_registry:
+        name: Push Docker image to Docker Hub
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out the repo
+              uses: actions/checkout@v2
+            - name: Docker meta app idp
+              id: docker_meta_app_idp
+              uses: crazy-max/ghaction-docker-meta@v1
+              with:
+                  images: baio/prr-app-idp
+                  tag-semver: |
+                      {{version}}
+                      {{major}}.{{minor}}
+            - name: Docker meta app admin
+              id: docker_meta_app_admin
+              uses: crazy-max/ghaction-docker-meta@v1
+              with:
+                  images: baio/prr-app-admin
+                  tag-semver: |
+                      {{version}}
+                      {{major}}.{{minor}}
+            - name: Docker meta api auth
+              id: docker_meta_api_auth
+              uses: crazy-max/ghaction-docker-meta@v1
+              with:
+                  images: baio/prr-api-auth
+                  tag-semver: |
+                      {{version}}
+                      {{major}}.{{minor}}
+            - name: Docker meta api tenant
+              id: docker_meta_api_tenant
+              uses: crazy-max/ghaction-docker-meta@v1
+              with:
+                  images: baio/prr-api-tenant
+                  tag-semver: |
+                      {{version}}
+                      {{major}}.{{minor}}
+            - name: Set up QEMU
+              uses: docker/setup-qemu-action@v1
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v1
+            - name: Login to DockerHub
+              uses: docker/login-action@v1
+              with:
+                  username: ${{ secrets.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
+            - name: Push App IDP to Docker Hub
+              uses: docker/build-push-action@v2
+              with:
+                  context: ./WebClients
+                  file: ./WebClients/apps/idp/dockerfile
+                  platforms: linux/amd64,linux/arm64
+                  push: true
+                  tags: ${{ steps.docker_meta_app_idp.outputs.tags }}
+                  labels: ${{ steps.docker_meta_app_idp.outputs.labels }}
+            - name: Push App Admin to Docker Hub
+              uses: docker/build-push-action@v2
+              with:
+                  context: ./WebClients
+                  file: ./WebClients/apps/admin/dockerfile
+                  platforms: linux/amd64,linux/arm64
+                  push: true
+                  tags: ${{ steps.docker_meta_app_admin.outputs.tags }}
+                  labels: ${{ steps.docker_meta_app_admin.outputs.labels }}
+            - name: Push api Auth to Docker Hub
+              uses: docker/build-push-action@v2
+              with:
+                  context: ./IdentityServer
+                  file: ./IdentityServer/Apps/PRR/PRR.API.Auth/dockerfile
+                  platforms: linux/amd64,linux/arm64
+                  push: true
+                  tags: ${{ steps.docker_meta_api_auth.outputs.tags }}
+                  labels: ${{ steps.docker_meta_api_auth.outputs.labels }}
+            - name: Push api Tenant to Docker Hub
+              uses: docker/build-push-action@v2
+              with:
+                  context: ./IdentityServer
+                  file: ./IdentityServer/Apps/PRR/PRR.API.Tenant/dockerfile
+                  platforms: linux/amd64,linux/arm64
+                  push: true
+                  tags: ${{ steps.docker_meta_api_tenant.outputs.tags }}
+                  labels: ${{ steps.docker_meta_api_tenant.outputs.labels }}
