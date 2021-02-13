@@ -1,12 +1,14 @@
 import * as k8s from '@pulumi/kubernetes';
 import { Output } from '@pulumi/pulumi';
+import * as pulumi from '@pulumi/pulumi';
 
-export const createIdpAppIngress = (
+export const createDeployment = (
     appName: string,
     imageName: Output<string> | string,
+    env?: any, //pulumi.Input<k8s.types.input.core.v1.EnvVar>[],
 ) => {
     const labels = { app: appName };
-    const deployment = new k8s.networking.v1beta1.Ingress(appName, {
+    const deployment = new k8s.apps.v1.Deployment(appName, {
         spec: {
             selector: { matchLabels: labels },
             replicas: 1,
@@ -17,6 +19,7 @@ export const createIdpAppIngress = (
                         {
                             name: appName,
                             image: imageName,
+                            env,
                         },
                     ],
                 },

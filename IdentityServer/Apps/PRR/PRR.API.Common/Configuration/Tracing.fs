@@ -11,7 +11,7 @@ open MongoDB.Driver.Core.Extensions.OpenTelemetry
 type TracingConfig =
     { ServiceName: string
       AgentHost: string
-      AgentPort: int }
+      AgentPort: int option }
 
 type TracingEnv =
     { Config: TracingConfig
@@ -29,7 +29,7 @@ module Tracing =
     let configureTracing (env: TracingEnv) (services: IServiceCollection) =
 
 #if !TEST
-        if env.Config.AgentHost <> null then
+        if not (System.String.IsNullOrEmpty env.Config.AgentHost) then
             // Change default activity format to OpenTelemetry
             Activity.DefaultIdFormat <- ActivityIdFormat.W3C
             Activity.ForceDefaultIdFormat <- true
@@ -40,7 +40,7 @@ module Tracing =
                     .AddJaegerExporter(fun c ->
                         c.ServiceName <- env.Config.ServiceName // "api"
                         c.AgentHost <- env.Config.AgentHost // "localhost"
-                        c.AgentPort <- env.Config.AgentPort) // 6831)
+                        c.AgentPort <- Option.defaultValue 6831 env.Config.AgentPort) // 6831)
                     .AddEntityFrameworkCoreInstrumentation(fun ops -> ops.SetTextCommandContent <- true)
                     .AddMassTransitInstrumentation()
                     .AddMongoDBInstrumentation()

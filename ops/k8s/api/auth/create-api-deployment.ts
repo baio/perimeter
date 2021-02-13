@@ -76,6 +76,14 @@ export const createApiDeployment = (
                                     name: 'SendGridApiKey',
                                     value: apiEnv.SendGridApiKey,
                                 },
+                                {
+                                    name: 'Logging__Seq__ServiceUrl',
+                                    value: apiEnv.Logging__Seq__ServiceUrl,
+                                },
+                                {
+                                    name: 'Tracing__Jaeger__AgentHost',
+                                    value: apiEnv.Tracing__Jaeger__AgentHost,
+                                },
                             ],
                         },
                     ],

@@ -43,3 +43,5 @@ config:
   k8s:registryUsername: baio
   k8s:tenant_api_Port: "82"
   k8s:tenant_api_TargetPort: "6000"
+  k8s:api_ENV_Logging__Seq__ServiceUrl: NULL
+  k8s:api_ENV_Tracing__Jaeger__AgentPort: NULL

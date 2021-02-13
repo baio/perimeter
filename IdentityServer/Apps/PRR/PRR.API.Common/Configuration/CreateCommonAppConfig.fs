@@ -43,5 +43,5 @@ module CreateCommonAppConfig =
               { Config =
                     { ServiceName = configuration.GetValue("Tracing:Jaeger:ServiceName")
                       AgentHost = configuration.GetValue("Tracing:Jaeger:AgentHost")
-                      AgentPort = configuration.GetValue<int>("Tracing:Jaeger:AgentPort") }
+                      AgentPort = configuration.GetValue<int option>("Tracing:Jaeger:AgentPort") }
                 IgnoreApiPaths = ignoreObserveApiPaths } }

@@ -5,6 +5,7 @@ ARG platform=win-x64
 WORKDIR /app
 
 # context should be in solution root
+
 # copy everything else and build app
 COPY . ./
 RUN dotnet publish ./Apps/PRR/PRR.API.Tenant/PRR.API.Tenant.fsproj -c Release -o out -r ${platform}

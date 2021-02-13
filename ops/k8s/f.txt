@@ -1,0 +1,1293 @@
+{
+    "version": 3,
+    "deployment": {
+        "manifest": {
+            "time": "2021-02-13T01:42:46.4461008+03:00",
+            "magic": "61ec870d6a25b23495f90eece4c5e4978c45a143b8fd639eb108796666e29aa3",
+            "version": "v2.17.0"
+        },
+        "secrets_providers": {
+            "type": "service",
+            "state": {
+                "url": "https://api.pulumi.com",
+                "owner": "baio",
+                "project": "k8s",
+                "stack": "qa"
+            }
+        },
+        "resources": [
+            {
+                "urn": "urn:pulumi:qa::k8s::pulumi:pulumi:Stack::k8s-qa",
+                "custom": false,
+                "type": "pulumi:pulumi:Stack"
+            },
+            {
+                "urn": "urn:pulumi:qa::k8s::pulumi:providers:kubernetes::default_2_7_3",
+                "custom": true,
+                "id": "ee81e6cf-2839-41ef-8263-dbf621f9fcd9",
+                "type": "pulumi:providers:kubernetes",
+                "inputs": {
+                    "version": "2.7.3"
+                },
+                "outputs": {
+                    "version": "2.7.3"
+                }
+            },
+            {
+                "urn": "urn:pulumi:qa::k8s::kubernetes:core/v1:PersistentVolume::postgres-pv-volume",
+                "custom": true,
+                "id": "postgres-pv-volume",
+                "type": "kubernetes:core/v1:PersistentVolume",
+                "inputs": {
+                    "apiVersion": "v1",
+                    "kind": "PersistentVolume",
+                    "metadata": {
+                        "labels": {
+                            "app": "psql",
+                            "app.kubernetes.io/managed-by": "pulumi",
+                            "type": "local"
+                        },
+                        "name": "postgres-pv-volume"
+                    },
+                    "spec": {
+                        "accessModes": [
+                            "ReadWriteMany"
+                        ],
+                        "capacity": {
+                            "storage": "5Gi"
+                        },
+                        "hostPath": {
+                            "path": "/data/prr/psql"
+                        },
+                        "storageClassName": "manual"
+                    }
+                },
+                "outputs": {
+                    "__initialApiVersion": "v1",
+                    "__inputs": {
+                        "apiVersion": "v1",
+                        "kind": "PersistentVolume",
+                        "metadata": {
+                            "labels": {
+                                "app": "psql",
+                                "app.kubernetes.io/managed-by": "pulumi",
+                                "type": "local"
+                            },
+                            "name": "postgres-pv-volume"
+                        },
+                        "spec": {
+                            "accessModes": [
+                                "ReadWriteMany"
+                            ],
+                            "capacity": {
+                                "storage": "5Gi"
+                            },
+                            "hostPath": {
+                                "path": "/data/prr/psql"
+                            },
+                            "storageClassName": "manual"
+                        }
+                    },
+                    "apiVersion": "v1",
+                    "kind": "PersistentVolume",
+                    "metadata": {
+                        "annotations": {
+                            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"PersistentVolume\",\"metadata\":{\"labels\":{\"app\":\"psql\",\"app.kubernetes.io/managed-by\":\"pulumi\",\"type\":\"local\"},\"name\":\"postgres-pv-volume\"},\"spec\":{\"accessModes\":[\"ReadWriteMany\"],\"capacity\":{\"storage\":\"5Gi\"},\"hostPath\":{\"path\":\"/data/prr/psql\"},\"storageClassName\":\"manual\"}}\n"
+                        },
+                        "creationTimestamp": "2021-02-12T22:42:38Z",
+                        "finalizers": [
+                            "kubernetes.io/pv-protection"
+                        ],
+                        "labels": {
+                            "app": "psql",
+                            "app.kubernetes.io/managed-by": "pulumi",
+                            "type": "local"
+                        },
+                        "managedFields": [
+                            {
+                                "apiVersion": "v1",
+                                "fieldsType": "FieldsV1",
+                                "fieldsV1": {
+                                    "f:status": {
+                                        "f:phase": {}
+                                    }
+                                },
+                                "manager": "kube-controller-manager",
+                                "operation": "Update",
+                                "time": "2021-02-12T22:42:38Z"
+                            },
+                            {
+                                "apiVersion": "v1",
+                                "fieldsType": "FieldsV1",
+                                "fieldsV1": {
+                                    "f:metadata": {
+                                        "f:annotations": {
+                                            ".": {},
+                                            "f:kubectl.kubernetes.io/last-applied-configuration": {}
+                                        },
+                                        "f:labels": {
+                                            ".": {},
+                                            "f:app": {},
+                                            "f:app.kubernetes.io/managed-by": {},
+                                            "f:type": {}
+                                        }
+                                    },
+                                    "f:spec": {
+                                        "f:accessModes": {},
+                                        "f:capacity": {
+                                            ".": {},
+                                            "f:storage": {}
+                                        },
+                                        "f:hostPath": {
+                                            ".": {},
+                                            "f:path": {},
+                                            "f:type": {}
+                                        },
+                                        "f:persistentVolumeReclaimPolicy": {},
+                                        "f:storageClassName": {},
+                                        "f:volumeMode": {}
+                                    }
+                                },
+                                "manager": "pulumi-resource-kubernetes.exe",
+                                "operation": "Update",
+                                "time": "2021-02-12T22:42:38Z"
+                            }
+                        ],
+                        "name": "postgres-pv-volume",
+                        "resourceVersion": "291504",
+                        "selfLink": "/api/v1/persistentvolumes/postgres-pv-volume",
+                        "uid": "a41c3636-d981-496e-b284-a28e6845f6cd"
+                    },
+                    "spec": {
+                        "accessModes": [
+                            "ReadWriteMany"
+                        ],
+                        "capacity": {
+                            "storage": "5Gi"
+                        },
+                        "hostPath": {
+                            "path": "/data/prr/psql",
+                            "type": ""
+                        },
+                        "persistentVolumeReclaimPolicy": "Retain",
+                        "storageClassName": "manual",
+                        "volumeMode": "Filesystem"
+                    },
+                    "status": {
+                        "phase": "Available"
+                    }
+                },
+                "parent": "urn:pulumi:qa::k8s::pulumi:pulumi:Stack::k8s-qa",
+                "provider": "urn:pulumi:qa::k8s::pulumi:providers:kubernetes::default_2_7_3::ee81e6cf-2839-41ef-8263-dbf621f9fcd9",
+                "propertyDependencies": {
+                    "apiVersion": null,
+                    "kind": null,
+                    "metadata": null,
+                    "spec": null
+                }
+            },
+            {
+                "urn": "urn:pulumi:qa::k8s::kubernetes:core/v1:PersistentVolume::mongo-pv-volume",
+                "custom": true,
+                "id": "mongo-pv-volume",
+                "type": "kubernetes:core/v1:PersistentVolume",
+                "inputs": {
+                    "apiVersion": "v1",
+                    "kind": "PersistentVolume",
+                    "metadata": {
+                        "labels": {
+                            "app": "mongo",
+                            "app.kubernetes.io/managed-by": "pulumi",
+                            "type": "local"
+                        },
+                        "name": "mongo-pv-volume"
+                    },
+                    "spec": {
+                        "accessModes": [
+                            "ReadWriteMany"
+                        ],
+                        "capacity": {
+                            "storage": "5Gi"
+                        },
+                        "hostPath": {
+                            "path": "/data/prr/mongo"
+                        },
+                        "storageClassName": "manual"
+                    }
+                },
+                "outputs": {
+                    "__initialApiVersion": "v1",
+                    "__inputs": {
+                        "apiVersion": "v1",
+                        "kind": "PersistentVolume",
+                        "metadata": {
+                            "labels": {
+                                "app": "mongo",
+                                "app.kubernetes.io/managed-by": "pulumi",
+                                "type": "local"
+                            },
+                            "name": "mongo-pv-volume"
+                        },
+                        "spec": {
+                            "accessModes": [
+                                "ReadWriteMany"
+                            ],
+                            "capacity": {
+                                "storage": "5Gi"
+                            },
+                            "hostPath": {
+                                "path": "/data/prr/mongo"
+                            },
+                            "storageClassName": "manual"
+                        }
+                    },
+                    "apiVersion": "v1",
+                    "kind": "PersistentVolume",
+                    "metadata": {
+                        "annotations": {
+                            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"PersistentVolume\",\"metadata\":{\"labels\":{\"app\":\"mongo\",\"app.kubernetes.io/managed-by\":\"pulumi\",\"type\":\"local\"},\"name\":\"mongo-pv-volume\"},\"spec\":{\"accessModes\":[\"ReadWriteMany\"],\"capacity\":{\"storage\":\"5Gi\"},\"hostPath\":{\"path\":\"/data/prr/mongo\"},\"storageClassName\":\"manual\"}}\n"
+                        },
+                        "creationTimestamp": "2021-02-12T22:42:39Z",
+                        "finalizers": [
+                            "kubernetes.io/pv-protection"
+                        ],
+                        "labels": {
+                            "app": "mongo",
+                            "app.kubernetes.io/managed-by": "pulumi",
+                            "type": "local"
+                        },
+                        "managedFields": [
+                            {
+                                "apiVersion": "v1",
+                                "fieldsType": "FieldsV1",
+                                "fieldsV1": {
+                                    "f:status": {
+                                        "f:phase": {}
+                                    }
+                                },
+                                "manager": "kube-controller-manager",
+                                "operation": "Update",
+                                "time": "2021-02-12T22:42:39Z"
+                            },
+                            {
+                                "apiVersion": "v1",
+                                "fieldsType": "FieldsV1",
+                                "fieldsV1": {
+                                    "f:metadata": {
+                                        "f:annotations": {
+                                            ".": {},
+                                            "f:kubectl.kubernetes.io/last-applied-configuration": {}
+                                        },
+                                        "f:labels": {
+                                            ".": {},
+                                            "f:app": {},
+                                            "f:app.kubernetes.io/managed-by": {},
+                                            "f:type": {}
+                                        }
+                                    },
+                                    "f:spec": {
+                                        "f:accessModes": {},
+                                        "f:capacity": {
+                                            ".": {},
+                                            "f:storage": {}
+                                        },
+                                        "f:hostPath": {
+                                            ".": {},
+                                            "f:path": {},
+                                            "f:type": {}
+                                        },
+                                        "f:persistentVolumeReclaimPolicy": {},
+                                        "f:storageClassName": {},
+                                        "f:volumeMode": {}
+                                    }
+                                },
+                                "manager": "pulumi-resource-kubernetes.exe",
+                                "operation": "Update",
+                                "time": "2021-02-12T22:42:39Z"
+                            }
+                        ],
+                        "name": "mongo-pv-volume",
+                        "resourceVersion": "291506",
+                        "selfLink": "/api/v1/persistentvolumes/mongo-pv-volume",
+                        "uid": "e836b15b-0c62-48e9-8dcf-93a83cb7c29c"
+                    },
+                    "spec": {
+                        "accessModes": [
+                            "ReadWriteMany"
+                        ],
+                        "capacity": {
+                            "storage": "5Gi"
+                        },
+                        "hostPath": {
+                            "path": "/data/prr/mongo",
+                            "type": ""
+                        },
+                        "persistentVolumeReclaimPolicy": "Retain",
+                        "storageClassName": "manual",
+                        "volumeMode": "Filesystem"
+                    },
+                    "status": {
+                        "phase": "Available"
+                    }
+                },
+                "parent": "urn:pulumi:qa::k8s::pulumi:pulumi:Stack::k8s-qa",
+                "provider": "urn:pulumi:qa::k8s::pulumi:providers:kubernetes::default_2_7_3::ee81e6cf-2839-41ef-8263-dbf621f9fcd9",
+                "propertyDependencies": {
+                    "apiVersion": null,
+                    "kind": null,
+                    "metadata": null,
+                    "spec": null
+                }
+            },
+            {
+                "urn": "urn:pulumi:qa::k8s::kubernetes:core/v1:PersistentVolumeClaim::postgres-pv-claim",
+                "custom": true,
+                "id": "default/postgres-pv-claim",
+                "type": "kubernetes:core/v1:PersistentVolumeClaim",
+                "inputs": {
+                    "apiVersion": "v1",
+                    "kind": "PersistentVolumeClaim",
+                    "metadata": {
+                        "labels": {
+                            "app": "psql",
+                            "app.kubernetes.io/managed-by": "pulumi"
+                        },
+                        "name": "postgres-pv-claim"
+                    },
+                    "spec": {
+                        "accessModes": [
+                            "ReadWriteMany"
+                        ],
+                        "resources": {
+                            "requests": {
+                                "storage": "5Gi"
+                            }
+                        },
+                        "storageClassName": "manual"
+                    }
+                },
+                "outputs": {
+                    "__initialApiVersion": "v1",
+                    "__inputs": {
+                        "apiVersion": "v1",
+                        "kind": "PersistentVolumeClaim",
+                        "metadata": {
+                            "labels": {
+                                "app": "psql",
+                                "app.kubernetes.io/managed-by": "pulumi"
+                            },
+                            "name": "postgres-pv-claim"
+                        },
+                        "spec": {
+                            "accessModes": [
+                                "ReadWriteMany"
+                            ],
+                            "resources": {
+                                "requests": {
+                                    "storage": "5Gi"
+                                }
+                            },
+                            "storageClassName": "manual"
+                        }
+                    },
+                    "apiVersion": "v1",
+                    "kind": "PersistentVolumeClaim",
+                    "metadata": {
+                        "annotations": {
+                            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"PersistentVolumeClaim\",\"metadata\":{\"labels\":{\"app\":\"psql\",\"app.kubernetes.io/managed-by\":\"pulumi\"},\"name\":\"postgres-pv-claim\"},\"spec\":{\"accessModes\":[\"ReadWriteMany\"],\"resources\":{\"requests\":{\"storage\":\"5Gi\"}},\"storageClassName\":\"manual\"}}\n",
+                            "pv.kubernetes.io/bind-completed": "yes",
+                            "pv.kubernetes.io/bound-by-controller": "yes"
+                        },
+                        "creationTimestamp": "2021-02-12T22:42:39Z",
+                        "finalizers": [
+                            "kubernetes.io/pvc-protection"
+                        ],
+                        "labels": {
+                            "app": "psql",
+                            "app.kubernetes.io/managed-by": "pulumi"
+                        },
+                        "managedFields": [
+                            {
+                                "apiVersion": "v1",
+                                "fieldsType": "FieldsV1",
+                                "fieldsV1": {
+                                    "f:metadata": {
+                                        "f:annotations": {
+                                            "f:pv.kubernetes.io/bind-completed": {},
+                                            "f:pv.kubernetes.io/bound-by-controller": {}
+                                        }
+                                    },
+                                    "f:spec": {
+                                        "f:volumeName": {}
+                                    },
+                                    "f:status": {
+                                        "f:accessModes": {},
+                                        "f:capacity": {
+                                            ".": {},
+                                            "f:storage": {}
+                                        },
+                                        "f:phase": {}
+                                    }
+                                },
+                                "manager": "kube-controller-manager",
+                                "operation": "Update",
+                                "time": "2021-02-12T22:42:39Z"
+                            },
+                            {
+                                "apiVersion": "v1",
+                                "fieldsType": "FieldsV1",
+                                "fieldsV1": {
+                                    "f:metadata": {
+                                        "f:annotations": {
+                                            ".": {},
+                                            "f:kubectl.kubernetes.io/last-applied-configuration": {}
+                                        },
+                                        "f:labels": {
+                                            ".": {},
+                                            "f:app": {},
+                                            "f:app.kubernetes.io/managed-by": {}
+                                        }
+                                    },
+                                    "f:spec": {
+                                        "f:accessModes": {},
+                                        "f:resources": {
+                                            "f:requests": {
+                                                ".": {},
+                                                "f:storage": {}
+                                            }
+                                        },
+                                        "f:storageClassName": {},
+                                        "f:volumeMode": {}
+                                    }
+                                },
+                                "manager": "pulumi-resource-kubernetes.exe",
+                                "operation": "Update",
+                                "time": "2021-02-12T22:42:39Z"
+                            }
+                        ],
+                        "name": "postgres-pv-claim",
+                        "namespace": "default",
+                        "resourceVersion": "291524",
+                        "selfLink": "/api/v1/namespaces/default/persistentvolumeclaims/postgres-pv-claim",
+                        "uid": "65ca75ac-8eb1-4a92-b265-eda03bd6667d"
+                    },
+                    "spec": {
+                        "accessModes": [
+                            "ReadWriteMany"
+                        ],
+                        "resources": {
+                            "requests": {
+                                "storage": "5Gi"
+                            }
+                        },
+                        "storageClassName": "manual",
+                        "volumeMode": "Filesystem",
+                        "volumeName": "postgres-pv-volume"
+                    },
+                    "status": {
+                        "accessModes": [
+                            "ReadWriteMany"
+                        ],
+                        "capacity": {
+                            "storage": "5Gi"
+                        },
+                        "phase": "Bound"
+                    }
+                },
+                "parent": "urn:pulumi:qa::k8s::pulumi:pulumi:Stack::k8s-qa",
+                "provider": "urn:pulumi:qa::k8s::pulumi:providers:kubernetes::default_2_7_3::ee81e6cf-2839-41ef-8263-dbf621f9fcd9",
+                "propertyDependencies": {
+                    "apiVersion": null,
+                    "kind": null,
+                    "metadata": null,
+                    "spec": null
+                }
+            },
+            {
+                "urn": "urn:pulumi:qa::k8s::kubernetes:apps/v1:Deployment::rabbitmq",
+                "custom": true,
+                "id": "default/rabbitmq-gbrr32qi",
+                "type": "kubernetes:apps/v1:Deployment",
+                "inputs": {
+                    "apiVersion": "apps/v1",
+                    "kind": "Deployment",
+                    "metadata": {
+                        "annotations": {
+                            "pulumi.com/autonamed": "true"
+                        },
+                        "labels": {
+                            "app.kubernetes.io/managed-by": "pulumi"
+                        },
+                        "name": "rabbitmq-gbrr32qi"
+                    },
+                    "spec": {
+                        "replicas": 1,
+                        "selector": {
+                            "matchLabels": {
+                                "app": "rabbitmq"
+                            }
+                        },
+                        "template": {
+                            "metadata": {
+                                "labels": {
+                                    "app": "rabbitmq"
+                                }
+                            },
+                            "spec": {
+                                "containers": [
+                                    {
+                                        "image": "arm64v8/rabbitmq",
+                                        "imagePullPolicy": "IfNotPresent",
+                                        "name": "rabbitmq"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "outputs": {
+                    "__initialApiVersion": "apps/v1",
+                    "__inputs": {
+                        "apiVersion": "apps/v1",
+                        "kind": "Deployment",
+                        "metadata": {
+                            "annotations": {
+                                "pulumi.com/autonamed": "true"
+                            },
+                            "labels": {
+                                "app.kubernetes.io/managed-by": "pulumi"
+                            },
+                            "name": "rabbitmq-gbrr32qi"
+                        },
+                        "spec": {
+                            "replicas": 1,
+                            "selector": {
+                                "matchLabels": {
+                                    "app": "rabbitmq"
+                                }
+                            },
+                            "template": {
+                                "metadata": {
+                                    "labels": {
+                                        "app": "rabbitmq"
+                                    }
+                                },
+                                "spec": {
+                                    "containers": [
+                                        {
+                                            "image": "arm64v8/rabbitmq",
+                                            "imagePullPolicy": "IfNotPresent",
+                                            "name": "rabbitmq"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "apiVersion": "apps/v1",
+                    "kind": "Deployment",
+                    "metadata": {
+                        "annotations": {
+                            "deployment.kubernetes.io/revision": "1",
+                            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{\"pulumi.com/autonamed\":\"true\"},\"labels\":{\"app.kubernetes.io/managed-by\":\"pulumi\"},\"name\":\"rabbitmq-gbrr32qi\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"rabbitmq\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"rabbitmq\"}},\"spec\":{\"containers\":[{\"image\":\"arm64v8/rabbitmq\",\"imagePullPolicy\":\"IfNotPresent\",\"name\":\"rabbitmq\"}]}}}}\n",
+                            "pulumi.com/autonamed": "true"
+                        },
+                        "creationTimestamp": "2021-02-12T22:42:39Z",
+                        "generation": 1,
+                        "labels": {
+                            "app.kubernetes.io/managed-by": "pulumi"
+                        },
+                        "managedFields": [
+                            {
+                                "apiVersion": "apps/v1",
+                                "fieldsType": "FieldsV1",
+                                "fieldsV1": {
+                                    "f:metadata": {
+                                        "f:annotations": {
+                                            ".": {},
+                                            "f:kubectl.kubernetes.io/last-applied-configuration": {},
+                                            "f:pulumi.com/autonamed": {}
+                                        },
+                                        "f:labels": {
+                                            ".": {},
+                                            "f:app.kubernetes.io/managed-by": {}
+                                        }
+                                    },
+                                    "f:spec": {
+                                        "f:progressDeadlineSeconds": {},
+                                        "f:replicas": {},
+                                        "f:revisionHistoryLimit": {},
+                                        "f:selector": {},
+                                        "f:strategy": {
+                                            "f:rollingUpdate": {
+                                                ".": {},
+                                                "f:maxSurge": {},
+                                                "f:maxUnavailable": {}
+                                            },
+                                            "f:type": {}
+                                        },
+                                        "f:template": {
+                                            "f:metadata": {
+                                                "f:labels": {
+                                                    ".": {},
+                                                    "f:app": {}
+                                                }
+                                            },
+                                            "f:spec": {
+                                                "f:containers": {
+                                                    "k:{\"name\":\"rabbitmq\"}": {
+                                                        ".": {},
+                                                        "f:image": {},
+                                                        "f:imagePullPolicy": {},
+                                                        "f:name": {},
+                                                        "f:resources": {},
+                                                        "f:terminationMessagePath": {},
+                                                        "f:terminationMessagePolicy": {}
+                                                    }
+                                                },
+                                                "f:dnsPolicy": {},
+                                                "f:restartPolicy": {},
+                                                "f:schedulerName": {},
+                                                "f:securityContext": {},
+                                                "f:terminationGracePeriodSeconds": {}
+                                            }
+                                        }
+                                    }
+                                },
+                                "manager": "pulumi-resource-kubernetes.exe",
+                                "operation": "Update",
+                                "time": "2021-02-12T22:42:39Z"
+                            },
+                            {
+                                "apiVersion": "apps/v1",
+                                "fieldsType": "FieldsV1",
+                                "fieldsV1": {
+                                    "f:metadata": {
+                                        "f:annotations": {
+                                            "f:deployment.kubernetes.io/revision": {}
+                                        }
+                                    },
+                                    "f:status": {
+                                        "f:availableReplicas": {},
+                                        "f:conditions": {
+                                            ".": {},
+                                            "k:{\"type\":\"Available\"}": {
+                                                ".": {},
+                                                "f:lastTransitionTime": {},
+                                                "f:lastUpdateTime": {},
+                                                "f:message": {},
+                                                "f:reason": {},
+                                                "f:status": {},
+                                                "f:type": {}
+                                            },
+                                            "k:{\"type\":\"Progressing\"}": {
+                                                ".": {},
+                                                "f:lastTransitionTime": {},
+                                                "f:lastUpdateTime": {},
+                                                "f:message": {},
+                                                "f:reason": {},
+                                                "f:status": {},
+                                                "f:type": {}
+                                            }
+                                        },
+                                        "f:observedGeneration": {},
+                                        "f:readyReplicas": {},
+                                        "f:replicas": {},
+                                        "f:updatedReplicas": {}
+                                    }
+                                },
+                                "manager": "kube-controller-manager",
+                                "operation": "Update",
+                                "time": "2021-02-12T22:42:42Z"
+                            }
+                        ],
+                        "name": "rabbitmq-gbrr32qi",
+                        "namespace": "default",
+                        "resourceVersion": "291589",
+                        "selfLink": "/apis/apps/v1/namespaces/default/deployments/rabbitmq-gbrr32qi",
+                        "uid": "ecc5f0b1-2807-4642-aee7-d4d9b3aeb258"
+                    },
+                    "spec": {
+                        "progressDeadlineSeconds": 600,
+                        "replicas": 1,
+                        "revisionHistoryLimit": 10,
+                        "selector": {
+                            "matchLabels": {
+                                "app": "rabbitmq"
+                            }
+                        },
+                        "strategy": {
+                            "rollingUpdate": {
+                                "maxSurge": "25%",
+                                "maxUnavailable": "25%"
+                            },
+                            "type": "RollingUpdate"
+                        },
+                        "template": {
+                            "metadata": {
+                                "labels": {
+                                    "app": "rabbitmq"
+                                }
+                            },
+                            "spec": {
+                                "containers": [
+                                    {
+                                        "image": "arm64v8/rabbitmq",
+                                        "imagePullPolicy": "IfNotPresent",
+                                        "name": "rabbitmq",
+                                        "resources": {},
+                                        "terminationMessagePath": "/dev/termination-log",
+                                        "terminationMessagePolicy": "File"
+                                    }
+                                ],
+                                "dnsPolicy": "ClusterFirst",
+                                "restartPolicy": "Always",
+                                "schedulerName": "default-scheduler",
+                                "securityContext": {},
+                                "terminationGracePeriodSeconds": 30
+                            }
+                        }
+                    },
+                    "status": {
+                        "availableReplicas": 1,
+                        "conditions": [
+                            {
+                                "lastTransitionTime": "2021-02-12T22:42:42Z",
+                                "lastUpdateTime": "2021-02-12T22:42:42Z",
+                                "message": "Deployment has minimum availability.",
+                                "reason": "MinimumReplicasAvailable",
+                                "status": "True",
+                                "type": "Available"
+                            },
+                            {
+                                "lastTransitionTime": "2021-02-12T22:42:39Z",
+                                "lastUpdateTime": "2021-02-12T22:42:42Z",
+                                "message": "ReplicaSet \"rabbitmq-gbrr32qi-5b57646745\" has successfully progressed.",
+                                "reason": "NewReplicaSetAvailable",
+                                "status": "True",
+                                "type": "Progressing"
+                            }
+                        ],
+                        "observedGeneration": 1,
+                        "readyReplicas": 1,
+                        "replicas": 1,
+                        "updatedReplicas": 1
+                    }
+                },
+                "parent": "urn:pulumi:qa::k8s::pulumi:pulumi:Stack::k8s-qa",
+                "provider": "urn:pulumi:qa::k8s::pulumi:providers:kubernetes::default_2_7_3::ee81e6cf-2839-41ef-8263-dbf621f9fcd9",
+                "propertyDependencies": {
+                    "apiVersion": null,
+                    "kind": null,
+                    "spec": null
+                },
+                "aliases": [
+                    "urn:pulumi:qa::k8s::kubernetes:apps/v1beta1:Deployment::rabbitmq",
+                    "urn:pulumi:qa::k8s::kubernetes:apps/v1beta2:Deployment::rabbitmq",
+                    "urn:pulumi:qa::k8s::kubernetes:extensions/v1beta1:Deployment::rabbitmq"
+                ]
+            },
+            {
+                "urn": "urn:pulumi:qa::k8s::kubernetes:core/v1:PersistentVolumeClaim::mongo-pv-claim",
+                "custom": true,
+                "id": "default/mongo-pv-claim",
+                "type": "kubernetes:core/v1:PersistentVolumeClaim",
+                "inputs": {
+                    "apiVersion": "v1",
+                    "kind": "PersistentVolumeClaim",
+                    "metadata": {
+                        "labels": {
+                            "app": "mongo",
+                            "app.kubernetes.io/managed-by": "pulumi"
+                        },
+                        "name": "mongo-pv-claim"
+                    },
+                    "spec": {
+                        "accessModes": [
+                            "ReadWriteMany"
+                        ],
+                        "resources": {
+                            "requests": {
+                                "storage": "5Gi"
+                            }
+                        },
+                        "storageClassName": "manual"
+                    }
+                },
+                "outputs": {
+                    "__initialApiVersion": "v1",
+                    "__inputs": {
+                        "apiVersion": "v1",
+                        "kind": "PersistentVolumeClaim",
+                        "metadata": {
+                            "labels": {
+                                "app": "mongo",
+                                "app.kubernetes.io/managed-by": "pulumi"
+                            },
+                            "name": "mongo-pv-claim"
+                        },
+                        "spec": {
+                            "accessModes": [
+                                "ReadWriteMany"
+                            ],
+                            "resources": {
+                                "requests": {
+                                    "storage": "5Gi"
+                                }
+                            },
+                            "storageClassName": "manual"
+                        }
+                    },
+                    "apiVersion": "v1",
+                    "kind": "PersistentVolumeClaim",
+                    "metadata": {
+                        "annotations": {
+                            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"PersistentVolumeClaim\",\"metadata\":{\"labels\":{\"app\":\"mongo\",\"app.kubernetes.io/managed-by\":\"pulumi\"},\"name\":\"mongo-pv-claim\"},\"spec\":{\"accessModes\":[\"ReadWriteMany\"],\"resources\":{\"requests\":{\"storage\":\"5Gi\"}},\"storageClassName\":\"manual\"}}\n",
+                            "pv.kubernetes.io/bind-completed": "yes",
+                            "pv.kubernetes.io/bound-by-controller": "yes"
+                        },
+                        "creationTimestamp": "2021-02-12T22:42:38Z",
+                        "finalizers": [
+                            "kubernetes.io/pvc-protection"
+                        ],
+                        "labels": {
+                            "app": "mongo",
+                            "app.kubernetes.io/managed-by": "pulumi"
+                        },
+                        "managedFields": [
+                            {
+                                "apiVersion": "v1",
+                                "fieldsType": "FieldsV1",
+                                "fieldsV1": {
+                                    "f:metadata": {
+                                        "f:annotations": {
+                                            ".": {},
+                                            "f:kubectl.kubernetes.io/last-applied-configuration": {}
+                                        },
+                                        "f:labels": {
+                                            ".": {},
+                                            "f:app": {},
+                                            "f:app.kubernetes.io/managed-by": {}
+                                        }
+                                    },
+                                    "f:spec": {
+                                        "f:accessModes": {},
+                                        "f:resources": {
+                                            "f:requests": {
+                                                ".": {},
+                                                "f:storage": {}
+                                            }
+                                        },
+                                        "f:storageClassName": {},
+                                        "f:volumeMode": {}
+                                    }
+                                },
+                                "manager": "pulumi-resource-kubernetes.exe",
+                                "operation": "Update",
+                                "time": "2021-02-12T22:42:38Z"
+                            },
+                            {
+                                "apiVersion": "v1",
+                                "fieldsType": "FieldsV1",
+                                "fieldsV1": {
+                                    "f:metadata": {
+                                        "f:annotations": {
+                                            "f:pv.kubernetes.io/bind-completed": {},
+                                            "f:pv.kubernetes.io/bound-by-controller": {}
+                                        }
+                                    },
+                                    "f:spec": {
+                                        "f:volumeName": {}
+                                    },
+                                    "f:status": {
+                                        "f:accessModes": {},
+                                        "f:capacity": {
+                                            ".": {},
+                                            "f:storage": {}
+                                        },
+                                        "f:phase": {}
+                                    }
+                                },
+                                "manager": "kube-controller-manager",
+                                "operation": "Update",
+                                "time": "2021-02-12T22:42:43Z"
+                            }
+                        ],
+                        "name": "mongo-pv-claim",
+                        "namespace": "default",
+                        "resourceVersion": "291601",
+                        "selfLink": "/api/v1/namespaces/default/persistentvolumeclaims/mongo-pv-claim",
+                        "uid": "8016f917-75ba-48f4-98ee-dd2208907399"
+                    },
+                    "spec": {
+                        "accessModes": [
+                            "ReadWriteMany"
+                        ],
+                        "resources": {
+                            "requests": {
+                                "storage": "5Gi"
+                            }
+                        },
+                        "storageClassName": "manual",
+                        "volumeMode": "Filesystem",
+                        "volumeName": "mongo-pv-volume"
+                    },
+                    "status": {
+                        "accessModes": [
+                            "ReadWriteMany"
+                        ],
+                        "capacity": {
+                            "storage": "5Gi"
+                        },
+                        "phase": "Bound"
+                    }
+                },
+                "parent": "urn:pulumi:qa::k8s::pulumi:pulumi:Stack::k8s-qa",
+                "provider": "urn:pulumi:qa::k8s::pulumi:providers:kubernetes::default_2_7_3::ee81e6cf-2839-41ef-8263-dbf621f9fcd9",
+                "propertyDependencies": {
+                    "apiVersion": null,
+                    "kind": null,
+                    "metadata": null,
+                    "spec": null
+                }
+            },
+            {
+                "urn": "urn:pulumi:qa::k8s::kubernetes:apps/v1:Deployment::psql",
+                "custom": true,
+                "id": "default/psql-6bll5tnp",
+                "type": "kubernetes:apps/v1:Deployment",
+                "inputs": {
+                    "apiVersion": "apps/v1",
+                    "kind": "Deployment",
+                    "metadata": {
+                        "annotations": {
+                            "pulumi.com/autonamed": "true"
+                        },
+                        "labels": {
+                            "app.kubernetes.io/managed-by": "pulumi"
+                        },
+                        "name": "psql-6bll5tnp"
+                    },
+                    "spec": {
+                        "replicas": 1,
+                        "selector": {
+                            "matchLabels": {
+                                "app": "psql"
+                            }
+                        },
+                        "template": {
+                            "metadata": {
+                                "labels": {
+                                    "app": "psql"
+                                }
+                            },
+                            "spec": {
+                                "containers": {
+                                    "4dabf18193072939515e22adb298388d": "1b47061264138c4ac30d75fd1eb44270",
+                                    "ciphertext": "AAABANsqy92Qfuu67+np3A2rc1saKOZlfaoCVjx2L+AaUSLPIMUB0wqRD/0csHINTueo7pJOoBZH5oh7bcBxzQ04xnnwhqtNAYXlXXyeisheFG6gYoESSs82Xe2ZRGuE90AdObGcpG2f7zCnudrtoCX9E+1a9crGEEt6Rz/OTIEGU2d9V9fN8MrZFQbh6zrL/6XSYald4vjn/XOh7gVmzuj+c+JxFnkExk4fosILa3TjV1HdYmL/t/T6lGnUlP3gL+Za8OOaUu1VSKrYpQuv517M5sbFPWeS0YbGAfeQyg+Th9SqtkRboUoHsvTkHiQkiLmZxr9WJqMAOXX6PO5BMhpuACb8lGQkuXHPre+i0TxvXSTBiL+Zma9jfC+F8K5FsZbPVEgThsL8VDogjQtqJNi8We986hl4vek4Nx8iVije7Jc="
+                                },
+                                "volumes": [
+                                    {
+                                        "name": "postgresdb",
+                                        "persistentVolumeClaim": {
+                                            "claimName": "postgres-pv-claim"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "outputs": {
+                    "__initialApiVersion": "apps/v1",
+                    "__inputs": {
+                        "apiVersion": "apps/v1",
+                        "kind": "Deployment",
+                        "metadata": {
+                            "annotations": {
+                                "pulumi.com/autonamed": "true"
+                            },
+                            "labels": {
+                                "app.kubernetes.io/managed-by": "pulumi"
+                            },
+                            "name": "psql-6bll5tnp"
+                        },
+                        "spec": {
+                            "replicas": 1,
+                            "selector": {
+                                "matchLabels": {
+                                    "app": "psql"
+                                }
+                            },
+                            "template": {
+                                "metadata": {
+                                    "labels": {
+                                        "app": "psql"
+                                    }
+                                },
+                                "spec": {
+                                    "containers": {
+                                        "4dabf18193072939515e22adb298388d": "1b47061264138c4ac30d75fd1eb44270",
+                                        "ciphertext": "AAABAJLvZJbFFJZSwPVW8pjVfnib7ilikLLvPJunBeADkv+OrwWW272WyThUHybcxY23D8kNmxEkXuFkLaEskJ8s5C5msl3LQuKnMUPA4oVFjsRlz4BqR9zwGz38z5a26vigf4hRQgKD4Wi1dCmC3idTdO4u3KWuj6w1xxRy1Xl75EZFzxXjzOYqYABQ9m91EO/8WGqRQDg83VqLn0ph0vNsPA7XwMcUgn+vuoxHWqQGrhhbF9Y2mb55gUWgskn7sqapmyeuoDio+HDFIZyi3XBzmAzecioGc8nsVKyqTTW1KdDM0lSVkNFJrAtt9X2WtNG7RaBuyS/xvkgLTTC6mT1OfuIGNP1D7MtpNw/3qsA17p4lvBr8jiQkzq1mE7k6wDdTVih7PGsGpImHVL2/EIGqzkcHvOP7U+z7iPlLHgPWr34="
+                                    },
+                                    "volumes": [
+                                        {
+                                            "name": "postgresdb",
+                                            "persistentVolumeClaim": {
+                                                "claimName": "postgres-pv-claim"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "apiVersion": "apps/v1",
+                    "kind": "Deployment",
+                    "metadata": {
+                        "annotations": {
+                            "deployment.kubernetes.io/revision": "1",
+                            "kubectl.kubernetes.io/last-applied-configuration": {
+                                "4dabf18193072939515e22adb298388d": "1b47061264138c4ac30d75fd1eb44270",
+                                "ciphertext": "AAABAArWZOSz9S++plONFhZbweLId61m1Eb10RlIhKt+g4/Z/XcO026Rl8AsSvTXdNhgSvFObw+fgbamnnwCGVDL0vXszcNwGBhvAw8Pyw+fcS28soufqM2GDDPbbPwNz3iKQFT1QXMR/ye6xZzWRo5Ls2DxAPyChNrHc+/fe69y8XmjMo7KTgfYZbGS9gjZXDGgwvHiLEd8IPtXpkNuKHX54sQDJHAY9iABu3YFQDZapwxEK44GRRayFDd3yr1cM6vcyQOoZtXlEZN3pFWmzMtQdZTi3o9+Jt4PlH//laZP+5KssxIEiLuyGrqmoDYsDI9UDh2kH7FNIcxU40mdI4j22dxdCpesULgtTbm+xCiBd1cuDPhThEtziVRQZEjCMo8Kvf0mqqlp/9EInXcdvU+i2qEPVs5R1sszIqgF0wRRxi8mfrH/QpDIgwGgLJyYqoED7R9X1hzeo6OEkOL2OF9zLkoGmghICNflOD6ePQ6akNksfxUsvch6FTMgpotpLvKuWqk/wWAN+UYNnTiGfOETr9asclgqHBjpRs6wBUzvFZ57kprrZrudQDQ7lil5JdSIEOzbzu6WvNM9ON9sF/povQDuQiXBGF2wPDSc3BRiyINF054zV13FtZ/2xXsiKYqVpK6qLxFu+/ca9Qjsq8hUykI/YdAi5ooXOEhUYtbxSLVHXOf9WLPUTRWSbAErYCmAwCUgsq1kD63sMPJgYtuQtMiIHqrxGqQOTYeZUTw/RtTZ0USBOUFtcMqUXEDZ1Th3WOqByG63AFCMe932Es11czSZqc6qdMOWV4QnuWYpTOwOBj5bI6yDAn5ryidoHn3gd/Ou0tEbd0Xha9EHXzgji4aPWB7dTIA+vJhSJQMpckNc+BUTuehsjeF3Fz3+Y9Ayz2ysY6orMlAD9opHPcJ8/F7IDROOzJXzwuCGucICwWtC7uaK0rFodHjsW432OvU3j48iPucULdoV5TrUQWHVZopr7Cag8p/f8toFHbpZMBfZ8ppFKPd7teMNlY6QPUM0fTnfBoBkIKLQeSirutUYQje4J3EPFLzsC28ZBjiPHGJgZ4AJUY+8fHd2YnnbOCCx90Sr68Ogo9RcUyx4GeftnS/9saTsu4tl218="
+                            },
+                            "pulumi.com/autonamed": "true"
+                        },
+                        "creationTimestamp": "2021-02-12T22:42:41Z",
+                        "generation": 1,
+                        "labels": {
+                            "app.kubernetes.io/managed-by": "pulumi"
+                        },
+                        "managedFields": [
+                            {
+                                "apiVersion": "apps/v1",
+                                "fieldsType": "FieldsV1",
+                                "fieldsV1": {
+                                    "f:metadata": {
+                                        "f:annotations": {
+                                            ".": {},
+                                            "f:kubectl.kubernetes.io/last-applied-configuration": {},
+                                            "f:pulumi.com/autonamed": {}
+                                        },
+                                        "f:labels": {
+                                            ".": {},
+                                            "f:app.kubernetes.io/managed-by": {}
+                                        }
+                                    },
+                                    "f:spec": {
+                                        "f:progressDeadlineSeconds": {},
+                                        "f:replicas": {},
+                                        "f:revisionHistoryLimit": {},
+                                        "f:selector": {},
+                                        "f:strategy": {
+                                            "f:rollingUpdate": {
+                                                ".": {},
+                                                "f:maxSurge": {},
+                                                "f:maxUnavailable": {}
+                                            },
+                                            "f:type": {}
+                                        },
+                                        "f:template": {
+                                            "f:metadata": {
+                                                "f:labels": {
+                                                    ".": {},
+                                                    "f:app": {}
+                                                }
+                                            },
+                                            "f:spec": {
+                                                "f:containers": {
+                                                    "k:{\"name\":\"postgres\"}": {
+                                                        ".": {},
+                                                        "f:env": {
+                                                            ".": {},
+                                                            "k:{\"name\":\"POSTGRES_DB\"}": {
+                                                                ".": {},
+                                                                "f:name": {},
+                                                                "f:value": {}
+                                                            },
+                                                            "k:{\"name\":\"POSTGRES_PASSWORD\"}": {
+                                                                ".": {},
+                                                                "f:name": {},
+                                                                "f:value": {}
+                                                            },
+                                                            "k:{\"name\":\"POSTGRES_USER\"}": {
+                                                                ".": {},
+                                                                "f:name": {},
+                                                                "f:value": {}
+                                                            }
+                                                        },
+                                                        "f:image": {},
+                                                        "f:imagePullPolicy": {},
+                                                        "f:name": {},
+                                                        "f:resources": {},
+                                                        "f:terminationMessagePath": {},
+                                                        "f:terminationMessagePolicy": {},
+                                                        "f:volumeMounts": {
+                                                            ".": {},
+                                                            "k:{\"mountPath\":\"/var/lib/postgresql/data\"}": {
+                                                                ".": {},
+                                                                "f:mountPath": {},
+                                                                "f:name": {}
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "f:dnsPolicy": {},
+                                                "f:restartPolicy": {},
+                                                "f:schedulerName": {},
+                                                "f:securityContext": {},
+                                                "f:terminationGracePeriodSeconds": {},
+                                                "f:volumes": {
+                                                    ".": {},
+                                                    "k:{\"name\":\"postgresdb\"}": {
+                                                        ".": {},
+                                                        "f:name": {},
+                                                        "f:persistentVolumeClaim": {
+                                                            ".": {},
+                                                            "f:claimName": {}
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "manager": "pulumi-resource-kubernetes.exe",
+                                "operation": "Update",
+                                "time": "2021-02-12T22:42:41Z"
+                            },
+                            {
+                                "apiVersion": "apps/v1",
+                                "fieldsType": "FieldsV1",
+                                "fieldsV1": {
+                                    "f:metadata": {
+                                        "f:annotations": {
+                                            "f:deployment.kubernetes.io/revision": {}
+                                        }
+                                    },
+                                    "f:status": {
+                                        "f:availableReplicas": {},
+                                        "f:conditions": {
+                                            ".": {},
+                                            "k:{\"type\":\"Available\"}": {
+                                                ".": {},
+                                                "f:lastTransitionTime": {},
+                                                "f:lastUpdateTime": {},
+                                                "f:message": {},
+                                                "f:reason": {},
+                                                "f:status": {},
+                                                "f:type": {}
+                                            },
+                                            "k:{\"type\":\"Progressing\"}": {
+                                                ".": {},
+                                                "f:lastTransitionTime": {},
+                                                "f:lastUpdateTime": {},
+                                                "f:message": {},
+                                                "f:reason": {},
+                                                "f:status": {},
+                                                "f:type": {}
+                                            }
+                                        },
+                                        "f:observedGeneration": {},
+                                        "f:readyReplicas": {},
+                                        "f:replicas": {},
+                                        "f:updatedReplicas": {}
+                                    }
+                                },
+                                "manager": "kube-controller-manager",
+                                "operation": "Update",
+                                "time": "2021-02-12T22:42:46Z"
+                            }
+                        ],
+                        "name": "psql-6bll5tnp",
+                        "namespace": "default",
+                        "resourceVersion": "291629",
+                        "selfLink": "/apis/apps/v1/namespaces/default/deployments/psql-6bll5tnp",
+                        "uid": "82888fc7-29e5-48de-bee1-7e649046a389"
+                    },
+                    "spec": {
+                        "progressDeadlineSeconds": 600,
+                        "replicas": 1,
+                        "revisionHistoryLimit": 10,
+                        "selector": {
+                            "matchLabels": {
+                                "app": "psql"
+                            }
+                        },
+                        "strategy": {
+                            "rollingUpdate": {
+                                "maxSurge": "25%",
+                                "maxUnavailable": "25%"
+                            },
+                            "type": "RollingUpdate"
+                        },
+                        "template": {
+                            "metadata": {
+                                "labels": {
+                                    "app": "psql"
+                                }
+                            },
+                            "spec": {
+                                "containers": {
+                                    "4dabf18193072939515e22adb298388d": "1b47061264138c4ac30d75fd1eb44270",
+                                    "ciphertext": "AAABAMUHwsomHVPR6rzIpXWqkE0VD7tJRzNkwDaiQKa3DzW3YueCikqe5x6NGGjtaAngcbErGOHFF76KeOPw36wyZdHoI1gQ/qdaV3fUissSXhSEh4Kxi3Ub9YYOvvQdT03Ah5e9KyVTrAJEqDaiZxGwmmvtdxDMEySZ6wiLgolpCL0CkqS7NYBAC6d7KCSjrhhu2qhBumiXNV92WpunWFi3pqZ+lLgsXMoI/X2UZtfmYSF60lP7CNbs+sZOueVR/yjhF2zk2MqMXNBJzQbl9Yod2x5vzBWeqtt0YMyfnCAV8FabsNt+JXxcdUapxE4cfoebmTFA8gqifUyWqrg9A37CsTlSrcZWT5LVB7z+GypaJTgltZYKCk/jUeUV3EW4eNbxlxLAyD0YDFHOnIg5k5/lMDwC1oF6LWyyyzkphhqv/JoYxGYUAja+MBlE8lD8H1TIWimRblB0KJNJW0gMZb73wZDDBCTDxb4fxrWru+Pzv9n0nVx5PoDWGRAn44LWZB+fMRMncmbp0dMyb8Uji9u7gnZ2lVRCtzBwZZoiihRB7/pL"
+                                },
+                                "dnsPolicy": "ClusterFirst",
+                                "restartPolicy": "Always",
+                                "schedulerName": "default-scheduler",
+                                "securityContext": {},
+                                "terminationGracePeriodSeconds": 30,
+                                "volumes": [
+                                    {
+                                        "name": "postgresdb",
+                                        "persistentVolumeClaim": {
+                                            "claimName": "postgres-pv-claim"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "status": {
+                        "availableReplicas": 1,
+                        "conditions": [
+                            {
+                                "lastTransitionTime": "2021-02-12T22:42:46Z",
+                                "lastUpdateTime": "2021-02-12T22:42:46Z",
+                                "message": "Deployment has minimum availability.",
+                                "reason": "MinimumReplicasAvailable",
+                                "status": "True",
+                                "type": "Available"
+                            },
+                            {
+                                "lastTransitionTime": "2021-02-12T22:42:41Z",
+                                "lastUpdateTime": "2021-02-12T22:42:46Z",
+                                "message": "ReplicaSet \"psql-6bll5tnp-6c5bdff7b8\" has successfully progressed.",
+                                "reason": "NewReplicaSetAvailable",
+                                "status": "True",
+                                "type": "Progressing"
+                            }
+                        ],
+                        "observedGeneration": 1,
+                        "readyReplicas": 1,
+                        "replicas": 1,
+                        "updatedReplicas": 1
+                    }
+                },
+                "parent": "urn:pulumi:qa::k8s::pulumi:pulumi:Stack::k8s-qa",
+                "provider": "urn:pulumi:qa::k8s::pulumi:providers:kubernetes::default_2_7_3::ee81e6cf-2839-41ef-8263-dbf621f9fcd9",
+                "propertyDependencies": {
+                    "apiVersion": null,
+                    "kind": null,
+                    "spec": null
+                },
+                "aliases": [
+                    "urn:pulumi:qa::k8s::kubernetes:apps/v1beta1:Deployment::psql",
+                    "urn:pulumi:qa::k8s::kubernetes:apps/v1beta2:Deployment::psql",
+                    "urn:pulumi:qa::k8s::kubernetes:extensions/v1beta1:Deployment::psql"
+                ]
+            }
+        ],
+        "pending_operations": []
+    }
+}

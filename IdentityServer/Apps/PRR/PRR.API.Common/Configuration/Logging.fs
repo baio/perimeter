@@ -31,7 +31,7 @@ module Logging =
         services.AddLogging(fun (builder: ILoggingBuilder) -> builder.ClearProviders().AddSerilog() |> ignore)
         |> ignore
 
-        if env.Config.ServiceUrl <> null then
+        if not (System.String.IsNullOrEmpty env.Config.ServiceUrl) then
             Log.Logger <-
                 LoggerConfiguration().Enrich.FromLogContext()
                     #if !TEST 

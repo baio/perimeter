@@ -1,10 +1,10 @@
 import * as docker from '@pulumi/docker';
 import * as pulumi from '@pulumi/pulumi';
-import { Config as AdminAppConfig } from './admin-app';
-import { Config as IdpAppConfig } from './idp-app';
+import { Config as AdminAppConfig } from './app/admin-app';
+import { Config as IdpAppConfig } from './app/idp-app';
 import { ApiConfig } from './api';
-import { MongoConfig } from './mongo';
-import { PsqlConfig } from './psql';
+import { MongoConfig } from './db/mongo';
+import { PsqlConfig } from './db/psql';
 
 const pulumiConfig = new pulumi.Config();
 
@@ -21,6 +21,7 @@ const registry: docker.ImageRegistry = {
 
 //
 
+const get = (x: string) => pulumiConfig.get<string>('api_ENV_' + x);
 const rq = (x: string) => pulumiConfig.require('api_ENV_' + x);
 const rs = (x: string) => pulumiConfig.requireSecret('api_ENV_' + x);
 
@@ -55,6 +56,8 @@ const authApiConfig: ApiConfig = {
         ),
         SendGridApiKey: rq('SendGridApiKey'),
         TenantAuth__AccessTokenSecret: rs('TenantAuth__AccessTokenSecret'),
+        Logging__Seq__ServiceUrl: get('Logging__Seq__ServiceUrl'),
+        Tracing__Jaeger__AgentHost: get('Tracing__Jaeger__AgentHost'),
     },
 };
 

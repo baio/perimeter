@@ -26,20 +26,23 @@ export const createIdpApp = (
     
     const imageName = `baio/prr-app-idp:${version}`;
 
-    const extName = 'prr-app-idp-ext';
+    version = '0.30.20';    
     const appName = 'prr-app-idp';
 
     const deployment = createIdpAppDeployment(appName, imageName);
 
+    /*
+    const extName = 'prr-app-idp-ext';
     const loadBalancer = createIdpAppLoadBalancer(
         extName,
         appName,
         config.ports,
     );
+    */
 
     return {
         imageName: imageName,
         deploymentName: deployment.metadata.name,
-        loadBalancerUrn: loadBalancer.urn,
+        // loadBalancerUrn: loadBalancer.urn,
     };
 };

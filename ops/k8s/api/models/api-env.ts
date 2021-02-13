@@ -14,4 +14,6 @@ export interface ApiEnv {
     Auth__PerimeterSocialProviders__Google__SecretKey: string | Output<string>;
     SendGridApiKey: string | Output<string>;
     TenantAuth__AccessTokenSecret: string | Output<string>;
+    Logging__Seq__ServiceUrl: string | undefined;
+    Tracing__Jaeger__AgentHost: string | undefined;
 }

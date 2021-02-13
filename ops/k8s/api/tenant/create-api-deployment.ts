@@ -83,6 +83,14 @@ export const createApiDeployment = (
                                     name: 'TenantAuth__AccessTokenSecret',
                                     value: apiEnv.TenantAuth__AccessTokenSecret,
                                 },
+                                {
+                                    name: 'Logging__Seq__ServiceUrl',
+                                    value: apiEnv.Logging__Seq__ServiceUrl,
+                                },
+                                {
+                                    name: 'Tracing__Jaeger__AgentHost',
+                                    value: apiEnv.Tracing__Jaeger__AgentHost,
+                                },
                             ],
                         },
                     ],

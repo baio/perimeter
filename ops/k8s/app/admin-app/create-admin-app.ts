@@ -22,22 +22,23 @@ export const createAdminApp = (
         imageRegistry,
     );
     */
-   const imageName = `baio/prr-app-admin:${version}`;
-
-    const extName = 'prr-app-admin-ext';
+    version = '0.30.20';
+    const imageName = `baio/prr-app-admin:${version}`;
     const appName = 'prr-app-admin';
-
     const deployment = createAdminAppDeployment(appName, imageName);
 
+    /*
+    const extName = 'prr-app-admin-ext';
     const loadBalancer = createAdminAppLoadBalancer(
         extName,
         appName,
         config.ports,
     );
+    */
 
     return {
         imageName: imageName,
         deploymentName: deployment.metadata.name,
-        loadBalancerUrn: loadBalancer.urn,
+        // loadBalancerUrn: loadBalancer.urn,
     };
 };
