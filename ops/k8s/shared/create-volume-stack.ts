@@ -10,7 +10,7 @@ export const createVolumeStack = (
     appName: string,
     fullImageName: string,
     config: VolumeConfig,
-    env?: any, //pulumi.Input<k8s.types.input.core.v1.EnvVar>[],
+    envs?: any, //pulumi.Input<k8s.types.input.core.v1.EnvVar>[],
     port?: number,
 ) => {
     const volumeName = `${appName}-pv-volume`;
@@ -23,7 +23,7 @@ export const createVolumeStack = (
         requestsStorage: config.storageCapacity,
     });
 
-    const stack = createStack(appName, null, fullImageName, env, port);
+    const stack = createStack(appName, null, fullImageName, envs, port);
     return {
         ...stack,
         volumeName: volumeName,

@@ -9,6 +9,7 @@ export const createApiMongoClaim = (
     claimName: string,
     config: ClaimConfig,
 ) => {
+    console.log('222', config);
     const volume = new k8s.core.v1.PersistentVolumeClaim(claimName, {
         metadata: {
             name: claimName,

@@ -12,8 +12,10 @@ import { createStack, createVolumeStack } from './shared';
 import {
     getApiAuthEnv,
     getApiTenantEnv,
+    getMongoConfig,
     getMongoEnv,
     getPasqlEnv,
+    getPsqlConfig,
 } from './config';
 
 export const createK8sCluster = () => {
@@ -23,6 +25,7 @@ export const createK8sCluster = () => {
 
     //return nginx;
     //api
+
     const apiAuthConfig = getApiAuthEnv(config);
     const apiAuthStack = createStack(
         'api-auth',
@@ -31,6 +34,7 @@ export const createK8sCluster = () => {
         apiAuthConfig,
         { port: 80, targetPort: 5000 },
     );
+    
     const apiTenantStack = createStack(
         'api-tenant',
         '0.50.3',
@@ -38,6 +42,7 @@ export const createK8sCluster = () => {
         getApiTenantEnv(config),
         { port: 80, targetPort: 6000 },
     );
+    /*
     //app
     const appAdminStack = createStack(
         'app-admin',
@@ -45,13 +50,12 @@ export const createK8sCluster = () => {
         'baio/prr-app-admin',
     );
     const appIdpStack = createStack('app-idp', '0.30.3', 'baio/prr-app-idp');
+    */
 
     //db
+    
     const psqlConfig = getPasqlEnv(config);
-    const psqlVolumeConfig = {
-        storageCapacity: psqlConfig.storageSize,
-        hostPaths: psqlConfig.dataPath,
-    };
+    const psqlVolumeConfig = getPsqlConfig(config);
     const psqlStack = createVolumeStack(
         'psql',
         'postgres:11.4',
@@ -59,24 +63,17 @@ export const createK8sCluster = () => {
         psqlConfig,
         5432,
     );
+    
 
-    const mongoConfig = getMongoEnv(config);
-    const mongoVolumeConfig = {
-        storageCapacity: mongoConfig.storageSize,
-        hostPaths: mongoConfig.dataPath,
-    };
+    const mongoEnv = getMongoEnv(config);
+    const mongoVolumeConfig = getMongoConfig(config);
     const mongoStack = createVolumeStack(
         'mongo',
         'mongo:4.4.3',
         mongoVolumeConfig,
-        mongoConfig,
+        mongoEnv,
         27017,
     );
-
-    /*
-    const psql = createPsql(config.psql);
-    const mongo = createMongo(config.mongo);
-    */
 
     const rabbitStack = createStack(
         'rabbit',
@@ -86,6 +83,7 @@ export const createK8sCluster = () => {
         5672,
     );
 
+        /*
     const ingress = new k8s.networking.v1beta1.Ingress('prr-ingress', {
         spec: {
             rules: [
@@ -119,19 +117,24 @@ export const createK8sCluster = () => {
             ],
         },
     });
+    */
 
     // const jaeger = createJaeger();
     // const seq = createSeq();
     // prometheus is not setup since it requires add whole persistent volume / claim story to config (insane shit)
     return {
-        ingress: ingress.urn,
+        psqlStack,
         apiAuthStack,
+        apiTenantStack,
+        mongoStack,
+        /*
+        ingress: ingress.urn,        
         apiTenantStack,
         appIdpStack,
         appAdminStack,
-        psqlStack,
-        mongoStack,
+        psqlStack,        
         rabbitStack,
+        */
         // jaeger,
         // seq,
     };

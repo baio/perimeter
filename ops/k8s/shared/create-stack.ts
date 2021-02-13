@@ -7,11 +7,12 @@ export const createStack = (
     appName: string,
     version: string | null,
     imageName: string,
-    env?: any, //pulumi.Input<k8s.types.input.core.v1.EnvVar>[],
+    envs?: any, //pulumi.Input<k8s.types.input.core.v1.EnvVar>[],
     port?: number | NodePortConfig,
 ) => {
     imageName = version ? imageName + ':' + version : imageName;
-    const deployment = createDeployment(appName, imageName, env);
+    console.log('333', imageName, appName, envs)
+    const deployment = createDeployment(appName, imageName, envs);
     const nodePort = createNodePort(appName, appName, port || 80);
     return {
         imageName: imageName,
