@@ -6,7 +6,7 @@ import {
     getMongoConfig,
     getMongoEnv,
     getPasqlEnv,
-    getPsqlConfig
+    getPsqlConfig,
 } from './config';
 import { createStack, createVolumeStack } from './shared';
 
@@ -69,6 +69,8 @@ export const createK8sCluster = () => {
         27017,
     );
 
+    // bus
+
     const rabbitStack = createStack(
         'rabbit',
         null,
@@ -77,22 +79,16 @@ export const createK8sCluster = () => {
         5672,
     );
 
+    // ingress
     const ingress = new k8s.networking.v1beta1.Ingress('prr-ingress', {
         spec: {
-            rules: [
+            tls: [
                 {
-                    host: 'perimeter.pw',
-                    http: {
-                        paths: [
-                            {
-                                backend: {
-                                    serviceName: appAdminStack.nodePortName,
-                                    servicePort: 80,
-                                },
-                            },
-                        ],
-                    },
+                    hosts: ['perimeter.pw', 'oauth.perimeter.pw'],
+                    secretName: 'perimeter-secret-tls',
                 },
+            ],
+            rules: [
                 {
                     host: 'oauth.perimeter.pw',
                     http: {
@@ -106,6 +102,19 @@ export const createK8sCluster = () => {
                         ],
                     },
                 },
+                {
+                    host: 'perimeter.pw',
+                    http: {
+                        paths: [
+                            {
+                                backend: {
+                                    serviceName: appAdminStack.nodePortName,
+                                    servicePort: 80,
+                                },
+                            },
+                        ],
+                    },
+                }
             ],
         },
     });
