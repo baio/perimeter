@@ -11,7 +11,6 @@ export const createStack = (
     port?: number | NodePortConfig,
 ) => {
     imageName = version ? imageName + ':' + version : imageName;
-    console.log('333', imageName, appName, envs)
     const deployment = createDeployment(appName, imageName, envs);
     const nodePort = createNodePort(appName, appName, port || 80);
     return {

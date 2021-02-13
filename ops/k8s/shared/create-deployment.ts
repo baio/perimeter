@@ -11,8 +11,6 @@ export const createDeployment = (
 
     const labels = { app: appName };
 
-    console.log(111, appName, imageName, labels, env);
-
     const deployment = new k8s.apps.v1.Deployment(appName, {
         spec: {
             selector: { matchLabels: labels },

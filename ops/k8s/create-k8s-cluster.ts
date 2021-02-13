@@ -28,7 +28,7 @@ export const createK8sCluster = () => {
 
     const apiAuthConfig = getApiAuthEnv(config);
     const apiAuthStack = createStack(
-        'api-auth',
+        'prr-api-auth',
         '0.50.3',
         'baio/prr-api-auth',
         apiAuthConfig,
@@ -36,21 +36,21 @@ export const createK8sCluster = () => {
     );
     
     const apiTenantStack = createStack(
-        'api-tenant',
-        '0.50.3',
+        'prr-api-tenant',
+        '0.50.4',
         'baio/prr-api-tenant',
         getApiTenantEnv(config),
         { port: 80, targetPort: 6000 },
     );
-    /*
+    
     //app
     const appAdminStack = createStack(
-        'app-admin',
-        '0.30.3',
+        'prr-app-admin',
+        '0.30.20',
         'baio/prr-app-admin',
     );
-    const appIdpStack = createStack('app-idp', '0.30.3', 'baio/prr-app-idp');
-    */
+    const appIdpStack = createStack('prr-app-idp', '0.30.20', 'baio/prr-app-idp');
+    
 
     //db
     
@@ -83,7 +83,6 @@ export const createK8sCluster = () => {
         5672,
     );
 
-        /*
     const ingress = new k8s.networking.v1beta1.Ingress('prr-ingress', {
         spec: {
             rules: [
@@ -93,6 +92,7 @@ export const createK8sCluster = () => {
                         paths: [
                             {
                                 path: '/oauth',
+                                pathType: 'Prefix',
                                 backend: {
                                     serviceName: appIdpStack.nodePortName,
                                     servicePort: 80,
@@ -117,21 +117,21 @@ export const createK8sCluster = () => {
             ],
         },
     });
-    */
 
     // const jaeger = createJaeger();
     // const seq = createSeq();
     // prometheus is not setup since it requires add whole persistent volume / claim story to config (insane shit)
     return {
+        ingressUrl: ingress.urn,
         psqlStack,
         apiAuthStack,
         apiTenantStack,
         mongoStack,
+        appIdpStack,
+        appAdminStack,
         /*
         ingress: ingress.urn,        
         apiTenantStack,
-        appIdpStack,
-        appAdminStack,
         psqlStack,        
         rabbitStack,
         */
