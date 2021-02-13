@@ -37,7 +37,9 @@ module CreateCommonAppConfig =
               { ConnectionString = psqlConnectionString
                 MigrationAssembly = Some "PRR.Data.DataContextMigrations" }
           Logging =
-              { Config = { ServiceUrl = configuration.GetValue("Logging:Seq:ServiceUrl") }
+              { Config =
+                    { SeqServiceUrl = configuration.GetValue("Logging:Seq:ServiceUrl")
+                      ElasticServiceUrl = configuration.GetValue("Logging:Elastic:ServiceUrl") }
                 IgnoreApiPaths = ignoreObserveApiPaths }
           Tracing =
               { Config =

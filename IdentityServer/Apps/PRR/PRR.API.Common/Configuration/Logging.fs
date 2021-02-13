@@ -1,12 +1,16 @@
 ﻿namespace PRR.API.Common.Configuration
 
+open System
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Logging
 
 open Serilog
 open Serilog.Events
+open Serilog.Sinks.Elasticsearch
 
-type LoggingConfig = { ServiceUrl: string }
+type LoggingConfig =
+    { SeqServiceUrl: string
+      ElasticServiceUrl: string }
 
 type LoggingEnv =
     { Config: LoggingConfig
@@ -31,12 +35,28 @@ module Logging =
         services.AddLogging(fun (builder: ILoggingBuilder) -> builder.ClearProviders().AddSerilog() |> ignore)
         |> ignore
 
-        if not (System.String.IsNullOrEmpty env.Config.ServiceUrl) then
-            Log.Logger <-
+        Log.Logger <-
+            let mutable config =
                 LoggerConfiguration().Enrich.FromLogContext()
-                    #if !TEST 
-                    .WriteTo.Seq(env.Config.ServiceUrl)
-                    #else
-                    .WriteTo.Console().WriteTo.Debug()
-                    #endif
-                    .Filter.ByExcluding(filterIgnoredEndpoints env.IgnoreApiPaths).CreateLogger()
+            #if !TEST
+            let useSeq =
+                not (String.IsNullOrEmpty env.Config.SeqServiceUrl)
+
+            let useElastic =
+                not (String.IsNullOrEmpty env.Config.ElasticServiceUrl)
+
+            if useSeq
+            then config <- config.WriteTo.Seq env.Config.SeqServiceUrl
+
+            if useElastic
+            then
+                config <- config.WriteTo.Elasticsearch(ElasticsearchSinkOptions(Uri env.Config.ElasticServiceUrl))
+
+            if (not useElastic) && (not useSeq) then config <- config.WriteTo.Console()
+            #else
+
+            #endif
+            config
+                .Filter
+                .ByExcluding(filterIgnoredEndpoints env.IgnoreApiPaths)
+                .CreateLogger()
