@@ -6,6 +6,7 @@ config:
   k8s:api_ENV_Auth__Jwt__AccessTokenSecret: DrJHgte6EPcv0fN_81BGH7_k
   k8s:api_ENV_Auth__Jwt__IdTokenSecret: xxxABCD
   k8s:api_ENV_Auth__PasswordSecret: xxxABCD
+  k8s:api_ENV_ServiceBus__Host: rabbit
   k8s:api_ENV_Auth__PerimeterSocialProviders__Github__ClientId:
     secure: AAABAMVGJDwipASlZU/laugi5rnsxMho3/fZK0SiSVwlYs+bujprsleGpTuyS0LNxTfkUg==
   k8s:api_ENV_Auth__PerimeterSocialProviders__Github__SecretKey:
@@ -17,7 +18,7 @@ config:
   k8s:api_ENV_ConnectionStrings__PostgreSQL: Host=psql;Database=prr_qa;Username=postgres;Password=123;
   k8s:api_ENV_MailSender__FromEmail: Perimeter (qa)
   k8s:api_ENV_MailSender__FromName: Perimeter (qa)
-  k8s:api_ENV_MailSender__Project__BaseUrl: http://perimeter.pw
+  k8s:api_ENV_MailSender__Project__BaseUrl: http://oauth.perimeter.pw
   k8s:api_ENV_MailSender__Project__Name: Perimeter (qa)
   k8s:api_ENV_MongoKeyValueStorage__ConnectionString: mongodb://root:123@mongo?authSource=admin
   k8s:api_ENV_MongoViewStorage__ConnectionString: mongodb://root:123@mongo?authSource=admin
