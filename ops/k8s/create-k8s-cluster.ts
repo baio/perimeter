@@ -1,22 +1,14 @@
-import { ApiConfig, ApiEnv, createAuthApi, createTenantApi } from './api';
-import { AppConfig } from './app-config';
-import { createMongo } from './db/mongo';
-import { create as createJaeger } from './observability/jaeger/create';
-import { create as createSeq } from './observability/seq/create';
-import { createPsql } from './db/psql';
-import { create as createRabbit } from './bus/rabbit/create';
-import { create as createNginx } from './nginx-test/nginx-ingress';
 import * as k8s from '@pulumi/kubernetes';
 import * as pulumi from '@pulumi/pulumi';
-import { createStack, createVolumeStack } from './shared';
 import {
     getApiAuthEnv,
     getApiTenantEnv,
     getMongoConfig,
     getMongoEnv,
     getPasqlEnv,
-    getPsqlConfig,
+    getPsqlConfig
 } from './config';
+import { createStack, createVolumeStack } from './shared';
 
 export const createK8sCluster = () => {
     //const nginx = createNginx();
