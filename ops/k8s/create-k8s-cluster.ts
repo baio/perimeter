@@ -79,6 +79,15 @@ export const createK8sCluster = () => {
         5672,
     );
 
+    // observability
+    const elasticStack = createStack(
+        'elastic',
+        null,
+        'docker.elastic.co/elasticsearch/elasticsearch:7.11.0',
+        null,
+        9200,
+    );
+
     // ingress
     const ingress = new k8s.networking.v1beta1.Ingress('prr-ingress', {
         spec: {
@@ -87,21 +96,12 @@ export const createK8sCluster = () => {
                     hosts: ['perimeter.pw'],
                     secretName: 'perimeter-secret-tls',
                 },
+                {
+                    hosts: ['prr.pw'],
+                    secretName: 'prr-secret-tls',
+                },
             ],
             rules: [
-                {
-                    host: 'oauth.perimeter.pw',
-                    http: {
-                        paths: [
-                            {
-                                backend: {
-                                    serviceName: appIdpStack.nodePortName,
-                                    servicePort: 80,
-                                },
-                            },
-                        ],
-                    },
-                },
                 {
                     host: 'perimeter.pw',
                     http: {
@@ -114,7 +114,20 @@ export const createK8sCluster = () => {
                             },
                         ],
                     },
-                }
+                },
+                {
+                    host: 'prr.pw',
+                    http: {
+                        paths: [
+                            {
+                                backend: {
+                                    serviceName: appIdpStack.nodePortName,
+                                    servicePort: 80,
+                                },
+                            },
+                        ],
+                    },
+                },
             ],
         },
     });
@@ -131,6 +144,7 @@ export const createK8sCluster = () => {
         appIdpStack,
         appAdminStack,
         rabbitStack,
+        elasticStack,
         /*
         ingress: ingress.urn,        
         apiTenantStack,
