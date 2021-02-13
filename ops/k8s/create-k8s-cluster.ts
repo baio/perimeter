@@ -34,7 +34,7 @@ export const createK8sCluster = () => {
         apiAuthConfig,
         { port: 80, targetPort: 5000 },
     );
-    
+
     const apiTenantStack = createStack(
         'prr-api-tenant',
         '0.50.4',
@@ -42,18 +42,21 @@ export const createK8sCluster = () => {
         getApiTenantEnv(config),
         { port: 80, targetPort: 6000 },
     );
-    
+
     //app
     const appAdminStack = createStack(
         'prr-app-admin',
         '0.30.20',
         'baio/prr-app-admin',
     );
-    const appIdpStack = createStack('prr-app-idp', '0.30.20', 'baio/prr-app-idp');
-    
+    const appIdpStack = createStack(
+        'prr-app-idp',
+        '0.30.20',
+        'baio/prr-app-idp',
+    );
 
     //db
-    
+
     const psqlConfig = getPasqlEnv(config);
     const psqlVolumeConfig = getPsqlConfig(config);
     const psqlStack = createVolumeStack(
@@ -63,7 +66,6 @@ export const createK8sCluster = () => {
         psqlConfig,
         5432,
     );
-    
 
     const mongoEnv = getMongoEnv(config);
     const mongoVolumeConfig = getMongoConfig(config);
@@ -91,10 +93,8 @@ export const createK8sCluster = () => {
                     http: {
                         paths: [
                             {
-                                path: '/oauth',
-                                pathType: 'Prefix',
                                 backend: {
-                                    serviceName: appIdpStack.nodePortName,
+                                    serviceName: appAdminStack.nodePortName,
                                     servicePort: 80,
                                 },
                             },
@@ -102,12 +102,12 @@ export const createK8sCluster = () => {
                     },
                 },
                 {
-                    host: 'perimeter.pw',
+                    host: 'oauth.perimeter.pw',
                     http: {
                         paths: [
                             {
                                 backend: {
-                                    serviceName: appAdminStack.nodePortName,
+                                    serviceName: appIdpStack.nodePortName,
                                     servicePort: 80,
                                 },
                             },
@@ -129,6 +129,7 @@ export const createK8sCluster = () => {
         mongoStack,
         appIdpStack,
         appAdminStack,
+        rabbitStack,
         /*
         ingress: ingress.urn,        
         apiTenantStack,
