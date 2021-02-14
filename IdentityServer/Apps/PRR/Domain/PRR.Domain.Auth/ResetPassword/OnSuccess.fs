@@ -32,6 +32,7 @@ module private OnSuccess =
                 env.Logger.LogInformation("Send reset password email to ${email}", mailData.Email)
 
                 do! env.SendMail
+                        env.Logger
                         { From = "admin"
                           To = email
                           Subject = "welcome"

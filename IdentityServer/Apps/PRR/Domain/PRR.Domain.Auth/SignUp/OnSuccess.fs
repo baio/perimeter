@@ -35,6 +35,7 @@ module private OnSuccess =
                       QueryString = data.QueryString }
 
                 do! env.SendMail
+                        env.Logger
                         { From = "admin"
                           To = data.Email
                           Subject = "welcome"

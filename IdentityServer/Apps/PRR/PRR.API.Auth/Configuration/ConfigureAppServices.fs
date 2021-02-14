@@ -39,9 +39,9 @@ module ConfigureServices =
 
         printfn "Start app with config %O" config
         // common
-        configureAuthorization config.Auth.Jwt.AccessTokenSecret services
-        configureDataContext config.Common.DataContext services
         configureLogging config.Common.Logging services
+        configureAuthorization config.Auth.Jwt.AccessTokenSecret services
+        configureDataContext config.Common.DataContext services        
         configureTracing config.Common.Tracing services
         configureHealthCheck config.Common.HealthCheck services
         configureConfigProvider config services
@@ -49,6 +49,7 @@ module ConfigureServices =
 
         configureInfra config.Infra services
         configureKeyValueStorage config.KeyValueStorage services
+        
         configureSendMail config.SendGridApiKey config.MailSender services
 
         services.AddSingleton<IConfigProvider>(ConfigProvider config)

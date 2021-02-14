@@ -1,6 +1,7 @@
 ﻿namespace PRR.Domain.Auth.Common
 
 open System.Threading.Tasks
+open Microsoft.Extensions.Logging
 
 [<AutoOpen>]
 module SendMail =
@@ -25,4 +26,4 @@ module SendMail =
           Subject: string
           Template: SendMailTemplate }
 
-    type SendMail = SendMailParams -> Task<unit>
+    type SendMail = ILogger -> SendMailParams -> Task<unit>

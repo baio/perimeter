@@ -1,5 +1,6 @@
 ﻿namespace PRR.API.Auth.Infra
 
+open Microsoft.Extensions.Logging
 open PRR.API.Auth.Infra.Mail
 open PRR.Domain.Auth.Common
 
@@ -53,8 +54,9 @@ module SendMail =
                           { Email = item.Email
                             Token = item.Token } }
 
-    let createSendMail (env: MailSenderConfig) (sender: MailSender) =
+
+    let createSendMail (config: MailSenderConfig) (sender: MailSender) =
         let sendMail: SendMail =
-            fun prms -> createSendMail' env prms |> sender
+            fun logger prms -> createSendMail' config prms |> sender logger
 
         sendMail

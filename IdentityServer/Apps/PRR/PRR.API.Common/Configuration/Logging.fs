@@ -49,8 +49,7 @@ module Logging =
             then config <- config.WriteTo.Seq env.Config.SeqServiceUrl
 
             if useElastic
-            then
-                config <- config.WriteTo.Elasticsearch(ElasticsearchSinkOptions(Uri env.Config.ElasticServiceUrl))
+            then config <- config.WriteTo.Elasticsearch(ElasticsearchSinkOptions(Uri env.Config.ElasticServiceUrl))
 
             if (not useElastic) && (not useSeq) then config <- config.WriteTo.Console()
             #else
@@ -60,3 +59,4 @@ module Logging =
                 .Filter
                 .ByExcluding(filterIgnoredEndpoints env.IgnoreApiPaths)
                 .CreateLogger()
+              

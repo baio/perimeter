@@ -31,7 +31,7 @@ module SignUp =
           QueryString = null }
 
     let sendMail: SendMail =
-        fun data ->
+        fun _ data ->
             actualEmail <- Some data
 
             match data.Template with

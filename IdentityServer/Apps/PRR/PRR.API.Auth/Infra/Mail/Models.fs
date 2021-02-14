@@ -1,6 +1,7 @@
 ﻿namespace PRR.API.Auth.Infra.Mail
 
 open System.Threading.Tasks
+open Microsoft.Extensions.Logging
 open PRR.Domain.Auth.Common
 
 [<AutoOpen>]
@@ -26,7 +27,7 @@ module Models =
           Subject: string
           Html: string }
 
-    type MailSender = SendMailData -> Task<unit>
+    type MailSender = ILogger -> SendMailData -> Task<unit>
 
     type ISendMailProvider =
         abstract GetSendMail: unit -> SendMail
