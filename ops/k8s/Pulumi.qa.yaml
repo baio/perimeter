@@ -18,7 +18,7 @@ config:
   k8s:api_ENV_ConnectionStrings__PostgreSQL: Host=psql;Database=prr_qa;Username=postgres;Password=123;
   k8s:api_ENV_MailSender__FromEmail: Perimeter (qa)
   k8s:api_ENV_MailSender__FromName: Perimeter (qa)
-  k8s:api_ENV_MailSender__Project__BaseUrl: http://oauth.perimeter.pw
+  k8s:api_ENV_MailSender__Project__BaseUrl: http://prr.pw
   k8s:api_ENV_MailSender__Project__Name: Perimeter (qa)
   k8s:api_ENV_MongoKeyValueStorage__ConnectionString: mongodb://root:123@mongo?authSource=admin
   k8s:api_ENV_MongoViewStorage__ConnectionString: mongodb://root:123@mongo?authSource=admin
@@ -44,5 +44,5 @@ config:
   k8s:registryUsername: baio
   k8s:tenant_api_Port: "82"
   k8s:tenant_api_TargetPort: "6000"
-  k8s:api_ENV_Logging__Seq__ServiceUrl: NULL
-  k8s:api_ENV_Tracing__Jaeger__AgentPort: NULL
+  k8s:api_ENV_Logging__Elastic__ServiceUrl: http://elastic:9200
+  k8s:api_ENV_Tracing__Jaeger__AgentHost: jaeger

@@ -3,13 +3,31 @@ import * as k8s from '@pulumi/kubernetes';
 export interface NodePortConfig {
     port: number;
     targetPort?: number;
+    protocol?: 'TCP' | 'UDP' | 'SCTP';
+    name?: string;
 }
+
+const mapPort = (port: number | NodePortConfig): NodePortConfig =>
+    typeof port === 'number'
+        ? {
+              port,
+              name: port.toString(),
+          }
+        : { ...port, name: port.name || port.port.toString() };
+
+export type NodePort = number | number[] | NodePortConfig | NodePortConfig[];
 
 export const createNodePort = (
     name: string,
     appName: string,
-    port: number | NodePortConfig = 80,
+    port: NodePort = 80,
 ) => {
+    let ports: NodePortConfig[] = [];
+    if (Array.isArray(port)) {
+        ports = (port as any[]).map((p) => mapPort(p));
+    } else if (port) {
+        ports = [mapPort(port)];
+    }
     const volume = new k8s.core.v1.Service(name, {
         metadata: {
             name: name,
@@ -20,13 +38,7 @@ export const createNodePort = (
         },
         spec: {
             type: 'NodePort',
-            ports: [
-                typeof port === 'number'
-                    ? {
-                          port,
-                      }
-                    : port,
-            ],
+            ports,
             selector: {
                 app: appName,
             },

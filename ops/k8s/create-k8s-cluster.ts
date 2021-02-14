@@ -21,7 +21,7 @@ export const createK8sCluster = () => {
     const apiAuthConfig = getApiAuthEnv(config);
     const apiAuthStack = createStack(
         'prr-api-auth',
-        '0.50.3',
+        '0.50.5',
         'baio/prr-api-auth',
         apiAuthConfig,
         { port: 80, targetPort: 5000 },
@@ -29,7 +29,7 @@ export const createK8sCluster = () => {
 
     const apiTenantStack = createStack(
         'prr-api-tenant',
-        '0.50.4',
+        '0.50.5',
         'baio/prr-api-tenant',
         getApiTenantEnv(config),
         { port: 80, targetPort: 6000 },
@@ -38,12 +38,12 @@ export const createK8sCluster = () => {
     //app
     const appAdminStack = createStack(
         'prr-app-admin',
-        '0.30.20',
+        '0.30.28',
         'baio/prr-app-admin',
     );
     const appIdpStack = createStack(
         'prr-app-idp',
-        '0.30.20',
+        '0.30.28',
         'baio/prr-app-idp',
     );
 
@@ -71,21 +71,32 @@ export const createK8sCluster = () => {
 
     // bus
 
-    const rabbitStack = createStack(
-        'rabbit',
-        null,
-        'arm64v8/rabbitmq',
-        null,
+    const rabbitStack = createStack('rabbit', null, 'arm64v8/rabbitmq', null, [
         5672,
-    );
+        15672,
+    ]);
 
     // observability
     const elasticStack = createStack(
         'elastic',
         null,
         'docker.elastic.co/elasticsearch/elasticsearch:7.11.0',
+        {
+            'discovery.type': 'single-node',
+        },
+        [9200, 9300],
+    );
+
+    const jaegerStack = createStack(
+        'jaeger',
         null,
-        9200,
+        'thomasmatbalenaio/jaegertracing-all-in-one-arm64',
+        null,
+        [
+            { port: 6831, protocol: 'UDP' },
+            { port: 6832, protocol: 'UDP' },
+            { port: 16686, protocol: 'TCP' },
+        ],
     );
 
     // ingress
@@ -145,6 +156,7 @@ export const createK8sCluster = () => {
         appAdminStack,
         rabbitStack,
         elasticStack,
+        jaegerStack,
         /*
         ingress: ingress.urn,        
         apiTenantStack,
