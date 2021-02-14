@@ -1,12 +1,26 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
-# linux-arm64
-ARG platform=win-x64
 WORKDIR /app
 
 # context should be in solution root
 # copy everything else and build app
+COPY *.sln ./
+COPY Apps/PRR/Data/*/*.csproj ./
+RUN for file in $(ls *.csproj); do mkdir -p Apps/PRR/Data/${file%.*}/ && mv $file Apps/PRR/Data/${file%.*}/; done
+COPY Apps/PRR/Domain/*/*.fsproj ./
+RUN for file in $(ls *.fsproj); do mkdir -p Apps/PRR/Domain/${file%.*}/ && mv $file Apps/PRR/Domain/${file%.*}/; done
+COPY Apps/PRR/*/*.fsproj ./
+RUN for file in $(ls *.fsproj); do mkdir -p Apps/PRR/${file%.*}/ && mv $file Apps/PRR/${file%.*}/; done
+COPY Libs/DataAvail.ListQuery/*/*.fsproj ./
+RUN for file in $(ls *.fsproj); do mkdir -p Libs/DataAvail.ListQuery/${file%.*}/ && mv $file Libs/DataAvail.ListQuery/${file%.*}/; done
+COPY Libs/DataAvail.HttpRequest/*/*.fsproj ./
+RUN for file in $(ls *.fsproj); do mkdir -p Libs/DataAvail.HttpRequest/${file%.*}/ && mv $file Libs/DataAvail.HttpRequest/${file%.*}/; done
+COPY Libs/*/*.fsproj ./
+RUN for file in $(ls *.fsproj); do mkdir -p Libs/${file%.*}/ && mv $file Libs/${file%.*}/; done
+
+RUN dotnet restore
+
 COPY . ./
-RUN dotnet publish ./Apps/PRR/PRR.API.Auth/PRR.API.Auth.fsproj -c Release -o out -r ${platform}
+RUN dotnet publish ./Apps/PRR/PRR.API.Auth/PRR.API.Auth.fsproj -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
 WORKDIR /app

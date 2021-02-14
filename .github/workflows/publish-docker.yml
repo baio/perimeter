@@ -69,25 +69,21 @@ jobs:
                   push: true
                   tags: ${{ steps.docker_meta_app_admin.outputs.tags }}
                   labels: ${{ steps.docker_meta_app_admin.outputs.labels }}
-            # - name: Push api Auth to Docker Hub
-            #   uses: docker/build-push-action@v2
-            #   with:
-            #       context: ./IdentityServer
-            #       file: ./IdentityServer/Apps/PRR/PRR.API.Auth/dockerfile
-            #       push: true
-            #       platforms: linux/arm64
-            #       tags: ${{ steps.docker_meta_api_auth.outputs.tags }}
-            #       labels: ${{ steps.docker_meta_api_auth.outputs.labels }}
-            #       build-args: |
-            #         platform: linux-arm64
-            # - name: Push api Tenant to Docker Hub
-            #   uses: docker/build-push-action@v2
-            #   with:
-            #       context: ./IdentityServer
-            #       file: ./IdentityServer/Apps/PRR/PRR.API.Tenant/dockerfile
-            #       push: true
-            #       platforms: linux/arm64
-            #       tags: ${{ steps.docker_meta_api_tenant.outputs.tags }}
-            #       labels: ${{ steps.docker_meta_api_tenant.outputs.labels }}
-            #       build-args: |
-            #         platform: linux-arm64
+            - name: Push api Auth to Docker Hub
+              uses: docker/build-push-action@v2
+              with:
+                  context: ./IdentityServer
+                  file: ./IdentityServer/Apps/PRR/PRR.API.Auth/dockerfile
+                  push: true
+                  platforms: linux/arm64
+                  tags: ${{ steps.docker_meta_api_auth.outputs.tags }}
+                  labels: ${{ steps.docker_meta_api_auth.outputs.labels }}
+            - name: Push api Tenant to Docker Hub
+              uses: docker/build-push-action@v2
+              with:
+                  context: ./IdentityServer
+                  file: ./IdentityServer/Apps/PRR/PRR.API.Tenant/dockerfile
+                  push: true
+                  platforms: linux/arm64
+                  tags: ${{ steps.docker_meta_api_tenant.outputs.tags }}
+                  labels: ${{ steps.docker_meta_api_tenant.outputs.labels }}
