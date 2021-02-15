@@ -14,7 +14,7 @@ module CreateAppConfig =
         let common = createCommonAppConfig configuration
 
         let jwt =
-            { IdTokenSecret = configuration.GetValue<string>("Auth:Jwt:AccessTokenSecret")
+            { IdTokenSecret = configuration.GetValue<string>("Auth:Jwt:IdTokenSecret")
               AccessTokenSecret = configuration.GetValue<string>("Auth:Jwt:AccessTokenSecret")
               IdTokenExpiresIn = configuration.GetValue<int<minutes>>("Auth:Jwt:IdTokenExpiresInMinutes")
               AccessTokenExpiresIn = configuration.GetValue<int<minutes>>("Auth:Jwt:IdTokenExpiresInMinutes")
