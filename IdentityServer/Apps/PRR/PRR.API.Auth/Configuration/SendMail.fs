@@ -4,13 +4,19 @@ open FluentEmail.Core
 open Microsoft.Extensions.DependencyInjection
 open PRR.API.Auth.Infra.Mail
 open PRR.API.Auth.Infra.SendMail
-open FluentEmail.SendGrid
+// open FluentEmail.SendGrid
+open FluentEmail.Mailgun
 open FluentEmail.Handlebars
 
 [<AutoOpen>]
 module MailSender =
 
-    let configureSendMail (sendGridApiKey: string) (config: MailSenderConfig) (services: IServiceCollection) =
+    type SendMailConfig =
+        { DomainName: string
+          ApiKey: string
+          Region: string }
+
+    let configureSendMail (sendMailConfig: SendMailConfig) (config: MailSenderConfig) (services: IServiceCollection) =
 
         let sendMail =
             createSendMail config FluentMail.createSendMail
@@ -21,14 +27,24 @@ module MailSender =
         let sandboxMode = false
 #endif
 
+        let domainName = sendMailConfig.DomainName
+        let apiKey = sendMailConfig.ApiKey
+
+        let region =
+            match sendMailConfig.Region with
+            | "EU" -> MailGunRegion.EU
+            | _ -> MailGunRegion.USA
+
         services
             .AddFluentEmail(config.FromEmail)
-            .AddSendGridSender(sendGridApiKey, sandboxMode)
+            .AddMailGunSender(domainName, apiKey, region)
+            //.AddSendGridSender(sendGridApiKey, sandboxMode)
             .AddHandlebarsRenderer()
         |> ignore
 
         services.AddSingleton<ISendMailProvider>(SendMailProvider sendMail)
         |> ignore
 
-        Email.DefaultSender <- SendGridSender(sendGridApiKey, sandboxMode)
+        Email.DefaultSender <- MailgunSender(domainName, apiKey, region)
+
         Email.DefaultRenderer <- HandlebarsRenderer()

@@ -26,7 +26,7 @@ module ConfigureServices =
           Infra: InfraConfig
           KeyValueStorage: KeyValueStorageConfig
           MailSender: MailSenderConfig
-          SendGridApiKey: string }
+          SendMailConfig: SendMailConfig }
 
     type IConfigProvider =
         abstract GetConfig: (unit -> AppConfig)
@@ -41,7 +41,7 @@ module ConfigureServices =
         // common
         configureLogging config.Common.Logging services
         configureAuthorization config.Auth.Jwt.AccessTokenSecret services
-        configureDataContext config.Common.DataContext services        
+        configureDataContext config.Common.DataContext services
         configureTracing config.Common.Tracing services
         configureHealthCheck config.Common.HealthCheck services
         configureConfigProvider config services
@@ -49,8 +49,8 @@ module ConfigureServices =
 
         configureInfra config.Infra services
         configureKeyValueStorage config.KeyValueStorage services
-        
-        configureSendMail config.SendGridApiKey config.MailSender services
+
+        configureSendMail config.SendMailConfig config.MailSender services
 
         services.AddSingleton<IConfigProvider>(ConfigProvider config)
         |> ignore

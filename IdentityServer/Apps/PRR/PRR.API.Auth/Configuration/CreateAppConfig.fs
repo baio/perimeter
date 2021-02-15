@@ -59,8 +59,13 @@ module CreateAppConfig =
               DbName = configuration.GetValue("MongoKeyValueStorage:DbName")
               CollectionName = configuration.GetValue("MongoKeyValueStorage:CollectionName") }
 
+        let sendMailConfig: SendMailConfig =
+            { DomainName = configuration.GetValue("MailGun:DomainName")
+              ApiKey = configuration.GetValue("MailGun:ApiKey")
+              Region = configuration.GetValue("MailGun:Region") }
+
         { Common = common
-          SendGridApiKey = sendGridApiKey
+          SendMailConfig = sendMailConfig
           MailSender = mailSenderConfig
           KeyValueStorage = keyValueStorageConfig
           Infra = { PasswordSecret = configuration.GetValue<string>("Auth:PasswordSecret") }
