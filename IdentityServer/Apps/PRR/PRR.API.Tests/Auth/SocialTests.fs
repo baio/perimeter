@@ -163,7 +163,7 @@ module SocialTests =
                     |> sprintf "https:\/\/github\.com\/login\/oauth\/authorize\?client_id=%s"
                     |> sprintf "%s&redirect_uri=(.+)&state=(\w+)"
 
-                let expectedLocation = Regex expectedUrl
+                let expectedLocation = Regex expectedUrl               
 
                 (expectedLocation.IsMatch location)
                 |> should equal true

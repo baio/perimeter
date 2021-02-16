@@ -32,12 +32,23 @@ module Logging =
 
     let configureLogging (env: LoggingEnv) (services: IServiceCollection) =
 
-        services.AddLogging(fun (builder: ILoggingBuilder) -> builder.ClearProviders().AddSerilog() |> ignore)
+        services.AddLogging(fun (builder: ILoggingBuilder) ->
+            builder
+                .ClearProviders()
+                .AddSerilog()
+                .SetMinimumLevel(LogLevel.Debug)
+            |> ignore)
         |> ignore
 
         Log.Logger <-
             let mutable config =
-                LoggerConfiguration().Enrich.FromLogContext()
+                LoggerConfiguration()
+                    .Enrich.FromLogContext()
+                    .MinimumLevel.Debug()
+                    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                    // Filter out ASP.NET Core infrastructre logs that are Information and below
+                    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+                    .Enrich.FromLogContext()
             #if !TEST
             let useSeq =
                 not (String.IsNullOrEmpty env.Config.SeqServiceUrl)
@@ -59,4 +70,3 @@ module Logging =
                 .Filter
                 .ByExcluding(filterIgnoredEndpoints env.IgnoreApiPaths)
                 .CreateLogger()
-              

@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.Social.SocialCallback.Identities.Google
+﻿namespace PRR.Domain.Auth.Social.SocialCallback.Identities
 
 open System.Security.Claims
 open PRR.Domain.Models
@@ -11,7 +11,9 @@ open DataAvail.Http.Exceptions
 
 // https://developers.google.com/identity/protocols/oauth2/web-server
 
-module public Models =
+
+[<AutoOpen>]
+module Google =
 
     type CodeResponse =
         { access_token: string
@@ -24,65 +26,61 @@ module public Models =
           name: string
           given_name: string
           family_name: string }
+    
+    module private Helpers =
 
-module private Helpers =
+        let getCodeResponse (httpRequestFun: HttpRequestFun) clientId secret code redirectUri =
+            task {
+                let request: HttpRequest =
+                    { Uri = "https://oauth2.googleapis.com/token"
+                      Method = HttpRequestMethodPOST
+                      QueryStringParams = Seq.empty
+                      FormBody =
+                          seq {
+                              ("client_id", clientId)
+                              ("client_secret", secret)
+                              ("code", code)
+                              ("grant_type", "authorization_code")
+                              ("redirect_uri", redirectUri)
+                          }
+                      Headers =
+                          seq {
+                              ("Accept", "application/json")
+                              ("Content-Type", "application/x-www-form-urlencoded")
+                          } }
 
-    open Models
+                let! content = httpRequestFun request
 
-    let getCodeResponse (httpRequestFun: HttpRequestFun) clientId secret code redirectUri =
-        task {
-            let request: HttpRequest =
-                { Uri = "https://oauth2.googleapis.com/token"
-                  Method = HttpRequestMethodPOST
-                  QueryStringParams = Seq.empty
-                  FormBody =
-                      seq {
-                          ("client_id", clientId)
-                          ("client_secret", secret)
-                          ("code", code)
-                          ("grant_type", "authorization_code")
-                          ("redirect_uri", redirectUri)
-                      }
-                  Headers =
-                      seq {
-                          ("Accept", "application/json")
-                          ("Content-Type", "application/x-www-form-urlencoded")
-                      } }
-
-            let! content = httpRequestFun request
-
-            return JsonConvert.DeserializeObject<CodeResponse> content
-        }
+                return JsonConvert.DeserializeObject<CodeResponse> content
+            }
 
 
-    let getClaimValue (claims: Claim seq) key =
-        claims
-        |> Seq.tryFind (fun claim -> claim.Type = key)
-        |> function
-        | Some x -> x.Value
-        | None ->
-            raise
-                (key
-                 |> sprintf "Claim %s is not found"
-                 |> unexpected)
+        let getClaimValue (claims: Claim seq) key =
+            claims
+            |> Seq.tryFind (fun claim -> claim.Type = key)
+            |> function
+            | Some x -> x.Value
+            | None ->
+                raise
+                    (key
+                     |> sprintf "Claim %s is not found"
+                     |> unexpected)
 
-    let mapIdTokenToIdentity =
-        readToken
-        >> function
-        | Some token ->
-            let getClaimValue = getClaimValue token.Claims
-            let email = getClaimValue "email"
-            let name = getClaimValue "name"
-            let sub = getClaimValue "sub"
-            let socialName = socialType2Name SocialType.Google
-            SocialIdentity(Name = name, Email = email, SocialName = socialName, SocialId = sub)
-        | None -> raise (unexpected "id token is in wrong format")
-
-module internal Handler =
+        let mapIdTokenToIdentity =
+            readToken
+            >> function
+            | Some token ->
+                let getClaimValue = getClaimValue token.Claims
+                let email = getClaimValue "email"
+                let name = getClaimValue "name"
+                let sub = getClaimValue "sub"
+                let socialName = socialType2Name SocialType.Google
+                SocialIdentity(Name = name, Email = email, SocialName = socialName, SocialId = sub)
+            | None -> raise (unexpected "id token is in wrong format")
 
     open Helpers
 
-    let getSocialIdentity redirectUri httpRequestFun socialClientId socialSecretKey code =
+    let getGoogleSocialIdentity redirectUri httpRequestFun socialClientId socialSecretKey code =
         task {
             // request social access token by clientId, secret and code from callback
             let! codeResponse = getCodeResponse httpRequestFun socialClientId socialSecretKey code redirectUri

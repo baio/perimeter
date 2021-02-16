@@ -30,7 +30,7 @@ module GetAuthSocialCallback =
     let handler next ctx =
         let env = getEnv ctx
         task {
-            let data = bindQueryString ctx
+            let data = bindQueryStringFields ctx
             let sso = bindCookie "sso" ctx
             let! result = socialCallback env data sso
             // TODO : Error handler

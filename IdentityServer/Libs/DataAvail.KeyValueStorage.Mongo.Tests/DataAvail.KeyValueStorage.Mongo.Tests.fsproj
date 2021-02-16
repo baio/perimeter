@@ -11,6 +11,7 @@
         <Compile Include="SetUp.fs" />
         <Compile Include="BaseTests.fs" />
         <Compile Include="TagTests.fs" />
+        <Compile Include="CommonTests.fs" />
         <Compile Include="Program.fs" />
         <Content Include="appsettings.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -38,6 +39,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\DataAvail.KeyValueStorage.Mongo\DataAvail.KeyValueStorage.Mongo.fsproj" />
+      <ProjectReference Include="..\NamelessInteractive.FSharp.MongoDB\NamelessInteractive.FSharp.MongoDB.fsproj" />
     </ItemGroup>
 
 </Project>

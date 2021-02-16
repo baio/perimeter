@@ -49,6 +49,9 @@ module Option =
         | None ->
             raise ex    
 
+    let choose a =
+        a |> Seq.tryFind (fun a -> a |> Option.isSome)
+    
     let inline (<!>) f m = Option.map f m
      
     /// Option wrapper monoid

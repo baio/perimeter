@@ -10,7 +10,7 @@ open PRR.Data.DataContext
 module Models =
 
     [<CLIMutable>]
-    type Data = { Code: string; State: string }
+    type Data = (string * string) seq // { Code: string; State: string }
 
     // Since there is no app to manage perimeter admin data itself,
     // setup social providers for perimeter runtime through the environment configuration

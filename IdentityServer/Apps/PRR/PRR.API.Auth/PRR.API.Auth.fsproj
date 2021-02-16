@@ -116,6 +116,7 @@
       <ProjectReference Include="..\..\..\Libs\DataAvail.Giraffe.Common\DataAvail.Giraffe.Common.fsproj" />
       <ProjectReference Include="..\..\..\Libs\DataAvail.HttpRequest\DataAvail.HttpRequest.HttpFs\DataAvail.HttpRequest.HttpFs.fsproj" />
       <ProjectReference Include="..\..\..\Libs\DataAvail.KeyValueStorage.Mongo\DataAvail.KeyValueStorage.Mongo.fsproj" />
+      <ProjectReference Include="..\..\..\Libs\NamelessInteractive.FSharp.MongoDB\NamelessInteractive.FSharp.MongoDB.fsproj" />
       <ProjectReference Include="..\Data\PRR.Data.DataContextMigrations\PRR.Data.DataContextMigrations.csproj" />
       <ProjectReference Include="..\Data\PRR.Data.DataContext\PRR.Data.DataContext.csproj" />
       <ProjectReference Include="..\Domain\PRR.Domain.Auth\PRR.Domain.Auth.fsproj" />

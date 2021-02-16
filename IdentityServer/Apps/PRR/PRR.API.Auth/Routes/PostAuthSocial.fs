@@ -19,10 +19,13 @@ module PostAuthSocial =
           SocialCallbackExpiresIn = config.Auth.Social.CallbackExpiresIn
           Logger = getLogger ctx
           KeyValueStorage = getKeyValueStorage ctx
+          HttpRequestFun = getHttpRequestFun ctx
           PerimeterSocialClientIds =
               { Github = config.Auth.PerimeterSocialProviders.Github.ClientId
                 Google = config.Auth.PerimeterSocialProviders.Google.ClientId
-                Twitter = config.Auth.PerimeterSocialProviders.Twitter.ClientId } }
+                Twitter =
+                    config.Auth.PerimeterSocialProviders.Twitter.ClientId,
+                    config.Auth.PerimeterSocialProviders.Twitter.SecretKey } }
 
     let handler next ctx =
         let env = getEnv ctx

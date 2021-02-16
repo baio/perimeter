@@ -30,7 +30,8 @@ module ApplicationInfo =
         { Title = "Perimeter"
           SocialConnections =
               [ (socialType2Name SocialType.Github)
-                (socialType2Name SocialType.Google) ] }
+                (socialType2Name SocialType.Google)
+                (socialType2Name SocialType.Twitter) ] }
 
     type ApplicationInfoEnv =
         { DataContext: DbDataContext

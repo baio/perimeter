@@ -1,6 +1,7 @@
 ﻿namespace PRR.Domain.Auth.Social.SocialAuth
 
 open System.Threading.Tasks
+open DataAvail.HttpRequest.Core
 open PRR.Domain.Models
 open DataAvail.KeyValueStorage.Core.KeyValueStorage
 open Microsoft.Extensions.Logging
@@ -11,6 +12,7 @@ module Models =
 
     type internal SocialInfo =
         { ClientId: string
+          ClientSecret: string
           Attributes: string seq
           Permissions: string seq }
 
@@ -28,16 +30,17 @@ module Models =
 
     // Since there is no app to manage perimeter admin data itself,
     // setup social providers for perimeter runtime through the environment configuration
-    type PerimeterSocialClientIds =
-        { Github: string
-          Google: string
-          Twitter: string }
+    type PerimeterSocialClientKeySecrets =
+        { Github: string 
+          Google: string 
+          Twitter: string * string }
 
     type Env =
         { DataContext: DbDataContext
           HashProvider: HashProvider
           SocialCallbackUrl: string
           SocialCallbackExpiresIn: int<milliseconds>
-          PerimeterSocialClientIds: PerimeterSocialClientIds
+          PerimeterSocialClientIds: PerimeterSocialClientKeySecrets
           KeyValueStorage: IKeyValueStorage
-          Logger: ILogger }
+          Logger: ILogger
+          HttpRequestFun: HttpRequestFun }

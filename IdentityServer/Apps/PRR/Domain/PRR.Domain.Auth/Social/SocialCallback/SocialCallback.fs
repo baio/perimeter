@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.Social.SocialCallback
 
+open DataAvail.Common
 open PRR.Domain.Models
 open System.Threading.Tasks
 open FSharp.Control.Tasks.V2.ContextInsensitive
@@ -12,18 +13,23 @@ open Microsoft.Extensions.Logging
 open DataAvail.EntityFramework.Common
 open DataAvail.Http.Exceptions
 open DataAvail.Common.StringUtils
+open DataAvail.Common.Option
+open PRR.Domain.Auth.Social.SocialCallback.Identities
 
 [<AutoOpen>]
 module Social =
 
     let private getCommonSocialConnectionSecret (dataContext: DbDataContext) clientId socialType =
         let socialTypeName = socialType2Name socialType
+
         query {
             for app in dataContext.Applications do
                 join sc in dataContext.SocialConnections on (app.DomainId = sc.DomainId)
+
                 where
                     (app.ClientId = clientId
                      && sc.SocialName = socialTypeName)
+
                 select sc.ClientSecret
         }
         |> toSingleAsync
@@ -96,12 +102,51 @@ module Social =
         }
 
 
+    let getOAuth2StateAndCode (data: Data) =
+        maybe {
+            let! state = data |> Seq.tryFind (fun (a, _) -> a = "state")
+            let! code = data |> Seq.tryFind (fun (a, _) -> a = "code")
+            return (state, code)
+        }
+
+    let getOauth1aStateAndCode (data: Data) =
+        maybe {
+            let! code =
+                data
+                |> Seq.tryFind (fun (a, _) -> a = "oauth_verifier")
+
+            let! state =
+                data
+                |> Seq.tryFind (fun (a, _) -> a = "oauth_token")
+
+            return (state, code)
+        }
+
+    let getStateAndCode (data: Data) =
+        seq {
+            getOAuth2StateAndCode data
+            getOauth1aStateAndCode data
+        }
+        |> Seq.choose (id)
+        |> Seq.tryHead
+        |> Option.map (fun ((_, state), (_, code)) -> state, code)
+
     let socialCallback (env: Env) (data: Data) (ssoToken: string option) =
         let logger = env.Logger
+        logger.LogInformation("SocialCallback starts ${@data}", data)
+
+        let (state, code) =
+            match getStateAndCode data with
+            | Some (state, code) ->
+                logger.LogDebug("State and code is found ${state} ${code}", state, code)
+                state, code
+            | None ->
+                logger.LogError("State or code is not found")
+                raise (unAuthorized "State or code not found")
+
         task {
-            logger.LogInformation("SocialCallback starts ${@data}", data)
             // Get stored before social login item
-            let! item = getSocialLoginItem env data.State
+            let! item = getSocialLoginItem env state
 
             // get social connection secret
             let! secret =
@@ -111,14 +156,15 @@ module Social =
                     item.DomainClientId
                     item.Type
 
+
             let! ident =
-                getSocialIdentity
-                    env.SocialCallbackUrl
-                    item.Type
-                    env.HttpRequestFun
-                    item.SocialClientId
-                    secret
-                    data.Code
+                match item.Type with
+                | Github -> getGithubSocialIdentity env.HttpRequestFun item.SocialClientId secret code
+                | Google ->
+                    getGoogleSocialIdentity env.SocialCallbackUrl env.HttpRequestFun item.SocialClientId secret code
+                | Twitter -> getTwitterSocialIdentity env.Logger env.HttpRequestFun secret state code
+
+            logger.LogInformation("Identity ${ident} created for flow", ident)
 
             // create user and social identity (if still not created)
             let! userId = createUserAndSocialIdentity env.DataContext ident

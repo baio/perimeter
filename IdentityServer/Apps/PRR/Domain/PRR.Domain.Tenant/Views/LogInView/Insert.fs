@@ -11,5 +11,4 @@ module Insert =
     let insertLoginEvent (db: IMongoDatabase) (evt: LogIn) =
         let col =
             db.GetCollection<LogIn>(LOGIN_VIEW_COLLECTION_NAME)
-
         insertOneAsync col evt

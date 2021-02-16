@@ -24,7 +24,8 @@ module Mongo =
     let private createExpireAtIndex () =
         // https://docs.mongodb.com/manual/tutorial/expire-data/
         let expireAt =
-            FieldDefinition<DbRecord<obj>>.op_Implicit("ExpireAt")
+            FieldDefinition<DbRecord<obj>>
+                .op_Implicit("ExpireAt")
 
         let builderIndexKeys = Builders<DbRecord<obj>>.IndexKeys
 
@@ -37,10 +38,12 @@ module Mongo =
     let private createFieldPartitionIndex (fieldName, isUniq) =
 
         let keyFieldDefinition =
-            FieldDefinition<DbRecord<obj>>.op_Implicit(fieldName)
+            FieldDefinition<DbRecord<obj>>
+                .op_Implicit(fieldName)
 
         let partitionFieldDefinition =
-            FieldDefinition<DbRecord<obj>>.op_Implicit("Partition")
+            FieldDefinition<DbRecord<obj>>
+                .op_Implicit("Partition")
 
         let builderIndexKeys = Builders<DbRecord<obj>>.IndexKeys
 
@@ -88,7 +91,7 @@ module Mongo =
                 task {
                     try
                         do! collection.InsertOneAsync
-                                { Id = BsonObjectId.Empty
+                                { Id = BsonObjectId(ObjectId.GenerateNewId())
                                   Key = key
                                   Data = v
                                   Partition = partition
@@ -99,7 +102,8 @@ module Mongo =
                     with
                     | :? MongoWriteException as ex when ex.HResult = MongoKeyExistsErrorHResult ->
                         return Result.Error(AddValueError.KeyAlreadyExists)
-                    | ex -> return raise ex
+                    | ex ->
+                        return raise ex
                 }
 
             member __.GetValue<'a> key options =
@@ -110,7 +114,10 @@ module Mongo =
 
                 task {
                     try
-                        let! x = collection.Find(fun x -> x.Key = key && x.Partition = partition).FirstAsync()
+                        let! x =
+                            collection
+                                .Find(fun x -> x.Key = key && x.Partition = partition)
+                                .FirstAsync()
                         // mongo has delay before remove TTL items
                         match x.ExpireAt < DateTime.UtcNow with
                         | true -> return Result.Error(GetValueError.KeyNotFound)

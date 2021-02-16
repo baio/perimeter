@@ -73,6 +73,9 @@ let configureApp (app: IApplicationBuilder) =
 
 let configureServices (context: WebHostBuilderContext) (services: IServiceCollection) =
 
+    // Important for mongo F# serialization
+    NamelessInteractive.FSharp.MongoDB.SetUp.registerSerializationAndConventions()
+
     services.AddCors().AddGiraffe() |> ignore
 
     let appConfig =

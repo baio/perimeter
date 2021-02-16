@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Include="Helpers.fs" />
+    <Compile Include="Conventions.fs" />
+    <Compile Include="DiscriminatedUnionSerializer.fs" />
+    <Compile Include="ListSerializer.fs" />
+    <Compile Include="MapSerializer.fs" />
+    <Compile Include="SetSerializer.fs" />
+    <Compile Include="OptionSerializer.fs" />
+    <Compile Include="RecordSerializer.fs" />
+    <Compile Include="FSharpSerializationProvider.fs" />
+    <Compile Include="SetUp.fs" />
+    <Content Include="packages.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="2.11.2" />
+  </ItemGroup>
+  
+</Project>

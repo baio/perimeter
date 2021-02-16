@@ -13,6 +13,7 @@
         <Compile Include="ProjectionHelpers.fs" />
         <Compile Include="FindHelpers.fs" />
         <Compile Include="CollectionHelpers.fs" />
+        <Compile Include="NewId.fs" />
     </ItemGroup>
 
     <ItemGroup>

@@ -56,6 +56,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PRR.API.Tenant", "Apps\PRR\
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PRR.API.Common", "Apps\PRR\PRR.API.Common\PRR.API.Common.fsproj", "{E48DEF1F-9AFF-4DA9-82B3-42B5C42489E1}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "NamelessInteractive.FSharp.MongoDB", "Libs\NamelessInteractive.FSharp.MongoDB\NamelessInteractive.FSharp.MongoDB.fsproj", "{9CA5E5DE-7AD0-49C1-A6BE-387A6ABA61B5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -305,6 +307,16 @@ Global
 		{E48DEF1F-9AFF-4DA9-82B3-42B5C42489E1}.Stage|Any CPU.Build.0 = Debug|Any CPU
 		{E48DEF1F-9AFF-4DA9-82B3-42B5C42489E1}.Test|Any CPU.ActiveCfg = Test|Any CPU
 		{E48DEF1F-9AFF-4DA9-82B3-42B5C42489E1}.Test|Any CPU.Build.0 = Test|Any CPU
+		{9CA5E5DE-7AD0-49C1-A6BE-387A6ABA61B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CA5E5DE-7AD0-49C1-A6BE-387A6ABA61B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CA5E5DE-7AD0-49C1-A6BE-387A6ABA61B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CA5E5DE-7AD0-49C1-A6BE-387A6ABA61B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CA5E5DE-7AD0-49C1-A6BE-387A6ABA61B5}.Test|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CA5E5DE-7AD0-49C1-A6BE-387A6ABA61B5}.Test|Any CPU.Build.0 = Debug|Any CPU
+		{9CA5E5DE-7AD0-49C1-A6BE-387A6ABA61B5}.E2E|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CA5E5DE-7AD0-49C1-A6BE-387A6ABA61B5}.E2E|Any CPU.Build.0 = Debug|Any CPU
+		{9CA5E5DE-7AD0-49C1-A6BE-387A6ABA61B5}.Stage|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CA5E5DE-7AD0-49C1-A6BE-387A6ABA61B5}.Stage|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,6 +9,7 @@ open Microsoft.Extensions.Logging
 open DataAvail.KeyValueStorage.Core
 open DataAvail.EntityFramework.Common
 open DataAvail.Http.Exceptions
+open PRR.Domain.Auth.Social.SocialAuth.GetSocialRedirectUrl
 
 [<AutoOpen>]
 module SocialAuth =
@@ -20,30 +21,38 @@ module SocialAuth =
         query {
             for app in dataContext.Applications do
                 join sc in dataContext.SocialConnections on (app.DomainId = sc.DomainId)
+
                 where
                     (app.ClientId = clientId
                      && sc.SocialName = socialTypeName)
+
                 select
                     { ClientId = sc.ClientId
+                      ClientSecret = sc.ClientSecret
                       Attributes = sc.Attributes
                       Permissions = sc.Permissions }
         }
         |> toSingleAsync
 
-    let private getPerimeterSocialClientId (ids: PerimeterSocialClientIds) =
+    let private getPerimeterSocialClientId (ids: PerimeterSocialClientKeySecrets) =
         function
-        | Github -> ids.Github
-        | Google -> ids.Google
+        | Github -> ids.Github, null
+        | Google -> ids.Google, null
         | Twitter -> ids.Twitter
 
     let private getPerimeterSocialConnection ids =
         getPerimeterSocialClientId ids
-        >> fun id ->
+        >> fun (id, secret) ->
             ({ ClientId = id
+               ClientSecret = secret
                Attributes = []
                Permissions = [] })
 
-    let private getSocialConnectionInfo (ids: PerimeterSocialClientIds) (dataContext: DbDataContext) clientId socialType =
+    let private getSocialConnectionInfo (ids: PerimeterSocialClientKeySecrets)
+                                        (dataContext: DbDataContext)
+                                        clientId
+                                        socialType
+                                        =
         // Since there is no app to manage perimeter admin data itself,
         // setup social providers for perimeter runtime through the environment configuration
         match clientId with
@@ -55,6 +64,7 @@ module SocialAuth =
 
     let socialAuth (env: Env) (data: Data) =
         let logger = env.Logger
+
         task {
             logger.LogInformation("SocialAuth with ${@data}", { data with Code_Challenge = "***" })
             // Social name to social type
@@ -67,10 +77,25 @@ module SocialAuth =
             logger.LogInformation("${@socialInfo} found", socialInfo)
 
             // Generate token it will be used as state for social redirect url
-            let token = env.HashProvider()
 
-            let socialRedirectUrl =
-                getSocialRedirectUrl token env.SocialCallbackUrl socialInfo.ClientId socialType
+            let getCommonRedirectUrl t =
+                let token = env.HashProvider()
+                token, getCommonRedirectUrl token env.SocialCallbackUrl socialInfo.ClientId t
+
+            let! (token, socialRedirectUrl) =
+                task {
+                    match socialType with
+                    | Google -> return getCommonRedirectUrl CommonGoogle
+                    | Github -> return getCommonRedirectUrl CommonGithub
+                    | Twitter ->
+                        return!
+                            getTwitterRedirectUrl
+                                env.Logger
+                                env.HttpRequestFun
+                                env.SocialCallbackUrl
+                                socialInfo.ClientId
+                                socialInfo.ClientSecret
+                }
 
             logger.LogInformation("${socialRedirectUrl} created", socialRedirectUrl)
 
