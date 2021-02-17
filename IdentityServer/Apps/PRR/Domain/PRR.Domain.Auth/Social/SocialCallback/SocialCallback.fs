@@ -131,7 +131,7 @@ module Social =
         |> Seq.tryHead
         |> Option.map (fun ((_, state), (_, code)) -> state, code)
 
-    let socialCallback (env: Env) (data: Data) (ssoToken: string option) =
+    let socialCallback (env: Env) (data: Data) (ssoCookie) =
         let logger = env.Logger
         logger.LogInformation("SocialCallback starts ${@data}", data)
 
@@ -200,7 +200,7 @@ module Social =
                 { Id = ident.SocialId
                   Type = item.Type }
 
-            let! res = logInUser env' ssoToken loginData (Some social)
+            let! res = logInUser env' ssoCookie loginData (Some social)
 
             logger.LogInformation("loginUser success ${@res}", res)
 
@@ -213,7 +213,7 @@ module Social =
                 { RedirectUrl = redirectUrl
                   SocialLoginToken = item.Token }
 
-            logger.LogInformation("${@result} is ready", { result with SocialLoginToken = "***" })
+            logger.LogDebug("${@result} is ready", result)
 
             return result
         }
