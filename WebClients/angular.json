@@ -23,7 +23,8 @@
                         "aot": true,
                         "assets": [
                             "apps/admin/src/favicon.ico",
-                            "apps/admin/src/assets"
+                            "apps/admin/src/assets",
+                            "apps/admin/src/yandex_73b2a96d56ee6b03.html"
                         ],
                         "styles": [
                             "node_modules/quill/dist/quill.snow.css",
