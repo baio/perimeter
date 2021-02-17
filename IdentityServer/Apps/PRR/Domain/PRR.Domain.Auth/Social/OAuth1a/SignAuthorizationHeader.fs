@@ -13,7 +13,6 @@ module internal SignAuthorizationHeader =
                                 (requestUrl: string)
                                 (consumerKeyAndSecret: string * string)
                                 (parameters: (string * string) seq)
-                                (separator: string)
                                 (tokenAndSecret: (string * string) option)
                                 =
         let timestamp =
@@ -46,6 +45,8 @@ module internal SignAuthorizationHeader =
             |> Seq.map (fun (k, v) -> sprintf "%s=%s" k (WebUtility.UrlEncode v))
             |> String.concat "&"
 
+        printfn "777 %s" signatureParameterString
+        
         let signatureBaseString =
             methodName
             + "&"
@@ -84,7 +85,7 @@ module internal SignAuthorizationHeader =
         let headerParameterString =
             headerParameters
             |> Seq.map (fun (k, v) -> sprintf "%s=\"%s\"" k (WebUtility.UrlEncode v))
-            |> String.concat separator
+            |> String.concat ", " 
 
         printfn "222 %s" headerParameterString
 

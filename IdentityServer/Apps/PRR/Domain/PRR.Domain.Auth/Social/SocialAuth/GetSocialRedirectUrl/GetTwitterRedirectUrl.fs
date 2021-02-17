@@ -26,66 +26,6 @@ module GetTwitterRedirectUrl =
           oauth_token_secret: string
           oauth_callback_confirmed: bool }
 
-    let prepareAuthHeaderValue (requestString: string)
-                               (consumerKey: string)
-                               (consumerSecret: string)
-                               (callbackUrl: string)
-                               =
-        let timestamp =
-            (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)))
-                .TotalSeconds.ToString()
-
-        let nonce =
-            Convert.ToBase64String(Encoding.ASCII.GetBytes(timestamp.ToString()))
-
-        let nonce = "MTYxMzU1NDY2Ni4xNDkxMDM2"
-        let timestamp = "1613554666.1491036"
-
-        let parameterString =
-            sprintf
-                "oauth_callback=%s&oauth_consumer_key=%s&oauth_nonce=%s&oauth_signature_method=%s&oauth_timestamp=%s&oauth_version=%s"
-                (WebUtility.UrlEncode callbackUrl)
-                (WebUtility.UrlEncode consumerKey)
-                (WebUtility.UrlEncode nonce)
-                (WebUtility.UrlEncode "HMAC-SHA1")
-                (WebUtility.UrlEncode(timestamp))
-                (WebUtility.UrlEncode "1.0")
-
-        let signatureBaseString =
-            "POST&"
-            + WebUtility.UrlEncode(requestString)
-            + "&"
-            + WebUtility.UrlEncode(parameterString)
-
-        let signingKey =
-            WebUtility.UrlEncode(consumerSecret) + "&"
-
-        let signatureBaseStringBytes =
-            Encoding.ASCII.GetBytes(signatureBaseString)
-
-        let signingKeyBytes = Encoding.ASCII.GetBytes(signingKey)
-
-        let hmacSha1 = new HMACSHA1(signingKeyBytes)
-
-        let signature =
-            hmacSha1.ComputeHash signatureBaseStringBytes
-
-        let base64Signature = Convert.ToBase64String signature
-
-        let authenticationHeaderValue =
-            sprintf
-                "OAuth oauth_callback=\"%s\", oauth_consumer_key=\"%s\", oauth_nonce=\"%s\", oauth_signature_method=\"%s\", oauth_timestamp=\"%s\", oauth_signature=\"%s\", oauth_version=\"%s\""
-                (WebUtility.UrlEncode callbackUrl)
-                (WebUtility.UrlEncode consumerKey)
-                (WebUtility.UrlEncode nonce)
-                (WebUtility.UrlEncode "HMAC-SHA1")
-                (WebUtility.UrlEncode(timestamp.ToString()))
-                (WebUtility.UrlEncode base64Signature)
-                (WebUtility.UrlEncode "1.0")
-
-        authenticationHeaderValue
-
-
     let private requestToken (logger: ILogger)
                              (httpRequestFun: HttpRequestFun)
                              (callbackUrl: string)
@@ -104,14 +44,7 @@ module GetTwitterRedirectUrl =
                     uri
                     (consumerKey, consumerSecret)
                     ([ "oauth_callback", callbackUrl ])
-                    ", "
                     None
-
-            let authHeader2 =
-                prepareAuthHeaderValue uri consumerKey consumerSecret callbackUrl
-
-            printfn "111 %s" authHeader
-            printfn "222 %s" authHeader2
 
             let request: HttpRequest =
                 { Uri = uri

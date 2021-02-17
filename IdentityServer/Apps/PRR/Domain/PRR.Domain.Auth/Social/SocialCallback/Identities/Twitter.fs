@@ -86,43 +86,37 @@ module Twitter =
                                      (httpRequestFun: HttpRequestFun)
                                      consumerKey
                                      consumerSecret
-                                     token
-                                     tokenSecret
+                                     (token: string)
+                                     (tokenSecret: string)
                                      =
             task {
 
                 let uri =
                     "https://api.twitter.com/1.1/account/verify_credentials.json"
 
+                let queryParams =
+                    seq {
+                        ("include_email", "true")
+                    }
+
                 let authHeader =
                     signAuthorizationHeader
                         "GET"
                         uri
                         (consumerKey, consumerSecret)
-                        Seq.empty
-                        //("skip_status", "true")
-                        //("include_email", "true")
-                        ", "
+                        queryParams
                         (Some(token, tokenSecret))
 
                 let request: HttpRequest =
                     { Uri = uri
                       Method = HttpRequestMethodGET
-                      QueryStringParams = Seq.empty
-                      (*
-                          seq {
-                              ("oauth_consumer_key", consumerKey)
-                              ("oauth_token", token)
-                          }*)
+                      QueryStringParams = queryParams
                       FormBody = Seq.empty
                       Headers =
                           seq {
                               ("Accept", "application/json")
                               ("Authorization", authHeader)
-                          }
-                    //("skip_status", "true")
-                    //("include_email", "true")
-                    }
+                          } }
 
                 logger.LogDebug("OAuth1a verify_credentials request ${@request} is ready", request)
 
@@ -131,8 +125,6 @@ module Twitter =
                 logger.LogDebug("OAuth1a verify_credentials response ${content}", content)
 
                 return JsonConvert.DeserializeObject<VerifyCredentialsResponse> content
-            //("skip_status", "true")
-            //("include_email", "true")
             }
 
 
