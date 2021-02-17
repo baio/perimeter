@@ -11,6 +11,7 @@ open DataAvail.HttpRequest.Core
 open System
 open DataAvail.Common
 open DataAvail.Common.Option
+open PRR.Domain.Auth.Social.OAuth1a
 
 // https://developer.twitter.com/en/docs/apps/callback-urls
 // https://developer.twitter.com/en/docs/authentication/oauth-1-0a/obtaining-user-access-tokens
@@ -19,7 +20,6 @@ open DataAvail.Common.Option
 
 [<AutoOpen>]
 module GetTwitterRedirectUrl =
-
 
     type RequestTokenResponse =
         { oauth_token: string
@@ -33,11 +33,13 @@ module GetTwitterRedirectUrl =
                                =
         let timestamp =
             (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)))
-                .TotalSeconds
+                .TotalSeconds.ToString()
 
         let nonce =
             Convert.ToBase64String(Encoding.ASCII.GetBytes(timestamp.ToString()))
 
+        let nonce = "MTYxMzU1NDY2Ni4xNDkxMDM2"
+        let timestamp = "1613554666.1491036"
 
         let parameterString =
             sprintf
@@ -46,7 +48,7 @@ module GetTwitterRedirectUrl =
                 (WebUtility.UrlEncode consumerKey)
                 (WebUtility.UrlEncode nonce)
                 (WebUtility.UrlEncode "HMAC-SHA1")
-                (WebUtility.UrlEncode(timestamp.ToString()))
+                (WebUtility.UrlEncode(timestamp))
                 (WebUtility.UrlEncode "1.0")
 
         let signatureBaseString =
@@ -84,8 +86,7 @@ module GetTwitterRedirectUrl =
         authenticationHeaderValue
 
 
-    let private requestToken
-                             (logger: ILogger)
+    let private requestToken (logger: ILogger)
                              (httpRequestFun: HttpRequestFun)
                              (callbackUrl: string)
                              (consumerKey: string)
@@ -96,8 +97,22 @@ module GetTwitterRedirectUrl =
             "https://api.twitter.com/oauth/request_token"
 
         task {
+
             let authHeader =
+                signAuthorizationHeader
+                    "POST"
+                    uri
+                    consumerSecret
+                    ([ "oauth_callback", callbackUrl
+                       "oauth_consumer_key", consumerKey ])
+                    ", "
+                    None
+
+            let authHeader2 =
                 prepareAuthHeaderValue uri consumerKey consumerSecret callbackUrl
+
+            printfn "111 %s" authHeader
+            printfn "222 %s" authHeader2
 
             let request: HttpRequest =
                 { Uri = uri
@@ -111,9 +126,9 @@ module GetTwitterRedirectUrl =
                       } }
 
             logger.LogDebug("OAuth1a request_token ${@request} ready", request)
-            
+
             let! content = httpRequestFun request
-            
+
             logger.LogDebug("OAuth1a request_token response ${@content}", content)
 
             let spts =
@@ -136,22 +151,22 @@ module GetTwitterRedirectUrl =
                 logger.LogDebug("OAuth1a request_token result ${@result}", result)
                 return result
             | None ->
-                logger.LogDebug("Response from OAuth1a API has unexpected data ${@content}", content)
+                logger.LogError("Response from OAuth1a request_token API has unexpected data ${@content}", content)
                 return raise (unexpected (sprintf "Response from OAuth1a API has unexpected data %s" content))
 
         }
 
     let getTwitterRedirectUrl (logger: ILogger) (httpRequestFun: HttpRequestFun) callbackUri clientKey socialSecretKey =
         task {
-            let! tokenResponse = requestToken logger httpRequestFun callbackUri clientKey socialSecretKey            
+            let! tokenResponse = requestToken logger httpRequestFun callbackUri clientKey socialSecretKey
 
             if not tokenResponse.oauth_callback_confirmed
             then return raise (unAuthorized "oauth_callback_confirmed is false")
 
             let redirectUtl =
                 sprintf "https://api.twitter.com/oauth/authorize?oauth_token=%s" tokenResponse.oauth_token
-                
-            logger.LogDebug("OAuth1a redirectUrl ${redirectUrl} ready", redirectUtl)                
+
+            logger.LogDebug("OAuth1a redirectUrl ${redirectUrl} ready", redirectUtl)
 
             return (tokenResponse.oauth_token, redirectUtl)
         }
