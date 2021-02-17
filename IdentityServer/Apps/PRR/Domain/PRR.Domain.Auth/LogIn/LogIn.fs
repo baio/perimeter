@@ -155,6 +155,7 @@ module Authorize =
             let ssoItem =
                 match ssoEnabled, sso with
                 | (true, Some sso) ->
+                    env.Logger.LogDebug("With SSO ${sso}", sso)
                     Some
                         ({ Code = sso
                            UserId = userId
@@ -164,11 +165,13 @@ module Authorize =
                            Email = data.Email
                            Social = social }: SSOKV)
                 // TODO : Handle case SSO enabled but sso token not found
-                | _ -> None
+                | _ ->
+                    env.Logger.LogDebug("No SSO ${ssoEnabled}", ssoEnabled)
+                    None
 
             let successData = (loginItem, ssoItem)
 
-            env.Logger.LogInformation("${@successData} is ready", successData)
+            env.Logger.LogDebug("${@successData} is ready", successData)
 
             let env': OnSuccess.Env =
                 { Logger = env.Logger

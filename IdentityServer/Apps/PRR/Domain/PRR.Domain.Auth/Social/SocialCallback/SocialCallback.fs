@@ -185,7 +185,7 @@ module Social =
                   CodeChallenge = item.CodeChallenge
                   CodeChallengeMethod = item.CodeChallengeMethod }
 
-            logger.LogInformation("${@loginData} created", { loginData with CodeChallenge = "***" })
+            logger.LogDebug("${@loginData} created")
 
             let env': PRR.Domain.Auth.LogIn.Models.Env =
                 { DataContext = env.DataContext

@@ -66,7 +66,7 @@ module SocialAuth =
         let logger = env.Logger
 
         task {
-            logger.LogInformation("SocialAuth with ${@data}", { data with Code_Challenge = "***" })
+            logger.LogDebug("SocialAuth with ${@data}", data)
             // Social name to social type
             let socialType = socialName2Type data.Social_Name
 
@@ -74,7 +74,7 @@ module SocialAuth =
             let! socialInfo =
                 getSocialConnectionInfo env.PerimeterSocialClientIds env.DataContext data.Client_Id socialType
 
-            logger.LogInformation("${@socialInfo} found", socialInfo)
+            logger.LogDebug("${@socialInfo} found", socialInfo)
 
             // Generate token it will be used as state for social redirect url
 

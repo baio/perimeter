@@ -33,7 +33,7 @@ module Authorize =
     let logInSSO: LogInSSO =
         fun env ssoToken data ->
 
-            env.Logger.LogInformation("LogIn SSO with ${@data}", { data with Code_Challenge = "***" })
+            env.Logger.LogDebug("LogIn SSO with data ${@data} and token ${ssoToken}", data, ssoToken)
 
             match validateData data with
             | Some ex ->

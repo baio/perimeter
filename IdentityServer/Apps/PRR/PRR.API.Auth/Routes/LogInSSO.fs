@@ -30,7 +30,7 @@ module internal PostLogInSSO =
 
                 env.Logger.LogInformation "Redirect on success ${redirectUrlSuccess}"
 
-                return redirectUrlSuccess
+                return (true, redirectUrlSuccess)
 
             with ex ->
 
@@ -39,5 +39,5 @@ module internal PostLogInSSO =
 
                 env.Logger.LogWarning("Redirect on ${@error} to ${redirectUrlError}", ex, redirectUrlError)
 
-                return redirectUrlError
+                return (false, redirectUrlError)
         }
