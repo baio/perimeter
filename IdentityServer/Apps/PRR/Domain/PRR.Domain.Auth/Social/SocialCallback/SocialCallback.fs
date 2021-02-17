@@ -163,8 +163,8 @@ module Social =
                 | Google ->
                     getGoogleSocialIdentity env.SocialCallbackUrl env.HttpRequestFun item.SocialClientId secret code
                 | Twitter ->
-                    // Important state and code reversed 
-                    getTwitterSocialIdentity env.Logger env.HttpRequestFun secret code state 
+                    // Important state and code reversed
+                    getTwitterSocialIdentity env.Logger env.HttpRequestFun item.SocialClientId secret code state
 
             logger.LogInformation("Identity ${ident} created for flow", ident)
 

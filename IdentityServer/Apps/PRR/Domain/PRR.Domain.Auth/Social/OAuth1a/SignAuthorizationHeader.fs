@@ -9,13 +9,12 @@ module internal SignAuthorizationHeader =
 
     open System
 
-    let signAuthorizationHeader
-                                (methodName: string)
+    let signAuthorizationHeader (methodName: string)
                                 (requestUrl: string)
-                                (consumerSecret: string)
+                                (consumerKeyAndSecret: string * string)
                                 (parameters: (string * string) seq)
                                 (separator: string)
-                                (tokenSecret: string option)
+                                (tokenAndSecret: (string * string) option)
                                 =
         let timestamp =
             (DateTime.UtcNow.Subtract(DateTime(1970, 1, 1)))
@@ -24,13 +23,23 @@ module internal SignAuthorizationHeader =
         let nonce =
             Convert.ToBase64String(Encoding.ASCII.GetBytes(timestamp.ToString()))
 
-        let signatureParameters =
-            ([ ("oauth_nonce", nonce)
-               ("oauth_signature_method", "HMAC-SHA1")
-               ("oauth_timestamp", timestamp)
-               ("oauth_version", "1.0") ])
-            |> Seq.append parameters
+        let (consumerKey, consumerSecret) = consumerKeyAndSecret
 
+        let (token, tokenSecret) =
+            match tokenAndSecret with
+            | Some (f, s) -> (Some f), (Some s)
+            | None -> None, None
+
+        let signatureParameters =
+            ([ Some("oauth_consumer_key", consumerKey)
+               Some("oauth_nonce", nonce)
+               Some("oauth_signature_method", "HMAC-SHA1")
+               Some("oauth_timestamp", timestamp)
+               token
+               |> Option.map (fun token -> "oauth_token", token)
+               Some("oauth_version", "1.0") ])
+            |> Seq.choose id
+            |> Seq.append parameters
 
         let signatureParameterString =
             signatureParameters
@@ -43,8 +52,8 @@ module internal SignAuthorizationHeader =
             + WebUtility.UrlEncode(requestUrl)
             + "&"
             + WebUtility.UrlEncode(signatureParameterString)
-            
-        printfn "333 %s" signatureBaseString            
+
+        printfn "333 %s" signatureBaseString
 
         let signingKey =
             match tokenSecret with
@@ -53,8 +62,8 @@ module internal SignAuthorizationHeader =
                 WebUtility.UrlEncode(consumerSecret)
                 + "&"
                 + WebUtility.UrlEncode(tokenSecret)
-                
-        printfn "111 %s" signingKey                
+
+        printfn "111 %s" signingKey
 
         let signatureBaseStringBytes =
             Encoding.ASCII.GetBytes(signatureBaseString)
@@ -78,7 +87,7 @@ module internal SignAuthorizationHeader =
             |> String.concat separator
 
         printfn "222 %s" headerParameterString
-        
+
         let authenticationHeaderValue = sprintf "OAuth %s" headerParameterString
 
         authenticationHeaderValue

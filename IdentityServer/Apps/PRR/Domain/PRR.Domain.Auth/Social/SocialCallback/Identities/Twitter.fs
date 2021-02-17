@@ -82,7 +82,13 @@ module Twitter =
                                 (sprintf "Response from access_token OAuth1a API has unexpected data %s" content))
             }
 
-        let verifyCredentialsRequest (logger: ILogger) (httpRequestFun: HttpRequestFun) consumerKey token tokenSecret =
+        let verifyCredentialsRequest (logger: ILogger)
+                                     (httpRequestFun: HttpRequestFun)
+                                     consumerKey
+                                     consumerSecret
+                                     token
+                                     tokenSecret
+                                     =
             task {
 
                 let uri =
@@ -92,19 +98,18 @@ module Twitter =
                     signAuthorizationHeader
                         "GET"
                         uri
-                        consumerKey
-                        [ ("oauth_consumer_key", consumerKey)
-                          ("oauth_token", token) ]
+                        (consumerKey, consumerSecret)
+                        Seq.empty
                         //("skip_status", "true")
                         //("include_email", "true")
                         ", "
-                        (Some tokenSecret)
+                        (Some(token, tokenSecret))
 
                 let request: HttpRequest =
                     { Uri = uri
                       Method = HttpRequestMethodGET
                       QueryStringParams = Seq.empty
-                          (*
+                      (*
                           seq {
                               ("oauth_consumer_key", consumerKey)
                               ("oauth_token", token)
@@ -146,7 +151,7 @@ module Twitter =
 
     open Helpers
 
-    let getTwitterSocialIdentity (logger: ILogger) httpRequestFun socialClientSecret state code =
+    let getTwitterSocialIdentity (logger: ILogger) httpRequestFun socialClientKey socialClientSecret state code =
         task {
 
             let! accessTokenResponse = accessTokenRequest logger httpRequestFun socialClientSecret code state
@@ -155,6 +160,7 @@ module Twitter =
                 verifyCredentialsRequest
                     logger
                     httpRequestFun
+                    socialClientKey
                     socialClientSecret
                     accessTokenResponse.oauth_token
                     accessTokenResponse.oauth_token_secret

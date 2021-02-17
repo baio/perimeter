@@ -102,9 +102,8 @@ module GetTwitterRedirectUrl =
                 signAuthorizationHeader
                     "POST"
                     uri
-                    consumerSecret
-                    ([ "oauth_callback", callbackUrl
-                       "oauth_consumer_key", consumerKey ])
+                    (consumerKey, consumerSecret)
+                    ([ "oauth_callback", callbackUrl ])
                     ", "
                     None
 
