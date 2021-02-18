@@ -21,7 +21,7 @@ export const createK8sCluster = () => {
     const apiAuthConfig = getApiAuthEnv(config);
     const apiAuthStack = createStack(
         'prr-api-auth',
-        '0.50.7',
+        '0.50.8',
         'baio/prr-api-auth',
         apiAuthConfig,
         { port: 80, targetPort: 5000 },
@@ -38,12 +38,12 @@ export const createK8sCluster = () => {
     //app
     const appAdminStack = createStack(
         'prr-app-admin',
-        '0.30.29',
+        '0.30.30',
         'baio/prr-app-admin',
     );
     const appIdpStack = createStack(
         'prr-app-idp',
-        '0.30.29',
+        '0.30.30',
         'baio/prr-app-idp',
     );
 
