@@ -24,6 +24,15 @@ const socialConnections: SocialConnection[] = [
         attributes: null,
         permissions: null,
     },
+    {
+        id: 'twitter',
+        name: 'twitter',
+        isEnabled: false,
+        clientId: null,
+        clientSecret: null,
+        attributes: null,
+        permissions: null,
+    },
 ];
 
 @Injectable()
