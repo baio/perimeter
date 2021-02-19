@@ -14,6 +14,8 @@ module KeyValueModels =
           Email: string
           Password: string
           Token: string
+          // Case when user was registered through social provider before, just need update password on confirm
+          ExistentUserId: int option
           ExpiredAt: DateTime
           QueryString: string option }
 

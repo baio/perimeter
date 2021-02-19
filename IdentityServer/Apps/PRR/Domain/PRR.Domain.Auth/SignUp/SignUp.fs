@@ -40,20 +40,32 @@ module SignUp =
             task {
 
                 // check user with the same email not exists
-                let! sameEmailUsersCount =
+                let! userResult =
                     query {
                         for user in dataContext.Users do
                             where (user.Email = data.Email)
-                            select user.Id
+                            select (user.Id, user.Password)
                     }
-                    |> toCountAsync
+                    |> toSingleOptionAsync
 
-                if sameEmailUsersCount > 0 then
-                    let ex =
-                        Conflict(ConflictErrorField("name", UNIQUE))
+                let existentUserId =
+                    match userResult with
+                    | None -> None
+                    | Some (userId, password) ->
+                        if password <> null then
+                            let ex =
+                                Conflict(ConflictErrorField("name", UNIQUE))
 
-                    env.Logger.LogWarning("User with the same email already exists {email} {@ex}", data.Email, ex)
-                    raise ex
+                            env.Logger.LogWarning
+                                ("User with the same email already exists {email} {@ex}", data.Email, ex)
+
+                            raise ex
+                        else
+                            env.Logger.LogDebug
+                                ("User with the same email already exists {email} but password is null since it was registered from some social provider",
+                                 data.Email)
+
+                            Some userId
 
 #if E2E
                 let token = "HASH"
@@ -77,9 +89,9 @@ module SignUp =
                       Email = data.Email
                       Password = encodedPassword
                       Token = token
+                      ExistentUserId = existentUserId
                       ExpiredAt = expiresAt
                       QueryString = queryString }
-
 
                 env.Logger.LogInformation
                     ("Signup success data {@data} and expires at ${expiresAt}",

@@ -1,5 +1,7 @@
 ﻿namespace PRR.Domain.Auth.SignUpConfirm
 
+open System.Threading.Tasks
+open DataAvail.Common
 open PRR.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Models
@@ -39,20 +41,40 @@ module SignUpConfirm =
 
                 let dataContext = env.DataContext
 
-                let user =
-                    User
-                        (FirstName = item.FirstName,
-                         LastName = item.LastName,
-                         Email = item.Email,
-                         Password = item.Password)
-                    |> add' dataContext
+                let existentUserId = item.ExistentUserId
 
-                do! saveChangesAsync dataContext
+
+                let! userId =
+                    match existentUserId with
+                    | Some userId ->
+                        env.Logger.LogDebug
+                            ("UserId ${userId} is found in the stored item, just update password", userId)
+
+                        task {
+                            update dataContext (fun (user: User) -> user.Password = item.Password) (User(Id = userId))
+                            do! saveChangesAsync dataContext
+                            return userId
+                        }
+                    | None ->
+                        env.Logger.LogDebug("UserId is not found in the stored item, create new user")
+
+                        task {
+                            let user =
+                                User
+                                    (FirstName = item.FirstName,
+                                     LastName = item.LastName,
+                                     Email = item.Email,
+                                     Password = item.Password)
+                                |> add' dataContext
+
+                            do! saveChangesAsync dataContext
+                            return user.Id
+                        }
 
 
                 env.Logger.LogInformation("Signup confirm success email {@email}", item.Email)
 
-                do! env.KeyValueStorage.RemoveValuesByTag<SignUpKV> user.Email None
+                do! env.KeyValueStorage.RemoveValuesByTag<SignUpKV> item.Email None
 
-                return user.Id
+                return userId
             }
