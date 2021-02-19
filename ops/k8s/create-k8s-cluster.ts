@@ -104,8 +104,8 @@ export const createK8sCluster = () => {
         spec: {
             tls: [
                 {
-                    hosts: ['*.perimeter.pw'],
-                    secretName: 'perimeter-secret-tls',
+                    hosts: ['*.perimeter-tenant.pw'],
+                    secretName: 'perimeter-tenant-pw-tls',
                 },
                 {
                     hosts: ['*.prr.pw'],
@@ -114,7 +114,7 @@ export const createK8sCluster = () => {
             ],
             rules: [
                 {
-                    host: 'perimeter.pw',
+                    host: 'perimeter-tenant.pw',
                     http: {
                         paths: [
                             {
