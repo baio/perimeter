@@ -113,6 +113,7 @@ export class SignupPageComponent implements OnInit {
         if (!this.errorMessage) {
             this.router.navigate(['..', 'register-sent'], {
                 relativeTo: this.activatedRoute,
+                queryParamsHandling: 'preserve',
             });
         }
     }
