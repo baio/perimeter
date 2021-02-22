@@ -10,6 +10,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AppInfo, AuthDataAccessService, LoginParams } from '@idp/data-access';
 import { FormValidators, HTTP_BASE_URL_CONFIG } from '@perimeter/common';
+import { PreservedQueryParamsService } from '../services';
 
 @Component({
     selector: 'ip-login-page',
@@ -34,7 +35,8 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
         @Inject(HTTP_BASE_URL_CONFIG) private readonly baseUrl: string,
         dataAccess: AuthDataAccessService,
         private readonly activatedRoute: ActivatedRoute,
-        readonly cdr: ChangeDetectorRef
+        readonly cdr: ChangeDetectorRef,
+        readonly preservedQueryParams: PreservedQueryParamsService
     ) {
         const urlParams = this.activatedRoute.snapshot.params;
         const urlQueryParams = this.activatedRoute.snapshot.queryParams;

@@ -18,6 +18,10 @@ export class HomePageComponent implements OnInit {
         activatedRoute: ActivatedRoute
     ) {
         this.queryEvent = activatedRoute.snapshot.params['event'];
+        const autoLogin = activatedRoute.snapshot.queryParamMap['auto-login'];
+        if (autoLogin) {
+            this.onLogin();
+        }
     }
 
     ngOnInit(): void {}

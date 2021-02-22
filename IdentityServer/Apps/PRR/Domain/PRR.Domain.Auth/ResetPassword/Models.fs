@@ -19,6 +19,8 @@ module Models =
           HashProvider: HashProvider }
 
     [<CLIMutable>]
-    type Data = { Email: Email }
+    type Data =
+        { Email: Email
+          QueryString: string }
 
     type ResetPassword = Env -> Data -> Task<unit>

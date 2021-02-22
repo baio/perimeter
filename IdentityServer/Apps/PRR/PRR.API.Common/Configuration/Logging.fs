@@ -43,11 +43,10 @@ module Logging =
         Log.Logger <-
             let mutable config =
                 LoggerConfiguration()
-                    .Enrich.FromLogContext()
                     .MinimumLevel.Debug()
-                    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                    // .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                     // Filter out ASP.NET Core infrastructre logs that are Information and below
-                    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+                    // .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
                     .Enrich.FromLogContext()
             #if !TEST
             let useSeq =

@@ -143,7 +143,10 @@
         </button>
         <div nz-row class="login-form-margin">
             <div nz-col [nzSpan]="12">
-                <a routerLink="../register" preserveQueryParams>
+                <a
+                    routerLink="../register"
+                    [queryParams]="preservedQueryParams.getAuthParams()"
+                >
                     Register now!
                 </a>
             </div>
@@ -153,7 +156,7 @@
                     data-cy="forgot-password"
                     class="login-form-forgot"
                     routerLink="../forgot-password"
-                    preserveQueryParams
+                    [queryParams]="preservedQueryParams.getAuthParams()"
                     >Forgot password</a
                 >
             </div>

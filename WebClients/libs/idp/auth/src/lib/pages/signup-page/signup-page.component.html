@@ -225,7 +225,13 @@
             >
                 Register
             </button>
-            Or <a routerLink="../login" preserveQueryParams> login </a>
+            Or
+            <a
+                routerLink="../login"
+                [queryParams]="preservedQueryParams.getAuthParams()"
+            >
+                login
+            </a>
         </nz-form-control>
     </nz-form-item>
 </form>

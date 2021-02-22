@@ -22,14 +22,19 @@ module SendMail =
              | None -> "") proj.Name proj.Name
 
     let private getResetPasswordHtml (proj: ProjectConfig) (item: ResetPasswordMailData) =
+        let qs =
+            match item.QueryString with
+            | Some x -> (sprintf "&%s" x)
+            | None -> ""
+
         sprintf """
             <h2>Hello</h2>
             <p>
-                This is you <a href="%s/%s?token=%s">link</a> to reset password.
+                This is you <a href="%s/%s?token=%s%s">link</a> to reset password.
                 <br>
                 Cheers, %s.
             </p>
-        """ proj.BaseUrl proj.ResetPasswordUrl item.Token proj.Name
+        """ proj.BaseUrl proj.ResetPasswordUrl item.Token qs proj.Name
 
 
     let private createSendMail' (env: MailSenderConfig) (prms: SendMailParams) =
@@ -52,7 +57,8 @@ module SendMail =
                       getResetPasswordHtml
                           env.Project
                           { Email = item.Email
-                            Token = item.Token } }
+                            Token = item.Token
+                            QueryString = item.QueryString } }
 
 
     let createSendMail (config: MailSenderConfig) (sender: MailSender) =

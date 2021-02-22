@@ -9,6 +9,7 @@ import { FormValidators } from '@perimeter/common';
 import { AuthDataAccessService } from '@idp/data-access';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
+import { PreservedQueryParamsService } from '../services';
 
 @Component({
     selector: 'ip-forgot-password-page',
@@ -26,7 +27,8 @@ export class ForgotPasswordPageComponent implements OnInit {
         private readonly authDataAccess: AuthDataAccessService,
         private readonly cdr: ChangeDetectorRef,
         private readonly router: Router,
-        private readonly activatedRoute: ActivatedRoute
+        private readonly activatedRoute: ActivatedRoute,
+        readonly preservedQueryParams: PreservedQueryParamsService
     ) {
         this.form = fb.group({
             email: [null, [FormValidators.empty, Validators.email]],
@@ -37,7 +39,10 @@ export class ForgotPasswordPageComponent implements OnInit {
         try {
             this.isSubmitting = true;
             await this.authDataAccess
-                .resetPassword(this.form.value)
+                .resetPassword(
+                    this.form.value,
+                    this.preservedQueryParams.getAuthParamsQueryString()
+                )
                 .toPromise();
             this.errorMessage = null;
         } catch (_err) {

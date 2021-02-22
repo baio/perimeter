@@ -54,8 +54,15 @@ export class AuthDataAccessService {
         return this.http.post('auth/sign-up/confirm', { token });
     }
 
-    resetPassword(data: ResetPasswordData): Observable<any> {
-        return this.http.post('auth/reset-password', data);
+    resetPassword(
+        data: ResetPasswordData,
+        queryString: string
+    ): Observable<any> {
+        const payload = {
+            ...data,
+            queryString,
+        };
+        return this.http.post('auth/reset-password', payload);
     }
 
     resetPasswordConfirm(data: ResetPasswordConfirmData): Observable<any> {

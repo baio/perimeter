@@ -11,32 +11,34 @@ open DataAvail.Http.Exceptions
 [<AutoOpen>]
 module private OnSuccess =
 
-    let onSuccess (env: Env) =
-        fun email token expiredIn ->
-            task {
-                let options =
-                    { addValueDefaultOptions with
-                          Tag = email
-                          ExpiresAt = (Some expiredIn) }
+    let onSuccess (env: Env) email queryString token expiredIn =
+        task {
+            let options =
+                { addValueDefaultOptions with
+                      Tag = email
+                      ExpiresAt = (Some expiredIn) }
 
-                let! result = env.KeyValueStorage.AddValue<ResetPasswordKV> token { Email = email } (Some options)
+            let! result = env.KeyValueStorage.AddValue<ResetPasswordKV> token { Email = email } (Some options)
 
-                match result with
-                | Result.Error AddValueError.KeyAlreadyExists ->
-                    env.Logger.LogError("${token} already exists in storage", token)
-                    return raise (Unexpected')
-                | _ -> ()
+            match result with
+            | Result.Error AddValueError.KeyAlreadyExists ->
+                env.Logger.LogError("${token} already exists in storage", token)
+                return raise (Unexpected')
+            | _ -> ()
 
-                let mailData = { Email = email; Token = token }
+            let mailData =
+                { Email = email
+                  Token = token
+                  QueryString = None }
 
-                env.Logger.LogInformation("Send reset password email to ${email}", mailData.Email)
+            env.Logger.LogInformation("Send reset password email to ${email}", mailData.Email)
 
-                do! env.SendMail
-                        env.Logger
-                        { From = "admin"
-                          To = email
-                          Subject = "welcome"
-                          Template = ResetPasswordMail mailData }
+            do! env.SendMail
+                    env.Logger
+                    { From = "admin"
+                      To = email
+                      Subject = "welcome"
+                      Template = ResetPasswordMail mailData }
 
-                return ()
-            }
+            return ()
+        }

@@ -7,6 +7,8 @@ open PRR.Domain.Auth.ResetPassword.Models
 open Microsoft.Extensions.Logging
 open System
 open DataAvail.EntityFramework.Common
+open DataAvail.Common
+open DataAvail.Common.Option
 
 [<AutoOpen>]
 module ResetPassword =
@@ -14,6 +16,7 @@ module ResetPassword =
     let resetPassword: ResetPassword =
         fun env data ->
             env.Logger.LogInformation("Reset password ${@data}", data)
+
             task {
                 let! cnt =
                     query {
@@ -36,5 +39,11 @@ module ResetPassword =
 #endif
                     env.Logger.LogInformation
                         ("On success for email ${email} token expires at ${@expiredAt}", data.Email, expiredAt)
-                    do! onSuccess env data.Email token expiredAt
+
+                    let queryString =
+                        data.QueryString
+                        |> ofNullable
+                        |> Option.map (trimStart "?")
+
+                    do! onSuccess env data.Email queryString token expiredAt
             }

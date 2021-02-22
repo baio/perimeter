@@ -17,6 +17,7 @@ import {
     Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PreservedQueryParamsService } from '../services';
 
 @Component({
     selector: 'ip-signup-page',
@@ -37,7 +38,8 @@ export class SignupPageComponent implements OnInit {
         private readonly authDataAccess: AuthDataAccessService,
         private readonly cdr: ChangeDetectorRef,
         private readonly router: Router,
-        private readonly activatedRoute: ActivatedRoute
+        private readonly activatedRoute: ActivatedRoute,
+        readonly preservedQueryParams: PreservedQueryParamsService
     ) {
         this.form = this.fb.group({
             email: [null, [Validators.email, FormValidators.empty]],
@@ -92,7 +94,10 @@ export class SignupPageComponent implements OnInit {
         try {
             this.isSubmitting = true;
             await this.authDataAccess
-                .signUp(this.form.value, this.qs)
+                .signUp(
+                    this.form.value,
+                    this.preservedQueryParams.getAuthParamsQueryString()
+                )
                 .toPromise();
             this.errorMessage = null;
         } catch (_err) {

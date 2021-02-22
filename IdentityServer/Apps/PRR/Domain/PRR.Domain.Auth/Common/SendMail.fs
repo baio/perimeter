@@ -13,7 +13,10 @@ module SendMail =
           Token: string
           QueryString: string option }
 
-    type ResetPasswordMailData = { Email: string; Token: string }
+    type ResetPasswordMailData =
+        { Email: string
+          Token: string
+          QueryString: string option }
 
 
     type SendMailTemplate =

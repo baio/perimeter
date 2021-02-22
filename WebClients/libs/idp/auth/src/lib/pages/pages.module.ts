@@ -17,6 +17,7 @@ import { ForgotPasswordResetPageComponent } from './forgot-password-reset-page/f
 import { ForgotPasswordSentPageComponent } from './forgot-password-sent-page/forgot-password-sent-page.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { PageHeaderComponent } from './page-header/page-header.component';
+import { PreservedQueryParamsService } from './services';
 import { SignupConfirmPageComponent } from './signup-confirm-page/signup-confirm-page.component';
 import { SignupConfirmSentPageComponent } from './signup-confirm-sent-page/signup-confirm-sent-page.component';
 import { SignupPageComponent } from './signup-page/signup-page.component';
@@ -58,5 +59,6 @@ import { SignupPageComponent } from './signup-page/signup-page.component';
         ForgotPasswordSentPageComponent,
         ForgotPasswordResetPageComponent,
     ],
+    providers: [PreservedQueryParamsService],
 })
 export class IPPagesModule {}
