@@ -11,27 +11,36 @@ const REDIRECT_PATH = '/';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomePageComponent implements OnInit {
-    queryEvent: string;
+    message: string;
 
     constructor(
         private readonly authService: AuthService,
         activatedRoute: ActivatedRoute
     ) {
-        this.queryEvent = activatedRoute.snapshot.params['event'];
-        const autoLogin = activatedRoute.snapshot.queryParamMap['auto-login'];
-        if (autoLogin) {
-            this.onLogin();
+        const queryEvent = activatedRoute.snapshot.queryParamMap.get('event');
+
+        // TODO : Any request with event query will be dispatched to idp
+        switch (queryEvent) {
+            case 'reset-password-success':
+                this.message = 'Password reset! You can login now.';
+            case 'sign-up-confirm-success':
+                this.message = 'Email confirmed! You can login now.';
+        }
+
+        if (queryEvent) {
+            this.onLogin(queryEvent);
         }
     }
 
     ngOnInit(): void {}
 
-    async onLogin() {
+    async onLogin(queryEvent?: string) {
         const loginUrl = await this.authService.createLoginUrl({
             useSSO: true,
             redirectPath: REDIRECT_PATH,
         });
-        window.location.href = loginUrl;
+        // Simple delegate handling of `event` query string to the idp
+        window.location.href = loginUrl + (queryEvent ? '&event=' + queryEvent : '');
     }
 
     async onSignUp() {

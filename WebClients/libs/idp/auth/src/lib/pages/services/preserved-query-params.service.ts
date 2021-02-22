@@ -50,13 +50,4 @@ export class PreservedQueryParamsService {
         }, {});
         return res;
     }
-
-    /*
-    getAuthParamsQueryString() {
-        const authParams = this.getAuthParams();
-        return Object.keys(authParams)
-            .map((k) => `${k}=${encodeURIComponent(authParams[k])}`)
-            .join('&');
-    }
-    */
 }

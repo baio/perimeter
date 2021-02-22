@@ -82,7 +82,9 @@ export class ProfileEffects {
             this.actions$.pipe(
                 ofType(authenticationFails, profileLoadFails),
                 tap(() => {
-                    this.router.navigate(['/home']);
+                    this.router.navigate(['/home'], {
+                        queryParamsHandling: 'preserve',
+                    });
                 })
             ),
         { dispatch: false }

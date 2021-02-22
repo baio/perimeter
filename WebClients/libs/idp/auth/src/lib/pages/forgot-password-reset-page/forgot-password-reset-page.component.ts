@@ -102,7 +102,8 @@ export class ForgotPasswordResetPageComponent implements OnInit {
             this.cdr.markForCheck();
         }
         if (!this.errorMessage) {
-            window.location.href = this.redirectUri + '?reset-password-success';
+            window.location.href =
+                this.redirectUri + '?event=reset-password-success';
 
             /*
             this.router.navigate(
