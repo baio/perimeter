@@ -1,15 +1,11 @@
 config:
-  k8s:Auth__Jwt__AccessTokenSecret:
-    secure: AAABAKrewPUh1zDvTZhwRLeYqG+MzNS7iX94YoLvS0LRA4/C5exXv6ePWWq83BMUdmFFBL6T
+  k8s:Auth__Jwt__AccessTokenSecret: kkkkkkkkkkkkkkk
   k8s:adminApp_Port: "70"
   k8s:adminApp_TargetPort: "80"
   k8s:api_ENV_ASPNETCORE_ENVIRONMENT: LOCAL-K8S
-  k8s:api_ENV_Auth__Jwt__AccessTokenSecret:
-    secure: AAABAMYgGhzoHq2N6Bwimt1gr2EeWW/qZF666vryctA+yLNZkrplhau909nSiYrZpsb2RttA
-  k8s:api_ENV_Auth__Jwt__IdTokenSecret:
-    secure: AAABANfBn33w2HZTuJ5E7iN4XnZlMCbyU9bEg2wnJ0WLOK0=
-  k8s:api_ENV_Auth__PasswordSecret:
-    secure: AAABAIykcl9PF/CP0Khur6PtsYlWFmNhj0/62+aHA6uxNCm9DlQgQxsbSt2XBPd/4ktxTh8=
+  k8s:api_ENV_Auth__Jwt__AccessTokenSecret: aaaaaaaaaa
+  k8s:api_ENV_Auth__Jwt__IdTokenSecret: bbbbbbbbbbb
+  k8s:api_ENV_Auth__PasswordSecret: ccccccccccccccccccc
   k8s:api_ENV_Auth__PerimeterSocialProviders__Github__ClientId:
     secure: AAABAIKNyn7zoQY0y/OPleirIMI7QdQq6Uwl/bDouC5CVw02J38OFnMSB4t+HSKTRjBvMw==
   k8s:api_ENV_Auth__PerimeterSocialProviders__Github__SecretKey:
@@ -18,43 +14,37 @@ config:
     secure: AAABALoD41myQXS273b+TGfLMXeaE1Zz+BSbBg5tayaI+eqnCMly9IEZtwlI0TFxhyBKL0OTykkXqlq9zgsR6zKhR9ePlu2nYPGUQr0j6ky9nq5EGvRoRdpLoSOcNcmHvrYTYwxJ0H8=
   k8s:api_ENV_Auth__PerimeterSocialProviders__Google__SecretKey:
     secure: AAABAK9A4aUZ3jXLqGLdDoYFJc1+mqJ4GPXcXQ13P8smHTL6FToQ9LQ9FmeYe703/6xctZSz6Zo=
-  k8s:api_ENV_ConnectionStrings__MongoJournal:
-    secure: AAABAGRb0oGQY8i6fm6d2ODXPu+CD/NnYDEezKSM+vkVgeP1S+4JiX30u/Lt9XfduF2yqif5iUKU4i0VYgDA4TiaNgSLZSD/n1mwOdvAjK7IfI1zhtIgVVY=
-  k8s:api_ENV_ConnectionStrings__MongoSnapshot:
-    secure: AAABAIkSLf6JlqpnGIl2gFnGZQo8dCEQ3hVlshUhVggheQtR8yYuSGPrU/LKEY9vTm+c/U1j06L7TxkUxJ0+qrYp0yRnWKjIlmcX3omMo7kRvnuaniIJbPiu
-  k8s:api_ENV_ConnectionStrings__MongoViews:
-    secure: AAABABY7yrcgX5A0owieU64tn7a9IUVSPK1L3C8164kP0qSK7m/zChPLTrmRz62kun6gsDULFaBjmdVocm7uCbmgrk3raeP7a6aEeQ+EqA/rbvfQbpQw
-  k8s:api_ENV_ConnectionStrings__PostgreSQL:
-    secure: AAABAOudSklUw/84buENhDs2nFNsWD15wE0q2l4LGm3OxLdXn4ZFvV9mjm9f9DJQCa/rhSxcTHQ9ttjDAJyvisP9g0IfIrayrLYYsteC43Bng58camU1nxlM
-  k8s:api_ENV_MailSender__FromEmail: Perimeter (stage)
-  k8s:api_ENV_MailSender__FromName: Perimeter (stage)
-  k8s:api_ENV_MailSender__Project__BaseUrl: https://perimeter.azurefd.net
+  k8s:api_ENV_Auth__PerimeterSocialProviders__Twitter__ClientId: 67KuSYwPHVTL6UwV7MLLPBrEB
+  k8s:api_ENV_Auth__PerimeterSocialProviders__Twitter__SecretKey: rf8iVsl0F3hGVIGpwdcsHMyNH5lxLYHv7LhC7FCEF1wnbwwLJP
+  k8s:api_ENV_Auth__Social__CallbackExpiresInMilliseconds: 300000
+  k8s:api_ENV_Auth__Social__CallbackUrl: https://prr.pw/api/auth/social/callback
+  k8s:api_ENV_ConnectionStrings__PostgreSQL:  Host=psql;Database=prr_qa;Username=postgres;Password=123;
+  k8s:api_ENV_Logging__Elastic__ServiceUrl: ""
+  k8s:api_ENV_Tracing__Jaeger__AgentHost: ""
+  k8s:api_ENV_MailGun__ApiKey: 8aafb733c50135fe6bac243ebfc2a252-4de08e90-8da900ea
+  k8s:api_ENV_MailGun__DomainName: www.perimeter.pw
+  k8s:api_ENV_MailGun__Region: EU
+  k8s:api_ENV_MailSender__FromEmail: Perimeter (local)
+  k8s:api_ENV_MailSender__FromName: Perimeter (local)
+  k8s:api_ENV_MailSender__Project__BaseUrl: http://perimeter-local:9801
   k8s:api_ENV_MailSender__Project__Name: Perimeter (stage)
-  k8s:api_ENV_MongoKeyValueStorage__ConnectionString:
-    secure: AAABAEKOVv0INpnFpo0KiFEhVinl3zZLdW/55i090BesUnLnhe0eBPDorPJQwD9rQESVVMfELKTIDEzYPNW1ATR5KT2ftncqOw==
-  k8s:api_ENV_MongoViewStorage__ConnectionString:
-    secure: AAABAFCRHIoquD2NwOyg4IfgaEnfor/iBYHBhbrlEo0wAf4eRGMo+II1/YwmwUe8UVwC3kdHCuj36iBcsUGwI1YLhi1/p0EEYw==
-  k8s:api_ENV_SendGridApiKey:
-    secure: AAABAHVBV4jdHYEVFX5Gqsi9iSr/lIIHH4DvLqKPutGuLC/pr50H5seMc728CpfmaORmCiwYI/Ib0b0YohUX0XSLcNlwP/9NP4lruPLQ4kqz0DjDV5bncdKjcWChF1pN8P1T2Fw=
-  k8s:api_ENV_TenantAuth__AccessTokenSecret:
-    secure: AAABACbrDw6m010F8yK1XkFPZYjYCV6NOZhvgKlHdAbg1Id7R6TDvzR+aJ691u9AQS7cEzCuu3I=
+  k8s:api_ENV_MongoKeyValueStorage__ConnectionString: mongodb://root:123@mongo?authSource=admin
+  k8s:api_ENV_MongoViewStorage__ConnectionString: mongodb://root:123@mongo?authSource=admin
+  k8s:api_ENV_ServiceBus__Host: rabbit
+  k8s:api_ENV_TenantAuth__AccessTokenSecret: zzzzzzzzzzzzzzzzzzz
   k8s:auth_api_Port: "81"
   k8s:auth_api_TargetPort: "5000"
   k8s:idpApp_Port: "80"
   k8s:idpApp_TargetPort: "80"
-  k8s:mongo_MONGODB_ROOT_PASSWORD:
-    secure: AAABAKq66ryt8oG7cfW/MDft2lvL6nLzSJ7lmYdOcPi2nmM=
+  k8s:mongo_MONGODB_ROOT_PASSWORD: "123"
   k8s:mongo_MONGODB_ROOT_USER: root
   k8s:mongo_dataPath: /C/dev/data/prr/mongo
   k8s:mongo_storageSize: "1"
   k8s:psql_POSTGRES_DB: prr-dev
-  k8s:psql_POSTGRES_PASSWORD:
-    secure: AAABAGfmv5Eat4mbH4l7g/NTTydJd7oWEtRCaTTpTpjkgIM=
+  k8s:psql_POSTGRES_PASSWORD: "123"
   k8s:psql_POSTGRES_USER: postgres
   k8s:psql_dataPath: /C/dev/data/prr/psql
   k8s:psql_storageSize: "1"
-  k8s:registryPassword:
-    secure: AAABAEPa888sKixalz/NSAXF0Zn6GzUoKsI0TNFP+yEq2mtQJN/CiKfr
   k8s:registryServer: docker.io
   k8s:registryUsername: baio
   k8s:tenant_api_Port: "82"

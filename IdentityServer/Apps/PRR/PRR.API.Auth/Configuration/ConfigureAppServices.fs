@@ -42,11 +42,10 @@ module ConfigureServices =
         configureLogging config.Common.Logging services
         configureAuthorization config.Auth.Jwt.AccessTokenSecret services
         configureDataContext config.Common.DataContext services
-        configureTracing config.Common.Tracing services
-        configureHealthCheck config.Common.HealthCheck services
+        configureTracing config.Common.Tracing services        
         configureConfigProvider config services
-        configureServiceBus config.Common.ServiceBus [] services
-
+        configureHealthCheck config.Common.HealthCheck services
+        configureServiceBus config.Common.ServiceBus [] services        
         configureInfra config.Infra services
         configureKeyValueStorage config.KeyValueStorage services
 

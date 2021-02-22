@@ -16,7 +16,7 @@ config:
     secure: AAABAA0H0yk1ZvxcCgquHWAQ08sY05sOXgMaxOj6o9wDZhPmWVO3vvBhidS7KhutJgYJBt87GMU=
   k8s:api_ENV_Auth__PerimeterSocialProviders__Twitter__ClientId: 67KuSYwPHVTL6UwV7MLLPBrEB
   k8s:api_ENV_Auth__PerimeterSocialProviders__Twitter__SecretKey: rf8iVsl0F3hGVIGpwdcsHMyNH5lxLYHv7LhC7FCEF1wnbwwLJP
-  k8s:api_ENV_Auth__Social__CallbackExpiresInMilliseconds: "300000"
+  k8s:api_ENV_Auth__Social__CallbackExpiresInMilliseconds: 300000
   k8s:api_ENV_Auth__Social__CallbackUrl: https://prr.pw/api/auth/social/callback
   k8s:api_ENV_ConnectionStrings__PostgreSQL: Host=psql;Database=prr_qa;Username=postgres;Password=123;
   k8s:api_ENV_Logging__Elastic__ServiceUrl: http://elastic:9200

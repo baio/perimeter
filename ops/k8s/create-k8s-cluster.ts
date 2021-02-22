@@ -143,9 +143,6 @@ export const createK8sCluster = () => {
         },
     });
 
-    // const jaeger = createJaeger();
-    // const seq = createSeq();
-    // prometheus is not setup since it requires add whole persistent volume / claim story to config (insane shit)
     return {
         ingressUrl: ingress.urn,
         psqlStack,
@@ -157,13 +154,5 @@ export const createK8sCluster = () => {
         rabbitStack,
         elasticStack,
         jaegerStack,
-        /*
-        ingress: ingress.urn,        
-        apiTenantStack,
-        psqlStack,        
-        rabbitStack,
-        */
-        // jaeger,
-        // seq,
     };
 };

@@ -34,8 +34,8 @@ let configureApp (app: IApplicationBuilder) =
         .UseCors(configureCors)
         // Configure metrics from prometheus
 #if !TEST
-        .UseHealthChecks(PathString("/health"))
-        .UseHealthChecksPrometheusExporter(PathString("/metrics"))
+        .UseHealthChecks(PathString("/api/tenant/health"))
+        .UseHealthChecksPrometheusExporter(PathString("/api/tenant/metrics"))
         .UseMetricServer()
         .UseHttpMetrics()
 #endif

@@ -25,13 +25,17 @@ module CreateCommonAppConfig =
             configuration.GetConnectionString "PostgreSQL"
 
         let mongoConnectionString =
-            configuration.GetConnectionString "Mongo"
+            configuration.GetValue("MongoViewStorage:ConnectionString")
 
+        let rabbitConnectionString =
+            configuration.GetValue("ServiceBus:Host")
+        
         { ServiceBus = { Host = configuration.GetValue("ServiceBus:Host") }
           ViewStorage = viewStorageConfig
           HealthCheck =
               { PsqlConnectionString = psqlConnectionString
                 MongoConnectionString = mongoConnectionString
+                RabbitMqConnectionString = rabbitConnectionString
                 AllocatedMemoryGb = 5 }
           DataContext =
               { ConnectionString = psqlConnectionString
