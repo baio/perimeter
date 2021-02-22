@@ -38,12 +38,12 @@ export const createK8sCluster = () => {
     //app
     const appAdminStack = createStack(
         'prr-app-admin',
-        '0.30.30',
+        '0.30.32',
         'baio/prr-app-admin',
     );
     const appIdpStack = createStack(
         'prr-app-idp',
-        '0.30.30',
+        '0.30.32',
         'baio/prr-app-idp',
     );
 
