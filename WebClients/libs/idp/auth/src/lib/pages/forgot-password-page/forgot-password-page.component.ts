@@ -38,11 +38,13 @@ export class ForgotPasswordPageComponent implements OnInit {
     async submitForm() {
         try {
             this.isSubmitting = true;
+            // TODO : this is login callback just redirect to root
+            const redirectUri = this.preservedQueryParams.getAuthParam(
+                'redirect_uri'
+            );
+            const url = new URL(redirectUri);
             await this.authDataAccess
-                .resetPassword(
-                    this.form.value,
-                    this.preservedQueryParams.getAuthParamsQueryString()
-                )
+                .resetPassword(this.form.value, url.origin)
                 .toPromise();
             this.errorMessage = null;
         } catch (_err) {

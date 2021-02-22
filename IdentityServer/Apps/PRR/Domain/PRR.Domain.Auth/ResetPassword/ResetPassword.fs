@@ -40,10 +40,5 @@ module ResetPassword =
                     env.Logger.LogInformation
                         ("On success for email ${email} token expires at ${@expiredAt}", data.Email, expiredAt)
 
-                    let queryString =
-                        data.QueryString
-                        |> ofNullable
-                        |> Option.map (trimStart "?")
-
-                    do! onSuccess env data.Email queryString token expiredAt
+                    do! onSuccess env data.Email token expiredAt data.ReturnUrl
             }

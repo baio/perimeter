@@ -17,14 +17,14 @@ module MultiUsers =
           LastName = "XXX"
           Email = "user1@user.com"
           Password = "#6VvR&^"
-          QueryString = null }
+          ReturnUrl = null }
 
     let user2Data: Data =
         { FirstName = "Second"
           LastName = "YYY"
           Email = "user2@user.com"
           Password = "#6VvR&^"
-          QueryString = null }
+          ReturnUrl = null }
     
     let private users =
         System.Collections.Generic.List<_>

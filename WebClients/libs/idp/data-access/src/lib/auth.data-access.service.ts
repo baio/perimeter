@@ -42,10 +42,10 @@ export interface AppInfo {
 export class AuthDataAccessService {
     constructor(private readonly http: HttpClient) {}
 
-    signUp(data: SignUpData, queryString: string): Observable<any> {
+    signUp(data: SignUpData, returnUrl: string): Observable<any> {
         const payload = {
             ...data,
-            queryString,
+            returnUrl,
         };
         return this.http.post('auth/sign-up', payload);
     }
@@ -54,13 +54,10 @@ export class AuthDataAccessService {
         return this.http.post('auth/sign-up/confirm', { token });
     }
 
-    resetPassword(
-        data: ResetPasswordData,
-        queryString: string
-    ): Observable<any> {
+    resetPassword(data: ResetPasswordData, returnUrl: string): Observable<any> {
         const payload = {
             ...data,
-            queryString,
+            returnUrl,
         };
         return this.http.post('auth/reset-password', payload);
     }

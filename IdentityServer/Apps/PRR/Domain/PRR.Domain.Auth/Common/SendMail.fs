@@ -11,13 +11,12 @@ module SendMail =
           LastName: string
           Email: string
           Token: string
-          QueryString: string option }
+          RedirectUri: string }
 
     type ResetPasswordMailData =
         { Email: string
           Token: string
-          QueryString: string option }
-
+          RedirectUri: string }
 
     type SendMailTemplate =
         | ConfirmSignUpMail of ConfirmSignUpMailData

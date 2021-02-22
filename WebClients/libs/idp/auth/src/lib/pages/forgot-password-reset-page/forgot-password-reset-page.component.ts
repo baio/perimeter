@@ -31,6 +31,10 @@ export class ForgotPasswordResetPageComponent implements OnInit {
         return this.activatedRoute.snapshot.queryParams['token'];
     }
 
+    private get redirectUri() {
+        return this.activatedRoute.snapshot.queryParams['redirect_uri'];
+    }
+
     constructor(
         fb: FormBuilder,
         private readonly activatedRoute: ActivatedRoute,
@@ -98,10 +102,17 @@ export class ForgotPasswordResetPageComponent implements OnInit {
             this.cdr.markForCheck();
         }
         if (!this.errorMessage) {
-            this.router.navigate(['/home', { event: 'reset-password-success' }], {
-                relativeTo: this.activatedRoute,
-                preserveQueryParams: true,
-            });
+            window.location.href = this.redirectUri + '?reset-password-success';
+
+            /*
+            this.router.navigate(
+                ['/home', { event: 'reset-password-success' }],
+                {
+                    relativeTo: this.activatedRoute,
+                    preserveQueryParams: true,
+                }
+            );
+            */
         }
     }
 }

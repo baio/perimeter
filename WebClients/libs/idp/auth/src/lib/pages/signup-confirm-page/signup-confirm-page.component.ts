@@ -26,17 +26,23 @@ export class SignupConfirmPageComponent implements OnInit {
     ) {}
 
     async ngOnInit() {
-
         const token = this.activatedRoute.snapshot.queryParams['token'];
+        const redirectUri = this.activatedRoute.snapshot.queryParams[
+            'redirect_uri'
+        ];
         if (!token) {
             this.errorMessage = 'Token is not found in query string';
             return;
-        }        
+        }
 
         await this.authDataAccess
             .signUpConfirm(token)
             .toPromise()
-            .then(() =>
+            .then(
+                () =>
+                    (window.location.href =
+                        redirectUri + '?event=sign-up-confirm-success')
+                /*
                 this.router.navigate(
                     ['..', 'login', { event: 'sign-up-confirm-success' }],
                     {
@@ -44,6 +50,7 @@ export class SignupConfirmPageComponent implements OnInit {
                         preserveQueryParams: true,
                     }
                 )
+                */
             )
             .catch((_err) => {
                 const err = _err as HttpErrorResponse;

@@ -75,11 +75,6 @@ module SignUp =
 #endif
                 let encodedPassword = env.PasswordSalter data.Password
 
-                let queryString =
-                    if System.String.IsNullOrEmpty data.QueryString
-                    then None
-                    else (Some(data.QueryString.TrimStart('?')))
-
                 let expiresAt =
                     System.DateTime.UtcNow.AddMinutes(float (int env.TokenExpiresIn))
 
@@ -91,7 +86,7 @@ module SignUp =
                       Token = token
                       ExistentUserId = existentUserId
                       ExpiredAt = expiresAt
-                      QueryString = queryString }
+                      RedirectUri = data.ReturnUrl }
 
                 env.Logger.LogInformation
                     ("Signup success data {@data} and expires at ${expiresAt}",

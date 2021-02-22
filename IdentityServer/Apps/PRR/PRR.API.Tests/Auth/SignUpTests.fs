@@ -28,7 +28,7 @@ module SignUp =
           LastName = "Last"
           Email = "user@user.com"
           Password = "#6VvR&^"
-          QueryString = null }
+          ReturnUrl = null }
 
     let sendMail: SendMail =
         fun _ data ->
@@ -67,7 +67,7 @@ module SignUp =
                       LastName = ""
                       Email = "xxx"
                       Password = "#6VvR&^"
-                      QueryString = null }
+                      ReturnUrl = null }
 
                 let! result = testFixture.Server1.HttpPostAsync' "/api/auth/sign-up" invalidUserData
 
@@ -100,7 +100,7 @@ module SignUp =
                                     LastName = userData.LastName
                                     Email = userData.Email
                                     Token = userToken
-                                    QueryString = None } }
+                                    RedirectUri = null } }
 
 
 

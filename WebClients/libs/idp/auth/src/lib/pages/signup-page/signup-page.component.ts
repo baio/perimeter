@@ -93,10 +93,13 @@ export class SignupPageComponent implements OnInit {
     async submitForm() {
         try {
             this.isSubmitting = true;
+            // TODO : this is login callback just redirect to root
+            const redirectUri = this.preservedQueryParams.getAuthParam('redirect_uri');
+            const url = new URL(redirectUri);
             await this.authDataAccess
                 .signUp(
                     this.form.value,
-                    this.preservedQueryParams.getAuthParamsQueryString()
+                    url.origin
                 )
                 .toPromise();
             this.errorMessage = null;

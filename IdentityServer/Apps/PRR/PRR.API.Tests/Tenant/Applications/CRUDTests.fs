@@ -18,7 +18,7 @@ module CRUD =
           LastName = "Last"
           Email = "user@user.com"
           Password = "#6VvR&^"
-          QueryString = null }
+          ReturnUrl = null }
 
     let userPassword = "123"
 

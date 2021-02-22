@@ -32,7 +32,7 @@ module private OnSuccess =
                       LastName = data.LastName
                       Email = data.Email
                       Token = data.Token
-                      QueryString = data.QueryString }
+                      RedirectUri = data.RedirectUri }
 
                 do! env.SendMail
                         env.Logger

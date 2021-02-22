@@ -27,6 +27,6 @@ module Models =
           LastName: string
           Email: string
           Password: string
-          QueryString: string }
+          ReturnUrl: string }
 
     type SignUp = Env -> Data -> Task<unit>

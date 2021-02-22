@@ -17,11 +17,11 @@ module KeyValueModels =
           // Case when user was registered through social provider before, just need update password on confirm
           ExistentUserId: int option
           ExpiredAt: DateTime
-          QueryString: string option }
+          RedirectUri: string }
 
 
     [<PartitionName("ResetPassword")>]
-    type ResetPasswordKV = { Email: string }
+    type ResetPasswordKV = { Email: string; RedirectUri: string }
 
 
     [<PartitionName("LogIn")>]

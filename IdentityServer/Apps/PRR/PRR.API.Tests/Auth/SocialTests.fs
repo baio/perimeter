@@ -51,7 +51,7 @@ module SocialTests =
           LastName = "Last"
           Email = "user@user.com"
           Password = "test123"
-          QueryString = null }
+          ReturnUrl = null }
 
     let mutable userToken: string = null
 

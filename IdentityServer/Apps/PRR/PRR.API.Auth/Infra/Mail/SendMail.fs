@@ -12,29 +12,23 @@ module SendMail =
         sprintf """
             <h2>Hello %s %s</h2>
             <p>
-                This is you <a href="%s/%s?token=%s%s">link</a> to activate %s account.
+                This is you <a href="%s/%s?token=%s&redirect_uri=%s">link</a> to activate %s account.
                 <br>
                 Cheers, %s
             </p>
-        """ item.FirstName item.LastName proj.BaseUrl proj.ConfirmSignUpUrl item.Token
-            (match item.QueryString with
-             | Some x -> (sprintf "&%s" x)
-             | None -> "") proj.Name proj.Name
+        """ item.FirstName item.LastName proj.BaseUrl proj.ConfirmSignUpUrl item.Token item.RedirectUri proj.Name
+            proj.Name
 
     let private getResetPasswordHtml (proj: ProjectConfig) (item: ResetPasswordMailData) =
-        let qs =
-            match item.QueryString with
-            | Some x -> (sprintf "&%s" x)
-            | None -> ""
 
         sprintf """
             <h2>Hello</h2>
             <p>
-                This is you <a href="%s/%s?token=%s%s">link</a> to reset password.
+                This is you <a href="%s/%s?token=%s&redirect_uri=%s">link</a> to reset password.
                 <br>
                 Cheers, %s.
             </p>
-        """ proj.BaseUrl proj.ResetPasswordUrl item.Token qs proj.Name
+        """ proj.BaseUrl proj.ResetPasswordUrl item.Token item.RedirectUri proj.Name
 
 
     let private createSendMail' (env: MailSenderConfig) (prms: SendMailParams) =
@@ -58,7 +52,7 @@ module SendMail =
                           env.Project
                           { Email = item.Email
                             Token = item.Token
-                            QueryString = item.QueryString } }
+                            RedirectUri = item.RedirectUri } }
 
 
     let createSendMail (config: MailSenderConfig) (sender: MailSender) =

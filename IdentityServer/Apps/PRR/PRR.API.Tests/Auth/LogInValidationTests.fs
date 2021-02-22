@@ -16,7 +16,7 @@ module LogInValidation =
           LastName = "Last"
           Email = "user@user.com"
           Password = "#6VvR&^"
-          QueryString = null }
+          ReturnUrl = null }
 
     let logInData =
         {| client_id = "123"

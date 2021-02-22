@@ -37,7 +37,7 @@ module SignIn =
           LastName = "Last"
           Email = "user@user.com"
           Password = "#6VvR&^"
-          QueryString = null }
+          ReturnUrl = null }
 
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]

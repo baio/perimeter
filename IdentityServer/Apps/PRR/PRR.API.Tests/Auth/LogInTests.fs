@@ -20,7 +20,7 @@ module LogIn =
           LastName = "Last"
           Email = "user@user.com"
           Password = "#6VvR&^"
-          QueryString = null }
+          ReturnUrl = null }
 
     let mutable authCode: string = null
 

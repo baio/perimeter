@@ -11,14 +11,19 @@ open DataAvail.Http.Exceptions
 [<AutoOpen>]
 module private OnSuccess =
 
-    let onSuccess (env: Env) email queryString token expiredIn =
+    let onSuccess (env: Env) email token expiredIn redirectUri =
         task {
             let options =
                 { addValueDefaultOptions with
                       Tag = email
                       ExpiresAt = (Some expiredIn) }
 
-            let! result = env.KeyValueStorage.AddValue<ResetPasswordKV> token { Email = email } (Some options)
+            let! result =
+                env.KeyValueStorage.AddValue<ResetPasswordKV>
+                    token
+                    { Email = email
+                      RedirectUri = redirectUri }
+                    (Some options)
 
             match result with
             | Result.Error AddValueError.KeyAlreadyExists ->
@@ -29,7 +34,7 @@ module private OnSuccess =
             let mailData =
                 { Email = email
                   Token = token
-                  QueryString = None }
+                  RedirectUri = redirectUri }
 
             env.Logger.LogInformation("Send reset password email to ${email}", mailData.Email)
 
