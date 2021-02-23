@@ -20,16 +20,12 @@ module HealthCheck =
 
         // https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/issues/552
         services.AddSingleton<IConnection>(fun sp ->
-            let amqpUrl =
-                sprintf "%s%s"
-                config.RabbitMqConnectionString
-                if config.RabbitMqConnectionString.StartsWith("amqp://") then "" else "amqp://"
-                
+
             let factory =
-                ConnectionFactory
-                    (Uri = Uri(amqpUrl), AutomaticRecoveryEnabled = true)
+                ConnectionFactory(Uri = Uri(config.RabbitMqConnectionString), AutomaticRecoveryEnabled = true)
 
             factory.CreateConnection())
+        |> ignore
 
         services
             .AddHealthChecks()

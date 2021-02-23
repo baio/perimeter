@@ -30,7 +30,7 @@ config:
   k8s:api_ENV_MailSender__Project__Name: Perimeter (stage)
   k8s:api_ENV_MongoKeyValueStorage__ConnectionString: mongodb://root:123@mongo?authSource=admin
   k8s:api_ENV_MongoViewStorage__ConnectionString: mongodb://root:123@mongo?authSource=admin
-  k8s:api_ENV_ServiceBus__Host: rabbit
+  k8s:api_ENV_ServiceBus__Host: amqp://rabbit
   k8s:api_ENV_TenantAuth__AccessTokenSecret: zzzzzzzzzzzzzzzzzzz
   k8s:auth_api_Port: "81"
   k8s:auth_api_TargetPort: "5000"

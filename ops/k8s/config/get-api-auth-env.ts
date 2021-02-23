@@ -32,6 +32,7 @@ export const getApiAuthEnv = (pulumiConfig: pulumi.Config) => {
         TenantAuth__AccessTokenSecret: rs('TenantAuth__AccessTokenSecret'),
         Logging__Seq__ServiceUrl: get('Logging__Seq__ServiceUrl'),
         Tracing__Jaeger__AgentHost: get('Tracing__Jaeger__AgentHost'),
+        Logging__Elastic__ServiceUrl: get('Logging__Elastic__ServiceUrl'),
         ServiceBus__Host: get('ServiceBus__Host'),
         MailSender__FromEmail: rq('MailSender__FromEmail'),
         MailSender__FromName: rq('MailSender__FromName'),

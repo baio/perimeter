@@ -18,13 +18,22 @@ export const createK8sCluster = () => {
     //return nginx;
     //api
 
+    const probe = {
+        httpGet: {
+            path: '/api/auth/health',
+            port: 5000,
+        },
+        failureThreshold: 5,
+        periodSeconds: 10,
+    };
     const apiAuthConfig = getApiAuthEnv(config);
     const apiAuthStack = createStack(
         'prr-api-auth',
-        '0.50.9',
+        '0.60.2',
         'baio/prr-api-auth',
         apiAuthConfig,
         { port: 80, targetPort: 5000 },
+        probe,
     );
 
     const apiTenantStack = createStack(
@@ -38,12 +47,12 @@ export const createK8sCluster = () => {
     //app
     const appAdminStack = createStack(
         'prr-app-admin',
-        '0.30.32',
+        '0.30.33',
         'baio/prr-app-admin',
     );
     const appIdpStack = createStack(
         'prr-app-idp',
-        '0.30.32',
+        '0.30.33',
         'baio/prr-app-idp',
     );
 

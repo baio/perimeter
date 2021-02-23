@@ -1,13 +1,5 @@
-import * as k8s from '@pulumi/kubernetes';
 import * as pulumi from '@pulumi/pulumi';
-import {
-    getApiAuthEnv,
-    getApiTenantEnv,
-    getMongoConfig,
-    getMongoEnv,
-    getPasqlEnv,
-    getPsqlConfig,
-} from './config';
+import { getApiAuthEnv, getMongoConfig, getMongoEnv, getPasqlEnv, getPsqlConfig } from './config';
 import { createStack, createVolumeStack } from './shared';
 
 export const createK8sCluster = () => {
@@ -16,13 +8,22 @@ export const createK8sCluster = () => {
     //return nginx;
     //api
 
+    const probe = {
+        httpGet: {
+            path: '/api/auth/health',
+            port: 5000,
+        },
+        failureThreshold: 5,
+        periodSeconds: 10,
+    };
     const apiAuthConfig = getApiAuthEnv(config);
     const apiAuthStack = createStack(
         'prr-api-auth',
-        'latest',
+        'l2',
         'baio/prr-api-auth',
         apiAuthConfig,
         { port: 80, targetPort: 5000 },
+        probe,
     );
     //db
 
@@ -48,10 +49,13 @@ export const createK8sCluster = () => {
 
     // bus
 
-    const rabbitStack = createStack('rabbit', null, 'masstransit/rabbitmq', null, [
-        5672,
-        15672,
-    ]);
+    const rabbitStack = createStack(
+        'rabbit',
+        null,
+        'masstransit/rabbitmq',
+        null,
+        [5672, 15672],
+    );
 
     return {
         psqlStack,

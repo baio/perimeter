@@ -29,7 +29,7 @@ config:
   k8s:api_ENV_MailSender__Project__Name: Perimeter (alpha)
   k8s:api_ENV_MongoKeyValueStorage__ConnectionString: mongodb://root:123@mongo?authSource=admin
   k8s:api_ENV_MongoViewStorage__ConnectionString: mongodb://root:123@mongo?authSource=admin
-  k8s:api_ENV_ServiceBus__Host: rabbit
+  k8s:api_ENV_ServiceBus__Host: amqp://rabbit
   k8s:api_ENV_TenantAuth__AccessTokenSecret: VR4%2nws=PN5j!W!3uJ!NS
   k8s:api_ENV_Tracing__Jaeger__AgentHost: jaeger
   k8s:auth_api_Port: "81"
