@@ -38,7 +38,7 @@ export const createK8sCluster = () => {
 
     const apiTenantStack = createStack(
         'prr-api-tenant',
-        '0.50.7',
+        '0.60.2',
         'baio/prr-api-tenant',
         getApiTenantEnv(config),
         { port: 80, targetPort: 6000 },
