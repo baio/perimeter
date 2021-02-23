@@ -115,7 +115,7 @@ module Domains =
             createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
             |> add
 
-            createDomainManagementApi env.AuthConfig domaing
+            createDomainManagementApi env.AuthConfig domain
             |> add
 
             let! userEmail =
