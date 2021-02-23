@@ -16,7 +16,7 @@ module Helpers =
             (Tenant = tenant,
              EnvName = "management",
              IsMain = true,
-             Issuer = sprintf "https://management.%s.perimeter.com/tenant/issuer" tenant.Name,
+             Issuer = sprintf "https://management.%s.perimeter.pw/tenant/issuer" tenant.Name,
              AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn),
              SigningAlgorithm = SigningAlgorithmType.HS256,
              HS256SigningSecret = authStringProvider.HS256SigningSecret())
@@ -39,7 +39,7 @@ module Helpers =
         Api
             (Domain = domain,
              Name = "Tenant domains management API",
-             Identifier = sprintf "https://tenant-management-api.%s.%s.com" domain.EnvName domain.Tenant.Name,
+             Identifier = sprintf "https://tenant-management-api.%s.%s.pw" domain.EnvName domain.Tenant.Name,
              IsDomainManagement = false)
 
     //
@@ -53,7 +53,7 @@ module Helpers =
              HS256SigningSecret = authStringProviders.HS256SigningSecret(),
              RS256Params = authStringProviders.RS256XMLParams(),
              Issuer =
-                 sprintf "https://dev.%s.%s.perimeter.com/domain/issuer" domainPool.Identifier domainPool.Tenant.Name)
+                 sprintf "https://dev.%s.%s.perimeter.pw/domain/issuer" domainPool.Identifier domainPool.Tenant.Name)
 
     let createDomainApp (authStringProvider: IAuthStringsGetter) (authConfig: AuthConfig) domain name =
         Application
@@ -93,7 +93,7 @@ module Helpers =
              Name = name,
              Identifier =
                  sprintf
-                     "https://%s.%s.%s.%s.com"
+                     "https://%s.%s.%s.%s.perimeter.pw"
                      identifier
                      domain.EnvName
                      domain.Pool.Identifier
@@ -106,7 +106,7 @@ module Helpers =
              Name = "Domain management API",
              Identifier =
                  sprintf
-                     "https://domain-management-api.%s.%s.%s.com"
+                     "https://domain-management-api.%s.%s.%s.perimeter.pw"
                      domain.EnvName
                      domain.Pool.Identifier
                      domain.Pool.Tenant.Name,

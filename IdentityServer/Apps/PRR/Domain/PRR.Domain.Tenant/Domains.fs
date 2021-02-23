@@ -102,7 +102,7 @@ module Domains =
                      IsMain = false,
                      Issuer =
                          sprintf
-                             "https://%s.%s.%s.perimeter.com/domain/issuer"
+                             "https://%s.%s.%s.perimeter.pw/domain/issuer"
                              dto.EnvName
                              pool.Identifier
                              pool.Tenant.Name,
@@ -115,7 +115,7 @@ module Domains =
             createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
             |> add
 
-            createDomainManagementApi env.AuthConfig domain
+            createDomainManagementApi env.AuthConfig domaing
             |> add
 
             let! userEmail =

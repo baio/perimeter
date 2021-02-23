@@ -71,7 +71,7 @@ module Apis =
             let api =
                 Api
                     (Name = dto.Name,
-                     Identifier = (sprintf "https://%s.%s.%s.%s.com" dto.Identifier envName poolIdentifier tenantName),
+                     Identifier = (sprintf "https://%s.%s.%s.%s.perimeter.pw" dto.Identifier envName poolIdentifier tenantName),
                      DomainId = domainId,
                      IsDomainManagement = false,
                      Permissions = [||])
