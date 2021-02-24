@@ -19,63 +19,85 @@ module DomainUserRoles =
 
     [<CLIMutable>]
     type PostLike =
-        {
-          [<EmailAddress>]
+        { [<EmailAddress>]
           [<Required>]
           UserEmail: string
           [<Required>]
           RolesIds: int seq }
 
     [<CLIMutable>]
-    type RolesGetLike =
-        { Id: int
-          Name: string }
+    type RolesGetLike = { Id: int; Name: string }
 
     [<CLIMutable>]
     type GetLike =
         { UserEmail: string
           Roles: RolesGetLike seq }
 
-    let private checkUserNotDomainOwner (domainId: DomainId) (email: string) (dbContext: DbDataContext) =
+    let private isUserDomainOwner (domainId: DomainId) (email: string) (dbContext: DbDataContext) =
         query {
             for dur in dbContext.DomainUserRole do
-                where (dur.DomainId = domainId && dur.UserEmail = email && dur.RoleId = Seed.Roles.DomainOwner.Id)
+                where
+                    (dur.DomainId = domainId
+                     && dur.UserEmail = email
+                     && dur.RoleId = Seed.Roles.DomainOwner.Id)
+
                 select dur.UserEmail
         }
         |> countAsync
-        |> map (fun cnt ->
-            if cnt = 1 then raise (forbidden "Domain owner could not be deleted or edited"))
+        |> map (function
+            | 0 -> false
+            | _ -> true)
+    //if cnt = 1 then raise (forbidden "Domain owner could not be deleted or edited"))
 
     let private validateRoles (domainId: DomainId, rolesIds: int seq) (dataContext: DbDataContext) =
         query {
             for p in dataContext.Roles do
-                where ((p.Domain <> null && p.DomainId <> Nullable(domainId)) && (%in' (rolesIds)) p.Id)
+                where
+                    ((p.Domain <> null
+                      && p.DomainId <> Nullable(domainId))
+                     && (%in' (rolesIds)) p.Id)
+
                 select p.Id
         }
         |> toCountAsync
-        |> map (fun cnt ->
-            if cnt > 0 then raise Forbidden')
+        |> map (fun cnt -> if cnt > 0 then raise Forbidden')
 
-    let private checkForbidenRoles (forbidenRolesRoles: int seq) (dto: PostLike) =
+    let private checkForbiddenRoles (forbiddenRolesRoles: int seq) (dto: PostLike) =
         dto.RolesIds
-        |> Seq.filter (forbidenRolesRoles.Contains)
+        |> Seq.filter (forbiddenRolesRoles.Contains)
         |> Seq.length
-        |> fun cnt ->
-            if cnt > 0 then raise Forbidden'
+        |> fun cnt -> if cnt > 0 then raise Forbidden'
 
-    let updateRoles validateRolesFn forbidenRoles ((domainId, dto): DomainId * PostLike) (dbContext: DbDataContext) =
+    let updateRoles validateRolesFn forbiddenRoles ((domainId, dto): DomainId * PostLike) (dbContext: DbDataContext) =
         task {
-            checkForbidenRoles forbidenRoles dto
-            do! checkUserNotDomainOwner domainId dto.UserEmail dbContext
+            checkForbiddenRoles forbiddenRoles dto
             do! validateRolesFn (domainId, dto.RolesIds) dbContext
+
+            let! isDomainOwner = isUserDomainOwner domainId dto.UserEmail dbContext
+
+            // add fixed owner role if this is owner and owner role is missed from dto roles
+            let fixedOwnerRoles =
+                if isDomainOwner
+                   && (dto.RolesIds.Contains Seed.Roles.DomainOwner.Id
+                       |> not) then
+                    [ Seed.Roles.DomainOwner.Id ]
+                else
+                    []
+
+            let roleIds =
+                dto.RolesIds |> Seq.append fixedOwnerRoles
+
             let incomingDur =
-                dto.RolesIds
-                |> Seq.map
-                    (fun roleId -> DomainUserRole(RoleId = roleId, UserEmail = dto.UserEmail, DomainId = domainId))
+                roleIds
+                |> Seq.map (fun roleId ->
+                    DomainUserRole(RoleId = roleId, UserEmail = dto.UserEmail, DomainId = domainId))
 
             do! (query {
                      for dur in dbContext.DomainUserRole do
-                         where (dur.UserEmail = dto.UserEmail && dur.DomainId = domainId)
+                         where
+                             (dur.UserEmail = dto.UserEmail
+                              && dur.DomainId = domainId)
+
                          select dur
                  }
                  |> querySplitAddRemoveRange dbContext incomingDur)
@@ -89,27 +111,28 @@ module DomainUserRoles =
         query {
             for p in dataContext.DomainUserRole do
                 where (p.DomainId = domainId && p.UserEmail = userEmail)
-                select
-                    (Tuple.Create
-                        (p.UserEmail,
-                         { Id = p.Role.Id
-                           Name = p.Role.Name }))
+                select (Tuple.Create(p.UserEmail, { Id = p.Role.Id; Name = p.Role.Name }))
         }
         |> groupByAsync'
         |> map
             (Seq.tryHead
              >> function
-             | Some(userEmail, roles) ->
-                 { UserEmail = userEmail
-                   Roles = roles }
+             | Some (userEmail, roles) -> { UserEmail = userEmail; Roles = roles }
              | None -> raise NotFound)
 
     let remove (domainId: DomainId) (email: string) (dbContext: DbDataContext) =
         task {
-            let! _ = checkUserNotDomainOwner domainId email dbContext
-            return! removeRawAsync dbContext.DomainUserRole
-                        {| UserEmail = email
-                           DomainId = domainId |} }
+            let! f = isUserDomainOwner domainId email dbContext
+
+            if f
+            then return raise (forbidden "Domain owner role could not be deleted")
+
+            return!
+                removeRawAsync
+                    dbContext.DomainUserRole
+                    {| UserEmail = email
+                       DomainId = domainId |}
+        }
 
     //
 
@@ -130,10 +153,10 @@ module DomainUserRoles =
     type GetList = RoleType -> DbDataContext -> (DomainId * ListQuery) -> Task<ListResponse>
 
     [<CLIMutable>]
-    type UserEmailData =
-        { UserEmail: string }
+    type UserEmailData = { UserEmail: string }
 
-    let getFilterFieldExpr filterValue = function
+    let getFilterFieldExpr filterValue =
+        function
         | FilterField.UserEmail ->
             <@ fun (x: DomainUserRole) ->
                 let like = %(ilike filterValue)
@@ -152,17 +175,23 @@ module DomainUserRoles =
                         select p
                  })
 
-            let dur2 = handleListQuery dur getFilterFieldExpr getSortFieldExpr prms
+            let dur2 =
+                handleListQuery dur getFilterFieldExpr getSortFieldExpr prms
 
-            let dur3 = dur2.Select(fun x -> x.UserEmail).Distinct()
+            let dur3 =
+                dur2.Select(fun x -> x.UserEmail).Distinct()
 
-            let dur4 = dur.Select(fun x -> x.UserEmail).Distinct()
+            let dur4 =
+                dur.Select(fun x -> x.UserEmail).Distinct()
 
             let roleTypeFilter =
                 match roleType with
                 | TenantManagement -> <@ fun (x: Role) -> x.IsTenantManagement @>
                 | DomainManagement -> <@ fun (x: Role) -> x.IsDomainManagement @>
-                | User -> <@ fun (x: Role) -> not x.IsDomainManagement && not x.IsTenantManagement @>
+                | User ->
+                    <@ fun (x: Role) ->
+                        not x.IsDomainManagement
+                        && not x.IsTenantManagement @>
 
             query {
                 for p0 in dur3 do
@@ -171,12 +200,5 @@ module DomainUserRoles =
                     select p
             }
             |> handleSort' prms.Sort getSortFieldExpr
-            |> fun q ->
-                q.Select(fun p ->
-                    (Tuple.Create
-                        (p.UserEmail,
-                         { Id = p.Role.Id
-                           Name = p.Role.Name })))
-            |> executeGroupByQuery prms (fun (userEmail, roles) ->
-                   { UserEmail = userEmail
-                     Roles = roles }) dur4
+            |> fun q -> q.Select(fun p -> (Tuple.Create(p.UserEmail, { Id = p.Role.Id; Name = p.Role.Name })))
+            |> executeGroupByQuery prms (fun (userEmail, roles) -> { UserEmail = userEmail; Roles = roles }) dur4

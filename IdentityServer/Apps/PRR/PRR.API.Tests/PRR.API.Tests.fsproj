@@ -52,6 +52,7 @@
         <Compile Include="Tenant\Roles\CRUDTests.fs" />
         <Compile Include="Tenant\Roles\MultiUsersTests.fs" />
         <Compile Include="Tenant\DomainUserRoles\MultiUsersTests.fs" />
+        <Compile Include="Tenant\DomainUserRoles\UserRolesTests.fs" />
         <Compile Include="Tenant\DomainPools\CRUDTests.fs" />
         <Compile Include="Tenant\DomainPools\MultiUsersTests.fs" />
         <Compile Include="Tenant\Domains\CRUDTests.fs" />

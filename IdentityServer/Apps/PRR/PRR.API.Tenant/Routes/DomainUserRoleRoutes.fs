@@ -13,9 +13,9 @@ module private DomainUserRolesHandlers =
 
     let private dataContext = getDataContext |> ofReader
 
-    let updateRolesHandler (forbidenRoles) (domainId: int) =
+    let updateRolesHandler (forbiddenRoles) (domainId: int) =
         wrap
-            (updateUsersRoles forbidenRoles
+            (updateUsersRoles forbiddenRoles
              <!> ((doublet domainId)
                   <!> bindValidateAnnotatedJsonAsync<PostLike>)
              <*> dataContext)
@@ -32,8 +32,7 @@ module private DomainUserRolesHandlers =
 
     let getUsersList domainId =
         wrap
-            (getList RoleType.User
-             <!> getDataContext'
+            (getList RoleType.User <!> getDataContext'
              <*> ((doublet domainId) <!> bindListQuery))
 
     let getDomainAdminsList domainId =
@@ -51,12 +50,9 @@ module private DomainUserRolesHandlers =
 module DomainUserRole =
 
     let createRoutes () =
-        choose [ DELETE
-                 >=> routef "/domains/%i/users/%s" remove
-                 GET
-                 >=> routef "/domains/%i/users/%s" getOne
-                 GET
-                 >=> routef "/domains/%i/users" getUsersList
+        choose [ DELETE >=> routef "/domains/%i/users/%s" remove
+                 GET >=> routef "/domains/%i/users/%s" getOne
+                 GET >=> routef "/domains/%i/users" getUsersList
                  GET
                  >=> routef "/domains/%i/admins" getDomainAdminsList
                  POST

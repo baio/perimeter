@@ -91,7 +91,6 @@ module MultiUsers =
                               Name = "test:role:1"
                               PermissionIds = [ permissionId ] }
                     >>= (readAsJsonAsync<int>)
-
                 users.[0] <- {| u with
                                     Token = Some(userToken)
                                     Tenant = Some(tenant)
@@ -103,7 +102,6 @@ module MultiUsers =
 
                 let! userToken = createUser testContext.Value u.Data
                 let tenant = testContext.Value.GetTenant()
-
                 users.[1] <- {| u with
                                     Token = Some(userToken)
                                     Tenant = Some(tenant)
@@ -116,6 +114,7 @@ module MultiUsers =
         [<Priority(1)>]
         member __.``A admin add role 1 to new email should success``() =
             let u1 = users.[0]
+
             task {
                 let data: PostLike =
                     { UserEmail = newUserEmail
@@ -135,6 +134,7 @@ module MultiUsers =
         member __.``B user 1 add user 2 with custom role to own tenant should success``() =
             let u1 = users.[0]
             let u2 = users.[1]
+
             task {
                 let data: PostLike =
                     { UserEmail = u2.Data.Email
@@ -154,6 +154,7 @@ module MultiUsers =
         member __.``C re-signin 2nd user under 1st tenant should be success``() =
             let u1 = users.[0]
             let u2 = users.[1]
+
             task {
 
                 let! res =
@@ -162,7 +163,6 @@ module MultiUsers =
                 res |> should be (not' null)
 
                 res.access_token |> should be (not' null)
-
                 users.[1] <- {| u2 with
                                     Token = Some res.access_token |}
             }
@@ -172,6 +172,7 @@ module MultiUsers =
         member __.``D user 2 can't add any role to tenant 1``() =
             let u1 = users.[0]
             let u2 = users.[1]
+
             task {
                 let data: PostLike =
                     { UserEmail = "other@mail.com"
@@ -211,6 +212,7 @@ module MultiUsers =
         member __.``F re-signin 2nd user under 1st tenant should be success``() =
             let u1 = users.[0]
             let u2 = users.[1]
+
             task {
                 let! res =
                     logInUser
@@ -222,7 +224,6 @@ module MultiUsers =
                 res |> should be (not' null)
 
                 res.access_token |> should be (not' null)
-
                 users.[1] <- {| u2 with
                                     Token = Some res.access_token |}
             }
@@ -233,6 +234,7 @@ module MultiUsers =
         member __.``G user 2 can add new user with custom role to tenant 1``() =
             let u1 = users.[0]
             let u2 = users.[1]
+
             task {
                 let data: PostLike =
                     { UserEmail = "other@mail.com"
@@ -252,6 +254,7 @@ module MultiUsers =
         member __.``H user 2 forbidden to add new user with admin role to tenant 1``() =
             let u1 = users.[0]
             let u2 = users.[1]
+
             task {
                 let data: PostLike =
                     { UserEmail = "other1@mail.com"
@@ -291,6 +294,7 @@ module MultiUsers =
         member __.``J re-signin 2nd user under 1st tenant should be success``() =
             let u1 = users.[0]
             let u2 = users.[1]
+
             task {
                 let! res =
                     logInUser
@@ -304,7 +308,6 @@ module MultiUsers =
                 res |> should be (not' null)
 
                 res.access_token |> should be (not' null)
-
                 users.[1] <- {| u2 with
                                     Token = Some res.access_token |}
             }
@@ -315,6 +318,7 @@ module MultiUsers =
         member __.``K user 2 can add new user with admin role to tenant 1``() =
             let u1 = users.[0]
             let u2 = users.[1]
+
             task {
                 let data: PostLike =
                     { UserEmail = "other-admin@mail.com"
@@ -334,6 +338,7 @@ module MultiUsers =
         [<Priority(11)>]
         member __.``L remove domain owner should give error``() =
             let u1 = users.[0]
+
             task {
                 let! result =
                     testFixture.Server2.HttpDeleteAsync
@@ -347,6 +352,7 @@ module MultiUsers =
         [<Priority(12)>]
         member __.``M update domain owner should give error``() =
             let u1 = users.[0]
+
             task {
                 let data: PostLike =
                     { UserEmail = u1.Data.Email
@@ -358,13 +364,14 @@ module MultiUsers =
                         (sprintf "/api/tenant/domains/%i/users" u1.Tenant.Value.DomainId)
                         data
 
-                do ensureForbidden result
+                do! ensureSuccessAsync result
             }
 
         [<Fact>]
         [<Priority(13)>]
         member __.``N trying to create user with wrong email should give bas request error``() =
             let u1 = users.[0]
+
             task {
                 let data: PostLike =
                     { UserEmail = "test"
