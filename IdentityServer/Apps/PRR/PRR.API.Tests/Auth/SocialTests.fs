@@ -210,7 +210,7 @@ module SocialTests =
             task {
 
                 let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
-                    { Grant_Type = "code"
+                    { Grant_Type = "authorization_code"
                       Code = authCode
                       Redirect_Uri = "http://localhost:4200"
                       Client_Id = clientId

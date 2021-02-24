@@ -115,7 +115,7 @@ module LogIn =
                 let! authCode = logIn testFixture logInData
 
                 let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
-                    { Grant_Type = "code"
+                    { Grant_Type = "authorization_code"
                       Code = authCode
                       Redirect_Uri = logInData.Redirect_Uri
                       Client_Id = clientId
@@ -152,7 +152,7 @@ module LogIn =
                 authCode <- result
 
                 let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
-                    { Grant_Type = "code"
+                    { Grant_Type = "authorization_code"
                       Code = authCode
                       Redirect_Uri = logInData.Redirect_Uri
                       Client_Id = clientId
@@ -175,7 +175,7 @@ module LogIn =
         [<Priority(4)>]
         member __.``D Login token with the same code should give 401``() =
             let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
-                { Grant_Type = "code"
+                { Grant_Type = "authorization_code"
                   Code = authCode
                   Redirect_Uri = redirectUri
                   Client_Id =

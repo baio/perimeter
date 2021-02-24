@@ -27,7 +27,7 @@ module LogInToken =
         [| (validateNullOrEmpty "client_id" data.Client_Id)
            (validateNullOrEmpty "code" data.Code)
            (validateNullOrEmpty "grant_type" data.Grant_Type)
-           (validateContains [| "code" |] "grant_ype" data.Grant_Type)
+           (validateContains [| "authorization_code" |] "grant_ype" data.Grant_Type)
            (validateNullOrEmpty "redirect_uri" data.Redirect_Uri)
            (validateUrl "redirect_uri" data.Redirect_Uri)
            (validateNullOrEmpty "code_verifier" data.Code_Verifier) |]
