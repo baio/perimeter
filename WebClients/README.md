@@ -1,6 +1,6 @@
 ## build libs
 ```
-yarn build perimeter-nestjs-auth --prod
+yarn build perimeter-nestjs-auth
 npm publish --access public
 
 yarn build perimeter-ng-auth --prod
