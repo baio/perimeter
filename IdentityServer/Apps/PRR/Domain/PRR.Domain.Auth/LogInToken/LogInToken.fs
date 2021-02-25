@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.LogInToken
 
+open System.Threading.Tasks
 open PRR.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Models
@@ -11,6 +12,7 @@ open PRR.Domain.Auth.Common
 open Microsoft.Extensions.Logging
 open PRR.Domain.Common
 open DataAvail.Http.Exceptions
+open DataAvail.EntityFramework.Common.LinqHelpers
 
 [<AutoOpen>]
 module LogInToken =
@@ -34,6 +36,37 @@ module LogInToken =
             then (validateNullOrEmpty "code_verifier" data.Code_Verifier)
             else (validateNullOrEmpty "client_secret" data.Client_Secret)) |]
         |> Array.choose id
+
+    let private checkPKCECodeChallenge sha256Provider codeVerifier itemCodeChallenge =
+        let codeChallenge =
+            sha256Provider codeVerifier
+            |> cleanupCodeChallenge
+
+        if codeChallenge <> itemCodeChallenge
+        then Some(unAuthorized "code_verifier code_challenge mismatch")
+        else None
+
+
+    let private checkApplicationClientSecret (dbContext: DbDataContext) clientId clientSecret =
+
+        task {
+
+            let! appClientSecret =
+                query {
+                    for app in dbContext.Applications do
+                        where (app.ClientId = clientId)
+                        select app.ClientSecret
+                }
+                |> toSingleOptionAsync // (unexpected "Application client secret is not found")
+
+            match appClientSecret with
+            | None -> return Some(unexpected "Application client secret is not found")
+            | Some appClientSecret ->
+                if clientSecret <> appClientSecret
+                then return Some(unAuthorized "Client secret mismatch")
+                else return None
+
+        }
 
     // https://auth0.com/docs/api/authentication?http#authorization-code-flow-with-pkce46
     // https://auth0.com/docs/api/authentication?http#authorization-code-flow45
@@ -86,17 +119,18 @@ module LogInToken =
 
                     raise (unAuthorized "redirect_uri mismatch")
 
-                let codeChallenge =
-                    env.Sha256Provider(data.Code_Verifier)
-                    |> cleanupCodeChallenge
+                let! exn =
+                    match isPKCE with
+                    | true ->
+                        checkPKCECodeChallenge env.Sha256Provider data.Code_Verifier item.CodeChallenge
+                        |> Task.FromResult
+                    | false -> checkApplicationClientSecret env.DataContext data.Client_Id data.Client_Secret
 
-                let itemCodeChallenge = item.CodeChallenge
-
-                if codeChallenge <> itemCodeChallenge then
-                    env.Logger.LogWarning
-                        ("${codeChallenge} and ${itemCodeChallenge} mismatch error", codeChallenge, itemCodeChallenge)
-
-                    raise (unAuthorized "code_verifier code_challenge mismatch")
+                match exn with
+                | Some exn ->
+                    env.Logger.LogDebug("Check secret or code challenge fails with ${@exn}", exn)
+                    return raise exn
+                | None -> ()
 
                 let socialType =
                     item.Social |> Option.map (fun f -> f.Type)
