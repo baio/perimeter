@@ -35,7 +35,7 @@ module ConfigureAppServices =
         configureConfigProvider config services
         configureServiceBus config.Common.ServiceBus [ typeof<LogInEventHandler> ] services
         // tenant
-        services.AddSingleton<IAuthStringsGetterProvider>(AuthStringsProvider())
+        services.AddSingleton<IAuthStringsGetterProvider>(AuthStringsProvider(authStringsGetter))
         |> ignore
         // event handlers
         let viewDb = viewDbProvider.Db

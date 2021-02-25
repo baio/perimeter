@@ -3,12 +3,15 @@
 open DataAvail.Test.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
+open Microsoft.Extensions.DependencyInjection
 open PRR.API.Auth.Infra
+open PRR.API.Tenant.Infra
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.LogInToken
 open PRR.Domain.Auth.SignUp
 open System
 open System.Security.Cryptography
+open PRR.Domain.Tenant
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
@@ -24,31 +27,36 @@ module LogInClientSecret =
 
     let mutable authCode: string = null
 
-    let random = Random()
-
-    let randomString length =
-
-        let chars =
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~"
-
-        [ 0 .. length ]
-        |> Seq.map (fun x -> chars.[random.Next(chars.Length)])
-        |> System.String.Concat
-
-
-    let codeVerfier = randomString 128
-
-    let sha256 = SHA256.Create()
-
-    let codeChellenge =
-        SHA256.getSha256Base64Hash sha256 codeVerfier
-        |> LogInToken.cleanupCodeChallenge
-
     let mutable testContext: UserTestContext option = None
 
     let mutable permissionId: int option = None
 
     let redirectUri = "http://localhost:4200"
+
+    let overrideServices (services: IServiceCollection) =
+        //
+        
+        let serv =
+            services
+            |> Seq.find (fun f -> f.ServiceType = typeof<IAuthStringsGetterProvider>)
+
+        services.Remove(serv) |> ignore
+
+        let authStringsGetter = (serv.ImplementationInstance :?> IAuthStringsGetterProvider).AuthStringsGetter
+            
+        let _authStringsGetter: IAuthStringsGetter =
+            { ClientId = authStringsGetter.ClientId
+              ClientSecret = fun () -> "ClientSecret"
+              AuthorizationCode = authStringsGetter.AuthorizationCode
+              HS256SigningSecret = authStringsGetter.HS256SigningSecret
+              RS256XMLParams = authStringsGetter.RS256XMLParams }
+
+
+        services.AddSingleton<IAuthStringsGetterProvider>(AuthStringsProvider _authStringsGetter)
+        |> ignore
+        
+        
+
 
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
@@ -60,7 +68,8 @@ module LogInClientSecret =
         [<Priority(-1)>]
         member __.``0 BeforeAll``() =
             task {
-                testContext <- Some(createUserTestContext testFixture)
+                testContext <-
+                    Some(createUserTestContextWithServicesOverrides2 (fun _ -> ()) overrideServices testFixture)
 
                 let! _ = createUser testContext.Value signUpData
                 ()
@@ -85,20 +94,20 @@ module LogInClientSecret =
                   Scope = "openid profile email"
                   Email = signUpData.Email
                   Password = signUpData.Password
-                  Code_Challenge = codeChellenge
-                  Code_Challenge_Method = "S256" }
+                  Code_Challenge = null
+                  Code_Challenge_Method = null }
 
 
             task {
-                let! authCode = logIn testFixture logInData
+                let! code = logIn testFixture logInData
 
                 let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
                     { Grant_Type = "authorization_code"
-                      Code = authCode
+                      Code = code
                       Redirect_Uri = logInData.Redirect_Uri
                       Client_Id = clientId
-                      Code_Verifier = sprintf "%s1" codeVerfier
-                      Client_Secret = null }
+                      Code_Verifier = null
+                      Client_Secret = "xxx" }
 
                 let! result = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
                 do ensureUnauthorized result
@@ -123,8 +132,8 @@ module LogInClientSecret =
                   Scope = "openid profile email"
                   Email = signUpData.Email
                   Password = signUpData.Password
-                  Code_Challenge = codeChellenge
-                  Code_Challenge_Method = "S256" }
+                  Code_Challenge = null
+                  Code_Challenge_Method = null }
 
             task {
                 let! result = logIn testFixture logInData
@@ -135,8 +144,8 @@ module LogInClientSecret =
                       Code = authCode
                       Redirect_Uri = logInData.Redirect_Uri
                       Client_Id = clientId
-                      Code_Verifier = codeVerfier
-                      Client_Secret = null }
+                      Code_Verifier = null
+                      Client_Secret = "ClientSecret" }
 
                 let! result' = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
                 do! ensureSuccessAsync result'
@@ -163,8 +172,8 @@ module LogInClientSecret =
                           .Value
                           .GetTenant()
                           .TenantManagementApplicationClientId
-                  Code_Verifier = codeVerfier
-                  Client_Secret = null }
+                  Code_Verifier = null
+                  Client_Secret = "ClientSecret" }
 
             task {
                 let! result = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData

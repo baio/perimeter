@@ -23,7 +23,7 @@ module AuthStringsGetterProvider =
         |> System.String.Concat
 
 
-    let private authStringsGetter: IAuthStringsGetter =
+    let authStringsGetter: IAuthStringsGetter =
         { ClientId = fun () -> getRandomString 33
           ClientSecret = fun () -> getRandomString 50
           // TODO : Read ???
@@ -34,6 +34,6 @@ module AuthStringsGetterProvider =
                   let rsa = RSA.Create(2048)
                   rsa.ToXmlString(true) }
 
-    type AuthStringsProvider() =
+    type AuthStringsProvider(authStringsGetter) =
         interface IAuthStringsGetterProvider with
             member __.AuthStringsGetter = authStringsGetter

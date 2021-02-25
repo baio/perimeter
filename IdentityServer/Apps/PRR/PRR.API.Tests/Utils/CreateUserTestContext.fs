@@ -20,8 +20,10 @@ module UserTestContext =
           GetResetPasswordToken: unit -> string
           ResetPasswordTokenHandle: AutoResetEvent }
 
-    let createUserTestContextWithServicesOverrides servicesOverridesFun (testFixture: TestFixture) =
-
+    let createUserTestContextWithServicesOverrides2 servicesOverridesFun1
+                                                    servicesOverridesFun2
+                                                    (testFixture: TestFixture)
+                                                    =
 
         let mutable confirmToken: string = null
 
@@ -74,7 +76,9 @@ module UserTestContext =
             overrideKeyValueStorage (sp.GetService<IKeyValueStorage>()) services
             |> ignore
 
-            servicesOverridesFun services)
+            servicesOverridesFun1 services)
+
+        testFixture.Server2.OverrideServices(servicesOverridesFun2)
 
 
         { TestFixture = testFixture
@@ -86,6 +90,8 @@ module UserTestContext =
           ResetPasswordTokenHandle = resetPasswordTokenHandle
           SetTenant = fun t -> tenant <- (Some t) }
 
+    let createUserTestContextWithServicesOverrides f1 x =
+        createUserTestContextWithServicesOverrides2 f1 (fun _ -> ()) x
 
     let createUserTestContext x =
         x

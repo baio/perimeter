@@ -11,10 +11,13 @@ module TestOutputConverter =
     type TestOutputConverter(output: ITestOutputHelper) =
         inherit TextWriter()
         override __.Encoding = stdout.Encoding
-        override __.WriteLine message =
-            output.WriteLine message
+        override __.WriteLine message = output.WriteLine message
+
         override __.Write message =
-            output.WriteLine message
+            try
+                output.WriteLine message
+            with _ -> ()
 
     let setConsoleOutput (output: ITestOutputHelper) =
-        new TestOutputConverter(output) |> System.Console.SetOut
+        new TestOutputConverter(output)
+        |> System.Console.SetOut

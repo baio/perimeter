@@ -6,6 +6,7 @@ open FSharpx
 open Microsoft.Extensions.Configuration
 open PRR.API.Auth.Configuration.ConfigureServices
 open PRR.API.Auth.Infra
+open PRR.API.Tenant.Infra
 open PRR.Data.DataContext
 open PRR.Domain.Auth
 open System
@@ -140,15 +141,15 @@ module CreateUser =
             let config =
                 services.GetService(typeof<IConfiguration>) :?> IConfiguration
 
+            let authStringsGetterProvider =
+                env.TestFixture.Server2.Server.Services.GetService(typeof<IAuthStringsGetterProvider>) :?> IAuthStringsGetterProvider
 
             let config' =
                 PRR.API.Tenant.Configuration.CreateAppConfig.createAppConfig (config)
 
-            let env': PRR.Domain.Tenant.CreateUserTenant.Env =
+            let env': CreateUserTenant.Env =
                 { DbDataContext = dataContext
-                  AuthStringsGetter =
-                      ((PRR.API.Tenant.Infra.AuthStringsGetterProvider.AuthStringsProvider() :> PRR.API.Tenant.Infra.IAuthStringsGetterProvider)
-                          .AuthStringsGetter)
+                  AuthStringsGetter = authStringsGetterProvider.AuthStringsGetter
                   AuthConfig = config'.TenantAuth }
 
             let! tenant =
