@@ -13,7 +13,7 @@ open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
 
-module LogIn =
+module LogInPKCE =
 
     let signUpData: Data =
         { FirstName = "First"
@@ -52,7 +52,7 @@ module LogIn =
 
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
-    type ``login-api``(testFixture: TestFixture, output: ITestOutputHelper) =
+    type ``login-pkce-api``(testFixture: TestFixture, output: ITestOutputHelper) =
         do setConsoleOutput output
         interface IClassFixture<TestFixture>
 

@@ -14,6 +14,8 @@ module BadRequestValidators =
     let noneIf f x = if f x then Some x else None
 
     let isEmpty = String.IsNullOrEmpty
+    
+    let isNotEmpty = isEmpty >> not
 
     let noneIfNullOrEmpty = noneIf isEmpty
 

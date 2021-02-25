@@ -12,7 +12,6 @@ open System.Linq
 open Microsoft.Extensions.Logging
 open DataAvail.EntityFramework.Common
 open DataAvail.Http.Exceptions
-open DataAvail.Common.StringUtils
 open DataAvail.Common.Option
 open PRR.Domain.Auth.Social.SocialCallback.Identities
 
@@ -132,6 +131,9 @@ module Social =
         |> Option.map (fun ((_, state), (_, code)) -> state, code)
 
     let socialCallback (env: Env) (data: Data) (ssoCookie) =
+        
+        // TODO : Validate data !
+        
         let logger = env.Logger
         logger.LogInformation("SocialCallback starts ${@data}", data)
 

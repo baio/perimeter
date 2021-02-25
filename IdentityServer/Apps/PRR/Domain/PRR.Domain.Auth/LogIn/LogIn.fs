@@ -13,9 +13,17 @@ open DataAvail.Http.Exceptions
 [<AutoOpen>]
 module Authorize =
 
-    let validateData (data: Data) =
+    let validateData isPKCE (data: Data) =
         let scope =
             if data.Scope = null then "" else data.Scope
+
+        let pkceValidations =
+            match isPKCE with
+            | true ->
+                [| validateNullOrEmpty "code_challenge" data.Code_Challenge
+                   validateNullOrEmpty "code_challenge_method" data.Code_Challenge_Method
+                   validateContains [| "S256" |] "code_challenge_method" data.Code_Challenge_Method |]
+            | false -> [||]
 
         [| (validateNullOrEmpty "client_id" data.Client_Id)
            (validateNullOrEmpty "response_type" data.Response_Type)
@@ -26,16 +34,15 @@ module Authorize =
            (validateContainsAll [| "openid"; "profile" |] "scope" (scope.Split " "))
            (validateNullOrEmpty "email" data.Email)
            (validateEmail "email" data.Email)
-           (validateNullOrEmpty "password" data.Password)
-           (validateNullOrEmpty "code_challenge" data.Code_Challenge)
-           (validateNullOrEmpty "code_challenge_method" data.Code_Challenge_Method)
-           (validateContains [| "S256" |] "code_challenge_method" data.Code_Challenge_Method) |]
+           (validateNullOrEmpty "password" data.Password) |]
+        |> Array.append pkceValidations
         |> mapBadRequest
 
     let private getClientAppData' (dataContext: DbDataContext) clientId =
         query {
             for app in dataContext.Applications do
                 where (app.ClientId = clientId)
+
                 select
                     (Tuple.Create
                         (app.SSOEnabled,
@@ -65,11 +72,14 @@ module Authorize =
 
     let logInUser (env: Models.Env) (sso: Token option) (data: LoginData) (social: Social option) =
 
-        env.Logger.LogInformation
-            ("LogIn user with ${@data} and ${sso} and social ${@social}",
-             { data with CodeChallenge = "***" },
+        let isPKCE = isNotEmpty data.CodeChallenge
+
+        env.Logger.LogDebug
+            ("LogIn user with ${@data} and ${sso} and social ${@social} and isPKCE ${isPKCE}",
+             data,
              sso.IsSome,
-             social)
+             social,
+             isPKCE)
 
         let dataContext = env.DataContext
 
@@ -102,12 +112,12 @@ module Authorize =
                         ("Both ${@poolTenantId}, ${@domainTenantId} defined this is unexpected",
                          poolTenantId,
                          domainTenantId)
+
                     raise (unexpected "Both poolTenantId, domainTenantId defined")
 
             env.Logger.LogInformation("TenantId found ${tenantId}", tenantId)
 
-            if (callbackUrls
-                <> "*"
+            if (callbackUrls <> "*"
                 && (callbackUrls.Split(",")
                     |> Seq.map (fun x -> x.Trim())
                     |> Seq.contains data.RedirectUri
@@ -137,11 +147,14 @@ module Authorize =
 
             let userId = data.UserId
 
+            let codeChallenge =
+                if isPKCE then data.CodeChallenge else code
+
             let loginItem: LogInKV =
                 { Code = code
                   ClientId = data.ClientId
                   Issuer = issuer
-                  CodeChallenge = data.CodeChallenge
+                  CodeChallenge = codeChallenge
                   RequestedScopes = scopes
                   ValidatedScopes = validatedScopes
                   UserId = userId
@@ -156,6 +169,7 @@ module Authorize =
                 match ssoEnabled, sso with
                 | (true, Some sso) ->
                     env.Logger.LogDebug("With SSO ${sso}", sso)
+
                     Some
                         ({ Code = sso
                            UserId = userId
@@ -188,14 +202,13 @@ module Authorize =
     let logIn: LogIn =
         fun env sso data ->
 
-            env.Logger.LogInformation
-                ("LogIn with ${@data} and ${sso}",
-                 { data with
-                       Password = "***"
-                       Code_Challenge = "***" },
-                 sso.IsSome)
+            env.Logger.LogDebug("LogIn with ${@data} and ${sso}", data, sso.IsSome)
 
-            match validateData data with
+            let isPKCE = isNotEmpty data.Code_Challenge
+
+            env.Logger.LogDebug("Is PKCE ${isPKCE}", isPKCE)
+
+            match validateData isPKCE data with
             | Some ex ->
                 env.Logger.LogWarning("Data validation failed {@ex}", ex)
                 raise ex
@@ -206,7 +219,6 @@ module Authorize =
             task {
 
                 let saltedPassword = env.PasswordSalter data.Password
-
                 match! getUserId dataContext (data.Email, saltedPassword) with
                 | Some userId ->
 

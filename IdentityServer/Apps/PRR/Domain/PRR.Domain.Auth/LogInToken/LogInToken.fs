@@ -13,6 +13,7 @@ open Microsoft.Extensions.Logging
 open PRR.Domain.Common
 open DataAvail.Http.Exceptions
 open DataAvail.EntityFramework.Common.LinqHelpers
+open DataAvail.Common.Option
 
 [<AutoOpen>]
 module LogInToken =
@@ -37,7 +38,8 @@ module LogInToken =
             else (validateNullOrEmpty "client_secret" data.Client_Secret)) |]
         |> Array.choose id
 
-    let private checkPKCECodeChallenge sha256Provider codeVerifier itemCodeChallenge =
+    //
+    let private checkPKCEFlow sha256Provider codeVerifier itemCodeChallenge =
         let codeChallenge =
             sha256Provider codeVerifier
             |> cleanupCodeChallenge
@@ -46,6 +48,10 @@ module LogInToken =
         then Some(unAuthorized "code_verifier code_challenge mismatch")
         else None
 
+
+    //
+    let private checkAuthorizationCode code itemCode =
+        if code <> itemCode then Some(unAuthorized "code mismatch") else None
 
     let private checkApplicationClientSecret (dbContext: DbDataContext) clientId clientSecret =
 
@@ -67,6 +73,12 @@ module LogInToken =
                 else return None
 
         }
+
+    let private checkAuthorizationCodeFlow (dbContext: DbDataContext) code itemCode clientId clientSecret =
+        match checkAuthorizationCode code itemCode with
+        | Some exn -> exn |> Some |> Task.FromResult
+        | None -> checkApplicationClientSecret dbContext clientId clientSecret
+
 
     // https://auth0.com/docs/api/authentication?http#authorization-code-flow-with-pkce46
     // https://auth0.com/docs/api/authentication?http#authorization-code-flow45
@@ -122,9 +134,15 @@ module LogInToken =
                 let! exn =
                     match isPKCE with
                     | true ->
-                        checkPKCECodeChallenge env.Sha256Provider data.Code_Verifier item.CodeChallenge
+                        checkPKCEFlow env.Sha256Provider data.Code_Verifier item.CodeChallenge
                         |> Task.FromResult
-                    | false -> checkApplicationClientSecret env.DataContext data.Client_Id data.Client_Secret
+                    | false ->
+                        checkAuthorizationCodeFlow
+                            env.DataContext
+                            data.Code
+                            item.CodeChallenge
+                            data.Client_Id
+                            data.Client_Secret
 
                 match exn with
                 | Some exn ->
@@ -134,7 +152,6 @@ module LogInToken =
 
                 let socialType =
                     item.Social |> Option.map (fun f -> f.Type)
-
                 match! getUserDataForToken dataContext item.UserId socialType with
                 | Some tokenData ->
                     env.Logger.LogInformation

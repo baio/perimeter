@@ -65,7 +65,8 @@
         <Compile Include="Tenant\UserActivities\UserActivitiesTests.fs" />
         <Compile Include="Tenant\SocialConnections\CRUDTests.fs" />
         <Compile Include="Auth\SignUpTests.fs" />
-        <Compile Include="Auth\LogInTests.fs" />
+        <Compile Include="Auth\LogInPKCETests.fs" />
+        <Compile Include="Auth\LogInClientSecret.fs" />
         <Compile Include="Auth\LogInValidationTests.fs" />
         <Compile Include="Auth\SignInTests.fs" />
         <Compile Include="Auth\RefreshTokenTests.fs" />
