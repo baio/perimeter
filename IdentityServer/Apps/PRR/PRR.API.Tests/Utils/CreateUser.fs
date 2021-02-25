@@ -99,11 +99,12 @@ module CreateUser =
             let! code = logIn fixture logInData
 
             let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
-                { Grant_Type = "code"
+                { Grant_Type = "authorization_code"
                   Code = code
                   Redirect_Uri = logInData.Redirect_Uri
                   Client_Id = clientId
-                  Code_Verifier = codeVerifier }
+                  Code_Verifier = codeVerifier
+                  Client_Secret = null }
 
             let! result = fixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
 

@@ -119,7 +119,8 @@ module LogIn =
                       Code = authCode
                       Redirect_Uri = logInData.Redirect_Uri
                       Client_Id = clientId
-                      Code_Verifier = sprintf "%s1" codeVerfier }
+                      Code_Verifier = sprintf "%s1" codeVerfier
+                      Client_Secret = null }
 
                 let! result = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
                 do ensureUnauthorized result
@@ -156,7 +157,8 @@ module LogIn =
                       Code = authCode
                       Redirect_Uri = logInData.Redirect_Uri
                       Client_Id = clientId
-                      Code_Verifier = codeVerfier }
+                      Code_Verifier = codeVerfier
+                      Client_Secret = null }
 
                 let! result' = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
                 do! ensureSuccessAsync result'
@@ -183,7 +185,8 @@ module LogIn =
                           .Value
                           .GetTenant()
                           .TenantManagementApplicationClientId
-                  Code_Verifier = codeVerfier }
+                  Code_Verifier = codeVerfier
+                  Client_Secret = null }
 
             task {
                 let! result = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData

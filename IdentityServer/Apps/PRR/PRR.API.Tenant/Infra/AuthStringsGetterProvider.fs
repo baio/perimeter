@@ -25,7 +25,7 @@ module AuthStringsGetterProvider =
 
     let private authStringsGetter: IAuthStringsGetter =
         { ClientId = fun () -> getRandomString 33
-          // ClientSecret = fun () -> getRandomString 50
+          ClientSecret = fun () -> getRandomString 50
           // TODO : Read ???
           AuthorizationCode = fun () -> getRandomString 35
           HS256SigningSecret = fun () -> getRandomString 35

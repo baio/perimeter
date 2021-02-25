@@ -23,22 +23,37 @@ module LogInToken =
         >> replace "\/" "_"
         >> replace "=" ""
 
-    let private validateData (data: Data): BadRequestError array =
+    let private validateData (isPKCE: bool) (data: Data): BadRequestError array =
         [| (validateNullOrEmpty "client_id" data.Client_Id)
            (validateNullOrEmpty "code" data.Code)
            (validateNullOrEmpty "grant_type" data.Grant_Type)
            (validateContains [| "authorization_code" |] "grant_ype" data.Grant_Type)
            (validateNullOrEmpty "redirect_uri" data.Redirect_Uri)
            (validateUrl "redirect_uri" data.Redirect_Uri)
-           (validateNullOrEmpty "code_verifier" data.Code_Verifier) |]
+           (if isPKCE
+            then (validateNullOrEmpty "code_verifier" data.Code_Verifier)
+            else (validateNullOrEmpty "client_secret" data.Client_Secret)) |]
         |> Array.choose id
 
+    // https://auth0.com/docs/api/authentication?http#authorization-code-flow-with-pkce46
+    // https://auth0.com/docs/api/authentication?http#authorization-code-flow45
     let logInToken: LogInToken =
         fun env data ->
 
             env.Logger.LogInformation("LogInToken with ${@data}", data)
 
             task {
+
+                // if client_secret is empty consider this PKCE flow
+                let isPKCE = isEmpty data.Client_Secret
+
+                env.Logger.LogDebug("PKCE flow is ${isPKCE}", isPKCE)
+
+                let validationResult = validateData isPKCE data
+
+                if Seq.length validationResult > 0 then
+                    env.Logger.LogWarning("Validation error ${@data}", validationResult)
+                    return raise (BadRequest validationResult)
 
                 let! item = env.KeyValueStorage.GetValue<LogInKV> data.Code None
 
@@ -56,16 +71,19 @@ module LogInToken =
                 if (item.ExpiresAt < DateTime.UtcNow) then
                     env.Logger.LogWarning
                         ("LoginItem item expired at ${expiresAt} for code ${code}", item.ExpiresAt, data.Code)
+
                     raise (unAuthorized "code expires")
 
                 if data.Client_Id <> item.ClientId then
                     env.Logger.LogWarning
                         ("${clientId} and ${itemClientId} mismatch error", data.Client_Id, item.ClientId)
+
                     raise (unAuthorized "client_id mismatch")
 
                 if data.Redirect_Uri <> item.RedirectUri then
                     env.Logger.LogWarning
                         ("${redirectUri} and ${itemRedirectUri} mismatch error", data.Redirect_Uri, item.RedirectUri)
+
                     raise (unAuthorized "redirect_uri mismatch")
 
                 let codeChallenge =
@@ -77,6 +95,7 @@ module LogInToken =
                 if codeChallenge <> itemCodeChallenge then
                     env.Logger.LogWarning
                         ("${codeChallenge} and ${itemCodeChallenge} mismatch error", codeChallenge, itemCodeChallenge)
+
                     raise (unAuthorized "code_verifier code_challenge mismatch")
 
                 let socialType =
@@ -114,5 +133,6 @@ module LogInToken =
                 | None ->
                     env.Logger.LogWarning
                         ("$tokenData for ${userId} and ${socialType} is not found", item.UserId, socialType)
+
                     return raise (unAuthorized "user is not found")
             }

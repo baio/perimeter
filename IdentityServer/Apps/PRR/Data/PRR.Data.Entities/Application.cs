@@ -5,9 +5,10 @@ namespace PRR.Data.Entities
 {
     public enum FlowType
     {
-        PKCE,
+        AuthorizationCodePKCE,
         AuthorizationCode,
-        Implicit
+        Password,
+        RefreshToken
     }
 
     public class Application
@@ -22,7 +23,8 @@ namespace PRR.Data.Entities
 
         [Required] public string ClientId { get; set; }
 
-        // [Required] public string ClientSecret { get; set; }
+        // For AuthorizationCode flow
+        public string ClientSecret { get; set; }
 
         [Required] public DateTime DateCreated { get; set; }
 
@@ -31,12 +33,12 @@ namespace PRR.Data.Entities
         [Required] public int RefreshTokenExpiresIn { get; set; }
 
         [Required] public string AllowedCallbackUrls { get; set; }
-        
+
         [Required] public string AllowedLogoutCallbackUrls { get; set; }
 
         [Required] public bool SSOEnabled { get; set; }
 
-        [Required] public FlowType Flow { get; set; }
+        [Required] public FlowType[] Flows { get; set; }
 
         [Required] public bool IsDomainManagement { get; set; }
     }

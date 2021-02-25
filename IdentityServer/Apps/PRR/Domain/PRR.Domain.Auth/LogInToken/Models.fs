@@ -18,8 +18,11 @@ module Models =
           Code: Token
           Redirect_Uri: string
           Client_Id: string
-          Code_Verifier: string }
-
+          // PKCE
+          Code_Verifier: string
+          // Default
+          Client_Secret: string }
+    
     type Result =
         { id_token: string
           access_token: string

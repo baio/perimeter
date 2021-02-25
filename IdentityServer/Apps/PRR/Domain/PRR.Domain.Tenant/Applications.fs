@@ -29,14 +29,14 @@ module Applications =
         { Id: int
           Name: string
           ClientId: string
-          // ClientSecret: string
+          ClientSecret: string
           DateCreated: DateTime
           IdTokenExpiresIn: int
           RefreshTokenExpiresIn: int
           AllowedCallbackUrls: string
           AllowedLogoutCallbackUrls: string
           SSOEnabled: bool
-          Flow: FlowType }
+          Flows: FlowType array }
 
     type CreateEnv =
         { AuthStringsProvider: IAuthStringsGetter
@@ -61,26 +61,34 @@ module Applications =
         | ex -> raise ex
 
     let create (env: CreateEnv): Create<DomainId * PostLike, int, DbDataContext> =
-        createCatch<Application, _, _, _> catch (fun (domainId, dto) ->
-            Application
-                (Name = dto.Name,
-                 ClientId = env.AuthStringsProvider.ClientId(),
-                 DomainId = domainId,
-                 // ClientSecret = env.AuthStringsProvider.ClientSecret(),
-                 IdTokenExpiresIn = int env.IdTokenExpiresIn,
-                 RefreshTokenExpiresIn = int env.RefreshTokenExpiresIn,
-                 Flow = FlowType.PKCE,
-                 AllowedLogoutCallbackUrls = "*",
-                 AllowedCallbackUrls = "*")) (fun x -> x.Id)
+        createCatch<Application, _, _, _>
+            catch
+            (fun (domainId, dto) ->
+                Application
+                    (Name = dto.Name,
+                     ClientId = env.AuthStringsProvider.ClientId(),
+                     DomainId = domainId,
+                     ClientSecret = env.AuthStringsProvider.ClientSecret(),
+                     IdTokenExpiresIn = int env.IdTokenExpiresIn,
+                     RefreshTokenExpiresIn = int env.RefreshTokenExpiresIn,
+                     Flows =
+                         [| FlowType.AuthorizationCodePKCE
+                            FlowType.RefreshToken |],
+                     AllowedLogoutCallbackUrls = "*",
+                     AllowedCallbackUrls = "*"))
+            (fun x -> x.Id)
 
     let update: Update<int, DomainId * PutLike, DbDataContext> =
-        updateCatch<Application, _, _, _> catch (fun id -> Application(Id = id)) (fun (_, dto) entity ->
-            entity.Name <- dto.Name
-            entity.IdTokenExpiresIn <- dto.IdTokenExpiresIn
-            entity.RefreshTokenExpiresIn <- dto.RefreshTokenExpiresIn
-            entity.AllowedCallbackUrls <- dto.AllowedCallbackUrls
-            entity.AllowedLogoutCallbackUrls <- dto.AllowedLogoutCallbackUrls
-            entity.SSOEnabled <- dto.SSOEnabled)
+        updateCatch<Application, _, _, _>
+            catch
+            (fun id -> Application(Id = id))
+            (fun (_, dto) entity ->
+                entity.Name <- dto.Name
+                entity.IdTokenExpiresIn <- dto.IdTokenExpiresIn
+                entity.RefreshTokenExpiresIn <- dto.RefreshTokenExpiresIn
+                entity.AllowedCallbackUrls <- dto.AllowedCallbackUrls
+                entity.AllowedLogoutCallbackUrls <- dto.AllowedLogoutCallbackUrls
+                entity.SSOEnabled <- dto.SSOEnabled)
 
     let remove: Remove<int, DbDataContext> = remove (fun id -> Application(Id = id))
 
@@ -89,14 +97,14 @@ module Applications =
             { Id = p.Id
               Name = p.Name
               ClientId = p.ClientId
-              // ClientSecret = p.ClientSecret
+              ClientSecret = p.ClientSecret
               DateCreated = p.DateCreated
               IdTokenExpiresIn = p.IdTokenExpiresIn
               RefreshTokenExpiresIn = p.RefreshTokenExpiresIn
               AllowedCallbackUrls = p.AllowedCallbackUrls
               AllowedLogoutCallbackUrls = p.AllowedLogoutCallbackUrls
               SSOEnabled = p.SSOEnabled
-              Flow = p.Flow } @>
+              Flows = p.Flows } @>
 
     let getOne: GetOne<int, GetLike, DbDataContext> =
         getOne<Application, _, _, _> (<@ fun p id -> p.Id = id @>) (selectApp)
@@ -138,6 +146,7 @@ module Applications =
                     where
                         (p.DomainId = domainId
                          && p.IsDomainManagement = false)
+
                     select ((%selectApp) p)
             }
             |> executeListQuery prms

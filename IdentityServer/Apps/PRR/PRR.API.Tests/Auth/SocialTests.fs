@@ -163,7 +163,7 @@ module SocialTests =
                     |> sprintf "https:\/\/github\.com\/login\/oauth\/authorize\?client_id=%s"
                     |> sprintf "%s&redirect_uri=(.+)&state=(\w+)"
 
-                let expectedLocation = Regex expectedUrl               
+                let expectedLocation = Regex expectedUrl
 
                 (expectedLocation.IsMatch location)
                 |> should equal true
@@ -214,7 +214,8 @@ module SocialTests =
                       Code = authCode
                       Redirect_Uri = "http://localhost:4200"
                       Client_Id = clientId
-                      Code_Verifier = codeVerifier }
+                      Code_Verifier = codeVerifier
+                      Client_Secret = null }
 
                 let! result' = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
 

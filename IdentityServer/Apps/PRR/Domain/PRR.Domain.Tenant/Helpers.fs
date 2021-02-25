@@ -26,8 +26,10 @@ module Helpers =
             (Domain = domain,
              Name = "Tenant domains management application",
              ClientId = authStringProvider.ClientId(),
-             // ClientSecret = authStringProvider.ClientSecret(),
-             Flow = FlowType.PKCE,
+             ClientSecret = authStringProvider.ClientSecret(),
+             Flows =
+                 [| FlowType.AuthorizationCodePKCE
+                    FlowType.RefreshToken |],
              AllowedCallbackUrls = "*",
              AllowedLogoutCallbackUrls = "*",
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
@@ -60,12 +62,14 @@ module Helpers =
             (Domain = domain,
              Name = name,
              ClientId = authStringProvider.ClientId(),
-             // ClientSecret = authStringProvider.ClientSecret(),
+             ClientSecret = authStringProvider.ClientSecret(),
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
              RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
              AllowedCallbackUrls = "*",
              AllowedLogoutCallbackUrls = "*",
-             Flow = FlowType.PKCE,
+             Flows =
+                 [| FlowType.AuthorizationCodePKCE
+                    FlowType.RefreshToken |],
              IsDomainManagement = false)
 
     let createDomainManagementApp (authStringProvider: IAuthStringsGetter) (authConfig: AuthConfig) domain =
@@ -73,12 +77,15 @@ module Helpers =
             (Domain = domain,
              Name = "Domain management application",
              ClientId = authStringProvider.ClientId(),
-             // ClientSecret = authStringProvider.ClientSecret(),
+             ClientSecret = authStringProvider.ClientSecret(),
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
              RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
              AllowedCallbackUrls = "*",
              AllowedLogoutCallbackUrls = "*",
-             Flow = FlowType.PKCE,
+             Flows =
+                 [| FlowType.AuthorizationCodePKCE
+                    FlowType.AuthorizationCode
+                    FlowType.RefreshToken |],
              SSOEnabled = true,
              IsDomainManagement = true)
 
