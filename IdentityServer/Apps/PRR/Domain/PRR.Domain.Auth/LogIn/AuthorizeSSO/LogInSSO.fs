@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.LogInSSO
+﻿namespace PRR.Domain.Auth.LogIn.AuthorizeSSO
 
 open PRR.Domain.Models
 
@@ -137,7 +137,7 @@ module Authorize =
 
                     let code = env.CodeGenerator()
 
-                    let result: PRR.Domain.Auth.LogIn.Authorize.Models.Result =
+                    let result: PRR.Domain.Auth.LogIn.Authorize.Models.AuthorizeResult =
                         { RedirectUri = data.Redirect_Uri
                           State = data.State
                           Code = code }

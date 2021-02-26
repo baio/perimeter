@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.LogInSSO
+﻿namespace PRR.Domain.Auth.LogIn.AuthorizeSSO
 
 open PRR.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive

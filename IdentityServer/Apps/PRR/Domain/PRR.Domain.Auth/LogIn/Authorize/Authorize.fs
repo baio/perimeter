@@ -129,7 +129,7 @@ module Authorize =
 
             let code = env.CodeGenerator()
 
-            let result: Result =
+            let result: AuthorizeResult =
                 { RedirectUri = data.RedirectUri
                   State = data.State
                   Code = code }

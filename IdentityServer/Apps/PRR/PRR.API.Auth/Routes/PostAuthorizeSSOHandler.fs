@@ -2,10 +2,10 @@
 
 open DataAvail.Giraffe.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open PRR.Domain.Auth.LogInSSO
+open PRR.Domain.Auth.LogIn.AuthorizeSSO
 open Microsoft.Extensions.Logging
 
-module internal PostLogInSSO =
+module internal PostAuthorizeSSOHandler =
 
     let getEnv ctx =
         { DataContext = getDataContext ctx

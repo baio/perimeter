@@ -38,6 +38,9 @@
         <Compile Include="LogIn\Authorize\UserHelpers.fs" />
         <Compile Include="LogIn\Authorize\OnSuccess.fs" />
         <Compile Include="LogIn\Authorize\Authorize.fs" />
+        <Compile Include="LogIn\AuthorizeSSO\UserHelpers.fs" />
+        <Compile Include="LogIn\AuthorizeSSO\Models.fs" />
+        <Compile Include="LogIn\AuthorizeSSO\LogInSSO.fs" />
         <Compile Include="LogIn\TokenAuthorizationCode\Models.fs" />
         <Compile Include="LogIn\TokenAuthorizationCode\TokenAuthorizationCode.fs" />
         <Compile Include="LogIn\TokenAuthorizationCode\LogInEmail.fs" />
@@ -63,9 +66,6 @@
         <Compile Include="ResetPassword\ResetPassword.fs" />
         <Compile Include="UpdatePassword\Models.fs" />
         <Compile Include="UpdatePassword\UpdatePassword.fs" />
-        <Compile Include="LogInSSO\Models.fs" />
-        <Compile Include="LogInSSO\UserHelpers.fs" />
-        <Compile Include="LogInSSO\LogInSSO.fs" />
         <Compile Include="LogOut\Models.fs" />
         <Compile Include="LogOut\LogOut.fs" />
         <Compile Include="Social\OAuth1a\SignAuthorizationHeader.fs" />

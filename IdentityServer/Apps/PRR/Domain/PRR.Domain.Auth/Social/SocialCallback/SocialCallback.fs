@@ -87,7 +87,7 @@ module Social =
                 return user.Id
         }
 
-    let private getSuccessRedirectUrl (loginResult: PRR.Domain.Auth.LogIn.Authorize.Models.Result) =
+    let private getSuccessRedirectUrl (loginResult: PRR.Domain.Auth.LogIn.Authorize.Models.AuthorizeResult) =
         sprintf "%s?code=%s&state=%s" loginResult.RedirectUri loginResult.Code loginResult.State
 
     let private getSocialLoginItem env state =

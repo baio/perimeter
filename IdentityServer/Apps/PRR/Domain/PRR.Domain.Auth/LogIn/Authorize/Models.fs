@@ -10,7 +10,7 @@ open System.Threading.Tasks
 module Models =
 
     [<CLIMutable>]
-    type Result =
+    type AuthorizeResult =
         { State: string
           Code: string
           RedirectUri: string }
@@ -36,4 +36,4 @@ module Models =
           Logger: ILogger
           KeyValueStorage: IKeyValueStorage }
 
-    type Authorize = Env -> string option -> Data -> Task<Result>
+    type Authorize = Env -> string option -> Data -> Task<AuthorizeResult>

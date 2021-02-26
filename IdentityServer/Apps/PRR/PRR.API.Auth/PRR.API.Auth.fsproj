@@ -57,7 +57,7 @@
         <Compile Include="Routes\PostResetPasswordConfirm.fs" />
         <Compile Include="Routes\PutPassword.fs" />
         <Compile Include="Routes\PostAuthorizeHandler.fs" />
-        <Compile Include="Routes\LogInSSO.fs" />
+        <Compile Include="Routes\PostAuthorizeSSOHandler.fs" />
         <Compile Include="Routes\PostAuthorize.fs" />
         <Compile Include="Routes\PostToken.fs" />
         <Compile Include="Routes\PostRefreshToken.fs" />

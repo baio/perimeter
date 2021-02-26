@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.LogInSSO
+﻿namespace PRR.Domain.Auth.LogIn.AuthorizeSSO
 
 open PRR.Domain.Models
 
@@ -30,4 +30,4 @@ module Models =
           Logger: ILogger
           KeyValueStorage: IKeyValueStorage }
 
-    type LogInSSO = Env -> string -> Data -> Task<Result>
+    type LogInSSO = Env -> string -> Data -> Task<AuthorizeResult>

@@ -5,7 +5,7 @@ open DataAvail.Giraffe.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Microsoft.AspNetCore.Http
 open PRR.API.Auth.Routes.Helpers
-open PRR.Domain.Auth.LogInSSO
+open PRR.Domain.Auth.LogIn.AuthorizeSSO
 open Microsoft.Extensions.Logging
 
 module PostAuthorize =
@@ -38,7 +38,7 @@ module PostAuthorize =
                 | Some sso ->
                     logger.LogDebug("Prompt none and sso cookie found, use SSO handler")
 
-                    let! (_, returnUrl) = PostLogInSSO.handler ctx sso
+                    let! (_, returnUrl) = PostAuthorizeSSOHandler.handler ctx sso
                     ctx.Response.Redirect(returnUrl, true)
                     logger.LogDebug("Redirect to ${redirectTo}", returnUrl)
                     return! redirectTo false returnUrl next ctx
