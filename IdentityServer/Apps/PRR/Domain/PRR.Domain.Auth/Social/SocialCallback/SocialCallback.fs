@@ -15,6 +15,7 @@ open DataAvail.EntityFramework.Common
 open DataAvail.Http.Exceptions
 open DataAvail.Common.Option
 open PRR.Domain.Auth.Social.SocialCallback.Identities
+open PRR.Domain.Auth.LogIn.Authorize.LogInUser
 
 [<AutoOpen>]
 module Social =
