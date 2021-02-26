@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.Social.SocialCallback.Identities
+﻿namespace PRR.Domain.Auth.LogIn.Social.SocialCallback.Identities
 
 open System.Security.Claims
 open PRR.Domain.Models

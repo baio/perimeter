@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.Social.SocialCallback.Identities
+﻿namespace PRR.Domain.Auth.LogIn.Social.SocialCallback.Identities
 
 open DataAvail.Http.Exceptions.Exceptions
 open Microsoft.Extensions.Logging
@@ -9,7 +9,7 @@ open PRR.Data.Entities
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open DataAvail.Common
 open DataAvail.Common.Option
-open PRR.Domain.Auth.Social.OAuth1a
+open PRR.Domain.Auth.LogIn.Social.OAuth1a
 
 // https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/manage-account-settings/api-reference/get-account-verify_credentials
 // https://stackoverflow.com/questions/45259100/twitter-api-returning-215-bad-authentication-data-when-calling-account-verify-cr

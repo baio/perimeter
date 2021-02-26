@@ -4,7 +4,7 @@ open Microsoft.AspNetCore.Http
 open Giraffe
 open DataAvail.Giraffe.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open PRR.Domain.Auth.Social.SocialAuth
+open PRR.Domain.Auth.LogIn.Social.SocialAuth
 open PRR.API.Auth.Routes.Helpers
 open Microsoft.Extensions.Logging
 

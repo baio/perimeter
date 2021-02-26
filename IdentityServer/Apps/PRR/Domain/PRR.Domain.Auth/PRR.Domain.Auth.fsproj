@@ -47,6 +47,16 @@
         <Compile Include="LogIn\TokenAuthorizationCode\LogInEmail.fs" />
         <Compile Include="LogIn\TokenResourceOwnerPassword\Models.fs" />
         <Compile Include="LogIn\TokenResourceOwnerPassword\TokenResourceOwnerPassword.fs" />
+        <Compile Include="LogIn\Social\OAuth1a\SignAuthorizationHeader.fs" />
+        <Compile Include="LogIn\Social\SocialAuth\Models.fs" />
+        <Compile Include="LogIn\Social\SocialAuth\GetSocialRedirectUrl\GetTwitterRedirectUrl.fs" />
+        <Compile Include="LogIn\Social\SocialAuth\GetSocialRedirectUrl\GetCommonRedirectUrl.fs" />
+        <Compile Include="LogIn\Social\SocialAuth\SocialAuth.fs" />
+        <Compile Include="LogIn\Social\SocialCallback\Models.fs" />
+        <Compile Include="LogIn\Social\SocialCallback\Identities\Github.fs" />
+        <Compile Include="LogIn\Social\SocialCallback\Identities\Google.fs" />
+        <Compile Include="LogIn\Social\SocialCallback\Identities\Twitter.fs" />
+        <Compile Include="LogIn\Social\SocialCallback\SocialCallback.fs" />
         <Compile Include="validatePassword.fs" />
         <Compile Include="SignUp\Models.fs" />
         <Compile Include="SignUp\OnSuccess.fs" />
@@ -69,16 +79,6 @@
         <Compile Include="UpdatePassword\UpdatePassword.fs" />
         <Compile Include="LogOut\Models.fs" />
         <Compile Include="LogOut\LogOut.fs" />
-        <Compile Include="Social\OAuth1a\SignAuthorizationHeader.fs" />
-        <Compile Include="Social\SocialAuth\Models.fs" />
-        <Compile Include="Social\SocialAuth\GetSocialRedirectUrl\GetTwitterRedirectUrl.fs" />
-        <Compile Include="Social\SocialAuth\GetSocialRedirectUrl\GetCommonRedirectUrl.fs" />
-        <Compile Include="Social\SocialAuth\SocialAuth.fs" />
-        <Compile Include="Social\SocialCallback\Models.fs" />
-        <Compile Include="Social\SocialCallback\Identities\Github.fs" />
-        <Compile Include="Social\SocialCallback\Identities\Google.fs" />
-        <Compile Include="Social\SocialCallback\Identities\Twitter.fs" />
-        <Compile Include="Social\SocialCallback\SocialCallback.fs" />
         <Compile Include="ApplicationInfo.fs" />
     </ItemGroup>
 

@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.Social.SocialCallback.Identities
+﻿namespace PRR.Domain.Auth.LogIn.Social.SocialCallback.Identities
 
 open PRR.Domain.Models
 open DataAvail.HttpRequest.Core

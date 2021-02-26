@@ -132,7 +132,7 @@ module SocialTests =
 
                 let url = "/api/auth/social"
 
-                let data: PRR.Domain.Auth.Social.SocialAuth.Models.Data =
+                let data: PRR.Domain.Auth.LogIn.Social.SocialAuth.Models.Data =
                     { Social_Name = "github"
                       Client_Id = clientId
                       Response_Type = "code"

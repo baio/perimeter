@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.Social.OAuth1a
+﻿namespace PRR.Domain.Auth.LogIn.Social.OAuth1a
 
 open System.Net
 open System.Security.Cryptography

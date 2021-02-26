@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.Social.SocialAuth
+﻿namespace PRR.Domain.Auth.LogIn.Social.SocialAuth
 
 open System.Threading.Tasks
 open PRR.Domain.Models
@@ -9,7 +9,7 @@ open Microsoft.Extensions.Logging
 open DataAvail.KeyValueStorage.Core
 open DataAvail.EntityFramework.Common
 open DataAvail.Http.Exceptions
-open PRR.Domain.Auth.Social.SocialAuth.GetSocialRedirectUrl
+open PRR.Domain.Auth.LogIn.Social.SocialAuth.GetSocialRedirectUrl
 
 [<AutoOpen>]
 module SocialAuth =

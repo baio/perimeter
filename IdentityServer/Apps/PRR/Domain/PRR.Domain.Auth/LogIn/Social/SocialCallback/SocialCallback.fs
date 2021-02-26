@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.Social.SocialCallback
+﻿namespace PRR.Domain.Auth.LogIn.Social.SocialCallback
 
 // open PRR.Domain.Auth.LogIn.Authorize
 open DataAvail.Common
@@ -14,7 +14,7 @@ open Microsoft.Extensions.Logging
 open DataAvail.EntityFramework.Common
 open DataAvail.Http.Exceptions
 open DataAvail.Common.Option
-open PRR.Domain.Auth.Social.SocialCallback.Identities
+open PRR.Domain.Auth.LogIn.Social.SocialCallback.Identities
 open PRR.Domain.Auth.LogIn.Authorize.LogInUser
 
 [<AutoOpen>]

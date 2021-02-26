@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.Social.SocialAuth.GetSocialRedirectUrl
+﻿namespace PRR.Domain.Auth.LogIn.Social.SocialAuth.GetSocialRedirectUrl
 
 open PRR.Domain.Models
 

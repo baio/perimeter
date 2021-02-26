@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.Social.SocialAuth.GetSocialRedirectUrl
+﻿namespace PRR.Domain.Auth.LogIn.Social.SocialAuth.GetSocialRedirectUrl
 
 open System.Net
 open System.Security.Cryptography
@@ -11,7 +11,7 @@ open DataAvail.HttpRequest.Core
 open System
 open DataAvail.Common
 open DataAvail.Common.Option
-open PRR.Domain.Auth.Social.OAuth1a
+open PRR.Domain.Auth.LogIn.Social.OAuth1a
 
 // https://developer.twitter.com/en/docs/apps/callback-urls
 // https://developer.twitter.com/en/docs/authentication/oauth-1-0a/obtaining-user-access-tokens

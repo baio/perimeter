@@ -4,7 +4,7 @@ open PRR.Domain.Models
 open Microsoft.AspNetCore.Http
 open Giraffe
 open DataAvail.Giraffe.Common
-open PRR.Domain.Auth.Social.SocialCallback
+open PRR.Domain.Auth.LogIn.Social.SocialCallback
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
 module GetAuthSocialCallback =

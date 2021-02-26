@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.Social.SocialAuth
+﻿namespace PRR.Domain.Auth.LogIn.Social.SocialAuth
 
 open System.Threading.Tasks
 open DataAvail.HttpRequest.Core
