@@ -14,6 +14,7 @@ open System.Security.Cryptography
 open System.Web
 open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Tenant
+open PRR.Domain.Auth.LogIn.TokenAuthorizationCode
 
 [<AutoOpen>]
 module CreateUser =
@@ -72,7 +73,7 @@ module CreateUser =
 
         (codeVerifier,
          (SHA256.getSha256Base64Hash sha256 codeVerifier)
-         |> LogInToken.LogInToken.cleanupCodeChallenge)
+         |> cleanupCodeChallenge)
 
     let logInUser' scopes (fixture: TestFixture) (clientId: string) (email: string) (password: string) =
         task {
@@ -100,7 +101,7 @@ module CreateUser =
 
             let! code = logIn fixture logInData
 
-            let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
+            let loginTokenData: Models.Data =
                 { Grant_Type = "authorization_code"
                   Code = code
                   Redirect_Uri = logInData.Redirect_Uri

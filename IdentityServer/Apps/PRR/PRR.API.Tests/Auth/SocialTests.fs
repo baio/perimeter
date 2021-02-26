@@ -8,7 +8,7 @@ open DataAvail.HttpRequest.Core
 open FSharpx
 open Newtonsoft.Json
 open PRR.API.Tests.Utils
-open PRR.Domain.Auth.LogInToken
+open PRR.Domain.Auth.LogIn.TokenAuthorizationCode
 open PRR.Domain.Auth.SignUp
 open PRR.Domain.Tenant
 open Xunit
@@ -210,7 +210,7 @@ module SocialTests =
 
             task {
 
-                let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
+                let loginTokenData: PRR.Domain.Auth.LogIn.TokenAuthorizationCode.Models.Data =
                     { Grant_Type = "authorization_code"
                       Code = authCode
                       Redirect_Uri = "http://localhost:4200"

@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.LogInToken
+﻿namespace PRR.Domain.Auth.LogIn.TokenAuthorizationCode
 
 open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Models
@@ -34,4 +34,4 @@ module Models =
           Logger: ILogger
           PublishEndpoint: IPublishEndpoint }
 
-    type LogInToken = Env -> Data -> Task<LogInResult>
+    type TokenAuthorizationCode = Env -> Data -> Task<LogInResult>

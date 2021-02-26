@@ -8,7 +8,7 @@ open PRR.API.Auth.Infra
 open PRR.API.Tenant.Infra
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth.LogIn.Common
-open PRR.Domain.Auth.LogInToken
+open PRR.Domain.Auth.LogIn.TokenAuthorizationCode
 open PRR.Domain.Auth.SignUp
 open System
 open System.Security.Cryptography
@@ -102,7 +102,7 @@ module LogInClientSecret =
             task {
                 let! code = logIn testFixture logInData
 
-                let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
+                let loginTokenData: PRR.Domain.Auth.LogIn.TokenAuthorizationCode.Models.Data =
                     { Grant_Type = "authorization_code"
                       Code = code
                       Redirect_Uri = logInData.Redirect_Uri
@@ -140,7 +140,7 @@ module LogInClientSecret =
                 let! result = logIn testFixture logInData
                 authCode <- result
 
-                let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
+                let loginTokenData: PRR.Domain.Auth.LogIn.TokenAuthorizationCode.Models.Data =
                     { Grant_Type = "authorization_code"
                       Code = authCode
                       Redirect_Uri = logInData.Redirect_Uri
@@ -164,7 +164,7 @@ module LogInClientSecret =
         [<Fact>]
         [<Priority(4)>]
         member __.``D Login token with the same code should give 401``() =
-            let loginTokenData: PRR.Domain.Auth.LogInToken.Models.Data =
+            let loginTokenData: PRR.Domain.Auth.LogIn.TokenAuthorizationCode.Models.Data =
                 { Grant_Type = "authorization_code"
                   Code = authCode
                   Redirect_Uri = redirectUri

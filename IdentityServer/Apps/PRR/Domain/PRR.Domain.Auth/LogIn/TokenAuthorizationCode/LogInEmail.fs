@@ -5,7 +5,7 @@ open PRR.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
 open PRR.Data.Entities
-open PRR.Domain.Auth.LogInToken
+open PRR.Domain.Auth.LogIn.TokenAuthorizationCode
 open DataAvail.Http.Exceptions
 
 let private getUserDataForToken (dataContext: DbDataContext) email password =

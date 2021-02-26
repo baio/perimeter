@@ -39,7 +39,7 @@
         <Compile Include="LogIn\Authorize\OnSuccess.fs" />
         <Compile Include="LogIn\Authorize\LogIn.fs" />
         <Compile Include="LogIn\TokenAuthorizationCode\Models.fs" />
-        <Compile Include="LogIn\TokenAuthorizationCode\LogInToken.fs" />
+        <Compile Include="LogIn\TokenAuthorizationCode\TokenAuthorizationCode.fs" />
         <Compile Include="LogIn\TokenAuthorizationCode\LogInEmail.fs" />
         <Compile Include="LogIn\TokenResourceOwnerPassword\Models.fs" />
         <Compile Include="LogIn\TokenResourceOwnerPassword\TokenResourceOwnerPassword.fs" />

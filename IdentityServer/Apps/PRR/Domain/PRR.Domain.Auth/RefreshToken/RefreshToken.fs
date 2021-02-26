@@ -3,7 +3,7 @@
 open System
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.Entities
-open PRR.Domain.Auth.LogInToken
+open PRR.Domain.Auth.LogIn.TokenAuthorizationCode
 open PRR.Domain.Auth.Common
 open Microsoft.Extensions.Logging
 open DataAvail.Http.Exceptions

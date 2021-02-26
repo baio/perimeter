@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.LogInToken
+﻿namespace PRR.Domain.Auth.LogIn.TokenAuthorizationCode
 
 open System.Threading.Tasks
 open PRR.Domain.Models
@@ -80,7 +80,7 @@ module LogInToken =
 
     // https://auth0.com/docs/api/authentication?http#authorization-code-flow-with-pkce46
     // https://auth0.com/docs/api/authentication?http#authorization-code-flow45
-    let logInToken: LogInToken =
+    let tokenAuthorizationCode: TokenAuthorizationCode =
         fun env data ->
 
             env.Logger.LogInformation("LogInToken with ${@data}", data)
