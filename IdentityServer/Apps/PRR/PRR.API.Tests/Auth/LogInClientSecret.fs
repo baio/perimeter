@@ -7,6 +7,7 @@ open Microsoft.Extensions.DependencyInjection
 open PRR.API.Auth.Infra
 open PRR.API.Tenant.Infra
 open PRR.API.Tests.Utils
+open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Auth.LogInToken
 open PRR.Domain.Auth.SignUp
 open System
@@ -152,7 +153,7 @@ module LogInClientSecret =
 
                 let! result =
                     result'
-                    |> readAsJsonAsync<PRR.Domain.Auth.LogInToken.Models.Result>
+                    |> readAsJsonAsync<LogInResult>
 
                 result.access_token |> should be (not' Empty)
                 result.id_token |> should be (not' Empty)

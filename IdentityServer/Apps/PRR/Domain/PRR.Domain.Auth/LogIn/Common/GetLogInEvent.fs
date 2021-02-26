@@ -1,16 +1,15 @@
-﻿namespace PRR.Domain.Auth.LogInToken
-
-open PRR.Domain.Models
-open FSharp.Control.Tasks.V2.ContextInsensitive
-open PRR.Data.DataContext
-open System
-open PRR.Domain.Auth.Common
-open PRR.Domain.Common
-open DataAvail.EntityFramework.Common
-open DataAvail.Http.Exceptions
+﻿namespace PRR.Domain.Auth.LogIn.Common
 
 [<AutoOpen>]
-module private GetLogInEvent =
+module GetLogInEvent =
+
+    open FSharp.Control.Tasks.V2.ContextInsensitive
+    open PRR.Data.DataContext
+    open System
+    open PRR.Domain.Auth.Common
+    open PRR.Domain.Common
+    open DataAvail.EntityFramework.Common
+    open DataAvail.Http.Exceptions
 
     let getLoginEvent (dataContext: DbDataContext) clientId userId social isPerimeterClient =
         task {

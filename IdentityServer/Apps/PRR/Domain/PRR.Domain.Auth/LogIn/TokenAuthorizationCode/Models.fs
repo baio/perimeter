@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.LogInToken
 
+open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Models
 
 open DataAvail.KeyValueStorage.Core
@@ -22,11 +23,6 @@ module Models =
           Code_Verifier: string
           // Default
           Client_Secret: string }
-    
-    type Result =
-        { id_token: string
-          access_token: string
-          refresh_token: string }
 
     type Env =
         { DataContext: DbDataContext
@@ -38,4 +34,4 @@ module Models =
           Logger: ILogger
           PublishEndpoint: IPublishEndpoint }
 
-    type LogInToken = Env -> Data -> Task<Result>
+    type LogInToken = Env -> Data -> Task<LogInResult>

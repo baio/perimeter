@@ -1,0 +1,113 @@
+﻿namespace PRR.Domain.Auth.LogIn.TokenResourceOwnerPassword
+
+[<AutoOpen>]
+module TokenResourceOwnerPassword =
+
+    open System
+    open DataAvail.Common
+    open PRR.Data.DataContext
+    open PRR.Domain.Auth.LogIn.Common
+    open DataAvail.Http.Exceptions
+    open Microsoft.Extensions.Logging
+    open FSharp.Control.Tasks.V2.ContextInsensitive
+    open DataAvail.EntityFramework.Common.LinqHelpers
+    open PRR.Domain.Auth.Common
+    open PRR.Domain.Auth
+
+
+    let private validateData (data: Data): BadRequestError array =
+        [| (validateNullOrEmpty "client_id" data.Client_Id)
+           (validateNullOrEmpty "grant_type" data.Grant_Type)
+           (validateContains [| "password" |] "grant_ype" data.Grant_Type)
+           (validateNullOrEmpty "username" data.Username)
+           (validateNullOrEmpty "password" data.Password)
+           (validateNullOrEmpty "scope" data.Scope) |]
+        |> Array.choose id
+
+    let private findUserId (dataContext: DbDataContext) (username: string) (hashedPassword: string) =
+        query {
+            for user in dataContext.Users do
+                where
+                    (user.Email = username
+                     && user.Password = hashedPassword)
+
+                select user.Id
+        }
+        |> toSingleOptionAsync
+
+    let tokenResourceOwnerPassword: TokenResourceOwnerPassword =
+        fun env data ->
+
+            let logger = env.Logger
+
+            logger.LogDebug("TokenResourceOwnerPassword with ${@data}", data)
+
+            task {
+                let validationResult = validateData data
+
+                if Seq.length validationResult > 0 then
+                    logger.LogWarning("Validation error ${@data}", validationResult)
+                    raise (BadRequest validationResult)
+
+                let! isValidCredentials = findUserId env.DataContext data.Username data.Password
+
+                let userId =
+                    match isValidCredentials with
+                    | Some userId -> userId
+                    | None ->
+                        logger.LogWarning("Invalid username or password")
+                        raise (unAuthorized "Invalid username or password")
+
+
+                let scopes = data.Scope.Split " "
+
+                env.Logger.LogInformation
+                    ("Validate ${@scopes} for @{email} and @{clientId} ", scopes, data.Username, data.Client_Id)
+
+                let! validatedScopes = validateScopes env.DataContext data.Username data.Client_Id scopes
+
+                env.Logger.LogInformation("${@validatedScopes} validated", validatedScopes)
+
+                let! userDataForToken = getUserDataForToken env.DataContext userId None
+
+                match userDataForToken with
+                | Some tokenData ->
+                    env.Logger.LogInformation("${@tokenData} for ${userId}", tokenData, userId)
+
+                    let signInUserEnv: SignInUserEnv =
+                        { DataContext = env.DataContext
+                          JwtConfig = env.JwtConfig
+                          Logger = env.Logger
+                          HashProvider = env.HashProvider }
+
+                    let! (result, clientId, isPerimeterClient) =
+                        signInUser signInUserEnv tokenData data.Client_Id (ValidatedScopes validatedScopes)
+
+                    let refreshTokenItem: RefreshTokenKV =
+                        { Token = result.refresh_token
+                          ClientId = clientId
+                          UserId = userId
+                          ExpiresAt = DateTime.UtcNow.AddMinutes(float env.RefreshTokenExpiresIn)
+                          Scopes = scopes
+                          IsPerimeterClient = isPerimeterClient
+                          SocialType = None }
+
+
+                    env.Logger.LogInformation("Success with refreshToken ${@refreshToken}", refreshTokenItem)
+
+                    let env': OnLogInTokenSuccess.Env =
+                        { DataContext = env.DataContext
+                          PublishEndpoint = env.PublishEndpoint
+                          Logger = env.Logger
+                          KeyValueStorage = env.KeyValueStorage }
+
+                    let loginItem: Item =
+                        { Code = None
+                          ClientId = data.Client_Id
+                          UserId = userId
+                          Social = None }
+
+                    do! onLoginTokenSuccess env' loginItem refreshTokenItem isPerimeterClient
+
+                    return result
+            }

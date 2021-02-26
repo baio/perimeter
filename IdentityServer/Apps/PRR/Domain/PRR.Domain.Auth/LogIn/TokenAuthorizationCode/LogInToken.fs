@@ -7,13 +7,11 @@ open Models
 open PRR.Data.DataContext
 open System
 open System.Text.RegularExpressions
-open PRR.Domain.Auth
 open PRR.Domain.Auth.Common
 open Microsoft.Extensions.Logging
-open PRR.Domain.Common
 open DataAvail.Http.Exceptions
 open DataAvail.EntityFramework.Common.LinqHelpers
-open DataAvail.Common.Option
+open PRR.Domain.Auth.LogIn.Common
 
 [<AutoOpen>]
 module LogInToken =
@@ -178,7 +176,19 @@ module LogInToken =
 
                     env.Logger.LogInformation("Success with refreshToken ${@refreshToken}", refreshTokenItem)
 
-                    do! loginTokenSuccess env item refreshTokenItem isPerimeterClient
+                    let env': OnLogInTokenSuccess.Env =
+                        { DataContext = env.DataContext
+                          PublishEndpoint = env.PublishEndpoint
+                          Logger = env.Logger
+                          KeyValueStorage = env.KeyValueStorage }
+
+                    let loginItem: Item =
+                        { Code = Some item.Code
+                          ClientId = data.Client_Id
+                          UserId = item.UserId
+                          Social = None }
+                    
+                    do! onLoginTokenSuccess env' loginItem refreshTokenItem isPerimeterClient
 
                     return result
                 | None ->

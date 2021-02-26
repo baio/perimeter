@@ -1,10 +1,10 @@
 ﻿namespace PRR.Domain.Auth.RefreshToken
 
+open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Models
 open DataAvail.KeyValueStorage.Core
 open PRR.Data.DataContext
 open PRR.Domain.Auth
-open PRR.Domain.Auth.LogInToken
 open System
 open System.Threading.Tasks
 open Microsoft.Extensions.Logging
@@ -22,4 +22,4 @@ module Models =
           KeyValueStorage: IKeyValueStorage
           TokenExpiresIn: int<minutes> }
 
-    type RefreshToken = Env -> Token -> Data -> Task<Result>
+    type RefreshToken = Env -> Token -> Data -> Task<LogInResult>

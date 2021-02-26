@@ -1,5 +1,6 @@
 ﻿module PRR.Domain.Auth.LogInEmail
 
+open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
@@ -12,7 +13,7 @@ let private getUserDataForToken (dataContext: DbDataContext) email password =
 
 
 // Exclusively for e2e test
-let logInEmail (env) clientId email password =
+let logInEmail (env: SignInUserEnv) clientId email password =
     task {
         match! getUserDataForToken env.DataContext email password with
         | Some tokenData ->

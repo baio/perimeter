@@ -1,7 +1,8 @@
-﻿namespace PRR.Domain.Auth.LogInToken
+﻿namespace PRR.Domain.Auth.LogIn.Common
 
 open PRR.Domain.Models
 open System.Security.Claims
+open PRR.Domain.Auth.LogIn.Common
 
 [<AutoOpen>]
 module private CreateClaims =

@@ -7,6 +7,7 @@ open PRR.Domain.Auth.LogInToken
 open PRR.Domain.Auth.Common
 open Microsoft.Extensions.Logging
 open DataAvail.Http.Exceptions
+open PRR.Domain.Auth.LogIn.Common
 
 [<AutoOpen>]
 module RefreshToken =

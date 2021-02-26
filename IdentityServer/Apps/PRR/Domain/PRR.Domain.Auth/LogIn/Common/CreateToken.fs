@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.LogInToken
+﻿namespace PRR.Domain.Auth.LogIn.Common
 
 open PRR.Domain.Models
 open Microsoft.IdentityModel.Tokens

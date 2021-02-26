@@ -2,6 +2,7 @@
 
 open System.Text.RegularExpressions
 open System.Threading.Tasks
+open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Models
 open DataAvail.HttpRequest.Core
 open FSharpx
@@ -223,7 +224,7 @@ module SocialTests =
 
                 let! result =
                     result'
-                    |> readAsJsonAsync<PRR.Domain.Auth.LogInToken.Models.Result>
+                    |> readAsJsonAsync<LogInResult>
 
                 result.access_token |> should be (not' Empty)
 

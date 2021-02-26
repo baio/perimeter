@@ -1,19 +1,14 @@
-﻿namespace PRR.Domain.Auth.LogInToken
+﻿namespace PRR.Domain.Auth.LogIn.Common
 
-open PRR.Domain.Models
-open DataAvail.Common
-open DataAvail.Http.Exceptions
-open FSharp.Control.Tasks.V2.ContextInsensitive
-open Microsoft.FSharp.Linq
-open Models
-open PRR.Data.DataContext
-open PRR.Data.Entities
-open System
-open System.Linq
-open DataAvail.EntityFramework.Common
 [<AutoOpen>]
-module internal UserHelpers =    
-    
+module GetUserDataForToken =
+
+    open PRR.Data.DataContext
+    open PRR.Data.Entities
+    open PRR.Domain.Models
+    open DataAvail.EntityFramework.Common
+    open DataAvail.Common    
+
     [<CLIMutable>]
     type TokenData =
         { Id: int
@@ -27,6 +22,7 @@ module internal UserHelpers =
         query {
             for user in dataContext.Users do
                 where ((%filterUser) user)
+
                 select
                     { Id = user.Id
                       FirstName = user.FirstName
@@ -38,17 +34,20 @@ module internal UserHelpers =
 
     let private getUserDataForTokenSocial (dataContext: DbDataContext) filterUser socialType =
         let socialTypeName = socialType2Name socialType
+
         query {
             for si in dataContext.SocialIdentities do
                 where
                     (((%filterUser) si.User)
                      && si.SocialName = socialTypeName)
+
                 select (si.Name, si.Email, si.UserId)
         }
         |> toSingleOptionAsync
         |> TaskUtils.map
             (Option.map (fun (name, email, userId) ->
                 let (firstName, lastName) = splitName name
+
                 { Id = userId
                   FirstName = firstName
                   LastName = lastName
@@ -62,33 +61,3 @@ module internal UserHelpers =
 
     let getUserDataForToken (dataContext: DbDataContext) userId =
         getUserDataForToken' dataContext <@ fun (user: User) -> (user.Id = userId) @>
-
-    type RolePermissions =
-        { Role: string
-          Permissions: string seq }
-
-    let getUserDomainRolesPermissions (dataContext: DbDataContext) (domainId, userEmail) =
-        query {
-            for dur in dataContext.DomainUserRole do
-                where
-                    (dur.DomainId = domainId
-                     && dur.UserEmail = userEmail)
-                select
-                    { Role = dur.Role.Name
-                      Permissions = dur.Role.RolesPermissions.Select(fun x -> x.Permission.Name) }
-        }
-        |> toListAsync
-
-    type DomainAudiences =
-        { DomainId: int
-          Audiences: string seq }
-
-    let getClientDomainAudiences (dataContext: DbDataContext) clientId =
-        query {
-            for app in dataContext.Applications do
-                where (app.ClientId = clientId)
-                select
-                    { DomainId = app.Domain.Id
-                      Audiences = app.Domain.Apis.Select(fun x -> x.Identifier) }
-        }
-        |> toSingleOptionAsync

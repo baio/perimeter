@@ -1,7 +1,8 @@
-﻿namespace PRR.Domain.Auth.LogInToken
+﻿namespace PRR.Domain.Auth.LogIn.Common
 
 open System.Security.Cryptography
 open System.Threading.Tasks
+open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Models
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
@@ -11,8 +12,6 @@ open Models
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open PRR.Domain.Auth
-open PRR.Domain.Auth.LogIn.UserHelpers
-open PRR.Domain.Auth.LogInToken
 open DataAvail.EntityFramework.Common
 open PRR.Domain.Auth.Common
 open DataAvail.Http.Exceptions
@@ -62,7 +61,7 @@ module internal SignInUser =
 
         { id_token = idToken
           access_token = accessToken
-          refresh_token = refreshToken }
+          refresh_token = refreshToken } : LogInResult
 
     let private getClientAudiencesRolePermissions' (dataContext: DbDataContext) clientId email =
         task {
@@ -97,10 +96,6 @@ module internal SignInUser =
                     (Seq.append audiences perimeterAudiences),
                     (Seq.append rolesPermissions perimeterUserRolePermissions)
         }
-
-    type SignInScopes =
-        | RequestedScopes of string seq
-        | ValidatedScopes of AudienceScopes seq
 
     let private getValidatedScopes dataContext email clientId (scopes: SignInScopes) =
         task {

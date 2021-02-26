@@ -12,6 +12,7 @@ open PRR.Domain.Auth
 open System
 open System.Security.Cryptography
 open System.Web
+open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Tenant
 
 [<AutoOpen>]
@@ -109,9 +110,7 @@ module CreateUser =
 
             let! result = fixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
 
-            let! result =
-                result
-                |> readAsJsonAsync<PRR.Domain.Auth.LogInToken.Models.Result>
+            let! result = result |> readAsJsonAsync<LogInResult>
 
             return result
         }
