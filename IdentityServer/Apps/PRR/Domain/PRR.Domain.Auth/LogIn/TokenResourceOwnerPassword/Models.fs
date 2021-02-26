@@ -25,6 +25,7 @@ module Models =
           JwtConfig: JwtConfig
           RefreshTokenExpiresIn: int<minutes>
           HashProvider: HashProvider
+          StringSalter: StringSalter
           Sha256Provider: Sha256Provider
           KeyValueStorage: IKeyValueStorage
           Logger: ILogger

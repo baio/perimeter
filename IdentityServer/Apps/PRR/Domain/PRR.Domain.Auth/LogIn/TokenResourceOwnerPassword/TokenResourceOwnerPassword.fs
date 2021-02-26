@@ -49,7 +49,9 @@ module TokenResourceOwnerPassword =
                     logger.LogWarning("Validation error ${@data}", validationResult)
                     raise (BadRequest validationResult)
 
-                let! isValidCredentials = findUserId env.DataContext data.Username data.Password
+                let hashedPassword = env.StringSalter data.Password
+                
+                let! isValidCredentials = findUserId env.DataContext data.Username hashedPassword
 
                 let userId =
                     match isValidCredentials with
