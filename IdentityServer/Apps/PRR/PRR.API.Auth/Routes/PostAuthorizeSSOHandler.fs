@@ -23,7 +23,7 @@ module internal PostAuthorizeSSOHandler =
 
             try
 
-                let! result = logInSSO env sso data
+                let! result = authorizeSSO env sso data
 
                 let redirectUrlSuccess =
                     sprintf "%s?code=%s&state=%s" result.RedirectUri result.Code result.State

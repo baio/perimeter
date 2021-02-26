@@ -30,4 +30,4 @@ module Models =
           Logger: ILogger
           KeyValueStorage: IKeyValueStorage }
 
-    type LogInSSO = Env -> string -> Data -> Task<AuthorizeResult>
+    type AuthorizeSSO = Env -> string -> Data -> Task<AuthorizeResult>

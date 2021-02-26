@@ -30,7 +30,7 @@ module Authorize =
            (validateContains [| "S256" |] "code_challenge_method" data.Code_Challenge_Method) |]
         |> mapBadRequest
 
-    let logInSSO: LogInSSO =
+    let authorizeSSO: AuthorizeSSO =
         fun env ssoToken data ->
 
             env.Logger.LogDebug("LogIn SSO with data ${@data} and token ${ssoToken}", data, ssoToken)
