@@ -25,7 +25,7 @@ module AuthRoutes =
                   >=> PostAuthorize.handler
                   POST
                   >=> route "/token"
-                  >=> PostAuthorizeToken.handler
+                  >=> PostToken.handler
                   POST
                   >=> route "/refresh-token"
                   >=> PostRefreshToken.handler

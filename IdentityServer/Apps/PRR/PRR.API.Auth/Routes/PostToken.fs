@@ -5,7 +5,7 @@ open DataAvail.Giraffe.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Domain.Auth.LogIn.TokenAuthorizationCode
 
-module PostAuthorizeToken =
+module PostToken =
 
     let getEnv ctx =
         let config = getConfig ctx

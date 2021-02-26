@@ -56,10 +56,10 @@
         <Compile Include="Routes\PostResetPassword.fs" />
         <Compile Include="Routes\PostResetPasswordConfirm.fs" />
         <Compile Include="Routes\PutPassword.fs" />
-        <Compile Include="Routes\PostLogIn.fs" />
+        <Compile Include="Routes\PostAuthorizeHandler.fs" />
         <Compile Include="Routes\LogInSSO.fs" />
         <Compile Include="Routes\PostAuthorize.fs" />
-        <Compile Include="Routes\PostAuthorizeToken.fs" />
+        <Compile Include="Routes\PostToken.fs" />
         <Compile Include="Routes\PostRefreshToken.fs" />
         <Compile Include="Routes\GetLogout.fs" />
         <Compile Include="Routes\PostAuthSocial.fs" />

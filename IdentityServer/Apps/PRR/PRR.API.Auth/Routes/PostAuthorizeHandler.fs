@@ -9,7 +9,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.API.Auth.Routes.Helpers
 open Microsoft.Extensions.Logging
 
-module internal PostLogIn =
+module internal PostAuthorizeHandler =
 
 
     let getEnv ctx =

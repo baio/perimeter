@@ -52,7 +52,7 @@ module PostAuthorize =
                     // TODO : Handle TOO many redirects when cookie couldn't be set
                     ctx.Response.Cookies.Append("sso", token, CookieOptions(HttpOnly = true, Secure = false))
                     let url = getRefererUrl ctx
-                    // true here intentially, since with false browser will try find web page and not redirect request directly back to the server iniital request                    
+                    // true here intentially, since with false browser will try find web page and not redirect request directly back to the server iniital request
                     // TODO : We need return page content here with SSO cookie included, browser seems arbitrary redirect to POST web page sometimes not to server
                     ctx.Response.Redirect(url, true)
                     ctx.SetStatusCode(307)
@@ -61,7 +61,7 @@ module PostAuthorize =
             | _ ->
                 logger.LogInformation("Prompt not none use regular login handler")
 
-                let! returnUrl = PostLogIn.handler ctx ssoCookie
+                let! returnUrl = PostAuthorizeHandler.handler ctx ssoCookie
                 logger.LogInformation("Redirect to ${returnUrl}", returnUrl)
                 return! redirectTo false returnUrl next ctx
         }
