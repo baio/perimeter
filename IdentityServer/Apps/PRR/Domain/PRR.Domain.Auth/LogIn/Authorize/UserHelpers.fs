@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.LogIn
+﻿namespace PRR.Domain.Auth.LogIn.Authorize
 
 open PRR.Data.DataContext
 open DataAvail.EntityFramework.Common

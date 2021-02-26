@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.LogIn
+﻿namespace PRR.Domain.Auth.LogIn.Authorize
 
 open PRR.Domain.Models
 
@@ -201,7 +201,7 @@ module Authorize =
         }
 
 
-    let logIn: LogIn =
+    let authorize: Authorize =
         fun env sso data ->
 
             env.Logger.LogDebug("LogIn with ${@data} and ${sso}", data, sso.IsSome)

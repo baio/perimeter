@@ -137,7 +137,7 @@ module Authorize =
 
                     let code = env.CodeGenerator()
 
-                    let result: PRR.Domain.Auth.LogIn.Models.Result =
+                    let result: PRR.Domain.Auth.LogIn.Authorize.Models.Result =
                         { RedirectUri = data.Redirect_Uri
                           State = data.State
                           Code = code }

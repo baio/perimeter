@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.LogIn
+﻿namespace PRR.Domain.Auth.LogIn.Authorize
 
 open Microsoft.Extensions.Logging
 open PRR.Domain.Auth.Common

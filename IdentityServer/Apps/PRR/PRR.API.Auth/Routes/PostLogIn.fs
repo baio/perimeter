@@ -2,7 +2,7 @@
 
 open PRR.Domain.Models
 open PRR.Domain.Auth
-open PRR.Domain.Auth.LogIn
+open PRR.Domain.Auth.LogIn.Authorize
 open Giraffe
 open DataAvail.Giraffe.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
@@ -33,7 +33,7 @@ module internal PostLogIn =
 
             try
 
-                let! result = logIn env sso data
+                let! result = authorize env sso data
 
                 let redirectUrlSuccess =
                     sprintf "%s?code=%s&state=%s" result.RedirectUri result.Code result.State

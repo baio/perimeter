@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.LogIn
+﻿namespace PRR.Domain.Auth.LogIn.Authorize
 
 open PRR.Domain.Models
 open DataAvail.KeyValueStorage.Core
@@ -36,4 +36,4 @@ module Models =
           Logger: ILogger
           KeyValueStorage: IKeyValueStorage }
 
-    type LogIn = Env -> string option -> Data -> Task<Result>
+    type Authorize = Env -> string option -> Data -> Task<Result>

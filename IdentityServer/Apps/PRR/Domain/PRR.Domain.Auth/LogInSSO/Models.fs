@@ -6,6 +6,7 @@ open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
 open System.Threading.Tasks
+open PRR.Domain.Auth.LogIn.Authorize
 
 [<AutoOpen>]
 module Models =
@@ -29,4 +30,4 @@ module Models =
           Logger: ILogger
           KeyValueStorage: IKeyValueStorage }
 
-    type LogInSSO = Env -> string -> Data -> Task<PRR.Domain.Auth.LogIn.Models.Result>
+    type LogInSSO = Env -> string -> Data -> Task<Result>

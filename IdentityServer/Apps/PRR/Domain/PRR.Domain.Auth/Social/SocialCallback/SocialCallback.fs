@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.Social.SocialCallback
 
+// open PRR.Domain.Auth.LogIn.Authorize
 open DataAvail.Common
 open PRR.Domain.Models
 open System.Threading.Tasks
@@ -7,7 +8,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open PRR.Domain.Auth.Common.KeyValueModels
-open PRR.Domain.Auth.LogIn.Authorize
+open PRR.Domain.Auth.LogIn.Authorize.Authorize
 open System.Linq
 open Microsoft.Extensions.Logging
 open DataAvail.EntityFramework.Common
@@ -86,7 +87,7 @@ module Social =
                 return user.Id
         }
 
-    let private getSuccessRedirectUrl (loginResult: PRR.Domain.Auth.LogIn.Models.Result) =
+    let private getSuccessRedirectUrl (loginResult: PRR.Domain.Auth.LogIn.Authorize.Models.Result) =
         sprintf "%s?code=%s&state=%s" loginResult.RedirectUri loginResult.Code loginResult.State
 
     let private getSocialLoginItem env state =
@@ -131,9 +132,9 @@ module Social =
         |> Option.map (fun ((_, state), (_, code)) -> state, code)
 
     let socialCallback (env: Env) (data: Data) (ssoCookie) =
-        
+
         // TODO : Validate data !
-        
+
         let logger = env.Logger
         logger.LogInformation("SocialCallback starts ${@data}", data)
 
@@ -189,7 +190,7 @@ module Social =
 
             logger.LogDebug("${@loginData} created")
 
-            let env': PRR.Domain.Auth.LogIn.Models.Env =
+            let env': PRR.Domain.Auth.LogIn.Authorize.Models.Env =
                 { DataContext = env.DataContext
                   CodeGenerator = env.CodeGenerator
                   PasswordSalter = env.PasswordSalter

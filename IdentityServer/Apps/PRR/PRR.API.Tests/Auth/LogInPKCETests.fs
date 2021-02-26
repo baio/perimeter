@@ -74,7 +74,7 @@ module LogInPKCE =
 
             let clientId = "123"
 
-            let logInData: PRR.Domain.Auth.LogIn.Models.Data =
+            let logInData: PRR.Domain.Auth.LogIn.Authorize.Models.Data =
                 { Client_Id = clientId
                   Response_Type = "code"
                   State = "state"
@@ -100,7 +100,7 @@ module LogInPKCE =
                     .GetTenant()
                     .TenantManagementApplicationClientId
 
-            let logInData: PRR.Domain.Auth.LogIn.Models.Data =
+            let logInData: PRR.Domain.Auth.LogIn.Authorize.Models.Data =
                 { Client_Id = clientId
                   Response_Type = "code"
                   State = "state"
@@ -138,7 +138,7 @@ module LogInPKCE =
                     .GetTenant()
                     .TenantManagementApplicationClientId
 
-            let logInData: PRR.Domain.Auth.LogIn.Models.Data =
+            let logInData: PRR.Domain.Auth.LogIn.Authorize.Models.Data =
                 { Client_Id = clientId
                   Response_Type = "code"
                   State = "state"
