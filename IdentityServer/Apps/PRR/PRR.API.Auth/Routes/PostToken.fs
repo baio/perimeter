@@ -15,6 +15,12 @@ module PostToken =
 
     let getTokenAuthorizationCodeEnv ctx =
         let config = getConfig ctx
+
+
+
+
+
+
         { DataContext = getDataContext ctx
           HashProvider = getHash ctx
           Sha256Provider = getSHA256 ctx
@@ -26,6 +32,12 @@ module PostToken =
 
     let getTokenResourceOwnerPasswordEnv ctx =
         let config = getConfig ctx
+
+
+
+
+
+
         { DataContext = getDataContext ctx
           HashProvider = getHash ctx
           Sha256Provider = getSHA256 ctx
@@ -38,6 +50,12 @@ module PostToken =
 
     let getTokenClientCredentialsEnv ctx =
         let config = getConfig ctx
+
+
+
+
+
+
         { DataContext = getDataContext ctx
           Sha256Provider = getSHA256 ctx
           JwtConfig = config.Auth.Jwt
@@ -58,7 +76,9 @@ module PostToken =
           Password: string
           Scope: string
           // Client Credentials
-          Audience: string }
+          Audience: string
+          // Refresh Token
+          Refresh_Token: string }
 
     let private handler' ctx =
         task {
@@ -100,7 +120,7 @@ module PostToken =
 
                 return result :> obj
             | "client_credentials" ->
-                logger.LogDebug("Token handler detects client credentials flow")
+                logger.LogDebug("Token handler detects client_credentials flow")
                 let env = getTokenClientCredentialsEnv ctx
 
                 let tokenData: TokenClientCredentials.Models.Data =
@@ -110,6 +130,16 @@ module PostToken =
                       Audience = data.Audience }
 
                 let! result = TokenClientCredentials.TokenClientCredentials.tokenClientCredentials env tokenData
+
+                return result :> obj
+            | "refresh_token" ->
+                logger.LogDebug("Token handler detects refresh_token flow")
+
+                let data: RefreshToken.Models.Data =
+                    { Refresh_Token = data.Refresh_Token
+                      Grant_Type = data.Grant_Type }
+
+                let! result = PostRefreshTokenHandler.handler ctx data
 
                 return result :> obj
             | grantType ->

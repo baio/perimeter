@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.RefreshToken
+﻿namespace PRR.Domain.Auth.LogIn.RefreshToken
 
 open PRR.Domain.Models
 open System

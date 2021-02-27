@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.RefreshToken
+﻿namespace PRR.Domain.Auth.LogIn.RefreshToken
 
 open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Models
@@ -12,7 +12,9 @@ open Microsoft.Extensions.Logging
 [<AutoOpen>]
 module Models =
 
-    type Data = { RefreshToken: Token }
+    type Data =
+        { Grant_Type: string
+          Refresh_Token: Token }
 
     type Env =
         { DataContext: DbDataContext

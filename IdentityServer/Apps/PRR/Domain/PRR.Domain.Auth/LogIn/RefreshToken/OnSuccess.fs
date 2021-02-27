@@ -1,4 +1,4 @@
-﻿namespace PRR.Domain.Auth.RefreshToken
+﻿namespace PRR.Domain.Auth.LogIn.RefreshToken
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open DataAvail.KeyValueStorage.Core

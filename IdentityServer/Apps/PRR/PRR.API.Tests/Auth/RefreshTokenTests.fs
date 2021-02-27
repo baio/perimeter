@@ -6,6 +6,7 @@ open FsUnit
 open PRR.API.Tests.Utils
 open PRR.Domain.Auth
 open PRR.Domain.Auth.SignUp
+open PRR.Domain.Auth.LogIn.RefreshToken
 open PRR.Domain.Tenant
 open Xunit
 open Xunit.Abstractions
@@ -31,7 +32,7 @@ module RefreshToken =
 
     let mutable tenant: CreatedTenantInfo option = None
 
-    let ownerData: Data =
+    let ownerData: PRR.Domain.Auth.SignUp.Models.Data =
         { FirstName = "First"
           LastName = "Last"
           Email = "user@user.com"
@@ -63,9 +64,11 @@ module RefreshToken =
 
             task {
 
-                let data: RefreshToken.Models.Data = { RefreshToken = "xxxx" }
+                let data: Data =
+                    { Grant_Type = "refresh_token"
+                      Refresh_Token = "xxxx" }
 
-                let! result = testFixture.Server1.HttpPostAsync accessToken "/api/auth/refresh-token" data
+                let! result = testFixture.Server1.HttpPostAsync accessToken "/api/auth/token" data
 
                 ensureUnauthorized result
             }
@@ -76,9 +79,11 @@ module RefreshToken =
 
             task {
 
-                let data: RefreshToken.Models.Data = { RefreshToken = refreshToken }
+                let data: Data =
+                    { Grant_Type = "refresh_token"
+                      Refresh_Token = refreshToken }
 
-                let! result = testFixture.Server1.HttpPostAsync "xxx" "/api/auth/refresh-token" data
+                let! result = testFixture.Server1.HttpPostAsync "xxx" "/api/auth/token" data
 
                 ensureUnauthorized result
             }
@@ -89,12 +94,14 @@ module RefreshToken =
 
             task {
 
-                let data: RefreshToken.Models.Data = { RefreshToken = refreshToken }
+                let data: Data =
+                    { Grant_Type = "refresh_token"
+                      Refresh_Token = refreshToken }
 
                 // Wait in order to get updated access token
                 do! System.Threading.Tasks.Task.Delay(1000)
 
-                let! result = testFixture.Server1.HttpPostAsync accessToken "/api/auth/refresh-token" data
+                let! result = testFixture.Server1.HttpPostAsync accessToken "/api/auth/token" data
 
                 do! ensureSuccessAsync result
 
@@ -122,9 +129,11 @@ module RefreshToken =
 
             task {
 
-                let data: RefreshToken.Models.Data = { RefreshToken = refreshToken }
+                let data: Data =
+                    { Grant_Type = "refresh_token"
+                      Refresh_Token = refreshToken }
 
-                let! result = testFixture.Server1.HttpPostAsync accessToken "/api/auth/refresh-token" data
+                let! result = testFixture.Server1.HttpPostAsync accessToken "/api/auth/token" data
 
                 ensureUnauthorized result
             }
@@ -135,12 +144,14 @@ module RefreshToken =
 
             task {
 
-                let data: RefreshToken.Models.Data = { RefreshToken = refreshToken2 }
+                let data: Data =
+                    { Grant_Type = "refresh_token"
+                      Refresh_Token = refreshToken2 }
 
                 // Wait in order to get updated access token
                 do! System.Threading.Tasks.Task.Delay(1000)
 
-                let! result = testFixture.Server1.HttpPostAsync accessToken2 "/api/auth/refresh-token" data
+                let! result = testFixture.Server1.HttpPostAsync accessToken2 "/api/auth/token" data
 
                 do! ensureSuccessAsync result
 
@@ -182,11 +193,13 @@ module RefreshToken =
 
                 do! ensureRedirectSuccessAsync logoutResult
 
-                let data: RefreshToken.Models.Data = { RefreshToken = refreshToken2 }
+                let data: Data =
+                    { Grant_Type = "refresh_token"
+                      Refresh_Token = refreshToken2 }
 
                 do! System.Threading.Tasks.Task.Delay(100)
 
-                let! result = testFixture.Server1.HttpPostAsync accessToken2 "/api/auth/refresh-token" data
+                let! result = testFixture.Server1.HttpPostAsync accessToken2 "/api/auth/token" data
 
                 ensureUnauthorized result
             }

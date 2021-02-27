@@ -1,13 +1,13 @@
 ﻿namespace PRR.API.Auth.Routes
 
-open PRR.Domain.Auth.RefreshToken
+open PRR.Domain.Auth.LogIn.RefreshToken
 open Giraffe
 open DataAvail.Giraffe.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Microsoft.Extensions.Logging
 open DataAvail.Http.Exceptions
 
-module internal PostRefreshToken =
+module internal PostRefreshTokenHandler =
 
     let getEnv ctx =
 
@@ -20,7 +20,7 @@ module internal PostRefreshToken =
           KeyValueStorage = getKeyValueStorage ctx
           TokenExpiresIn = config.Auth.ResetPasswordTokenExpiresIn }
 
-    let handler' ctx =
+    let handler ctx data =
         let env = getEnv ctx
 
         let logger = env.Logger
@@ -34,10 +34,4 @@ module internal PostRefreshToken =
                 logger.LogWarning("Bearer is not found in Authorization header")
                 raise (UnAuthorized(Some "Bearer is not found in Authorization header"))
 
-        task {
-            let! data = bindJsonAsync ctx
-            let data = { RefreshToken = data.RefreshToken }
-            return! refreshToken env bearer data
-        }
-
-    let handler: HttpHandler = wrapHandlerOK handler'
+        refreshToken env bearer data

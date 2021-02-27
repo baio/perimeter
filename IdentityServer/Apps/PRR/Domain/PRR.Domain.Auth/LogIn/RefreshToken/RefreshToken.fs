@@ -1,9 +1,8 @@
-﻿namespace PRR.Domain.Auth.RefreshToken
+﻿namespace PRR.Domain.Auth.LogIn.RefreshToken
 
 open System
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.Entities
-open PRR.Domain.Auth.LogIn.TokenAuthorizationCode
 open PRR.Domain.Auth.Common
 open Microsoft.Extensions.Logging
 open DataAvail.Http.Exceptions
@@ -21,6 +20,13 @@ module RefreshToken =
         | Some token -> token
         | None -> raise (unAuthorized "Token issuer not found")
 
+    let private validateData (data: Data): BadRequestError array =
+        [| (validateNullOrEmpty "refresh_token" data.Refresh_Token)
+           (validateNullOrEmpty "grant_type" data.Grant_Type)
+           (validateContains [| "refresh_token" |] "grant_ype" data.Grant_Type) |]
+        |> Array.choose id
+
+    // https://auth0.com/docs/api/authentication?http#refresh-token
     let refreshToken: RefreshToken =
         fun env token data ->
 
@@ -34,10 +40,16 @@ module RefreshToken =
 
             let accessToken = token
 
-            logger.LogInformation("refreshToken begins with access token ${accessToken}", accessToken)
+            logger.LogDebug("refreshToken begins with access token ${accessToken}", accessToken)
+
+            let validationResult = validateData data
+
+            if Seq.length validationResult > 0 then
+                logger.LogWarning("Validation error ${@data}", validationResult)
+                raise (BadRequest validationResult)
 
             task {
-                let! item = env.KeyValueStorage.GetValue<RefreshTokenKV> data.RefreshToken None
+                let! item = env.KeyValueStorage.GetValue<RefreshTokenKV> data.Refresh_Token None
 
                 let item =
                     match item with
@@ -47,7 +59,7 @@ module RefreshToken =
                     | Error err ->
                         logger.LogWarning
                             ("Refresh token item is not found for refresh token {token} with error ${@error}",
-                             data.RefreshToken,
+                             data.Refresh_Token,
                              err)
 
                         raise UnAuthorized'
@@ -84,10 +96,7 @@ module RefreshToken =
                               Scopes = item.Scopes
                               SocialType = item.SocialType }
 
-                        logger.LogInformation
-                            ("successData ${@successData} ready",
-                             { newRefreshTokenItem with
-                                   Token = "***" })
+                        logger.LogDebug("successData ${@successData} ready", newRefreshTokenItem)
 
                         do! onSuccess env item.Token newRefreshTokenItem
 

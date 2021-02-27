@@ -23,12 +23,7 @@ module AuthRoutes =
                   POST
                   >=> route "/authorize"
                   >=> PostAuthorize.handler
-                  POST
-                  >=> route "/token"
-                  >=> PostToken.handler
-                  POST
-                  >=> route "/refresh-token"
-                  >=> PostRefreshToken.handler
+                  POST >=> route "/token" >=> PostToken.handler
                   GET >=> route "/logout" >=> GetLogout.handler
                   GET
                   >=> routef "/applications/%s" GetApplicationInfo.handler
