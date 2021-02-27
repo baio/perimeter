@@ -37,13 +37,13 @@ module LogInPKCE =
         |> System.String.Concat
 
 
-    let codeVerfier = randomString 128
+    let codeVerifier = randomString 128
 
     let sha256 = SHA256.Create()
 
-    let codeChellenge =
-        SHA256.getSha256Base64Hash sha256 codeVerfier
-        |> LogInToken.cleanupCodeChallenge
+    let codeChallenge =
+        SHA256.getSha256Base64Hash sha256 codeVerifier
+        |> cleanupCodeChallenge
 
     let mutable testContext: UserTestContext option = None
 
@@ -82,7 +82,7 @@ module LogInPKCE =
                   Scope = "openid profile email"
                   Email = signUpData.Email
                   Password = signUpData.Password
-                  Code_Challenge = codeChellenge
+                  Code_Challenge = codeChallenge
                   Code_Challenge_Method = "S256" }
 
             task {
@@ -108,7 +108,7 @@ module LogInPKCE =
                   Scope = "openid profile email"
                   Email = signUpData.Email
                   Password = signUpData.Password
-                  Code_Challenge = codeChellenge
+                  Code_Challenge = codeChallenge
                   Code_Challenge_Method = "S256" }
 
 
@@ -120,7 +120,7 @@ module LogInPKCE =
                       Code = authCode
                       Redirect_Uri = logInData.Redirect_Uri
                       Client_Id = clientId
-                      Code_Verifier = sprintf "%s1" codeVerfier
+                      Code_Verifier = sprintf "%s1" codeVerifier
                       Client_Secret = null }
 
                 let! result = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
@@ -146,7 +146,7 @@ module LogInPKCE =
                   Scope = "openid profile email"
                   Email = signUpData.Email
                   Password = signUpData.Password
-                  Code_Challenge = codeChellenge
+                  Code_Challenge = codeChallenge
                   Code_Challenge_Method = "S256" }
 
             task {
@@ -158,7 +158,7 @@ module LogInPKCE =
                       Code = authCode
                       Redirect_Uri = logInData.Redirect_Uri
                       Client_Id = clientId
-                      Code_Verifier = codeVerfier
+                      Code_Verifier = codeVerifier
                       Client_Secret = null }
 
                 let! result' = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
@@ -186,7 +186,7 @@ module LogInPKCE =
                           .Value
                           .GetTenant()
                           .TenantManagementApplicationClientId
-                  Code_Verifier = codeVerfier
+                  Code_Verifier = codeVerifier
                   Client_Secret = null }
 
             task {

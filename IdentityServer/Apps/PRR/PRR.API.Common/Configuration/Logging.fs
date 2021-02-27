@@ -61,9 +61,9 @@ module Logging =
             if useElastic
             then config <- config.WriteTo.Elasticsearch(ElasticsearchSinkOptions(Uri env.Config.ElasticServiceUrl))
 
-            if (not useElastic) && (not useSeq) then config <- config.WriteTo.Console()
+            if (not useElastic) && (not useSeq) then config <- config.WriteTo.Console()            
             #else
-
+            config <- config.WriteTo.Console()
             #endif
             config
                 .Filter

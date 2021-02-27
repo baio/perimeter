@@ -17,7 +17,7 @@ open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
 
-module LogInClientSecret =
+module LogInAuthorizationCode =
 
     let signUpData: Data =
         { FirstName = "First"
@@ -36,15 +36,17 @@ module LogInClientSecret =
 
     let overrideServices (services: IServiceCollection) =
         //
-        
+
         let serv =
             services
             |> Seq.find (fun f -> f.ServiceType = typeof<IAuthStringsGetterProvider>)
 
         services.Remove(serv) |> ignore
 
-        let authStringsGetter = (serv.ImplementationInstance :?> IAuthStringsGetterProvider).AuthStringsGetter
-            
+        let authStringsGetter =
+            (serv.ImplementationInstance :?> IAuthStringsGetterProvider)
+                .AuthStringsGetter
+
         let _authStringsGetter: IAuthStringsGetter =
             { ClientId = authStringsGetter.ClientId
               ClientSecret = fun () -> "ClientSecret"
@@ -55,13 +57,9 @@ module LogInClientSecret =
 
         services.AddSingleton<IAuthStringsGetterProvider>(AuthStringsProvider _authStringsGetter)
         |> ignore
-        
-        
-
-
 
     [<TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)>]
-    type ``login-client-secret-api``(testFixture: TestFixture, output: ITestOutputHelper) =
+    type ``login-authorization-code-api``(testFixture: TestFixture, output: ITestOutputHelper) =
         do setConsoleOutput output
         interface IClassFixture<TestFixture>
 
@@ -151,9 +149,7 @@ module LogInClientSecret =
                 let! result' = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
                 do! ensureSuccessAsync result'
 
-                let! result =
-                    result'
-                    |> readAsJsonAsync<LogInResult>
+                let! result = result' |> readAsJsonAsync<LogInResult>
 
                 result.access_token |> should be (not' Empty)
                 result.id_token |> should be (not' Empty)

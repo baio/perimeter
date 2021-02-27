@@ -63,16 +63,19 @@ module TokenResourceOwnerPassword =
 
                 let scopes = data.Scope.Split " "
 
-                env.Logger.LogInformation
+                env.Logger.LogDebug
                     ("Validate ${@scopes} for @{email} and @{clientId} ", scopes, data.Username, data.Client_Id)
 
                 let! validatedScopes = validateScopes env.DataContext data.Username data.Client_Id scopes
 
-                env.Logger.LogInformation("${@validatedScopes} validated", validatedScopes)
+                env.Logger.LogDebug("${@validatedScopes} validated", validatedScopes)
 
                 let! userDataForToken = getUserDataForToken env.DataContext userId None
 
                 match userDataForToken with
+                | None ->
+                    env.Logger.LogError("User data is not found for ${userId}", userId)
+                    return raise (unAuthorized "User data is not found")
                 | Some tokenData ->
                     env.Logger.LogInformation("${@tokenData} for ${userId}", tokenData, userId)
 
@@ -95,7 +98,7 @@ module TokenResourceOwnerPassword =
                           SocialType = None }
 
 
-                    env.Logger.LogInformation("Success with refreshToken ${@refreshToken}", refreshTokenItem)
+                    env.Logger.LogDebug("Success with refreshToken ${@refreshToken}", refreshTokenItem)
 
                     let env': OnLogInTokenSuccess.Env =
                         { DataContext = env.DataContext

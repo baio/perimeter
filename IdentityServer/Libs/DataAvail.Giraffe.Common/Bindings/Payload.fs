@@ -1,5 +1,7 @@
 ﻿namespace DataAvail.Giraffe.Common
 
+open System.IO
+
 [<AutoOpen>]
 module Payload =
 
@@ -15,13 +17,14 @@ module Payload =
 
     let bindJsonAsync<'a> (ctx: HttpContext) =
         // As soon as model bound first time it erased from context, so we should persist one if we want to bind it many times
+        // https://devblogs.microsoft.com/aspnet/re-reading-asp-net-core-request-bodies-with-enablebuffering/
         task {
             let t = typeof<'a>
             let (f, v) = ctx.Items.TryGetValue(BoundModelValue t)
             if f then
                 return v :?> 'a
             else
-                let! v = ctx.BindModelAsync<'a>()
+                let! v = ctx.BindModelAsync<'a>()                
                 ctx.Items.Add(BoundModelValue typeof<'a>, v)
                 return v
         }

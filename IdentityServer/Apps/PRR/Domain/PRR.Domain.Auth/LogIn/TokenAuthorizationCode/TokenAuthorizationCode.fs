@@ -14,7 +14,7 @@ open DataAvail.EntityFramework.Common.LinqHelpers
 open PRR.Domain.Auth.LogIn.Common
 
 [<AutoOpen>]
-module LogInToken =
+module TokenAuthorizationCode =
 
     let private replace (pat: string) (rep: string) (str: string) = Regex.Replace(str, pat, rep)
 
