@@ -11,7 +11,7 @@ open Microsoft.Extensions.Logging
 module LogInEventHandler =
 
     type LogInEventHandler(dbProvider: IViewsDbProvider) =
-        interface IConsumer<Events.LogIn> with
+        interface IConsumer<Events.LogInEvent> with
             member __.Consume context =
                 printfn("LogInEventHandler")
                 insertLoginEvent dbProvider.Db context.Message

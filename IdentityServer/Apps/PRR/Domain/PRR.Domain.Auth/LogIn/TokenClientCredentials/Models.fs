@@ -27,7 +27,6 @@ module Models =
     type Env =
         { DataContext: DbDataContext
           JwtConfig: JwtConfig
-          HashProvider: HashProvider
           Sha256Provider: Sha256Provider
           Logger: ILogger
           PublishEndpoint: IPublishEndpoint }

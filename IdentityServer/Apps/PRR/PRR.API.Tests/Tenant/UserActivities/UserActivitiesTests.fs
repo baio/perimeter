@@ -9,6 +9,7 @@ open PRR.API.Tests.Utils
 open PRR.Domain.Auth.SignUp
 //open PRR.System.Views.LogInView
 open PRR.Domain.Common.Events
+open PRR.Domain.Tenant.Views.LogInView
 open Xunit
 open Xunit.Abstractions
 open Xunit.Priority
@@ -76,7 +77,7 @@ module CRUD =
 
                 do! ensureSuccessAsync result
 
-                let! resultDto = readAsJsonAsync<ListQueryResult<LogIn>> result
+                let! resultDto = readAsJsonAsync<ListQueryResult<LogInDoc>> result
 
                 resultDto.Items |> should haveCount 1
 
@@ -97,7 +98,7 @@ module CRUD =
 
                 do! ensureSuccessAsync result
 
-                let! resultDto = readAsJsonAsync<ListQueryResult<LogIn>> result
+                let! resultDto = readAsJsonAsync<ListQueryResult<LogInDoc>> result
 
                 resultDto.Items |> should haveCount 0
 
@@ -119,7 +120,7 @@ module CRUD =
 
                 do! ensureSuccessAsync result
 
-                let! resultDto = readAsJsonAsync<ListQueryResult<LogIn>> result
+                let! resultDto = readAsJsonAsync<ListQueryResult<LogInDoc>> result
 
                 resultDto.Items |> should haveCount 1
 

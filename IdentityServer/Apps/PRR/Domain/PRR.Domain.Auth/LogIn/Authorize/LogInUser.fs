@@ -12,7 +12,7 @@ module LogInUser =
     open Microsoft.Extensions.Logging
     open DataAvail.EntityFramework.Common
     open DataAvail.Http.Exceptions
-    
+
     let private getClientAppData' (dataContext: DbDataContext) clientId =
         query {
             for app in dataContext.Applications do
@@ -135,6 +135,7 @@ module LogInUser =
                   RequestedScopes = scopes
                   ValidatedScopes = validatedScopes
                   UserId = userId
+                  UserEmail = data.Email
                   ExpiresAt = codeExpiresAt
                   RedirectUri = data.RedirectUri
                   Social = social }

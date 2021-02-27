@@ -1,6 +1,7 @@
 ﻿namespace PRR.Domain.Auth.LogIn.TokenAuthorizationCode
 
 open System.Threading.Tasks
+open PRR.Domain.Common.Events
 open PRR.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Models
@@ -187,8 +188,17 @@ module TokenAuthorizationCode =
                           ClientId = data.Client_Id
                           UserId = item.UserId
                           Social = None }
-                    
-                    do! onLoginTokenSuccess env' loginItem refreshTokenItem isPerimeterClient
+
+                    let userData =
+                        { UserEmail = item.UserEmail
+                          UserId = item.UserId }
+
+                    let grantType =
+                        match isPKCE with
+                        | true -> LogInGrantType.AuthorizationCodePKCE userData
+                        | false -> LogInGrantType.AuthorizationCode userData
+
+                    do! onLoginTokenSuccess env' grantType loginItem refreshTokenItem isPerimeterClient
 
                     return result
                 | None ->

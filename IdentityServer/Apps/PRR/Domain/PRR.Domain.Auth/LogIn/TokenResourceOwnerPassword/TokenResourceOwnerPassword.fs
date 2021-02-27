@@ -1,5 +1,7 @@
 ﻿namespace PRR.Domain.Auth.LogIn.TokenResourceOwnerPassword
 
+open PRR.Domain.Common.Events
+
 [<AutoOpen>]
 module TokenResourceOwnerPassword =
 
@@ -51,7 +53,7 @@ module TokenResourceOwnerPassword =
                     raise (BadRequest validationResult)
 
                 let hashedPassword = env.StringSalter data.Password
-                
+
                 let! isValidCredentials = findUserId env.DataContext data.Username hashedPassword
 
                 let userId =
@@ -86,7 +88,7 @@ module TokenResourceOwnerPassword =
                           Logger = env.Logger
                           HashProvider = env.HashProvider }
 
-                    
+
                     let! (result, clientId, isPerimeterClient) =
                         signInUser signInUserEnv tokenData data.Client_Id (ValidatedScopes validatedScopes)
 
@@ -114,7 +116,12 @@ module TokenResourceOwnerPassword =
                           UserId = userId
                           Social = None }
 
-                    do! onLoginTokenSuccess env' loginItem refreshTokenItem isPerimeterClient
+                    let grantType =
+                        LogInGrantType.Password
+                            { UserEmail = data.Username
+                              UserId = userId }
+
+                    do! onLoginTokenSuccess env' grantType loginItem refreshTokenItem isPerimeterClient
 
                     return result
             }

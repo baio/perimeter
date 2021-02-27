@@ -5,13 +5,22 @@ open PRR.Domain.Models
 
 module Events =
 
+    // TODO : Add audience and scope
+
+    type LoginUser = { UserId: int; UserEmail: string }
+
+    type LogInGrantType =
+        | AuthorizationCode of LoginUser
+        | AuthorizationCodePKCE of LoginUser
+        | Password of LoginUser
+        | Social of LoginUser * Social
+        | ClientCredentials
+
     [<CLIMutable>]
-    type LogIn =
-        { Social: Social option
-          DateTime: DateTime
-          UserId: int
+    type LogInEvent =
+        { DateTime: DateTime
           ClientId: string
           DomainId: int
           IsManagementClient: bool
           AppIdentifier: string
-          UserEmail: string }
+          GrantType: LogInGrantType }

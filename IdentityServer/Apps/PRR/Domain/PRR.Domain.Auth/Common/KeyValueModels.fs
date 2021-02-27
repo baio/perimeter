@@ -28,6 +28,7 @@ module KeyValueModels =
     type LogInKV =
         { Code: string
           UserId: int
+          UserEmail: string
           Social: Social option
           RequestedScopes: string seq
           ValidatedScopes: AudienceScopes seq

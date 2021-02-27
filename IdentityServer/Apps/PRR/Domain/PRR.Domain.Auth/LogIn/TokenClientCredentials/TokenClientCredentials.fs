@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.LogIn.TokenClientCredentials
 
+open PRR.Domain.Common.Events
 open PRR.Domain.Models.Models
 
 [<AutoOpen>]
@@ -66,7 +67,9 @@ module TokenClientCredentials =
 
                 env.Logger.LogDebug("AppInfo found ${@appInfo}", appInfo)
 
-                let! secretData = getDomainSecretAndExpire env' appInfo.Issuer (appInfo.Type <> AppType.Regular)
+                let isPerimeterClient = appInfo.Type <> AppType.Regular
+
+                let! secretData = getDomainSecretAndExpire env' appInfo.Issuer isPerimeterClient
 
                 env.Logger.LogDebug("App secrets extracted")
 
@@ -90,6 +93,12 @@ module TokenClientCredentials =
                     { access_token = signInResult.access_token
                       token_type = "Bearer"
                       expires_in = int signInData.AccessTokenExpiresIn }
+
+                let grantType = LogInGrantType.ClientCredentials
+
+                let! event = getLoginEvent env.DataContext data.Client_Id grantType isPerimeterClient
+
+                do! env.PublishEndpoint.Publish(event)
 
                 return result
             }

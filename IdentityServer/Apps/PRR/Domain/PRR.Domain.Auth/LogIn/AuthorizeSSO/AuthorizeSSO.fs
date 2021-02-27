@@ -56,7 +56,7 @@ module Authorize =
                         env.Logger.LogWarning("SSO Item is not found for ${token} with error ${@err}", ssoItem, err)
                         raise (unAuthorized "sso not found")
 
-                if ssoItem.ExpiresAt < DateTime.UtcNow then raise (unAuthorized "sso expired")
+                if ssoItem.ExpiresAt < DateTime.UtcNow then raise (unAuthorized "sso expired")                
 
                 let! appInfo = getAppInfo env.DataContext data.Client_Id ssoItem.Email 1<minutes>
 
@@ -159,6 +159,7 @@ module Authorize =
                           RequestedScopes = scopes
                           ValidatedScopes = validatedScopes
                           UserId = userId
+                          UserEmail = ssoItem.Email
                           ExpiresAt = expiresAt
                           RedirectUri = data.Redirect_Uri
                           Social = None }

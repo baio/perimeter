@@ -10,7 +10,7 @@ module InitKKK =
     let initLoginView (db: IMongoDatabase) =
 
         let col =
-            db.GetCollection<LogIn>(LOGIN_VIEW_COLLECTION_NAME)
+            db.GetCollection<LogInDoc>(LOGIN_VIEW_COLLECTION_NAME)
         let keys =
             [| createIndexModel <@ fun x -> x.DateTime @> BsonOrderDesc
                createIndexModel <@ fun x -> x.UserEmail @> BsonOrderAsc

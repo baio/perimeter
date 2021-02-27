@@ -1,5 +1,8 @@
 ﻿namespace PRR.Domain.Auth.LogIn.Common
 
+open PRR.Domain.Common.Events
+open PRR.Domain.Models
+
 [<AutoOpen>]
 module GetLogInEvent =
 
@@ -11,27 +14,18 @@ module GetLogInEvent =
     open DataAvail.EntityFramework.Common
     open DataAvail.Http.Exceptions
 
-    let getLoginEvent (dataContext: DbDataContext) clientId userId social isPerimeterClient =
+
+    let getLoginEvent (dataContext: DbDataContext) clientId (grantType: LogInGrantType) isPerimeterClient =
         task {
 
-            let! userEmail =
-                query {
-                    for user in dataContext.Users do
-                        where (user.Id = userId)
-                        select user.Email
-                }
-                |> toSingleExnAsync (Unexpected')
-
             if clientId = PERIMETER_CLIENT_ID then
-                let result: Events.LogIn =
+                let result: Events.LogInEvent =
                     { DomainId = PERIMETER_DOMAIN_ID
-                      Social = social
                       IsManagementClient = true
                       AppIdentifier = PERIMETER_APP_IDENTIFIER
-                      UserId = userId
-                      UserEmail = userEmail
                       ClientId = clientId
-                      DateTime = DateTime.UtcNow }
+                      DateTime = DateTime.UtcNow
+                      GrantType = grantType }
 
                 return result
             else
@@ -43,15 +37,13 @@ module GetLogInEvent =
                     }
                     |> toSingleExnAsync (Unexpected')
 
-                let successData: Events.LogIn =
+                let successData: Events.LogInEvent =
                     { DomainId = domainId
                       IsManagementClient = isPerimeterClient
                       AppIdentifier = appIdentifier
-                      UserId = userId
-                      Social = social
-                      UserEmail = userEmail
                       ClientId = clientId
-                      DateTime = DateTime.UtcNow }
+                      DateTime = DateTime.UtcNow
+                      GrantType = grantType }
 
                 return successData
         }

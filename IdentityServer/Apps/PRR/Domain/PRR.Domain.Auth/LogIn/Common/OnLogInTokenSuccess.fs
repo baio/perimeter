@@ -8,6 +8,7 @@ open MassTransit
 open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
 open PRR.Domain.Auth.Common
+open PRR.Domain.Common.Events
 open PRR.Domain.Models.Social
 
 [<AutoOpen>]
@@ -25,7 +26,12 @@ module OnLogInTokenSuccess =
           Social: Social option
           UserId: int }
 
-    let onLoginTokenSuccess (env: Env) (loginItem: Item) (refreshTokenItem: RefreshTokenKV) isPerimeterClient =
+    let onLoginTokenSuccess (env: Env)
+                            (grantType: LogInGrantType)
+                            (loginItem: Item)
+                            (refreshTokenItem: RefreshTokenKV)
+                            isPerimeterClient
+                            =
         task {
 
             do! match loginItem.Code with
@@ -49,13 +55,7 @@ module OnLogInTokenSuccess =
                 env.Logger.LogInformation
                     ("Add refresh ${token} token to kv storage gives error ${@err}", refreshTokenItem.Token, err)
 
-            let! event =
-                getLoginEvent
-                    env.DataContext
-                    refreshTokenItem.ClientId
-                    loginItem.UserId
-                    loginItem.Social
-                    isPerimeterClient
+            let! event = getLoginEvent env.DataContext refreshTokenItem.ClientId grantType isPerimeterClient
 
             do! env.PublishEndpoint.Publish(event)
         }

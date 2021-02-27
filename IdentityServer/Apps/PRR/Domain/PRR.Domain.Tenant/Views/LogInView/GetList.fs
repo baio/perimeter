@@ -21,21 +21,9 @@ module GetList =
 
     type ListQuery = ListQuery<SortField, FilterField>
 
+
     [<CLIMutable>]
-    type LogIn =
-        {
-          Id: BsonObjectId
-          Social: Social option
-          DateTime: System.DateTime
-          UserId: int
-          ClientId: string
-          DomainId: int
-          IsManagementClient: bool
-          AppIdentifier: string
-          UserEmail: string }
-    
-    [<CLIMutable>]
-    type ListResponse = ListQueryResult<LogIn>
+    type ListResponse = ListQueryResult<LogInDoc>
 
     type GetList = IMongoDatabase -> (DomainId * bool * ListQuery) -> Task<ListResponse>
 
@@ -43,20 +31,20 @@ module GetList =
         function
         | FilterField.Email ->
             let likeFilterValue = getILikeString filterValue
-            <@ fun (doc: LogIn) -> doc.UserEmail =~ likeFilterValue @>
+            <@ fun (doc: LogInDoc) -> doc.UserEmail =~ likeFilterValue @>
         | FilterField.DateTime ->
             let date = System.DateTime.Parse(filterValue)
-            <@ fun (doc: LogIn) -> doc.DateTime = date @>
-        | FilterField.AppIdentifier -> <@ fun (doc: LogIn) -> doc.AppIdentifier = filterValue @>
+            <@ fun (doc: LogInDoc) -> doc.DateTime = date @>
+        | FilterField.AppIdentifier -> <@ fun (doc: LogInDoc) -> doc.AppIdentifier = filterValue @>
 
     let getSortFieldExpr =
         function
-        | SortField.DateTime -> SortDate <@ fun (doc: LogIn) -> doc.DateTime @>
+        | SortField.DateTime -> SortDate <@ fun (doc: LogInDoc) -> doc.DateTime @>
 
     let getLogInList: GetList =
         fun db (domainId, isManagement, prms) ->
             let col =
-                db.GetCollection<LogIn>(LOGIN_VIEW_COLLECTION_NAME)
+                db.GetCollection<LogInDoc>(LOGIN_VIEW_COLLECTION_NAME)
 
             handleListQuery col getFilterFieldExpr getSortFieldExpr prms
             |> andWhere
