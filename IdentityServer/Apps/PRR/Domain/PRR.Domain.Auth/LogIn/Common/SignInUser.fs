@@ -2,6 +2,7 @@
 
 open System.Security.Cryptography
 open System.Threading.Tasks
+open PRR.Data.DataContext
 open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Models
 
@@ -28,40 +29,6 @@ module internal SignInUser =
     // https://www.blinkingcaret.com/2018/05/30/refresh-tokens-in-asp-net-core-web-api/
     // https://jasonwatmore.com/post/2019/10/11/aspnet-core-3-jwt-authentication-tutorial-with-example-api
     // https://jasonwatmore.com/post/2020/05/25/aspnet-core-3-api-jwt-authentication-with-refresh-tokens
-
-    type SignInData =
-        { TokenData: TokenData
-          ClientId: ClientId
-          Issuer: string
-          AudienceScopes: AudienceScopes seq
-          RefreshTokenProvider: unit -> string
-          AccessTokenCredentials: SigningCredentials
-          AccessTokenExpiresIn: int<minutes>
-          IdTokenExpiresIn: int<minutes> }
-
-    let signInUser' (data: SignInData) =
-
-        let audiences =
-            data.AudienceScopes
-            |> Seq.map (fun x -> x.Audience)
-
-        let rolesPermissions =
-            data.AudienceScopes
-            |> Seq.collect (fun x -> x.Scopes)
-
-        let accessToken =
-            createAccessTokenClaims data.ClientId data.Issuer data.TokenData rolesPermissions audiences
-            |> (createSignedToken data.AccessTokenCredentials data.AccessTokenExpiresIn)
-
-        let idToken =
-            createIdTokenClaims data.ClientId data.Issuer data.TokenData rolesPermissions
-            |> (createUnsignedToken data.IdTokenExpiresIn)
-
-        let refreshToken = data.RefreshTokenProvider()
-
-        { id_token = idToken
-          access_token = accessToken
-          refresh_token = refreshToken } : LogInResult
 
     let private getClientAudiencesRolePermissions' (dataContext: DbDataContext) clientId email =
         task {
@@ -115,7 +82,11 @@ module internal SignInUser =
         { AccessTokenExpiresIn: int
           SigningCredentials: SigningCredentials }
 
-    let getDomainSecretAndExpire env issuer isPerimeterClient =
+    type GetDomainSecretAndExpireEnv =
+        { JwtConfig: JwtConfig
+          DataContext: DbDataContext }
+
+    let getDomainSecretAndExpire (env: GetDomainSecretAndExpireEnv) issuer isPerimeterClient =
         task {
             // perimeter clients should always use internal credentials
             match isPerimeterClient with
@@ -147,7 +118,7 @@ module internal SignInUser =
         }
 
 
-    let signInUser env (tokenData: TokenData) clientId (scopes: SignInScopes) =
+    let signInUser (env: SignInUserEnv) (tokenData: UserTokenData) clientId (scopes: SignInScopes) =
         task {
 
             let! { ClientId = clientId
@@ -166,19 +137,23 @@ module internal SignInUser =
 
             let isPerimeterClient = clientType <> Regular
 
-            let! secretData = getDomainSecretAndExpire env issuer isPerimeterClient
+            let env': GetDomainSecretAndExpireEnv =
+                { JwtConfig = env.JwtConfig
+                  DataContext = env.DataContext }
+
+            let! secretData = getDomainSecretAndExpire env' issuer isPerimeterClient
 
             let data =
-                { TokenData = tokenData
+                { UserTokenData = Some tokenData
                   ClientId = clientId
                   Issuer = issuer
                   AudienceScopes = validatedScopes
-                  RefreshTokenProvider = env.HashProvider
+                  RefreshTokenProvider = Some env.HashProvider
                   AccessTokenCredentials = secretData.SigningCredentials
                   AccessTokenExpiresIn = secretData.AccessTokenExpiresIn * 1<minutes>
                   IdTokenExpiresIn = idTokenExpiresIn }
 
-            let result = signInUser' data
+            let result = signIn data
 
             return (result, clientId, isPerimeterClient)
         }

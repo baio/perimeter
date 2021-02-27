@@ -56,11 +56,16 @@ module RefreshToken =
 
                 logger.LogInformation("${@issuer} found for bearer token", issuer)
 
-                let! domainSecret = getDomainSecretAndExpire env' issuer item.IsPerimeterClient
+                let env'': GetDomainSecretAndExpireEnv =
+                    { JwtConfig = env.JwtConfig
+                      DataContext = env.DataContext }
+
+                let! domainSecret = getDomainSecretAndExpire env'' issuer item.IsPerimeterClient
 
                 match validate env accessToken (item.ExpiresAt, item.UserId, domainSecret.SigningCredentials.Key) with
                 | Success ->
                     logger.LogInformation("Domain and token validated for refresh token item")
+
                     match! getUserDataForToken env.DataContext item.UserId item.SocialType with
                     | Some tokenData ->
                         logger.LogInformation("${@tokenData} for token found", tokenData)

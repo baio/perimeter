@@ -35,6 +35,7 @@ module TokenResourceOwnerPassword =
         }
         |> toSingleOptionAsync
 
+    // https://auth0.com/docs/api/authentication?http#resource-owner-password
     let tokenResourceOwnerPassword: TokenResourceOwnerPassword =
         fun env data ->
 
@@ -85,6 +86,7 @@ module TokenResourceOwnerPassword =
                           Logger = env.Logger
                           HashProvider = env.HashProvider }
 
+                    
                     let! (result, clientId, isPerimeterClient) =
                         signInUser signInUserEnv tokenData data.Client_Id (ValidatedScopes validatedScopes)
 

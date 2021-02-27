@@ -33,6 +33,7 @@
         <Compile Include="LogIn\Common\UserHelpers.fs" />
         <Compile Include="LogIn\Common\CreateClaims.fs" />
         <Compile Include="LogIn\Common\CreateToken.fs" />
+        <Compile Include="LogIn\Common\SignIn.fs" />
         <Compile Include="LogIn\Common\SignInUser.fs" />
         <Compile Include="LogIn\Authorize\Models.fs" />
         <Compile Include="LogIn\Authorize\UserHelpers.fs" />
@@ -57,6 +58,8 @@
         <Compile Include="LogIn\Social\SocialCallback\Identities\Google.fs" />
         <Compile Include="LogIn\Social\SocialCallback\Identities\Twitter.fs" />
         <Compile Include="LogIn\Social\SocialCallback\SocialCallback.fs" />
+        <Compile Include="LogIn\TokenClientCredentials\Models.fs" />
+        <Compile Include="LogIn\TokenClientCredentials\TokenClientCredentials.fs" />
         <Compile Include="validatePassword.fs" />
         <Compile Include="SignUp\Models.fs" />
         <Compile Include="SignUp\OnSuccess.fs" />

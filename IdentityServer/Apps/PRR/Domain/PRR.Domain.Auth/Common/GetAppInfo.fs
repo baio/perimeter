@@ -32,7 +32,7 @@ module GetAppInfo =
         | (false, false) -> Regular
         | _ -> raise (unexpected "App both domain and tenant management")
 
-    let private getClientAppInfo (dataContext: DbDataContext) clientId =
+    let getClientAppInfo (dataContext: DbDataContext) clientId =
         task {
             let! (issuer, idTokenExpiresIn, isDomainManagement, isTenantManagement) =
                 query {

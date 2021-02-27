@@ -7,16 +7,15 @@ module GetUserDataForToken =
     open PRR.Data.Entities
     open PRR.Domain.Models
     open DataAvail.EntityFramework.Common
-    open DataAvail.Common    
+    open DataAvail.Common
 
     [<CLIMutable>]
-    type TokenData =
+    type UserTokenData =
         { Id: int
           FirstName: string
           LastName: string
           Email: string
           SocialType: SocialType option }
-
 
     let private getUserDataForTokenNotSocial (dataContext: DbDataContext) filterUser =
         query {
@@ -48,11 +47,12 @@ module GetUserDataForToken =
             (Option.map (fun (name, email, userId) ->
                 let (firstName, lastName) = splitName name
 
+
                 { Id = userId
                   FirstName = firstName
                   LastName = lastName
                   Email = email
-                  SocialType = Some socialType }: TokenData))
+                  SocialType = Some socialType }: UserTokenData))
 
     let getUserDataForToken' (dataContext: DbDataContext) filterUser socialType =
         match socialType with

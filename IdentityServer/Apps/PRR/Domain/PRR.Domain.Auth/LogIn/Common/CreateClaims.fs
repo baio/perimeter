@@ -25,19 +25,26 @@ module private CreateClaims =
 
     let createAccessTokenClaims clientId issuer tokenData (scopes: string seq) (audiences: string seq) =
 
-        let auds =
+        let audiencesClaims =
             audiences
             |> Seq.map (fun x -> Claim(CLAIM_TYPE_AUDIENCE, x))
 
         let permissions = scopes |> strJoin
+
+        let userClaims =
+            match tokenData with
+            | Some tokenData ->
+                [| Claim(CLAIM_TYPE_SUB, getSub tokenData)
+                   Claim(ClaimTypes.Email, tokenData.Email)
+                   Claim(CLAIM_TYPE_UID, tokenData.Id.ToString()) |]
+            | None -> [||]
+
         // TODO : RBA + Include permissions flag
-        [| Claim(CLAIM_TYPE_SUB, getSub tokenData)
-           Claim(ClaimTypes.Email, tokenData.Email)
-           Claim(CLAIM_TYPE_UID, tokenData.Id.ToString())
-           Claim(CLAIM_TYPE_SCOPE, permissions)
+        [| Claim(CLAIM_TYPE_SCOPE, permissions)
            Claim(CLAIM_TYPE_ISSUER, issuer)
            Claim(CLAIM_TYPE_CID, clientId) |]
-        |> Seq.append auds
+        |> Seq.append userClaims
+        |> Seq.append audiencesClaims
 
     let createIdTokenClaims clientId issuer tokenData (scopes: string seq) =
 

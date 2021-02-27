@@ -1,10 +1,10 @@
-﻿namespace PRR.Domain.Auth.LogIn.TokenResourceOwnerPassword
+﻿namespace PRR.Domain.Auth.LogIn.TokenClientCredentials
 
 [<AutoOpen>]
 module Models =
 
     open System.Threading.Tasks
-    open MassTransit    
+    open MassTransit
     open DataAvail.KeyValueStorage.Core
     open Microsoft.Extensions.Logging
     open PRR.Data.DataContext
@@ -12,22 +12,24 @@ module Models =
     open PRR.Domain.Models
     open PRR.Domain.Auth.LogIn.Common
 
+    type Result = {
+        access_token: string
+        token_type: string
+        expires_in: int
+    }
+    
     type Data =
         { Grant_Type: string
           Client_Id: string
-          Username: string
-          Password: string
-          Scope: string }
+          Client_Secret: string
+          Audience: string }
 
     type Env =
         { DataContext: DbDataContext
           JwtConfig: JwtConfig
-          RefreshTokenExpiresIn: int<minutes>
           HashProvider: HashProvider
-          StringSalter: StringSalter
           Sha256Provider: Sha256Provider
-          KeyValueStorage: IKeyValueStorage
           Logger: ILogger
           PublishEndpoint: IPublishEndpoint }
 
-    type TokenResourceOwnerPassword = Env -> Data -> Task<LogInResult>
+    type TokenClientCredentials = Env -> Data -> Task<Result>
