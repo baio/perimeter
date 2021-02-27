@@ -47,7 +47,6 @@
         <Compile Include="LogIn\AuthorizeSSO\AuthorizeSSO.fs" />
         <Compile Include="LogIn\TokenAuthorizationCode\Models.fs" />
         <Compile Include="LogIn\TokenAuthorizationCode\TokenAuthorizationCode.fs" />
-        <Compile Include="LogIn\TokenAuthorizationCode\LogInEmail.fs" />
         <Compile Include="LogIn\TokenResourceOwnerPassword\Models.fs" />
         <Compile Include="LogIn\TokenResourceOwnerPassword\TokenResourceOwnerPassword.fs" />
         <Compile Include="LogIn\Social\OAuth1a\SignAuthorizationHeader.fs" />

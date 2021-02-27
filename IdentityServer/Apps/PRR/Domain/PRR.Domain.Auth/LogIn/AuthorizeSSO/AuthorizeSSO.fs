@@ -60,8 +60,8 @@ module Authorize =
 
                 let! appInfo = getAppInfo env.DataContext data.Client_Id ssoItem.Email 1<minutes>
 
-                env.Logger.LogInformation("AppInfo found ${@appInfo}", appInfo)
-
+                env.Logger.LogInformation("AppInfo found ${@appInfo}", appInfo)                                
+                
                 let! app =
                     query {
                         for app in dataContext.Applications do

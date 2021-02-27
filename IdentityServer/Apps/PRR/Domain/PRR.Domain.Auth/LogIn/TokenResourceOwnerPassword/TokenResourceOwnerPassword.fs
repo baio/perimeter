@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.LogIn.TokenResourceOwnerPassword
 
+open PRR.Data.Entities
 open PRR.Domain.Common.Events
 
 [<AutoOpen>]
@@ -90,7 +91,12 @@ module TokenResourceOwnerPassword =
 
 
                     let! (result, clientId, isPerimeterClient) =
-                        signInUser signInUserEnv tokenData data.Client_Id (ValidatedScopes validatedScopes)
+                        signInUser
+                            signInUserEnv
+                            tokenData
+                            data.Client_Id
+                            (ValidatedScopes validatedScopes)
+                            GrantType.Password
 
                     let refreshTokenItem: RefreshTokenKV =
                         { Token = result.refresh_token

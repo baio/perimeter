@@ -118,14 +118,24 @@ module internal SignInUser =
         }
 
 
-    let signInUser (env: SignInUserEnv) (tokenData: UserTokenData) clientId (scopes: SignInScopes) =
+    let signInUser (env: SignInUserEnv)
+                   (tokenData: UserTokenData)
+                   clientId
+                   (scopes: SignInScopes)
+                   (grantType: GrantType)
+                   =
         task {
 
             let! { ClientId = clientId
                    Issuer = issuer
                    IdTokenExpiresIn = idTokenExpiresIn
-                   Type = clientType } =
+                   Type = clientType
+                   GrantTypes = grantTypes } =
                 getAppInfo env.DataContext clientId tokenData.Email env.JwtConfig.IdTokenExpiresIn
+
+
+            if Seq.contains grantType grantTypes |> not
+            then return raise (unAuthorized "grant_type is not allowed for this application")
 
             let! validatedScopes = getValidatedScopes env.DataContext tokenData.Email clientId scopes
 

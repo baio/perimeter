@@ -147,6 +147,7 @@ module LogInAuthorizationCode =
                       Client_Secret = "ClientSecret" }
 
                 let! result' = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
+                
                 do! ensureSuccessAsync result'
 
                 let! result = result' |> readAsJsonAsync<LogInResult>

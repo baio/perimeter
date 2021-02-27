@@ -77,7 +77,6 @@ module RefreshToken =
                 match validate env accessToken (item.ExpiresAt, item.UserId, domainSecret.SigningCredentials.Key) with
                 | Success ->
                     logger.LogInformation("Domain and token validated for refresh token item")
-
                     match! getUserDataForToken env.DataContext item.UserId item.SocialType with
                     | Some tokenData ->
                         logger.LogInformation("${@tokenData} for token found", tokenData)
@@ -85,7 +84,8 @@ module RefreshToken =
                         // Now just silently change scopes
                         let scopes = item.Scopes
 
-                        let! (res, clientId, _) = signInUser env' tokenData item.ClientId (RequestedScopes scopes)
+                        let! (res, clientId, _) =
+                            signInUser env' tokenData item.ClientId (RequestedScopes scopes) GrantType.RefreshToken
 
                         let newRefreshTokenItem: RefreshTokenKV =
                             { ClientId = clientId

@@ -2,6 +2,7 @@
 
 open System
 open System.Threading.Tasks
+open PRR.Data.Entities
 open PRR.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
@@ -23,7 +24,8 @@ module GetAppInfo =
         { ClientId: ClientId
           Issuer: Issuer
           IdTokenExpiresIn: int<minutes>
-          Type: AppType }
+          Type: AppType
+          GrantTypes: GrantType [] }
 
     let private getAppType =
         function
@@ -34,13 +36,17 @@ module GetAppInfo =
 
     let getClientAppInfo (dataContext: DbDataContext) clientId =
         task {
-            let! (issuer, idTokenExpiresIn, isDomainManagement, isTenantManagement) =
+            let! (issuer, idTokenExpiresIn, isDomainManagement, isTenantManagement, grantTypes) =
                 query {
                     for app in dataContext.Applications do
                         where (app.ClientId = clientId)
 
                         select
-                            (app.Domain.Issuer, app.IdTokenExpiresIn, app.IsDomainManagement, app.Domain.Tenant <> null)
+                            (app.Domain.Issuer,
+                             app.IdTokenExpiresIn,
+                             app.IsDomainManagement,
+                             app.Domain.Tenant <> null,
+                             app.GrantTypes)
                 }
                 |> LinqHelpers.toSingleExnAsync (unexpected (sprintf "ClientId %s is not found" clientId))
 
@@ -48,7 +54,8 @@ module GetAppInfo =
                 { ClientId = clientId
                   Issuer = issuer
                   IdTokenExpiresIn = idTokenExpiresIn * 1<minutes>
-                  Type = getAppType (isDomainManagement, isTenantManagement) }
+                  Type = getAppType (isDomainManagement, isTenantManagement)
+                  GrantTypes = grantTypes }
         }
 
     let private getDefaultClientId (dataContext: DbDataContext) email =
@@ -94,7 +101,6 @@ module GetAppInfo =
     let getAppInfo (dataContext: DbDataContext) clientId email idTokenExpires =
         task {
             if clientId = DEFAULT_CLIENT_ID then
-                printfn "getAppInfo:DEFAULT_CLIENT_ID"
 
                 let! clientId' = getDefaultClientId dataContext email
 
@@ -105,10 +111,15 @@ module GetAppInfo =
                         { ClientId = PERIMETER_CLIENT_ID
                           Issuer = PERIMETER_ISSUER
                           IdTokenExpiresIn = idTokenExpires
-                          Type = PerimeterManagement }
+                          Type = PerimeterManagement
+                          GrantTypes =
+                              [| GrantType.AuthorizationCodePKCE
+                                 GrantType.ClientCredentials
+                                 GrantType.Password
+                                 GrantType.AuthorizationCode
+                                 GrantType.RefreshToken |] }
                         |> Task.FromResult
 
             else
-                printfn "getAppInfo:2"
                 return! getClientAppInfo dataContext clientId
         }

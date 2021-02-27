@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.LogIn.Authorize
 
+open PRR.Data.Entities
 open PRR.Domain.Models
 
 [<AutoOpen>]
@@ -62,19 +63,19 @@ module LogInUser =
 
             // TODO Validate data
 
-            let! r = getAppInfo env.DataContext data.ClientId data.Email 1<minutes>
+            let! appInfo = getAppInfo env.DataContext data.ClientId data.Email 1<minutes>
 
-            env.Logger.LogInformation("App info found ${@info}", r)
+            env.Logger.LogInformation("App info found ${@info}", appInfo)
 
-            let issuer = r.Issuer
+            let issuer = appInfo.Issuer
 
-            let clientId = r.ClientId
+            let clientId = appInfo.ClientId
 
-            let! r = getClientAppData dataContext clientId
+            let! appData = getClientAppData dataContext clientId
 
-            env.Logger.LogInformation("App data found ${@data}", r)
+            env.Logger.LogInformation("App data found ${@data}", appData)
 
-            let (ssoEnabled, callbackUrls, poolTenantId, domainTenantId) = r
+            let (ssoEnabled, callbackUrls, poolTenantId, domainTenantId) = appData
 
             let tenantId =
                 match (poolTenantId.HasValue, domainTenantId.HasValue) with

@@ -29,7 +29,10 @@ module Helpers =
              ClientSecret = authStringProvider.ClientSecret(),
              GrantTypes =
                  [| GrantType.AuthorizationCodePKCE
-                    GrantType.RefreshToken |],
+                    GrantType.RefreshToken
+                    GrantType.AuthorizationCode
+                    GrantType.ClientCredentials
+                    GrantType.Password |],
              AllowedCallbackUrls = "*",
              AllowedLogoutCallbackUrls = "*",
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
@@ -84,7 +87,10 @@ module Helpers =
              AllowedLogoutCallbackUrls = "*",
              GrantTypes =
                  [| GrantType.AuthorizationCodePKCE
-                    GrantType.RefreshToken |],
+                    GrantType.RefreshToken
+                    GrantType.AuthorizationCode
+                    GrantType.ClientCredentials
+                    GrantType.Password |],
              SSOEnabled = true,
              IsDomainManagement = true)
 

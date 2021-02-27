@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.LogIn.TokenClientCredentials
 
+open PRR.Data.Entities
 open PRR.Domain.Common.Events
 open PRR.Domain.Models.Models
 
@@ -76,6 +77,10 @@ module TokenClientCredentials =
                 | None -> ()
 
                 let! appInfo = getClientAppInfo env.DataContext data.Client_Id
+
+                if Seq.contains GrantType.ClientCredentials appInfo.GrantTypes
+                   |> not then
+                    return raise (unAuthorized "grant_type is not allowed for this application")
 
                 env.Logger.LogDebug("AppInfo found ${@appInfo}", appInfo)
 

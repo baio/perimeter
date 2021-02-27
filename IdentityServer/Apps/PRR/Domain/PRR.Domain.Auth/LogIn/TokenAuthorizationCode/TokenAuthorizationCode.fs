@@ -1,6 +1,7 @@
 ﻿namespace PRR.Domain.Auth.LogIn.TokenAuthorizationCode
 
 open System.Threading.Tasks
+open PRR.Data.Entities
 open PRR.Domain.Common.Events
 open PRR.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
@@ -129,7 +130,6 @@ module TokenAuthorizationCode =
 
                 let socialType =
                     item.Social |> Option.map (fun f -> f.Type)
-
                 match! getUserDataForToken dataContext item.UserId socialType with
                 | Some tokenData ->
                     env.Logger.LogInformation
@@ -141,8 +141,18 @@ module TokenAuthorizationCode =
                           Logger = env.Logger
                           HashProvider = env.HashProvider }
 
+                    let grantType =
+                        match isPKCE with
+                        | true -> GrantType.AuthorizationCodePKCE
+                        | false -> GrantType.AuthorizationCode
+
                     let! (result, clientId, isPerimeterClient) =
-                        signInUser signInUserEnv tokenData data.Client_Id (ValidatedScopes item.ValidatedScopes)
+                        signInUser
+                            signInUserEnv
+                            tokenData
+                            data.Client_Id
+                            (ValidatedScopes item.ValidatedScopes)
+                            grantType
 
                     let refreshTokenItem: RefreshTokenKV =
                         { Token = result.refresh_token
@@ -171,12 +181,12 @@ module TokenAuthorizationCode =
                         { UserEmail = item.UserEmail
                           UserId = item.UserId }
 
-                    let grantType =
+                    let logInGrantType =
                         match isPKCE with
                         | true -> LogInGrantType.AuthorizationCodePKCE userData
                         | false -> LogInGrantType.AuthorizationCode userData
 
-                    do! onLoginTokenSuccess env' grantType loginItem refreshTokenItem isPerimeterClient
+                    do! onLoginTokenSuccess env' logInGrantType loginItem refreshTokenItem isPerimeterClient
 
                     return result
                 | None ->

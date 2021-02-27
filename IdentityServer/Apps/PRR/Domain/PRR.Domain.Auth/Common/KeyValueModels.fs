@@ -1,6 +1,7 @@
 ﻿namespace PRR.Domain.Auth.Common
 
 open System
+open PRR.Data.Entities
 open PRR.Domain.Models
 open DataAvail.KeyValueStorage.Core
 
