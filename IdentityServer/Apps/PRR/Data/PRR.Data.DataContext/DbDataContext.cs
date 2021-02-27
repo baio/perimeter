@@ -1,9 +1,8 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PRR.Data.Entities;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace PRR.Data.DataContext
 {
@@ -68,11 +67,11 @@ namespace PRR.Data.DataContext
                 entity.Property(d => d.SigningAlgorithm).HasConversion<string>();
             });
 
-            var enumArrayConverter = new ValueConverter<FlowType[], string>(
+            var enumArrayConverter = new ValueConverter<GrantType[], string>(
                 v => string.Join(',', v.Select(x => x.ToString())),
                 v =>
                     v.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                        .Select(x => (FlowType) Enum.Parse(typeof(FlowType), x)).ToArray());
+                        .Select(x => (GrantType) Enum.Parse(typeof(GrantType), x)).ToArray());
 
             modelBuilder.Entity<Application>(entity =>
             {
@@ -81,10 +80,10 @@ namespace PRR.Data.DataContext
                 entity.Property(x => x.DateCreated).HasDefaultValueSql("now()");
                 entity.Property(x => x.SSOEnabled).HasDefaultValue(false);
                 entity.Property(x => x.IsDomainManagement).HasDefaultValue(false);
-                entity.Property(x => x.Flows)
-                    .HasDefaultValue(new[] {FlowType.AuthorizationCodePKCE, FlowType.RefreshToken});
+                entity.Property(x => x.GrantTypes)
+                    .HasDefaultValue(new[] {GrantType.AuthorizationCodePKCE, GrantType.RefreshToken});
                 entity.HasOne(x => x.Domain).WithMany(x => x.Applications).OnDelete(DeleteBehavior.Cascade);
-                entity.Property(d => d.Flows)
+                entity.Property(d => d.GrantTypes)
                     .HasConversion(enumArrayConverter);
             });
 

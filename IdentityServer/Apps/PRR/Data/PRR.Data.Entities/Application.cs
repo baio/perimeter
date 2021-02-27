@@ -3,12 +3,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PRR.Data.Entities
 {
-    public enum FlowType
+    public enum GrantType
     {
         AuthorizationCodePKCE,
         AuthorizationCode,
         Password,
-        RefreshToken
+        RefreshToken,
+        ClientCredentials
     }
 
     public class Application
@@ -38,7 +39,7 @@ namespace PRR.Data.Entities
 
         [Required] public bool SSOEnabled { get; set; }
 
-        [Required] public FlowType[] Flows { get; set; }
+        [Required] public GrantType[] GrantTypes { get; set; }
 
         [Required] public bool IsDomainManagement { get; set; }
     }

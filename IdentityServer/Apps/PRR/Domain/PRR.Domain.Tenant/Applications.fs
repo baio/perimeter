@@ -36,7 +36,7 @@ module Applications =
           AllowedCallbackUrls: string
           AllowedLogoutCallbackUrls: string
           SSOEnabled: bool
-          Flows: FlowType array }
+          GrantTypes: GrantType array }
 
     type CreateEnv =
         { AuthStringsProvider: IAuthStringsGetter
@@ -71,9 +71,9 @@ module Applications =
                      ClientSecret = env.AuthStringsProvider.ClientSecret(),
                      IdTokenExpiresIn = int env.IdTokenExpiresIn,
                      RefreshTokenExpiresIn = int env.RefreshTokenExpiresIn,
-                     Flows =
-                         [| FlowType.AuthorizationCodePKCE
-                            FlowType.RefreshToken |],
+                     GrantTypes =
+                         [| GrantType.AuthorizationCodePKCE
+                            GrantType.RefreshToken |],
                      AllowedLogoutCallbackUrls = "*",
                      AllowedCallbackUrls = "*"))
             (fun x -> x.Id)
@@ -104,7 +104,7 @@ module Applications =
               AllowedCallbackUrls = p.AllowedCallbackUrls
               AllowedLogoutCallbackUrls = p.AllowedLogoutCallbackUrls
               SSOEnabled = p.SSOEnabled
-              Flows = p.Flows } @>
+              GrantTypes = p.GrantTypes } @>
 
     let getOne: GetOne<int, GetLike, DbDataContext> =
         getOne<Application, _, _, _> (<@ fun p id -> p.Id = id @>) (selectApp)

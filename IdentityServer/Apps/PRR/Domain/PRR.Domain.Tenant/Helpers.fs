@@ -27,9 +27,9 @@ module Helpers =
              Name = "Tenant domains management application",
              ClientId = authStringProvider.ClientId(),
              ClientSecret = authStringProvider.ClientSecret(),
-             Flows =
-                 [| FlowType.AuthorizationCodePKCE
-                    FlowType.RefreshToken |],
+             GrantTypes =
+                 [| GrantType.AuthorizationCodePKCE
+                    GrantType.RefreshToken |],
              AllowedCallbackUrls = "*",
              AllowedLogoutCallbackUrls = "*",
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
@@ -67,9 +67,9 @@ module Helpers =
              RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
              AllowedCallbackUrls = "*",
              AllowedLogoutCallbackUrls = "*",
-             Flows =
-                 [| FlowType.AuthorizationCodePKCE
-                    FlowType.RefreshToken |],
+             GrantTypes =
+                 [| GrantType.AuthorizationCodePKCE
+                    GrantType.RefreshToken |],
              IsDomainManagement = false)
 
     let createDomainManagementApp (authStringProvider: IAuthStringsGetter) (authConfig: AuthConfig) domain =
@@ -82,10 +82,9 @@ module Helpers =
              RefreshTokenExpiresIn = (int authConfig.RefreshTokenExpiresIn),
              AllowedCallbackUrls = "*",
              AllowedLogoutCallbackUrls = "*",
-             Flows =
-                 [| FlowType.AuthorizationCodePKCE
-                    FlowType.AuthorizationCode
-                    FlowType.RefreshToken |],
+             GrantTypes =
+                 [| GrantType.AuthorizationCodePKCE
+                    GrantType.RefreshToken |],
              SSOEnabled = true,
              IsDomainManagement = true)
 
