@@ -19,5 +19,5 @@ module ReadResponseUtils =
             return json
         }
 
-    let readResponseHader (name: string) (response: HttpResponseMessage) =                    
+    let readResponseHeader (name: string) (response: HttpResponseMessage) =                    
         response.Headers.GetValues(name) |> Seq.head

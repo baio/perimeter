@@ -35,6 +35,7 @@
         <Compile Include="LogIn\Common\CreateToken.fs" />
         <Compile Include="LogIn\Common\SignIn.fs" />
         <Compile Include="LogIn\Common\SignInUser.fs" />
+        <Compile Include="LogIn\Common\CheckApplicationClientSecret.fs" />
         <Compile Include="LogIn\Authorize\Models.fs" />
         <Compile Include="LogIn\Authorize\UserHelpers.fs" />
         <Compile Include="LogIn\Authorize\OnSuccess.fs" />

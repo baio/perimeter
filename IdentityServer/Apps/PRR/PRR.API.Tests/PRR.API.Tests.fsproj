@@ -68,6 +68,7 @@
         <Compile Include="Auth\LogInPKCETests.fs" />
         <Compile Include="Auth\LogInAuthorizationCode.fs" />
         <Compile Include="Auth\LogInPassword.fs" />
+        <Compile Include="Auth\LogInClientCredentials.fs" />
         <Compile Include="Auth\LogInValidationTests.fs" />
         <Compile Include="Auth\SignInTests.fs" />
         <Compile Include="Auth\RefreshTokenTests.fs" />

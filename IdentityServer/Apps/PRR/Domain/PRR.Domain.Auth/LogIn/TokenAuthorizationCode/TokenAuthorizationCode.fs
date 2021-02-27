@@ -11,7 +11,6 @@ open System.Text.RegularExpressions
 open PRR.Domain.Auth.Common
 open Microsoft.Extensions.Logging
 open DataAvail.Http.Exceptions
-open DataAvail.EntityFramework.Common.LinqHelpers
 open PRR.Domain.Auth.LogIn.Common
 
 [<AutoOpen>]
@@ -52,32 +51,11 @@ module TokenAuthorizationCode =
     let private checkAuthorizationCode code itemCode =
         if code <> itemCode then Some(unAuthorized "code mismatch") else None
 
-    let private checkApplicationClientSecret (dbContext: DbDataContext) clientId clientSecret =
-
-        task {
-
-            let! appClientSecret =
-                query {
-                    for app in dbContext.Applications do
-                        where (app.ClientId = clientId)
-                        select app.ClientSecret
-                }
-                |> toSingleOptionAsync // (unexpected "Application client secret is not found")
-
-            match appClientSecret with
-            | None -> return Some(unexpected "Application client secret is not found")
-            | Some appClientSecret ->
-                if clientSecret <> appClientSecret
-                then return Some(unAuthorized "Client secret mismatch")
-                else return None
-
-        }
 
     let private checkAuthorizationCodeFlow (dbContext: DbDataContext) code itemCode clientId clientSecret =
         match checkAuthorizationCode code itemCode with
         | Some exn -> exn |> Some |> Task.FromResult
         | None -> checkApplicationClientSecret dbContext clientId clientSecret
-
 
     // https://auth0.com/docs/api/authentication?http#authorization-code-flow-with-pkce46
     // https://auth0.com/docs/api/authentication?http#authorization-code-flow45
@@ -151,6 +129,7 @@ module TokenAuthorizationCode =
 
                 let socialType =
                     item.Social |> Option.map (fun f -> f.Type)
+
                 match! getUserDataForToken dataContext item.UserId socialType with
                 | Some tokenData ->
                     env.Logger.LogInformation
@@ -173,7 +152,6 @@ module TokenAuthorizationCode =
                           Scopes = item.RequestedScopes
                           IsPerimeterClient = isPerimeterClient
                           SocialType = socialType }
-
 
                     env.Logger.LogInformation("Success with refreshToken ${@refreshToken}", refreshTokenItem)
 

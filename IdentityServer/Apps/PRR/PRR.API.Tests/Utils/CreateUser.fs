@@ -38,7 +38,7 @@ module CreateUser =
     let logIn (testFixture: TestFixture) (data: PRR.Domain.Auth.LogIn.Authorize.Models.Data) =
         task {
             let! result = logIn' testFixture data
-            let location = readResponseHader "Location" result
+            let location = readResponseHeader "Location" result
             let uri = Uri(location)
 
             return

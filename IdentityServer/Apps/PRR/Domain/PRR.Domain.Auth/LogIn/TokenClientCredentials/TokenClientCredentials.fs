@@ -28,13 +28,29 @@ module TokenClientCredentials =
         |> Array.choose id
 
     let private getAudienceScopes (dataContext: DbDataContext) audience =
-        (query {
-            for api in dataContext.Apis do
-                where (api.Identifier = audience)
-                select api
-         })
-            .SelectMany(fun api -> api.Permissions.Select(fun permission -> permission.Name))
-        |> toListAsync
+
+        task {
+
+            let! cnt =
+                query {
+                    for api in dataContext.Apis do
+                        where (api.Identifier = audience)
+                        select api.Id
+                }
+                |> countAsync
+
+            if cnt = 0
+            then return raise (unAuthorized (sprintf "Audience %s is not found" audience))
+
+            return!
+                (query {
+                    for api in dataContext.Apis do
+                        where (api.Identifier = audience)
+                        select api
+                 })
+                    .SelectMany(fun api -> api.Permissions.Select(fun permission -> permission.Name))
+                |> toListAsync
+        }
 
     // https://auth0.com/docs/api/authentication?http#client-credentials-flow
     let tokenClientCredentials: TokenClientCredentials =
@@ -51,6 +67,18 @@ module TokenClientCredentials =
                     logger.LogWarning("Validation error ${@data}", validationResult)
                     raise (BadRequest validationResult)
 
+                let! exn = checkApplicationClientSecret env.DataContext data.Client_Id data.Client_Secret
+
+                match exn with
+                | Some exn ->
+                    env.Logger.LogDebug("Check secret fails with ${@exn}", exn)
+                    return raise exn
+                | None -> ()
+
+                let! appInfo = getClientAppInfo env.DataContext data.Client_Id
+
+                env.Logger.LogDebug("AppInfo found ${@appInfo}", appInfo)
+
                 let! scopes = getAudienceScopes env.DataContext data.Audience
 
                 let audienceScopes =
@@ -62,10 +90,6 @@ module TokenClientCredentials =
                 let env': GetDomainSecretAndExpireEnv =
                     { JwtConfig = env.JwtConfig
                       DataContext = env.DataContext }
-
-                let! appInfo = getClientAppInfo env.DataContext data.Client_Id
-
-                env.Logger.LogDebug("AppInfo found ${@appInfo}", appInfo)
 
                 let isPerimeterClient = appInfo.Type <> AppType.Regular
 
