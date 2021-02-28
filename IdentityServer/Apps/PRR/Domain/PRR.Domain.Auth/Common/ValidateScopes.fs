@@ -172,9 +172,8 @@ module ValidateScopes =
           "offline_access" ]
 
     let private getOpenIdIntersections scopes =
-        let set1 = scopes |> Set.ofSeq
-        let set2 = openIdScopes |> Set.ofSeq
-        Set.intersect set1 set2 |> Set.toSeq
+        scopes
+        |> Seq.filter (fun x -> Seq.contains x openIdScopes)
 
     let private appendOpenIDScopes requestedScopes foundScopes =
 
