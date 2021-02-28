@@ -15,7 +15,7 @@ export const environment = {
         returnLoginPath: '/',
         returnLogoutUri: '/',
         clientId: '__DEFAULT_CLIENT_ID__',
-        scope: 'openid profile',
+        scope: 'openid email profile offline_access',
         stateStringLength: 64,
         pkceCodeVerifierLength: 128,        
     },

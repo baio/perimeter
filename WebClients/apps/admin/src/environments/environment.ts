@@ -14,7 +14,7 @@ export const environment = {
         returnLoginPath: '/',
         returnLogoutUri: 'http://localhost:4201',
         clientId: '__DEFAULT_CLIENT_ID__',
-        scope: 'openid profile',
+        scope: 'openid email profile offline_access',
         stateStringLength: 64,
         pkceCodeVerifierLength: 128,
         refreshTokenUrl: `http://localhost:5000/api/auth/token`,

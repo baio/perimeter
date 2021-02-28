@@ -10,7 +10,7 @@ export const environment = {
         returnLoginPath: '/',
         returnLogoutUri: 'https://perimeter.azurefd.net',
         clientId: '__DEFAULT_CLIENT_ID__',
-        scope: 'openid profile',
+        scope: 'openid email profile offline_access',
         stateStringLength: 64,
         pkceCodeVerifierLength: 128,
         refreshTokenUrl: 'https://perimeter.azurefd.net/api/auth/token',
