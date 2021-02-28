@@ -54,8 +54,8 @@ module PostAuthorize =
                     let url = getRefererUrl ctx
                     // true here intentially, since with false browser will try find web page and not redirect request directly back to the server iniital request
                     // TODO : We need return page content here with SSO cookie included, browser seems arbitrary redirect to POST web page sometimes not to server
-                    ctx.Response.Redirect(url, true)
-                    ctx.SetStatusCode(307)
+                    ctx.Response.Redirect(url, false)
+                    // ctx.SetStatusCode(307)
                     logger.LogDebug("Redirect to ${redirectTo}", url)
                     return Some ctx
             | _ ->

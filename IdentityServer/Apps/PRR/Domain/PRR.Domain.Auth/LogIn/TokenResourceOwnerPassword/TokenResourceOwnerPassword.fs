@@ -65,15 +65,6 @@ module TokenResourceOwnerPassword =
                         raise (unAuthorized "Invalid username or password")
 
 
-                let scopes = data.Scope.Split " "
-
-                env.Logger.LogDebug
-                    ("Validate ${@scopes} for @{email} and @{clientId} ", scopes, data.Username, data.Client_Id)
-
-                let! validatedScopes = validateScopes env.DataContext data.Username data.Client_Id scopes
-
-                env.Logger.LogDebug("${@validatedScopes} validated", validatedScopes)
-
                 let! userDataForToken = getUserDataForToken env.DataContext userId None
 
                 match userDataForToken with
@@ -81,6 +72,7 @@ module TokenResourceOwnerPassword =
                     env.Logger.LogError("User data is not found for ${userId}", userId)
                     return raise (unAuthorized "User data is not found")
                 | Some tokenData ->
+
                     env.Logger.LogInformation("${@tokenData} for ${userId}", tokenData, userId)
 
                     let signInUserEnv: SignInUserEnv =
@@ -89,14 +81,10 @@ module TokenResourceOwnerPassword =
                           Logger = env.Logger
                           HashProvider = env.HashProvider }
 
+                    let scopes = data.Scope.Split " "
 
                     let! (result, clientId, isPerimeterClient) =
-                        signInUser
-                            signInUserEnv
-                            tokenData
-                            data.Client_Id
-                            (ValidatedScopes validatedScopes)
-                            GrantType.Password
+                        signInUser signInUserEnv tokenData data.Client_Id (RequestedScopes scopes) GrantType.Password
 
                     let refreshTokenItem: RefreshTokenKV =
                         { Token = result.refresh_token
@@ -106,7 +94,6 @@ module TokenResourceOwnerPassword =
                           Scopes = scopes
                           IsPerimeterClient = isPerimeterClient
                           SocialType = None }
-
 
                     env.Logger.LogDebug("Success with refreshToken ${@refreshToken}", refreshTokenItem)
 

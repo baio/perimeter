@@ -111,12 +111,15 @@ module E2E =
 
                          Thread.Sleep(1000)
 
+                         let email = "hahijo5833@acceptmail.net"
+                         let password = "#6VvR&^"
+
                          // signup
                          let signUpConfirmItem: SignUpKV =
                              { FirstName = "test"
                                LastName = "user"
-                               Email = "hahijo5833@acceptmail.net"
-                               Password = (getPasswordSalter ctx) "#6VvR&^"
+                               Email = email
+                               Password = (getPasswordSalter ctx) password
                                Token = ""
                                ExpiredAt = DateTime.UtcNow.AddDays(1.)
                                RedirectUri = null
@@ -157,7 +160,7 @@ module E2E =
                              //
                              Thread.Sleep(100)
 
-                             let! _ = createUserTenant ctx userId signUpConfirmItem.Email
+                             let! _ = createUserTenant ctx userId email
 
                              let! data = ctx |> bindJsonAsync<ReinitData>
 
@@ -168,7 +171,7 @@ module E2E =
                                          for dur in dataContext.DomainUserRole do
                                              where
                                                  (dur.RoleId = PRR.Data.DataContext.Seed.Roles.DomainOwner.Id
-                                                  && dur.UserEmail = signUpConfirmItem.Email)
+                                                  && dur.UserEmail = email)
 
                                              select
                                                  (dur
@@ -187,8 +190,8 @@ module E2E =
                              let logInData: PRR.Domain.Auth.LogIn.TokenResourceOwnerPassword.Models.Data =
                                  { Grant_Type = "password"
                                    Client_Id = clientId
-                                   Username = signUpConfirmItem.Email
-                                   Password = signUpConfirmItem.Password
+                                   Username = email
+                                   Password = password
                                    Scope = "openid email profile" }
 
                              let! res =
