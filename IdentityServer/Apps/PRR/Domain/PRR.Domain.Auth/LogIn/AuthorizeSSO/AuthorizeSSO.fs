@@ -24,7 +24,7 @@ module Authorize =
            (validateNullOrEmpty "redirect_uri" data.Redirect_Uri)
            (validateUrl "redirect_uri" data.Redirect_Uri)
            (validateNullOrEmpty "scope" scope)
-           (validateContainsAll [| "openid"; "profile" |] "scope" (scope.Split " "))
+           (validateContainsAll [| "openid" |] "scope" (scope.Split " "))
            (validateNullOrEmpty "code_challenge" data.Code_Challenge)
            (validateNullOrEmpty "code_challenge_method" data.Code_Challenge_Method)
            (validateContains [| "S256" |] "code_challenge_method" data.Code_Challenge_Method) |]

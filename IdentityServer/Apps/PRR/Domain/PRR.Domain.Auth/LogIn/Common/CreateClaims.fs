@@ -31,12 +31,17 @@ module private CreateClaims =
 
         let permissions = scopes |> strJoin
 
+        let hasEmailScope = scopes |> Seq.contains "email"
+
         let userClaims =
             match tokenData with
             | Some tokenData ->
-                [| Claim(CLAIM_TYPE_SUB, getSub tokenData)
-                   Claim(ClaimTypes.Email, tokenData.Email)
-                   Claim(CLAIM_TYPE_UID, tokenData.Id.ToString()) |]
+                [| Some(Claim(CLAIM_TYPE_SUB, getSub tokenData))
+                   Some(Claim(CLAIM_TYPE_UID, tokenData.Id.ToString()))
+                   if hasEmailScope
+                   then Some(Claim(ClaimTypes.Email, tokenData.Email))
+                   else None |]
+                |> Array.choose id
             | None -> [||]
 
         // TODO : RBA + Include permissions flag
@@ -48,13 +53,27 @@ module private CreateClaims =
 
     let createIdTokenClaims clientId issuer tokenData (scopes: string seq) =
 
+        let hasEmailScope = scopes |> Seq.contains "email"
+        let hasProfileScope = scopes |> Seq.contains "profile"
+
         let permissions = scopes |> strJoin
+
+        let userClaims =
+            [| if hasEmailScope
+               then Some(Claim(ClaimTypes.Email, tokenData.Email))
+               else None
+               // TODO : Separate claims for access and id
+               if hasProfileScope
+               then Some(Claim(ClaimTypes.GivenName, tokenData.FirstName))
+               else None
+               if hasProfileScope
+               then Some(Claim(ClaimTypes.Surname, tokenData.LastName))
+               else None |]
+            |> Array.choose id
+
         // TODO : RBA + Include permissions flag
         [| Claim(CLAIM_TYPE_SUB, getSub tokenData)
-           Claim(ClaimTypes.Email, tokenData.Email)
-           // TODO : Separate claims for access and id
-           Claim(ClaimTypes.GivenName, tokenData.FirstName)
-           Claim(ClaimTypes.Surname, tokenData.LastName)
            Claim(CLAIM_TYPE_CID, clientId)
            Claim(CLAIM_TYPE_SCOPE, permissions)
            Claim(CLAIM_TYPE_ISSUER, issuer) |]
+        |> Array.append userClaims

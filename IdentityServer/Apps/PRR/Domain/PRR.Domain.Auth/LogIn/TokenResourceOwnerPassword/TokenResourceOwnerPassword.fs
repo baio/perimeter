@@ -73,7 +73,7 @@ module TokenResourceOwnerPassword =
                     return raise (unAuthorized "User data is not found")
                 | Some tokenData ->
 
-                    env.Logger.LogInformation("${@tokenData} for ${userId}", tokenData, userId)
+                    env.Logger.LogInformation("Token data {@tokenData} for {userId}", tokenData, userId)
 
                     let signInUserEnv: SignInUserEnv =
                         { DataContext = env.DataContext

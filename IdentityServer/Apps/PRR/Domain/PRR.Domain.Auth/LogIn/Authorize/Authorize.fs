@@ -7,7 +7,7 @@ module Authorize =
     open PRR.Domain.Auth.Common
     open Microsoft.Extensions.Logging
     open DataAvail.Http.Exceptions
-    
+
     let validateData isPKCE (data: Data) =
         let scope =
             if data.Scope = null then "" else data.Scope
@@ -26,7 +26,7 @@ module Authorize =
            (validateNullOrEmpty "redirect_uri" data.Redirect_Uri)
            (validateUrl "redirect_uri" data.Redirect_Uri)
            (validateNullOrEmpty "scope" scope)
-           (validateContainsAll [| "openid"; "profile" |] "scope" (scope.Split " "))
+           (validateContainsAll [| "openid" |] "scope" (scope.Split " "))
            (validateNullOrEmpty "email" data.Email)
            (validateEmail "email" data.Email)
            (validateNullOrEmpty "password" data.Password) |]
@@ -54,7 +54,6 @@ module Authorize =
             task {
 
                 let saltedPassword = env.PasswordSalter data.Password
-
                 match! getUserId dataContext (data.Email, saltedPassword) with
                 | Some userId ->
 

@@ -48,7 +48,7 @@ module GetAppInfo =
                              app.Domain.Tenant <> null,
                              app.GrantTypes)
                 }
-                |> LinqHelpers.toSingleExnAsync (unexpected (sprintf "ClientId %s is not found" clientId))
+                |> LinqHelpers.toSingleExnAsync (unAuthorized (sprintf "ClientId %s is not found" clientId))
 
             return
                 { ClientId = clientId

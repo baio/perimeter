@@ -1,8 +1,10 @@
 ﻿namespace PRR.API.Tests.Tenant.Applications
+
 open DataAvail.Test.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open FsUnit
 open PRR.API.Tests.Utils
+open PRR.Data.Entities
 open PRR.Domain.Auth.SignUp
 open PRR.Domain.Tenant
 open PRR.Domain.Tenant.Applications
@@ -50,6 +52,7 @@ module CRUD =
         member __.``0 Before All``() =
             task {
                 testContext <- Some(createUserTestContext testFixture)
+
                 let! userToken' = createUser testContext.Value userData
                 userToken' |> should be (not' null)
                 userToken <- userToken'
@@ -59,11 +62,19 @@ module CRUD =
         [<Priority(1)>]
         member __.``A Create application must be success``() =
             let domainId = testContext.Value.GetTenant().DomainId
+
             task {
-                let data: PostLike = { Name = "App 1" }
+                let data: PostLike =
+                    { Name = "App 1"
+                      GrantTypes =
+                          [| GrantType.AuthorizationCodePKCE.ToString()
+                             GrantType.RefreshToken.ToString() |] }
 
                 let! result =
-                    testFixture.Server2.HttpPostAsync userToken (sprintf "/api/tenant/domains/%i/applications" domainId) data
+                    testFixture.Server2.HttpPostAsync
+                        userToken
+                        (sprintf "/api/tenant/domains/%i/applications" domainId)
+                        data
 
                 do! ensureSuccessAsync result
 
@@ -76,6 +87,7 @@ module CRUD =
         [<Priority(2)>]
         member __.``B Get app must be success``() =
             let domainId = testContext.Value.GetTenant().DomainId
+
             task {
                 let! result =
                     testFixture.Server2.HttpGetAsync
@@ -104,6 +116,7 @@ module CRUD =
         [<Priority(3)>]
         member __.``C Update app must be success``() =
             let domainId = testContext.Value.GetTenant().DomainId
+
             task {
                 let data: PutLike =
                     { Name = "App 1 Updated"
@@ -111,7 +124,10 @@ module CRUD =
                       RefreshTokenExpiresIn = 100
                       AllowedCallbackUrls = "https://some.com https://some1.com"
                       AllowedLogoutCallbackUrls = "https://some.com"
-                      SSOEnabled = true }
+                      SSOEnabled = true
+                      GrantTypes =
+                          [| GrantType.AuthorizationCodePKCE.ToString()
+                             GrantType.RefreshToken.ToString() |] }
 
                 let! result =
                     testFixture.Server2.HttpPutAsync
@@ -126,6 +142,7 @@ module CRUD =
         [<Priority(4)>]
         member __.``D Get app after update must be success``() =
             let domainId = testContext.Value.GetTenant().DomainId
+
             task {
                 let! result =
                     testFixture.Server2.HttpGetAsync
@@ -151,6 +168,7 @@ module CRUD =
         [<Priority(5)>]
         member __.``E Delete role must be success``() =
             let domainId = testContext.Value.GetTenant().DomainId
+
             task {
                 let! result =
                     testFixture.Server2.HttpDeleteAsync
