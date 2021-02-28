@@ -363,6 +363,7 @@ export class AuthService {
                     this.config.refreshTokenUrl,
                     {
                         refreshToken,
+                        grant_type: 'refresh_token',
                     },
                     { headers: { Authorization: `Bearer ${accessToken}` } }
                 )

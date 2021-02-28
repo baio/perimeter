@@ -17,7 +17,7 @@ export const environment = {
         scope: 'openid profile',
         stateStringLength: 64,
         pkceCodeVerifierLength: 128,
-        refreshTokenUrl: `http://localhost:5000/api/auth/refresh-token`,
+        refreshTokenUrl: `http://localhost:5000/api/auth/token`,
     },
 };
 

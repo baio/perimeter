@@ -10,7 +10,7 @@ export const environment = {
         signupUrl: '/auth/register',
         tokenUrl: 'http://localhost/api/auth/token',
         logoutUrl: 'http://localhost/api/auth/logout',
-        refreshTokenUrl: 'http://localhost/api/auth/refresh-token',
+        refreshTokenUrl: 'http://localhost/api/auth/token',
         returnLoginUri: '/login-cb',
         returnLoginPath: '/',
         returnLogoutUri: '/',

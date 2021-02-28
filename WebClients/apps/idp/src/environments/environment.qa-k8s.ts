@@ -10,7 +10,7 @@ export const environment = {
         signupUrl: 'https://prr.pw/auth/register',
         tokenUrl: 'https://prr.pw/api/auth/token',
         logoutUrl: 'https://prr.pw/api/auth/logout',
-        refreshTokenUrl: 'https://prr.pw/api/auth/refresh-token',
+        refreshTokenUrl: 'https://prr.pw/api/auth/token',
         returnLoginUri: '/login-cb',
         returnLoginPath: '/',
         returnLogoutUri: '/',

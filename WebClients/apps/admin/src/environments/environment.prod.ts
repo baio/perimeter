@@ -13,6 +13,6 @@ export const environment = {
         scope: 'openid profile',
         stateStringLength: 64,
         pkceCodeVerifierLength: 128,
-        refreshTokenUrl: 'https://perimeter.azurefd.net/api/auth/refresh-token',
+        refreshTokenUrl: 'https://perimeter.azurefd.net/api/auth/token',
     },
 };
