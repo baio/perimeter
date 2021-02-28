@@ -4,7 +4,7 @@
 
 export const environment = {
     production: false,
-    baseUrl: 'https://localhost:5001/api',
+    baseUrl: 'http://localhost:5000/api',
     auth: {
         loginUrl: 'http://localhost:4200/auth/login',
         signupUrl: 'http://localhost:4200/auth/register',

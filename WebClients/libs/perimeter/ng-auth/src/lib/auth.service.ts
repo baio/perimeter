@@ -209,7 +209,7 @@ export class AuthService {
         const clientId = localStorage.getItem(AUTH_CLIENT_ID);
 
         const payload = {
-            grant_type: 'code',
+            grant_type: 'authorization_code',
             code,
             redirect_uri: appendHost(this.config.returnLoginUri),
             client_id: clientId,

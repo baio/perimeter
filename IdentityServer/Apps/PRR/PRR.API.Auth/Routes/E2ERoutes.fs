@@ -43,7 +43,7 @@ module E2E =
 
     let private authStringsGetter: PRR.Domain.Tenant.Models.IAuthStringsGetter =
         { ClientId = fun () -> getRandomString 33
-          // ClientSecret = fun () -> getRandomString 50
+          ClientSecret = fun () -> getRandomString 50
           AuthorizationCode = fun () -> getRandomString 35
           HS256SigningSecret = fun () -> getRandomString 35
           RS256XMLParams =
@@ -119,7 +119,8 @@ module E2E =
                                Password = (getPasswordSalter ctx) "#6VvR&^"
                                Token = ""
                                ExpiredAt = DateTime.UtcNow.AddDays(1.)
-                               QueryString = None }
+                               RedirectUri = null
+                               ExistentUserId = None }
 
 
                          let signUpEnv = PostSignUpConfirm.getEnv ctx
@@ -138,9 +139,8 @@ module E2E =
                                  member __.RemoveValuesByTag<'a> k x = kvStorage.RemoveValuesByTag<'a> k x }
 
 
-
                          // login
-                         let loginEnv: PRR.Domain.Auth.LogInToken.SignInUserEnv =
+                         let loginEnv: PRR.Domain.Auth.LogIn.Common.SignInUserEnv =
                              let config = getConfig ctx
 
                              { DataContext = getDataContext ctx
@@ -180,15 +180,23 @@ module E2E =
                                      |> toSingleAsync
                                  | _ -> Task.FromResult "__DEFAULT_CLIENT_ID__"
 
+                             //
+                             let logInEnv =
+                                 PostToken.getTokenResourceOwnerPasswordEnv ctx
+
+                             let logInData: PRR.Domain.Auth.LogIn.TokenResourceOwnerPassword.Models.Data =
+                                 { Grant_Type = "password"
+                                   Client_Id = clientId
+                                   Username = signUpConfirmItem.Email
+                                   Password = signUpConfirmItem.Password
+                                   Scope = "openid email profile" }
 
                              let! res =
-                                 PRR.Domain.Auth.LogInEmail.logInEmail
-                                     loginEnv
-                                     clientId
-                                     signUpConfirmItem.Email
-                                     signUpConfirmItem.Password
+                                 PRR.Domain.Auth.LogIn.TokenResourceOwnerPassword.TokenResourceOwnerPassword.tokenResourceOwnerPassword
+                                     logInEnv
+                                     logInData
 
-                             let (result, _, _) = res
+                             let result = res
 
                              ctx.Response.Cookies.Delete("sso")
 

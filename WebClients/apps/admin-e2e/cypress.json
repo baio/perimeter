@@ -13,8 +13,8 @@
     "taskTimeout": 100000,
     "pageLoadTimeout": 100000,
     "env": {
-        "authApiBaseUrl": "https://localhost:5001/api/auth/",
-        "tenantApiBaseUrl": "https://localhost:6001/api/tenant/",
+        "authApiBaseUrl": "http://localhost:5000/api/auth/",
+        "tenantApiBaseUrl": "http://localhost:6000/api/tenant/",
         "authBaseUrl": "http://localhost:4201",
         "resetDbUrl": "e2e/reset",
         "reinitDbUrl": "e2e/reinit",

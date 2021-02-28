@@ -1,26 +1,18 @@
 ﻿namespace PRR.API.Auth.Routes
 
-open DataAvail.Http.Exceptions
-open DataAvail.Http.Exceptions.Exceptions
-open Giraffe
-open DataAvail.Giraffe.Common
-open FSharp.Control.Tasks.V2.ContextInsensitive
-open PRR.Domain.Auth.LogIn
-open Microsoft.Extensions.Logging
-open Microsoft.AspNetCore.Http
-
 module PostToken =
 
-    type GrantTypeData = { Grant_Type: string }
-
+    open DataAvail.Http.Exceptions
+    open DataAvail.Http.Exceptions.Exceptions
+    open Giraffe
+    open DataAvail.Giraffe.Common
+    open FSharp.Control.Tasks.V2.ContextInsensitive
+    open PRR.Domain.Auth.LogIn
+    open Microsoft.Extensions.Logging
+    open Microsoft.AspNetCore.Http
+    
     let getTokenAuthorizationCodeEnv ctx =
         let config = getConfig ctx
-
-
-
-
-
-
         { DataContext = getDataContext ctx
           HashProvider = getHash ctx
           Sha256Provider = getSHA256 ctx
@@ -32,12 +24,6 @@ module PostToken =
 
     let getTokenResourceOwnerPasswordEnv ctx =
         let config = getConfig ctx
-
-
-
-
-
-
         { DataContext = getDataContext ctx
           HashProvider = getHash ctx
           Sha256Provider = getSHA256 ctx
@@ -50,12 +36,6 @@ module PostToken =
 
     let getTokenClientCredentialsEnv ctx =
         let config = getConfig ctx
-
-
-
-
-
-
         { DataContext = getDataContext ctx
           Sha256Provider = getSHA256 ctx
           JwtConfig = config.Auth.Jwt

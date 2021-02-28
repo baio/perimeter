@@ -50,17 +50,21 @@ describe('signup flow', () => {
         cy.wait('@signup');
 
         cy.get('@signup').should((req: any) => {
-            assert.isTrue(!!req.request.body.queryString);
+            // assert.isTrue(!!req.request.body.returnUrl);
 
-            const qs = req.request.body.queryString;
+            // const qs = req.request.body.returnUrl;
 
             cy.url().should('include', '/auth/register-sent');
 
-            const url = `/auth/register-confirm${qs}&token=${Cypress.env(
+            const url = `/auth/register-confirm?token=${Cypress.env(
                 'confirmSignupToken'
             )}`;
 
             cy.visit(url);
+
+            cy.url().should('include', '/home');
+
+            cy.dataCy('login-button').click();
 
             cy.url().should('include', '/auth/login');
 
