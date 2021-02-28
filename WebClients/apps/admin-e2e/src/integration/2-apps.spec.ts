@@ -67,7 +67,7 @@ describe('apps', () => {
         });
 
         it('sort by created change rows positions', () => {
-            cy.get('table thead th').eq(4).click().click();
+            cy.get('table thead th').eq(5).click().click();
             cy.rows(0, 0).should('contain.text', UPDATED_NAME);
             cy.rows(1, 0).should('contain.text', 'new');
         });

@@ -1,4 +1,3 @@
-
 export interface AppItem {
     id: number;
     name: string;
@@ -6,4 +5,5 @@ export interface AppItem {
     idTokenExpiresIn: number;
     refreshTokenExpiresIn: number;
     dateCreated: string;
+    grantTypes: string[];
 }

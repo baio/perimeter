@@ -1,6 +1,29 @@
-import { Validators } from '@angular/forms';
 import { AdminForm } from '@admin/shared';
+import { Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
+
+const grantTypes = [
+    {
+        key: 'AuthorizationCode',
+        label: 'Authorization Code',
+    },
+    {
+        key: 'AuthorizationCodePKCE',
+        label: 'Authorization Code PKCE',
+    },
+    {
+        key: 'Password',
+        label: 'Password',
+    },
+    {
+        key: 'RefreshToken',
+        label: 'Refresh Token',
+    },
+    {
+        key: 'ClientCredentials',
+        label: 'Client Credentials',
+    },
+];
 
 export const getDefinition = (
     isNew$: Observable<boolean>
@@ -17,6 +40,17 @@ export const getDefinition = (
             id: 'name',
             kind: 'Text',
             label: 'Name',
+            validators: [Validators.required],
+        },
+        {
+            id: 'grantTypes',
+            kind: 'Select',
+            props: {
+                label: 'Grant Types',
+                mode: 'tags',
+                items: grantTypes,
+                value: ['AuthorizationCodePKCE', 'RefreshToken'],
+            },
             validators: [Validators.required],
         },
         {

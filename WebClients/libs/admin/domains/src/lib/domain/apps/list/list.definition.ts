@@ -9,6 +9,10 @@ export const listDefinition: AdminList.TableDefinition = {
             sort: true,
         },
         {
+            id: 'grantTypes',
+            title: 'Grant Types',
+        },
+        {
             id: 'clientId',
             title: 'Client Id',
         },

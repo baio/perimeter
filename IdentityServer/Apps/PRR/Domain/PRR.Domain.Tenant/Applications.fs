@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Tenant
 
+open Newtonsoft.Json
 open PRR.Domain.Models
 open PRR.Data.DataContext
 open PRR.Data.Entities
@@ -10,11 +11,15 @@ open DataAvail.ListQuery.EntityFramework
 open DataAvail.EntityFramework.Common
 open DataAvail.EntityFramework.Common.CRUD
 open DataAvail.Http.Exceptions
+open Newtonsoft.Json.Converters
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 module Applications =
 
     [<CLIMutable>]
-    type PostLike = { Name: string }
+    type PostLike =
+        { Name: string
+          GrantTypes: string array }
 
     type PutLike =
         { Name: string
@@ -22,7 +27,8 @@ module Applications =
           RefreshTokenExpiresIn: int
           AllowedCallbackUrls: string
           AllowedLogoutCallbackUrls: string
-          SSOEnabled: bool }
+          SSOEnabled: bool
+          GrantTypes: string array }
 
     [<CLIMutable>]
     type GetLike =
@@ -36,6 +42,7 @@ module Applications =
           AllowedCallbackUrls: string
           AllowedLogoutCallbackUrls: string
           SSOEnabled: bool
+          [<JsonProperty("grantTypes", ItemConverterType = typeof<StringEnumConverter>)>]
           GrantTypes: GrantType array }
 
     type CreateEnv =
@@ -60,7 +67,15 @@ module Applications =
         | UniqueConstraintException "IX_Applications_DomainId_Name" (ConflictErrorField ("name", UNIQUE)) ex -> raise ex
         | ex -> raise ex
 
+    let private parseGrantTypes =
+        Array.map (fun x -> Enum.Parse(typeof<GrantType>, x) :?> GrantType)
+        
     let create (env: CreateEnv): Create<DomainId * PostLike, int, DbDataContext> =
+
+        (*
+         [| GrantType.AuthorizationCodePKCE
+            GrantType.RefreshToken |]
+        *)
         createCatch<Application, _, _, _>
             catch
             (fun (domainId, dto) ->
@@ -71,9 +86,7 @@ module Applications =
                      ClientSecret = env.AuthStringsProvider.ClientSecret(),
                      IdTokenExpiresIn = int env.IdTokenExpiresIn,
                      RefreshTokenExpiresIn = int env.RefreshTokenExpiresIn,
-                     GrantTypes =
-                         [| GrantType.AuthorizationCodePKCE
-                            GrantType.RefreshToken |],
+                     GrantTypes = parseGrantTypes dto.GrantTypes,
                      AllowedLogoutCallbackUrls = "*",
                      AllowedCallbackUrls = "*"))
             (fun x -> x.Id)
@@ -83,12 +96,18 @@ module Applications =
             catch
             (fun id -> Application(Id = id))
             (fun (_, dto) entity ->
+
+                let grantTypes =
+                    dto.GrantTypes
+                    |> Array.map (fun x -> Enum.Parse(typeof<GrantType>, x) :?> GrantType)
+
                 entity.Name <- dto.Name
                 entity.IdTokenExpiresIn <- dto.IdTokenExpiresIn
                 entity.RefreshTokenExpiresIn <- dto.RefreshTokenExpiresIn
                 entity.AllowedCallbackUrls <- dto.AllowedCallbackUrls
                 entity.AllowedLogoutCallbackUrls <- dto.AllowedLogoutCallbackUrls
-                entity.SSOEnabled <- dto.SSOEnabled)
+                entity.SSOEnabled <- dto.SSOEnabled
+                entity.GrantTypes <- parseGrantTypes dto.GrantTypes)
 
     let remove: Remove<int, DbDataContext> = remove (fun id -> Application(Id = id))
 

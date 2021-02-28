@@ -68,7 +68,7 @@ namespace PRR.Data.DataContext
             });
 
             var enumArrayConverter = new ValueConverter<GrantType[], string>(
-                v => string.Join(',', v.Select(x => x.ToString())),
+                v => string.Join(',', v.Select(x => Enum.GetName(typeof(GrantType), x))),
                 v =>
                     v.Split(',', StringSplitOptions.RemoveEmptyEntries)
                         .Select(x => (GrantType) Enum.Parse(typeof(GrantType), x)).ToArray());
