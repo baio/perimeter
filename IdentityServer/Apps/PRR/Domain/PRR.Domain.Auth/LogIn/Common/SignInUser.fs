@@ -133,11 +133,12 @@ module internal SignInUser =
                    GrantTypes = grantTypes } =
                 getAppInfo env.DataContext clientId tokenData.Email env.JwtConfig.IdTokenExpiresIn
 
-
             if Seq.contains grantType grantTypes |> not
             then return raise (unAuthorized "grant_type is not allowed for this application")
 
             let! validatedScopes = getValidatedScopes env.DataContext tokenData.Email clientId scopes
+
+            env.Logger.LogDebug("Validated scopes {@validatedScopes}", validatedScopes)
 
             let audiences =
                 validatedScopes |> Seq.map (fun x -> x.Audience)
@@ -153,12 +154,19 @@ module internal SignInUser =
 
             let! secretData = getDomainSecretAndExpire env' issuer isPerimeterClient
 
+            let scopes =
+                validatedScopes
+                |> Seq.collect (fun x -> x.Scopes)
+                |> Seq.distinct
+
+            let hasOfflineAccessScope = scopes |> Seq.contains "offline_access"
+
             let data =
                 { UserTokenData = Some tokenData
                   ClientId = clientId
                   Issuer = issuer
                   AudienceScopes = validatedScopes
-                  RefreshTokenProvider = Some env.HashProvider
+                  RefreshTokenProvider = if hasOfflineAccessScope then Some env.HashProvider else None
                   AccessTokenCredentials = secretData.SigningCredentials
                   AccessTokenExpiresIn = secretData.AccessTokenExpiresIn * 1<minutes>
                   IdTokenExpiresIn = idTokenExpiresIn }

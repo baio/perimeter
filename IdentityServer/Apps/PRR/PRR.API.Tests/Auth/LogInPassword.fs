@@ -142,7 +142,6 @@ module LogInPassword =
         [<Priority(3)>]
         member __.``C Login with correct data should success``() =
 
-
             task {
 
                 let clientId =
@@ -156,7 +155,7 @@ module LogInPassword =
                       Client_Id = clientId
                       Username = signUpData.Email
                       Password = signUpData.Password
-                      Scope = "openid profile email" }
+                      Scope = "openid profile email offline_access" }
 
                 let! result' = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
                 do! ensureSuccessAsync result'

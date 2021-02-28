@@ -86,14 +86,18 @@ module TokenResourceOwnerPassword =
                     let! (result, clientId, isPerimeterClient) =
                         signInUser signInUserEnv tokenData data.Client_Id (RequestedScopes scopes) GrantType.Password
 
-                    let refreshTokenItem: RefreshTokenKV =
-                        { Token = result.refresh_token
-                          ClientId = clientId
-                          UserId = userId
-                          ExpiresAt = DateTime.UtcNow.AddMinutes(float env.RefreshTokenExpiresIn)
-                          Scopes = scopes
-                          IsPerimeterClient = isPerimeterClient
-                          SocialType = None }
+                    let refreshTokenItem =
+                        match result.refresh_token with
+                        | null -> None
+                        | _ ->
+                            Some
+                                { Token = result.refresh_token
+                                  ClientId = clientId
+                                  UserId = userId
+                                  ExpiresAt = DateTime.UtcNow.AddMinutes(float env.RefreshTokenExpiresIn)
+                                  Scopes = scopes
+                                  IsPerimeterClient = isPerimeterClient
+                                  SocialType = None }
 
                     env.Logger.LogDebug("Success with refreshToken ${@refreshToken}", refreshTokenItem)
 
@@ -114,7 +118,7 @@ module TokenResourceOwnerPassword =
                             { UserEmail = data.Username
                               UserId = userId }
 
-                    do! onLoginTokenSuccess env' grantType loginItem refreshTokenItem isPerimeterClient
+                    do! onLoginTokenSuccess env' clientId grantType loginItem refreshTokenItem isPerimeterClient
 
                     return result
             }

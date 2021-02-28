@@ -150,7 +150,7 @@ module ValidateScopes =
                 match appDomainType with
                 // for generic app return intersection of requested scopes with assigned (or default)
                 | Generic -> return! getGenericAudienceScopes dataContext userEmail domainId scopes
-                // for managements app domain return default management scopes only
+                // for managements app domain return default management scopes plus requested ones
                 // TODO : fix
                 | _ ->
                     // TODO : Management client does not request management scopes so don't check intersection
@@ -165,18 +165,49 @@ module ValidateScopes =
             | None -> return raise (unAuthorized (sprintf "App info is not found for client_id %s" clientId))
         }
 
+    let private openIdScopes =
+        [ "openid"
+          "profile"
+          "email"
+          "offline_access" ]
+
+    let private getOpenIdIntersections scopes =
+        let set1 = scopes |> Set.ofSeq
+        let set2 = openIdScopes |> Set.ofSeq
+        Set.intersect set1 set2 |> Set.toSeq
+
+    let private appendOpenIDScopes requestedScopes foundScopes =
+
+        getOpenIdIntersections requestedScopes
+        |> Seq.append foundScopes
+
+    // Default audience to manage tenant
     let defaultAudienceScopes =
         { Audience = PERIMETER_USERS_AUDIENCE
-          Scopes = [ "openid"; "profile"; "email" ] }
+          Scopes =
+              [ "openid"
+                "profile"
+                "email"
+                "offline_access" ] }
 
     let validateScopes (dataContext: DbDataContext) userEmail clientId scopes =
         task {
             if clientId = PERIMETER_CLIENT_ID then
                 // For perimeter client we don't pay attention to requested scopes and always return predefined set
                 // TODO : Fix
-                return seq { defaultAudienceScopes }
+                return
+                    seq {
+                        { Audience = PERIMETER_USERS_AUDIENCE
+                          Scopes = openIdScopes }
+                    }
             else
                 let! audScopes = validateScopes' dataContext userEmail clientId scopes
 
-                return audScopes |> Seq.append [ defaultAudienceScopes ]
+                let result =
+                    audScopes
+                    |> Seq.map (fun audScope ->
+                        { audScope with
+                              Scopes = audScope.Scopes |> appendOpenIDScopes scopes })
+
+                return result |> Seq.append [ defaultAudienceScopes ]
         }

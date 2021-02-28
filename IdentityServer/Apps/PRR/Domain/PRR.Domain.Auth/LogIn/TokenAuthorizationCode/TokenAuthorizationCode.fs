@@ -47,7 +47,6 @@ module TokenAuthorizationCode =
         then Some(unAuthorized "code_verifier code_challenge mismatch")
         else None
 
-
     //
     let private checkAuthorizationCode code itemCode =
         if code <> itemCode then Some(unAuthorized "code mismatch") else None
@@ -154,14 +153,18 @@ module TokenAuthorizationCode =
                             (ValidatedScopes item.ValidatedScopes)
                             grantType
 
-                    let refreshTokenItem: RefreshTokenKV =
-                        { Token = result.refresh_token
-                          ClientId = clientId
-                          UserId = item.UserId
-                          ExpiresAt = DateTime.UtcNow.AddMinutes(float env.RefreshTokenExpiresIn)
-                          Scopes = item.RequestedScopes
-                          IsPerimeterClient = isPerimeterClient
-                          SocialType = socialType }
+                    let refreshTokenItem =
+                        match result.refresh_token with
+                        | null -> None
+                        | _ ->
+                            Some
+                                { Token = result.refresh_token
+                                  ClientId = clientId
+                                  UserId = item.UserId
+                                  ExpiresAt = DateTime.UtcNow.AddMinutes(float env.RefreshTokenExpiresIn)
+                                  Scopes = item.RequestedScopes
+                                  IsPerimeterClient = isPerimeterClient
+                                  SocialType = socialType }
 
                     env.Logger.LogInformation("Success with refreshToken ${@refreshToken}", refreshTokenItem)
 
@@ -186,7 +189,7 @@ module TokenAuthorizationCode =
                         | true -> LogInGrantType.AuthorizationCodePKCE userData
                         | false -> LogInGrantType.AuthorizationCode userData
 
-                    do! onLoginTokenSuccess env' logInGrantType loginItem refreshTokenItem isPerimeterClient
+                    do! onLoginTokenSuccess env' clientId logInGrantType loginItem refreshTokenItem isPerimeterClient
 
                     return result
                 | None ->

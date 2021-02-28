@@ -26,20 +26,8 @@ module OnLogInTokenSuccess =
           Social: Social option
           UserId: int }
 
-    let onLoginTokenSuccess (env: Env)
-                            (grantType: LogInGrantType)
-                            (loginItem: Item)
-                            (refreshTokenItem: RefreshTokenKV)
-                            isPerimeterClient
-                            =
+    let private addRefreshToken (env: Env) (userId: int) (refreshTokenItem: RefreshTokenKV) =
         task {
-
-            do! match loginItem.Code with
-                | Some code ->
-                    env.KeyValueStorage.RemoveValue<LogInKV> code None
-                    |> TaskUtils.map (fun _ -> ())
-                | None -> Task.FromResult()
-
             let! result =
                 env.KeyValueStorage.AddValue
                     refreshTokenItem.Token
@@ -47,15 +35,36 @@ module OnLogInTokenSuccess =
                     (Some
                         { PartitionName = null
                           ExpiresAt = (Some refreshTokenItem.ExpiresAt)
-                          Tag = (loginItem.UserId.ToString()) })
+                          Tag = (userId.ToString()) })
 
             match result with
             | Result.Ok _ -> env.Logger.LogInformation("Refresh token successfully added to kv storage")
             | Result.Error err ->
                 env.Logger.LogInformation
                     ("Add refresh ${token} token to kv storage gives error ${@err}", refreshTokenItem.Token, err)
+        }
 
-            let! event = getLoginEvent env.DataContext refreshTokenItem.ClientId grantType isPerimeterClient
+
+    let onLoginTokenSuccess (env: Env)
+                            (clientId: string)
+                            (grantType: LogInGrantType)
+                            (loginItem: Item)
+                            (refreshTokenItem: RefreshTokenKV option)
+                            isPerimeterClient
+                            =
+        task {
+
+            match refreshTokenItem with
+            | Some refreshTokenItem -> do! addRefreshToken env loginItem.UserId refreshTokenItem
+            | None -> ()
+
+            do! match loginItem.Code with
+                | Some code ->
+                    env.KeyValueStorage.RemoveValue<LogInKV> code None
+                    |> TaskUtils.map (fun _ -> ())
+                | None -> Task.FromResult()
+
+            let! event = getLoginEvent env.DataContext clientId grantType isPerimeterClient
 
             do! env.PublishEndpoint.Publish(event)
         }

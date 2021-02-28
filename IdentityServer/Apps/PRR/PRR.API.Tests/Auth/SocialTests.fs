@@ -138,7 +138,7 @@ module SocialTests =
                       Response_Type = "code"
                       State = "state"
                       Redirect_Uri = "http://localhost:4200"
-                      Scope = "openid profile email"
+                      Scope = "openid profile email offline_access"
                       Code_Challenge = codeChallenge
                       Code_Challenge_Method = "S256" }
 

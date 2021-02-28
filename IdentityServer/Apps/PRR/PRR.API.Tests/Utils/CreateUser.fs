@@ -84,7 +84,10 @@ module CreateUser =
             let clientId = clientId
 
             let scope =
-                [ "openid"; "profile"; "email" ]
+                [ "openid"
+                  "profile"
+                  "email"
+                  "offline_access" ]
                 |> Seq.append scopes
                 |> String.concat " "
 
@@ -127,7 +130,6 @@ module CreateUser =
             let! result = env.TestFixture.Server1.HttpPostAsync' "/api/auth/sign-up/confirm" confirmData
 
             let! userId = readAsJsonAsync<int> result
-
 
             //
             let services = env.TestFixture.Server1.Server.Services

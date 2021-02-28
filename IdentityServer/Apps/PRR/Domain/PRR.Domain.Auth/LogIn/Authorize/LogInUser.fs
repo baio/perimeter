@@ -65,7 +65,7 @@ module LogInUser =
 
             let! appInfo = getAppInfo env.DataContext data.ClientId data.Email 1<minutes>
 
-            env.Logger.LogInformation("App info found ${@info}", appInfo)
+            env.Logger.LogDebug("App info found ${@info}", appInfo)
 
             let issuer = appInfo.Issuer
 
@@ -73,7 +73,7 @@ module LogInUser =
 
             let! appData = getClientAppData dataContext clientId
 
-            env.Logger.LogInformation("App data found ${@data}", appData)
+            env.Logger.LogDebug("App data found ${@data}", appData)
 
             let (ssoEnabled, callbackUrls, poolTenantId, domainTenantId) = appData
 
@@ -93,14 +93,14 @@ module LogInUser =
 
                     raise (unexpected "Both poolTenantId, domainTenantId defined")
 
-            env.Logger.LogInformation("TenantId found ${tenantId}", tenantId)
+            env.Logger.LogDebug("TenantId found ${tenantId}", tenantId)
 
             if (callbackUrls <> "*"
                 && (callbackUrls.Split(",")
                     |> Seq.map (fun x -> x.Trim())
                     |> Seq.contains data.RedirectUri
                     |> not)) then
-                env.Logger.LogInformation("${callbackUrls} and ${redirectUri} mismatch", callbackUrls, data.RedirectUri)
+                env.Logger.LogDebug("${callbackUrls} and ${redirectUri} mismatch", callbackUrls, data.RedirectUri)
                 return! raise (unAuthorized "return_uri mismatch")
 
             let code = env.CodeGenerator()
@@ -110,18 +110,18 @@ module LogInUser =
                   State = data.State
                   Code = code }
 
-            env.Logger.LogInformation("Login ${@result} ready", result)
+            env.Logger.LogDebug("Login {@result} ready", result)
 
             let codeExpiresAt =
                 DateTime.UtcNow.AddMinutes(float env.CodeExpiresIn)
 
             let scopes = data.Scope.Split " "
 
-            env.Logger.LogInformation("Validate ${@scopes} for @{email} and @{clientId} ", scopes, data.Email, clientId)
+            env.Logger.LogDebug("Validate {@scopes} for {email} and {clientId} ", scopes, data.Email, clientId)
 
             let! validatedScopes = validateScopes dataContext data.Email clientId scopes
 
-            env.Logger.LogInformation("${@validatedScopes} validated", validatedScopes)
+            env.Logger.LogDebug("Validated scopes {@validatedScopes}", validatedScopes)
 
             let userId = data.UserId
 
@@ -147,7 +147,7 @@ module LogInUser =
             let ssoItem =
                 match ssoEnabled, sso with
                 | (true, Some sso) ->
-                    env.Logger.LogDebug("With SSO ${sso}", sso)
+                    env.Logger.LogDebug("With SSO {sso}", sso)
 
                     Some
                         ({ Code = sso
@@ -159,12 +159,12 @@ module LogInUser =
                            Social = social }: SSOKV)
                 // TODO : Handle case SSO enabled but sso token not found
                 | _ ->
-                    env.Logger.LogDebug("No SSO ${ssoEnabled}", ssoEnabled)
+                    env.Logger.LogDebug("SSO Enabled {ssoEnabled}", ssoEnabled)
                     None
 
             let successData = (loginItem, ssoItem)
 
-            env.Logger.LogDebug("${@successData} is ready", successData)
+            env.Logger.LogDebug("{@successData} is ready", successData)
 
             let env': OnSuccess.Env =
                 { Logger = env.Logger
@@ -172,7 +172,7 @@ module LogInUser =
 
             do! onSuccess env' successData
 
-            env.Logger.LogInformation("Login user success")
+            env.Logger.LogDebug("Login user success")
 
             return result
         }
