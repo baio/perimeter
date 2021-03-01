@@ -10,3 +10,16 @@ type LogInResult =
 type SignInScopes =
     | RequestedScopes of string seq
     | ValidatedScopes of AudienceScopes seq
+
+[<CLIMutable>]
+type AuthorizeData =
+    { Client_Id: ClientId
+      Response_Type: string
+      State: string
+      Redirect_Uri: Uri
+      Scope: Scope
+      Email: string
+      Password: string
+      Code_Challenge: string
+      Code_Challenge_Method: string
+      Prompt: string option }

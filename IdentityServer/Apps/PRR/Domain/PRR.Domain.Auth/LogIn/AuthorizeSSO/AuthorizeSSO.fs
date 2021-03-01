@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.LogIn.AuthorizeSSO
 
+open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Models
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
@@ -14,7 +15,7 @@ open DataAvail.Http.Exceptions
 [<AutoOpen>]
 module Authorize =
 
-    let private validateData (data: Data) =
+    let private validateData (data: AuthorizeData) =
         let scope =
             if data.Scope = null then "" else data.Scope
 
@@ -56,12 +57,12 @@ module Authorize =
                         env.Logger.LogWarning("SSO Item is not found for ${token} with error ${@err}", ssoItem, err)
                         raise (unAuthorized "sso not found")
 
-                if ssoItem.ExpiresAt < DateTime.UtcNow then raise (unAuthorized "sso expired")                
+                if ssoItem.ExpiresAt < DateTime.UtcNow then raise (unAuthorized "sso expired")
 
                 let! appInfo = getAppInfo env.DataContext data.Client_Id ssoItem.Email 1<minutes>
 
-                env.Logger.LogInformation("AppInfo found ${@appInfo}", appInfo)                                
-                
+                env.Logger.LogInformation("AppInfo found ${@appInfo}", appInfo)
+
                 let! app =
                     query {
                         for app in dataContext.Applications do
@@ -130,7 +131,6 @@ module Authorize =
                         ("${@dataRedirectUri} is not contained in ${@callbackUrls}", data.Redirect_Uri, callbackUrls)
 
                     return! raise (unAuthorized "return_uri mismatch")
-
                 match! getUserId dataContext ssoItem.Email with
                 | Some userId ->
                     env.Logger.LogInformation("${@userId} is found for ${@ssoItemEmail}", userId, ssoItem.Email)

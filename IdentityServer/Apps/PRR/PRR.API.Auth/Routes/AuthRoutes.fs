@@ -22,10 +22,19 @@ module AuthRoutes =
                   >=> PostResetPasswordConfirm.handler
                   POST
                   >=> route "/authorize"
-                  >=> PostAuthorize.handler
+                  >=> GetPostAuthorize.handler GetPostAuthorize.GetPostMethod.Post
+                  GET
+                  >=> route "/authorize"
+                  >=> GetPostAuthorize.handler GetPostAuthorize.GetPostMethod.Get
                   POST >=> route "/token" >=> PostToken.handler
                   GET >=> route "/logout" >=> GetLogout.handler
                   GET
                   >=> routef "/applications/%s" GetApplicationInfo.handler
                   PUT >=> route "/password" >=> PutPassword.handler
-                  GET >=> route "/version" >=> Version.handler ])
+                  GET >=> route "/version" >=> Version.handler
+                  GET
+                  >=> route "/.well-known/openid-configuration"
+                  >=> GetOpenIdConfiguration.handler
+                  GET
+                  >=> route "/.well-known/jwks.json"
+                  >=> GetJwksJson.handler ])

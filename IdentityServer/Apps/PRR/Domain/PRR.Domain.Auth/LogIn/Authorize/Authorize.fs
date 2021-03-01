@@ -1,5 +1,7 @@
 ﻿namespace PRR.Domain.Auth.LogIn.Authorize
 
+open PRR.Domain.Auth.LogIn.Common
+
 [<AutoOpen>]
 module Authorize =
 
@@ -8,7 +10,7 @@ module Authorize =
     open Microsoft.Extensions.Logging
     open DataAvail.Http.Exceptions
 
-    let validateData isPKCE (data: Data) =
+    let validateData isPKCE (data: AuthorizeData) =
         let scope =
             if data.Scope = null then "" else data.Scope
 
@@ -54,6 +56,7 @@ module Authorize =
             task {
 
                 let saltedPassword = env.PasswordSalter data.Password
+
                 match! getUserId dataContext (data.Email, saltedPassword) with
                 | Some userId ->
 

@@ -15,6 +15,7 @@ module internal PostAuthorizeHandler =
     let getEnv ctx =
 
         let config = getConfig ctx
+
         { DataContext = getDataContext ctx
           PasswordSalter = getPasswordSalter ctx
           CodeGenerator = getHash ctx
@@ -24,12 +25,11 @@ module internal PostAuthorizeHandler =
           KeyValueStorage = getKeyValueStorage ctx }
 
 
-    let handler ctx sso =
+    let handler data ctx sso =
 
         let env = getEnv ctx
-        task {
 
-            let! data = bindFormAsync ctx
+        task {
 
             try
 

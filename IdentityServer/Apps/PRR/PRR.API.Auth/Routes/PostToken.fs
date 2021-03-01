@@ -43,6 +43,7 @@ module PostToken =
           PublishEndpoint = getPublishEndpoint ctx }: TokenClientCredentials.Models.Env
 
     // This is merged version of data for any grant_type
+    [<CLIMutable>]
     type Data =
         { Grant_Type: string
           Client_Id: string

@@ -51,6 +51,8 @@
         <Compile Include="Routes\Helpers\GetRefererUrl.fs" />
         <Compile Include="Routes\Helpers\GetExnRedirectUrl.fs" />
         <Compile Include="Routes\Version.fs" />
+        <Compile Include="Routes\GetOpenIdConfiguration.fs" />
+        <Compile Include="Routes\GetJwksJson.fs" />
         <Compile Include="Routes\PostSignUp.fs" />
         <Compile Include="Routes\PostSignUpConfirm.fs" />
         <Compile Include="Routes\PostResetPassword.fs" />
@@ -58,7 +60,7 @@
         <Compile Include="Routes\PutPassword.fs" />
         <Compile Include="Routes\PostAuthorizeHandler.fs" />
         <Compile Include="Routes\PostAuthorizeSSOHandler.fs" />
-        <Compile Include="Routes\PostAuthorize.fs" />
+        <Compile Include="Routes\GetPostAuthorize.fs" />
         <Compile Include="Routes\PostRefreshTokenHandler.fs" />
         <Compile Include="Routes\PostToken.fs" />
         <Compile Include="Routes\GetLogout.fs" />

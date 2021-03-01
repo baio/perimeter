@@ -14,12 +14,12 @@ module internal PostAuthorizeSSOHandler =
           Logger = getLogger ctx
           KeyValueStorage = getKeyValueStorage ctx }
 
-    let handler ctx sso =
+    let handler data ctx sso =
 
         let env = getEnv ctx
         task {
 
-            let! data = bindFormAsync ctx
+            // let! data = bindFormAsync ctx
 
             try
 

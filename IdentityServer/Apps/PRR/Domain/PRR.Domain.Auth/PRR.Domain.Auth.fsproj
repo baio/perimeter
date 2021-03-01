@@ -84,6 +84,7 @@
         <Compile Include="LogOut\Models.fs" />
         <Compile Include="LogOut\LogOut.fs" />
         <Compile Include="ApplicationInfo.fs" />
+        <Compile Include="OpenIdConfiguration\OpenIdConfiguration.fs" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.LogIn.AuthorizeSSO
 
+open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Models
 
 open DataAvail.KeyValueStorage.Core
@@ -11,18 +12,6 @@ open PRR.Domain.Auth.LogIn.Authorize
 [<AutoOpen>]
 module Models =
 
-    [<CLIMutable>]
-    type Data =
-        { Client_Id: ClientId
-          Response_Type: string
-          State: string
-          Redirect_Uri: Uri
-          Scope: Scope
-          Code_Challenge: string
-          Code_Challenge_Method: string
-          Prompt: string option }
-
-
     type Env =
         { DataContext: DbDataContext
           CodeGenerator: HashProvider
@@ -30,4 +19,4 @@ module Models =
           Logger: ILogger
           KeyValueStorage: IKeyValueStorage }
 
-    type AuthorizeSSO = Env -> string -> Data -> Task<AuthorizeResult>
+    type AuthorizeSSO = Env -> string -> AuthorizeData -> Task<AuthorizeResult>

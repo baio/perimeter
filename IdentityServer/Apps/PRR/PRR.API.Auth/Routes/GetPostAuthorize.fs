@@ -1,5 +1,6 @@
 ﻿namespace PRR.API.Auth.Routes
 
+open System.Threading.Tasks
 open Giraffe
 open DataAvail.Giraffe.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
@@ -7,10 +8,15 @@ open Microsoft.AspNetCore.Http
 open PRR.API.Auth.Routes.Helpers
 open PRR.Domain.Auth.LogIn.AuthorizeSSO
 open Microsoft.Extensions.Logging
+open PRR.Domain.Auth.LogIn.Common
 
-module PostAuthorize =
+module GetPostAuthorize =
 
-    let handler next ctx =
+    type GetPostMethod =
+        | Get
+        | Post
+
+    let handler method next ctx =
 
         // https://auth0.com/docs/authorization/configure-silent-authentication
 
@@ -28,7 +34,12 @@ module PostAuthorize =
 
         task {
             let ssoCookie = bindCookie "sso" ctx
-            let! data = ctx.BindFormAsync<Data>()
+
+            let! data =
+                ctx
+                |> (match method with
+                    | Post -> bindFormAsync<AuthorizeData>
+                    | Get -> bindQueryString >> Task.FromResult)
 
             logger.LogDebug("Login parameters ${ssoCookie} ${data}", ssoCookie, data)
 
@@ -38,7 +49,7 @@ module PostAuthorize =
                 | Some sso ->
                     logger.LogDebug("Prompt none and sso cookie found, use SSO handler")
 
-                    let! (_, returnUrl) = PostAuthorizeSSOHandler.handler ctx sso
+                    let! (_, returnUrl) = PostAuthorizeSSOHandler.handler data ctx sso
                     ctx.Response.Redirect(returnUrl, true)
                     logger.LogDebug("Redirect to ${redirectTo}", returnUrl)
                     return! redirectTo false returnUrl next ctx
@@ -61,7 +72,7 @@ module PostAuthorize =
             | _ ->
                 logger.LogInformation("Prompt not none use regular login handler")
 
-                let! returnUrl = PostAuthorizeHandler.handler ctx ssoCookie
+                let! returnUrl = PostAuthorizeHandler.handler data ctx ssoCookie
                 logger.LogInformation("Redirect to ${returnUrl}", returnUrl)
                 return! redirectTo false returnUrl next ctx
         }
