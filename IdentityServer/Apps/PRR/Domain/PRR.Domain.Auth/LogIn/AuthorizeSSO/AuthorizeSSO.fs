@@ -34,7 +34,7 @@ module Authorize =
     let authorizeSSO: AuthorizeSSO =
         fun env ssoToken data ->
 
-            env.Logger.LogDebug("LogIn SSO with data ${@data} and token ${ssoToken}", data, ssoToken)
+            env.Logger.LogDebug("LogIn SSO with data {@data} and token {ssoToken}", data, ssoToken)
 
             match validateData data with
             | Some ex ->
@@ -51,10 +51,10 @@ module Authorize =
                 let ssoItem =
                     match ssoItem with
                     | Ok ssoItem ->
-                        env.Logger.LogInformation("SSO ${@item} is found", ssoItem)
+                        env.Logger.LogInformation("SSO {@item} is found", ssoItem)
                         ssoItem
                     | Error err ->
-                        env.Logger.LogWarning("SSO Item is not found for ${token} with error ${@err}", ssoItem, err)
+                        env.Logger.LogWarning("SSO Item is not found for ${token} with error ${@err}", ssoToken, err)
                         raise (unAuthorized "sso not found")
 
                 if ssoItem.ExpiresAt < DateTime.UtcNow then raise (unAuthorized "sso expired")

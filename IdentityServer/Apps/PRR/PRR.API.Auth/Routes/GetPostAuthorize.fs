@@ -50,12 +50,16 @@ module GetPostAuthorize =
                 | Some sso ->
                     logger.LogDebug("Prompt none and sso cookie found, use SSO handler")
 
-                    let! (_, returnUrl) = AuthorizeSSOHandler.handler data ctx sso
+                    let! (success, returnUrl) = AuthorizeSSOHandler.handler data ctx sso
+                    if not success then
+                        logger.LogDebug("SSO auth fails, remove old sso cookie since it could be corrupted", returnUrl)
+                        ctx.Response.Cookies.Delete("sso")
                     ctx.Response.Redirect(returnUrl, true)
                     logger.LogDebug("Redirect to ${redirectTo}", returnUrl)
                     return! redirectTo false returnUrl next ctx
                 | None ->
                     // sso cookie not found just redirect back to itself with sso cookie
+                    // the redirect back must be to the idp server page for example prr.pw
                     logger.LogInformation("Prompt none and no SSO cookie, redirect back to itself with new sso cookie")
 
                     let hasher = getHash ctx
