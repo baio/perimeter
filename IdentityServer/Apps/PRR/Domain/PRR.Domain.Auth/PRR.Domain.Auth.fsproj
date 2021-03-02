@@ -37,6 +37,8 @@
         <Compile Include="LogIn\Common\SignIn.fs" />
         <Compile Include="LogIn\Common\SignInUser.fs" />
         <Compile Include="LogIn\Common\CheckApplicationClientSecret.fs" />
+        <Compile Include="LogIn\Common\ValidateAuthorizeData.fs" />
+        <Compile Include="LogIn\Common\GetRedirectAuthorizeUrl.fs" />
         <Compile Include="LogIn\Authorize\Models.fs" />
         <Compile Include="LogIn\Authorize\UserHelpers.fs" />
         <Compile Include="LogIn\Authorize\OnSuccess.fs" />
@@ -45,6 +47,9 @@
         <Compile Include="LogIn\AuthorizeSSO\UserHelpers.fs" />
         <Compile Include="LogIn\AuthorizeSSO\Models.fs" />
         <Compile Include="LogIn\AuthorizeSSO\AuthorizeSSO.fs" />
+        <Compile Include="LogIn\AuthorizeDispatcher\GetExnRedirectUrl.fs" />
+        <Compile Include="LogIn\AuthorizeDispatcher\Models.fs" />
+        <Compile Include="LogIn\AuthorizeDispatcher\AuthorizeDispatcher.fs" />
         <Compile Include="LogIn\TokenAuthorizationCode\Models.fs" />
         <Compile Include="LogIn\TokenAuthorizationCode\TokenAuthorizationCode.fs" />
         <Compile Include="LogIn\TokenResourceOwnerPassword\Models.fs" />

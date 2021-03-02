@@ -12,11 +12,4 @@ open PRR.Domain.Auth.LogIn.Authorize
 [<AutoOpen>]
 module Models =
 
-    type Env =
-        { DataContext: DbDataContext
-          CodeGenerator: HashProvider
-          CodeExpiresIn: int<minutes>
-          Logger: ILogger
-          KeyValueStorage: IKeyValueStorage }
-
-    type AuthorizeSSO = Env -> string -> AuthorizeData -> Task<AuthorizeResult>
+    type AuthorizeSSO = AuthorizeEnv -> string -> AuthorizeData -> Task<string>

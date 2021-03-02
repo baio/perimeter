@@ -20,12 +20,11 @@ module SignIn =
     let signIn (data: SignInData) =
 
         // looks like audience is clientId
-        let audiences = [| data.ClientId |]
-        (*
+        // let audiences = [| data.ClientId |]
+        
         let audiences =
             data.AudienceScopes
-            |> Seq.map (fun x -> x.Audience)
-        *)
+            |> Seq.map (fun x -> x.Audience)        
 
         let rolesPermissions =
             data.AudienceScopes

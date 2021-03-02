@@ -5,8 +5,8 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Domain.Auth.LogIn.AuthorizeSSO
 open Microsoft.Extensions.Logging
 
-module internal AuthorizeSSOHandler =
-
+module internal AuthorizeSSOHandler = ()
+(*
     let getEnv ctx =
         { DataContext = getDataContext ctx
           CodeGenerator = getHash ctx
@@ -41,3 +41,4 @@ module internal AuthorizeSSOHandler =
 
                 return (false, redirectUrlError)
         }
+*)

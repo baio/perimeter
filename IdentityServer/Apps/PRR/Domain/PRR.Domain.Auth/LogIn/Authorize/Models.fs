@@ -10,19 +10,4 @@ open System.Threading.Tasks
 [<AutoOpen>]
 module Models =
 
-    [<CLIMutable>]
-    type AuthorizeResult =
-        { State: string
-          Code: string
-          RedirectUri: string }
-
-    type Env =
-        { DataContext: DbDataContext
-          CodeGenerator: HashProvider
-          PasswordSalter: StringSalter
-          CodeExpiresIn: int<minutes>
-          SSOExpiresIn: int<minutes>
-          Logger: ILogger
-          KeyValueStorage: IKeyValueStorage }
-
-    type Authorize = Env -> string option -> AuthorizeData -> Task<string>
+    type Authorize = AuthorizeEnv -> string option -> AuthorizeData -> Task<string>

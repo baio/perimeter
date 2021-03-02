@@ -11,9 +11,8 @@ open PRR.API.Auth.Routes.Helpers
 open Microsoft.Extensions.Logging
 open DataAvail.Common
 
-module internal AuthorizeHandler =
-
-
+module internal AuthorizeHandler = ()
+(*
     let getEnv ctx =
 
         let config = getConfig ctx
@@ -52,3 +51,4 @@ module internal AuthorizeHandler =
 
                 return redirectUrlError
         }
+*)

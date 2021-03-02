@@ -10,12 +10,38 @@ open PRR.Domain.Auth.LogIn.AuthorizeSSO
 open Microsoft.Extensions.Logging
 open PRR.Domain.Auth.LogIn.Common
 open DataAvail.Common
+open PRR.Domain.Auth.LogIn.AuthorizeDispatcher
 
 module GetPostAuthorize =
+
+    let private getEnv ctx =
+
+        let config = getConfig ctx
+
+        { DataContext = getDataContext ctx
+          PasswordSalter = getPasswordSalter ctx
+          CodeGenerator = getHash ctx
+          CodeExpiresIn = config.Auth.Jwt.CodeExpiresIn
+          SSOExpiresIn = config.Auth.SSOCookieExpiresIn
+          Logger = getLogger ctx
+          KeyValueStorage = getKeyValueStorage ctx }
 
     type GetPostMethod =
         | Get
         | Post
+
+    let private setSSOCookie ctx =
+        let hasher = getHash ctx
+        let hash = hasher ()
+        ctx.Response.Cookies.Append("sso", hash, CookieOptions(HttpOnly = true, Secure = false))
+
+    let private removeSSOCookie (ctx: HttpContext) = ctx.Response.Cookies.Delete("sso")
+
+    let private updateSSOCookie ctx =
+        function
+        | SSOCookieExists -> ()
+        | SSOCookieNotExists -> setSSOCookie ctx
+
 
     let handler method next ctx =
 
@@ -23,7 +49,7 @@ module GetPostAuthorize =
 
         let logger = getLogger ctx
 
-        logger.LogInformation "Login handler"
+        logger.LogDebug "Authorize handler"
 
         // The initial flow
         // 1. prompt=none and sso cookie not found -> set sso cookie, redirect to itself
@@ -34,6 +60,9 @@ module GetPostAuthorize =
         // 4. after this any user logins with prompt=none (until logout) should be success since cookie is set for identity provider web page
 
         task {
+
+            let env = getEnv ctx
+
             let ssoCookie = bindCookie "sso" ctx
 
             let! data =
@@ -42,42 +71,23 @@ module GetPostAuthorize =
                     | Post -> bindFormAsync<AuthorizeData>
                     | Get -> bindQueryString >> Task.FromResult)
 
-            logger.LogDebug("Login parameters ${ssoCookie} ${data}", ssoCookie, data)
+            logger.LogDebug("Authorize parameters {ssoCookie} {@data}", ssoCookie, data)
 
-            match data.Prompt with
-            | Some "none" ->
-                match ssoCookie with
-                | Some sso ->
-                    logger.LogDebug("Prompt none and sso cookie found, use SSO handler")
+            let! result = authorizeDispatcher env ssoCookie data
 
-                    let! (success, returnUrl) = AuthorizeSSOHandler.handler data ctx sso
-                    if not success then
-                        logger.LogDebug("SSO auth fails, remove old sso cookie since it could be corrupted", returnUrl)
-                        ctx.Response.Cookies.Delete("sso")
-                    ctx.Response.Redirect(returnUrl, true)
-                    logger.LogDebug("Redirect to ${redirectTo}", returnUrl)
-                    return! redirectTo false returnUrl next ctx
-                | None ->
-                    // sso cookie not found just redirect back to itself with sso cookie
-                    // the redirect back must be to the idp server page for example prr.pw
-                    logger.LogInformation("Prompt none and no SSO cookie, redirect back to itself with new sso cookie")
+            logger.LogDebug("Authorize result {@result}", result)
 
-                    let hasher = getHash ctx
-                    let token = hasher ()
-                    // TODO : Secure = TRUE !!!
-                    // TODO : Handle TOO many redirects when cookie couldn't be set
-                    ctx.Response.Cookies.Append("sso", token, CookieOptions(HttpOnly = true, Secure = false))
-                    let url = getRefererUrl ctx
-                    // true here intentially, since with false browser will try find web page and not redirect request directly back to the server iniital request
-                    // TODO : We need return page content here with SSO cookie included, browser seems arbitrary redirect to POST web page sometimes not to server
-                    ctx.Response.Redirect(url, false)
-                    // ctx.SetStatusCode(307)
-                    logger.LogDebug("Redirect to ${redirectTo}", url)
-                    return Some ctx
-            | _ ->
-                logger.LogInformation("Prompt not none use regular login handler")
+            let updateSSOCookie = updateSSOCookie ctx
 
-                let! returnUrl = AuthorizeHandler.handler data ctx ssoCookie
-                logger.LogInformation("Redirect to ${returnUrl}", returnUrl)
-                return! redirectTo false returnUrl next ctx
+            match result with
+            | RedirectEmptyLoginPassword (url, ssoStatus) ->
+                updateSSOCookie ssoStatus
+                return! redirectTo false url next ctx
+            | RedirectNoPromptSSO (url, ssoStatus) ->
+                updateSSOCookie ssoStatus
+                return! redirectTo false url next ctx
+            | RedirectRegularSuccess (url) -> return! redirectTo false url next ctx
+            | RedirectError (url) ->
+                removeSSOCookie ctx
+                return! redirectTo false url next ctx
         }

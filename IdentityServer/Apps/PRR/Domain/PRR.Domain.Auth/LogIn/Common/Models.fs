@@ -1,5 +1,8 @@
 ﻿namespace PRR.Domain.Auth.LogIn.Common
 
+open DataAvail.KeyValueStorage.Core
+open Microsoft.Extensions.Logging
+open PRR.Data.DataContext
 open PRR.Domain.Models
 
 type LogInResult =
@@ -24,3 +27,14 @@ type AuthorizeData =
       Code_Challenge: string
       Code_Challenge_Method: string
       Prompt: string option }
+
+
+type AuthorizeEnv =
+        { DataContext: DbDataContext
+          CodeGenerator: HashProvider
+          PasswordSalter: StringSalter
+          CodeExpiresIn: int<minutes>
+          SSOExpiresIn: int<minutes>
+          Logger: ILogger
+          KeyValueStorage: IKeyValueStorage }
+    

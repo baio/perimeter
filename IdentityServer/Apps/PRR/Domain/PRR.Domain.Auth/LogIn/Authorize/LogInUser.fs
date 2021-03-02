@@ -1,6 +1,7 @@
 ﻿namespace PRR.Domain.Auth.LogIn.Authorize
 
 open PRR.Data.Entities
+open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Models
 
 [<AutoOpen>]
@@ -47,7 +48,13 @@ module LogInUser =
           CodeChallenge: string
           CodeChallengeMethod: string }
 
-    let logInUser (env: Models.Env) (sso: Token option) (data: LoginData) (social: Social option) =
+    type LogInResult =
+        { RedirectUri: string
+          State: string
+          Code: string }
+
+
+    let logInUser (env: AuthorizeEnv) (sso: Token option) (data: LoginData) (social: Social option) =
 
         let isPKCE = isNotEmpty data.CodeChallenge
 
@@ -106,7 +113,7 @@ module LogInUser =
 
             let code = env.CodeGenerator()
 
-            let result: AuthorizeResult =
+            let result =
                 { RedirectUri = data.RedirectUri
                   State = data.State
                   Code = code }
