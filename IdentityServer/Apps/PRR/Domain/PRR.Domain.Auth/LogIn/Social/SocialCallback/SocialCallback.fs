@@ -183,6 +183,7 @@ module Social =
                   ClientId = item.DomainClientId
                   ResponseType = item.ResponseType
                   State = item.State
+                  Nonce = item.Nonce
                   RedirectUri = item.RedirectUri
                   Scope = item.Scope
                   Email = ident.Email

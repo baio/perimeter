@@ -108,6 +108,7 @@ module SocialAuth =
                   Type = socialType
                   ResponseType = data.Response_Type
                   State = data.State
+                  Nonce = data.Nonce
                   RedirectUri = data.Redirect_Uri
                   Scope = data.Scope
                   CodeChallenge = data.Code_Challenge

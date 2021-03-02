@@ -40,6 +40,7 @@ module LogInUser =
           ClientId: ClientId
           ResponseType: string
           State: string
+          Nonce: string
           RedirectUri: string
           Scope: Scope
           Email: string
@@ -139,6 +140,8 @@ module LogInUser =
                   UserEmail = data.Email
                   ExpiresAt = codeExpiresAt
                   RedirectUri = data.RedirectUri
+                  State = data.State
+                  Nonce = data.Nonce
                   Social = social }
 
             let ssoExpiresAt =

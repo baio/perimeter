@@ -137,6 +137,7 @@ module SocialTests =
                       Client_Id = clientId
                       Response_Type = "code"
                       State = "state"
+                      Nonce = null
                       Redirect_Uri = "http://localhost:4200"
                       Scope = "openid profile email offline_access"
                       Code_Challenge = codeChallenge
@@ -222,9 +223,7 @@ module SocialTests =
 
                 do! ensureSuccessAsync result'
 
-                let! result =
-                    result'
-                    |> readAsJsonAsync<LogInResult>
+                let! result = result' |> readAsJsonAsync<LogInResult>
 
                 result.access_token |> should be (not' Empty)
 

@@ -9,6 +9,7 @@ open PRR.API.Auth.Routes.Helpers
 open PRR.Domain.Auth.LogIn.AuthorizeSSO
 open Microsoft.Extensions.Logging
 open PRR.Domain.Auth.LogIn.Common
+open DataAvail.Common
 
 module GetPostAuthorize =
 
@@ -49,7 +50,7 @@ module GetPostAuthorize =
                 | Some sso ->
                     logger.LogDebug("Prompt none and sso cookie found, use SSO handler")
 
-                    let! (_, returnUrl) = PostAuthorizeSSOHandler.handler data ctx sso
+                    let! (_, returnUrl) = AuthorizeSSOHandler.handler data ctx sso
                     ctx.Response.Redirect(returnUrl, true)
                     logger.LogDebug("Redirect to ${redirectTo}", returnUrl)
                     return! redirectTo false returnUrl next ctx
@@ -72,7 +73,7 @@ module GetPostAuthorize =
             | _ ->
                 logger.LogInformation("Prompt not none use regular login handler")
 
-                let! returnUrl = PostAuthorizeHandler.handler data ctx ssoCookie
+                let! returnUrl = AuthorizeHandler.handler data ctx ssoCookie
                 logger.LogInformation("Redirect to ${returnUrl}", returnUrl)
                 return! redirectTo false returnUrl next ctx
         }

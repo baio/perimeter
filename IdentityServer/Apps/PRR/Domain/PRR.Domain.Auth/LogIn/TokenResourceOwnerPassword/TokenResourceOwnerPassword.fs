@@ -84,7 +84,13 @@ module TokenResourceOwnerPassword =
                     let scopes = data.Scope.Split " "
 
                     let! (result, clientId, isPerimeterClient) =
-                        signInUser signInUserEnv tokenData data.Client_Id (RequestedScopes scopes) GrantType.Password
+                        signInUser
+                            signInUserEnv
+                            tokenData
+                            data.Client_Id
+                            null
+                            (RequestedScopes scopes)
+                            GrantType.Password
 
                     let refreshTokenItem =
                         match result.refresh_token with

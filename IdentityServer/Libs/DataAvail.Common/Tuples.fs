@@ -26,3 +26,10 @@ module Tuples =
 
     let tryFindTupleInt x = x |> tryFindTupleValue' tryParseInt
     let tryFindTupleBoolean x = x |> tryFindTupleValue' tryParseBoolean
+
+    let mapOptionValue key = Option.map (fun x -> key, x)
+
+    let mapNullValue key =
+        function
+        | null -> None
+        | v -> Some(key, v)

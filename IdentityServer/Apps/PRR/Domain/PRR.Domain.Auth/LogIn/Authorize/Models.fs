@@ -25,4 +25,4 @@ module Models =
           Logger: ILogger
           KeyValueStorage: IKeyValueStorage }
 
-    type Authorize = Env -> string option -> AuthorizeData -> Task<AuthorizeResult>
+    type Authorize = Env -> string option -> AuthorizeData -> Task<string>

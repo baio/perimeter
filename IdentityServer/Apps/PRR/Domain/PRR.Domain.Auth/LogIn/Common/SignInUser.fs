@@ -121,6 +121,7 @@ module internal SignInUser =
     let signInUser (env: SignInUserEnv)
                    (tokenData: UserTokenData)
                    clientId
+                   nonce
                    (scopes: SignInScopes)
                    (grantType: GrantType)
                    =
@@ -165,6 +166,7 @@ module internal SignInUser =
                 { UserTokenData = Some tokenData
                   ClientId = clientId
                   Issuer = issuer
+                  Nonce = nonce
                   AudienceScopes = validatedScopes
                   RefreshTokenProvider = if hasOfflineAccessScope then Some env.HashProvider else None
                   AccessTokenCredentials = secretData.SigningCredentials

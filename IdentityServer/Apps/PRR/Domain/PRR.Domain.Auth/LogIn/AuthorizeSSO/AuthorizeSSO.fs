@@ -131,6 +131,7 @@ module Authorize =
                         ("${@dataRedirectUri} is not contained in ${@callbackUrls}", data.Redirect_Uri, callbackUrls)
 
                     return! raise (unAuthorized "return_uri mismatch")
+
                 match! getUserId dataContext ssoItem.Email with
                 | Some userId ->
                     env.Logger.LogInformation("${@userId} is found for ${@ssoItemEmail}", userId, ssoItem.Email)
@@ -162,6 +163,8 @@ module Authorize =
                           UserEmail = ssoItem.Email
                           ExpiresAt = expiresAt
                           RedirectUri = data.Redirect_Uri
+                          State = data.State
+                          Nonce = data.Nonce
                           Social = None }
 
                     env.Logger.LogInformation("${@loginItem} ready", loginItem)

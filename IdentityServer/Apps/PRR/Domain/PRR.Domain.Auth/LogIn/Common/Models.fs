@@ -16,6 +16,7 @@ type AuthorizeData =
     { Client_Id: ClientId
       Response_Type: string
       State: string
+      Nonce: string
       Redirect_Uri: Uri
       Scope: Scope
       Email: string

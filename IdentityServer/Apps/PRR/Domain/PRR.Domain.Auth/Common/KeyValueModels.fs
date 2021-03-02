@@ -37,7 +37,9 @@ module KeyValueModels =
           ClientId: ClientId
           Issuer: string
           CodeChallenge: Token
-          ExpiresAt: DateTime }
+          ExpiresAt: DateTime
+          State: string
+          Nonce: string }
 
     [<PartitionName("SSO")>]
     type SSOKV =
@@ -56,6 +58,7 @@ module KeyValueModels =
           Type: SocialType
           ResponseType: string
           State: string
+          Nonce: string
           RedirectUri: Uri
           Scope: Scope
           CodeChallenge: string

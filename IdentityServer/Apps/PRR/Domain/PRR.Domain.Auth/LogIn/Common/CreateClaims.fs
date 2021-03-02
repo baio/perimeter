@@ -44,19 +44,25 @@ module private CreateClaims =
                 |> Array.choose id
             | None -> [||]
 
+
         // TODO : RBA + Include permissions flag
         [| Claim(CLAIM_TYPE_SCOPE, permissions)
            Claim(CLAIM_TYPE_ISSUER, issuer)
-           Claim(CLAIM_TYPE_CID, clientId) |]
+           Claim(CLAIM_TYPE_CID, clientId)
+           Claim(CLAIM_TYPE_NONCE, clientId) |]
         |> Seq.append userClaims
         |> Seq.append audiencesClaims
 
-    let createIdTokenClaims clientId issuer tokenData (scopes: string seq) =
+    let createIdTokenClaims clientId issuer nonce tokenData (scopes: string seq) (audiences: string seq) =
 
         let hasEmailScope = scopes |> Seq.contains "email"
         let hasProfileScope = scopes |> Seq.contains "profile"
 
         let permissions = scopes |> strJoin
+
+        let audiencesClaims =
+            audiences
+            |> Seq.map (fun x -> Claim(CLAIM_TYPE_AUDIENCE, x))
 
         let userClaims =
             [| if hasEmailScope
@@ -71,9 +77,16 @@ module private CreateClaims =
                else None |]
             |> Array.choose id
 
+        let nonceClaims =
+            match nonce with
+            | null -> [||]
+            | nonce -> [| Claim(CLAIM_TYPE_NONCE, nonce) |]            
+
         // TODO : RBA + Include permissions flag
         [| Claim(CLAIM_TYPE_SUB, getSub tokenData)
            Claim(CLAIM_TYPE_CID, clientId)
            Claim(CLAIM_TYPE_SCOPE, permissions)
            Claim(CLAIM_TYPE_ISSUER, issuer) |]
         |> Array.append userClaims
+        |> Seq.append audiencesClaims
+        |> Seq.append nonceClaims

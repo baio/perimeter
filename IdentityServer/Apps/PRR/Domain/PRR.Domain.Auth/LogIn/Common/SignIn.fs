@@ -14,13 +14,18 @@ module SignIn =
           AudienceScopes: AudienceScopes seq
           AccessTokenCredentials: SigningCredentials
           AccessTokenExpiresIn: int<minutes>
-          IdTokenExpiresIn: int<minutes> }
-        
+          IdTokenExpiresIn: int<minutes>
+          Nonce: string }
+
     let signIn (data: SignInData) =
 
+        // looks like audience is clientId
+        let audiences = [| data.ClientId |]
+        (*
         let audiences =
             data.AudienceScopes
             |> Seq.map (fun x -> x.Audience)
+        *)
 
         let rolesPermissions =
             data.AudienceScopes
@@ -33,7 +38,7 @@ module SignIn =
         let idToken =
             match data.UserTokenData with
             | Some userTokenData ->
-                createIdTokenClaims data.ClientId data.Issuer userTokenData rolesPermissions
+                createIdTokenClaims data.ClientId data.Issuer data.Nonce userTokenData rolesPermissions audiences
                 |> (createUnsignedToken data.IdTokenExpiresIn)
             | None -> null
 
@@ -41,7 +46,6 @@ module SignIn =
             match data.RefreshTokenProvider with
             | Some refreshTokenProvider -> refreshTokenProvider ()
             | None -> null
-
 
         { id_token = idToken
           access_token = accessToken

@@ -1,5 +1,6 @@
 ﻿namespace PRR.API.Auth.Routes
 
+open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Models
 open PRR.Domain.Auth
 open PRR.Domain.Auth.LogIn.Authorize
@@ -8,8 +9,9 @@ open DataAvail.Giraffe.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.API.Auth.Routes.Helpers
 open Microsoft.Extensions.Logging
+open DataAvail.Common
 
-module internal PostAuthorizeHandler =
+module internal AuthorizeHandler =
 
 
     let getEnv ctx =
@@ -25,22 +27,19 @@ module internal PostAuthorizeHandler =
           KeyValueStorage = getKeyValueStorage ctx }
 
 
-    let handler data ctx sso =
+    let handler (data: AuthorizeData) ctx sso =
 
         let env = getEnv ctx
 
         task {
-
+                        
             try
 
                 let! result = authorize env sso data
 
-                let redirectUrlSuccess =
-                    sprintf "%s?code=%s&state=%s" result.RedirectUri result.Code result.State
+                env.Logger.LogDebug("Redirect on success {redirectUrlSuccess}", result)
 
-                env.Logger.LogInformation "Redirect on success ${redirectUrlSuccess}"
-
-                return redirectUrlSuccess
+                return result
 
             with ex ->
 

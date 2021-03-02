@@ -108,6 +108,7 @@ module TokenClientCredentials =
                       Issuer = appInfo.Issuer
                       AudienceScopes = audienceScopes
                       RefreshTokenProvider = None
+                      Nonce = null
                       AccessTokenCredentials = secretData.SigningCredentials
                       AccessTokenExpiresIn = secretData.AccessTokenExpiresIn * 1<minutes>
                       IdTokenExpiresIn = 0<minutes> }

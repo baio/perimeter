@@ -5,7 +5,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Domain.Auth.LogIn.AuthorizeSSO
 open Microsoft.Extensions.Logging
 
-module internal PostAuthorizeSSOHandler =
+module internal AuthorizeSSOHandler =
 
     let getEnv ctx =
         { DataContext = getDataContext ctx
