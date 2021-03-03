@@ -64,6 +64,7 @@ module CreateAppConfig =
               Region = configuration.GetValue("MailGun:Region") }
 
         { Common = common
+          IssuerBaseUrl = configuration.GetValue<string>("IssuerBaseUrl")
           SendMailConfig = sendMailConfig
           MailSender = mailSenderConfig
           KeyValueStorage = keyValueStorageConfig

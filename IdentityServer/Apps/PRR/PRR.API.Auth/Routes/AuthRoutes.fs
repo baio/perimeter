@@ -33,8 +33,6 @@ module AuthRoutes =
                   PUT >=> route "/password" >=> PutPassword.handler
                   GET >=> route "/version" >=> Version.handler
                   GET
-                  >=> route "/.well-known/openid-configuration"
-                  >=> GetOpenIdConfiguration.handler
+                  >=> routef "/issuers/%s/%s/%s/.well-known/openid-configuration" GetOpenIdConfiguration.handler
                   GET
-                  >=> route "/.well-known/jwks.json"
-                  >=> GetJwksJson.handler ])
+                  >=> routef "/%s/.well-known/jwks.json" GetJwksJson.handler ])

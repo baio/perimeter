@@ -23,6 +23,7 @@ module ConfigureServices =
 
     type AppConfig =
         { Common: CommonAppConfig
+          IssuerBaseUrl: string
           Auth: AuthConfig
           Infra: InfraConfig
           KeyValueStorage: KeyValueStorageConfig

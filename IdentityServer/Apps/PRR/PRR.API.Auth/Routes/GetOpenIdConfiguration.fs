@@ -5,15 +5,29 @@ module GetOpenIdConfiguration =
     open Giraffe
     open PRR.Domain.Auth.OpenIdConfiguration
 
-    let handler next ctx =
+    let handler (tenant, domain, env) next ctx =
+
+        printfn "111 %s %s %s" tenant domain env
+
+        let issuerBaseUrl = (getConfig ctx).IssuerBaseUrl
+
+        let getPath str =
+            sprintf
+                "%sissuers/%s/%s/%s%s"
+                issuerBaseUrl
+                tenant
+                domain
+                env
+                (if str = null then "" else (sprintf "/%s" str))
+
         let config: OpenIdConfiguration =
-            { JwksUri = "https://localhost:5001/api/auth/.well-known/jwks.json"
-              TokenEndpoint = "https://localhost:5001/api/auth/token"
-              Issuer = "https://localhost:5001/api/auth"
-              UserInfoEndpoint = "https://tbd"
-              AuthorizationEndpoint = "https://localhost:5001/api/auth/authorize"
-              DeviceAuthorizationEndpoint = "https://tbd"
-              EndSessionEndpoint = "https://localhost:5001/api/auth/logout"
+            { JwksUri = getPath ".well-known/jwks.json"
+              TokenEndpoint = getPath "token"
+              Issuer = getPath null
+              UserInfoEndpoint = getPath "tbd"
+              AuthorizationEndpoint = getPath "authorize"
+              DeviceAuthorizationEndpoint = getPath "tbd"
+              EndSessionEndpoint = getPath "logout"
               RbacUrl = "https://tenant-perimeter.pw" }
 
         let result = getOpenIdConfigurationJsonString config

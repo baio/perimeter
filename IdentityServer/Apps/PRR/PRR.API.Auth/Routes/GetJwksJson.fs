@@ -4,4 +4,4 @@ module GetJwksJson =
 
     open Giraffe
 
-    let handler next ctx = json {| Ok = true |} next ctx
+    let handler issuerPath next ctx = json {| Ok = true |} next ctx
