@@ -68,3 +68,8 @@ module Option =
         function
         | null -> None
         | x -> Some x
+
+    let ofOption (str: _ option) =
+        match str with
+        | Some x -> x
+        | None -> null

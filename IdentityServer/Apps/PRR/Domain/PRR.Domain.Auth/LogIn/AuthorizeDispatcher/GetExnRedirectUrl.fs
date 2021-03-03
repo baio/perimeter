@@ -1,11 +1,14 @@
 namespace PRR.Domain.Auth.LogIn.AuthorizeDispatcher
 
-open System.Web
-open DataAvail.Http.Exceptions
-
 [<AutoOpen>]
-module internal GetExnRedirectUrl =
+module private GetExnRedirectUrl =
 
+    open System.Web
+    open DataAvail.Http.Exceptions
+    open DataAvail.Common.Option
+    open PRR.Domain.Auth.LogIn.Common
+
+    (*
     let concatQueryString (url: string) key v =
         let kv = sprintf "%s=%s" key v
 
@@ -22,10 +25,14 @@ module internal GetExnRedirectUrl =
         function
         | Some descr -> concatErrorDescription (concatQueryStringError url err) descr
         | None -> err |> concatQueryStringError url
+    *)
 
-    let getExnRedirectUrl (redirectUri) (ex: exn) =
+    let getExnRedirectUrl data (ex: exn) =
         // RedirectUri could not be retrieved in some cases
-        match ex with
-        | :? UnAuthorized as e -> concatErrorAndDescription redirectUri "unauthorized_client" e.Data0
-        | :? BadRequest -> concatQueryStringError redirectUri "invalid_request"
-        | _ -> concatQueryStringError redirectUri "server_error"
+        let (error, errorDescription) =
+            match ex with
+            | :? UnAuthorized as e -> "unauthorized_client", (ofOption e.Data0)
+            | :? BadRequest -> "invalid_request", null
+            | _ -> "server_error", null
+
+        getRedirectAuthorizeUrl data error errorDescription

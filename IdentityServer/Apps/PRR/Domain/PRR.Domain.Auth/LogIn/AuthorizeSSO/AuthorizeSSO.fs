@@ -20,15 +20,6 @@ module internal AuthorizeSSO =
 
             env.Logger.LogDebug("LogIn SSO with data {@data} and token {ssoToken}", data, ssoToken)
 
-            let emailPasswordEmpty =
-                (isEmpty data.Email) && (isEmpty data.Password)
-
-            match validateAuthorizeData (not emailPasswordEmpty) data with
-            | Some ex ->
-                env.Logger.LogWarning("Data validation failed {@ex}", ex)
-                raise ex
-            | None -> ()
-
             let dataContext = env.DataContext
 
             task {

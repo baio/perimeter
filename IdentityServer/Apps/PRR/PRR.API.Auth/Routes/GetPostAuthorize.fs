@@ -14,34 +14,32 @@ open PRR.Domain.Auth.LogIn.AuthorizeDispatcher
 
 module GetPostAuthorize =
 
-    let private getEnv ctx =
-
-        let config = getConfig ctx
-
-        { DataContext = getDataContext ctx
-          PasswordSalter = getPasswordSalter ctx
-          CodeGenerator = getHash ctx
-          CodeExpiresIn = config.Auth.Jwt.CodeExpiresIn
-          SSOExpiresIn = config.Auth.SSOCookieExpiresIn
-          Logger = getLogger ctx
-          KeyValueStorage = getKeyValueStorage ctx }
-
-    type GetPostMethod =
-        | Get
-        | Post
-
-    let private setSSOCookie ctx =
+    let private setSSOCookie ctx () =
         let hasher = getHash ctx
         let hash = hasher ()
         ctx.Response.Cookies.Append("sso", hash, CookieOptions(HttpOnly = true, Secure = false))
 
-    let private removeSSOCookie (ctx: HttpContext) = ctx.Response.Cookies.Delete("sso")
+    let private removeSSOCookie (ctx: HttpContext) () = ctx.Response.Cookies.Delete("sso")
 
-    let private updateSSOCookie ctx =
-        function
-        | SSOCookieExists -> ()
-        | SSOCookieNotExists -> setSSOCookie ctx
+    let private getEnv (ctx: HttpContext) =
 
+        let config = getConfig ctx
+
+        { IDPDomain = "http://localhost:4200/"
+          SetSSOCookie = setSSOCookie ctx
+          DeleteSSOCookie = removeSSOCookie ctx
+          AuthorizeEnv =
+              { DataContext = getDataContext ctx
+                PasswordSalter = getPasswordSalter ctx
+                CodeGenerator = getHash ctx
+                CodeExpiresIn = config.Auth.Jwt.CodeExpiresIn
+                SSOExpiresIn = config.Auth.SSOCookieExpiresIn
+                Logger = getLogger ctx
+                KeyValueStorage = getKeyValueStorage ctx } }
+
+    type GetPostMethod =
+        | Get
+        | Post
 
     let handler method next ctx =
 
@@ -65,29 +63,24 @@ module GetPostAuthorize =
 
             let ssoCookie = bindCookie "sso" ctx
 
-            let! data =
+            let! data' =
                 ctx
                 |> (match method with
                     | Post -> bindFormAsync<AuthorizeData>
                     | Get -> bindQueryString >> Task.FromResult)
 
-            logger.LogDebug("Authorize parameters {ssoCookie} {@data}", ssoCookie, data)
+            let refererUrl = getRefererUrl ctx
 
-            let! result = authorizeDispatcher env ssoCookie data
+            let data =
+                { AuthorizeData = data'
+                  SSOToken = ssoCookie
+                  RefererUrl = refererUrl }
+
+            logger.LogDebug("Authorize parameters {@data}", data')
+
+            let! result = authorizeDispatcher env data
 
             logger.LogDebug("Authorize result {@result}", result)
 
-            let updateSSOCookie = updateSSOCookie ctx
-
-            match result with
-            | RedirectEmptyLoginPassword (url, ssoStatus) ->
-                updateSSOCookie ssoStatus
-                return! redirectTo false url next ctx
-            | RedirectNoPromptSSO (url, ssoStatus) ->
-                updateSSOCookie ssoStatus
-                return! redirectTo false url next ctx
-            | RedirectRegularSuccess (url) -> return! redirectTo false url next ctx
-            | RedirectError (url) ->
-                removeSSOCookie ctx
-                return! redirectTo false url next ctx
+            return! redirectTo false result next ctx
         }

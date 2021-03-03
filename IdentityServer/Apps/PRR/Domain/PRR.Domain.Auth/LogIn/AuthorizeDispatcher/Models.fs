@@ -2,18 +2,20 @@
 
 open System.Threading.Tasks
 open PRR.Domain.Auth.LogIn.Common
+open PRR.Domain.Common
 
 [<AutoOpen>]
 module Models =
 
-    type SSOCookieStatus =
-        | SSOCookieExists
-        | SSOCookieNotExists
+    type Env =
+        { AuthorizeEnv: AuthorizeEnv
+          IDPDomain: string
+          SetSSOCookie: unit -> unit
+          DeleteSSOCookie: unit -> unit }
 
-    type RedirectResult =
-        | RedirectEmptyLoginPassword of string * SSOCookieStatus
-        | RedirectNoPromptSSO of string * SSOCookieStatus
-        | RedirectRegularSuccess of string
-        | RedirectError of string
+    type Data =
+        { AuthorizeData: AuthorizeData
+          SSOToken: string option
+          RefererUrl: string }
 
-    type AuthorizeDispatcher = AuthorizeEnv -> string option -> AuthorizeData -> Task<RedirectResult>
+    type AuthorizeDispatcher = Env -> Data -> Task<string>

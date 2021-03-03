@@ -1,11 +1,12 @@
-﻿namespace PRR.Domain.Auth.LogIn.Common
+﻿namespace PRR.Domain.Auth.LogIn.AuthorizeDispatcher
 
 [<AutoOpen>]
-module GetRedirectAuthorizeUrl =
+module private GetRedirectAuthorizeUrl =
 
+    open PRR.Domain.Auth.LogIn.Common
     open DataAvail.Common
 
-    let getRedirectAuthorizeUrl data =
+    let getRedirectAuthorizeUrl (data: AuthorizeData) error errorDescription =
 
         let qs =
             [| mapNullValue "client_id" data.Client_Id
@@ -16,9 +17,10 @@ module GetRedirectAuthorizeUrl =
                mapNullValue "code_challenge" data.Code_Challenge
                mapNullValue "redirect_uri" data.Redirect_Uri
                mapNullValue "response_type" data.Response_Type
-               mapNullValue "code_challenge_method" data.Code_Challenge_Method |]
+               mapNullValue "code_challenge_method" data.Code_Challenge_Method
+               mapNullValue "error" error
+               mapNullValue "error_description" errorDescription |]
             |> Seq.choose id
-            |> Seq.append [| "error", "login_required" |]
             |> joinQueryStringTuples
 
         sprintf "http://localhost:4200?%s" qs

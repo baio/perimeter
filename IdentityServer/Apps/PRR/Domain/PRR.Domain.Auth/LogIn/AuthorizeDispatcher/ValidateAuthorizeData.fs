@@ -1,10 +1,11 @@
-﻿namespace PRR.Domain.Auth.LogIn.Common
+﻿namespace PRR.Domain.Auth.LogIn.AuthorizeDispatcher
 
 [<AutoOpen>]
-module ValidateAuthorizeData =
+module private ValidateAuthorizeData =
 
     open PRR.Domain.Auth.Common
     open DataAvail.Http.Exceptions
+    open PRR.Domain.Auth.LogIn.Common
     
     let validateAuthorizeData validateEmailPassword (data: AuthorizeData) =
 

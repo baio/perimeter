@@ -19,12 +19,14 @@ module SignIn =
 
     let signIn (data: SignInData) =
 
-        // looks like audience is clientId
-        // let audiences = [| data.ClientId |]
-        
         let audiences =
             data.AudienceScopes
-            |> Seq.map (fun x -> x.Audience)        
+            |> Seq.map (fun x -> x.Audience)
+
+        // TODO : What is audience ???
+        // looks like audience is clientId
+        let audiences =
+            audiences |> Seq.append [| data.ClientId |]
 
         let rolesPermissions =
             data.AudienceScopes
@@ -45,6 +47,7 @@ module SignIn =
             match data.RefreshTokenProvider with
             | Some refreshTokenProvider -> refreshTokenProvider ()
             | None -> null
+
 
         { id_token = idToken
           access_token = accessToken

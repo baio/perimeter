@@ -1,5 +1,8 @@
 ﻿namespace PRR.Domain.Auth.LogIn.AuthorizeDispatcher
 
+open DataAvail.Http.Exceptions
+open PRR.Domain.Auth.Common
+
 [<AutoOpen>]
 module AuthorizeDispatcher =
 
@@ -10,65 +13,122 @@ module AuthorizeDispatcher =
     open FSharp.Control.Tasks.V2.ContextInsensitive
     open DataAvail.Common
 
-    let private tryAuthorizeDispatcher: AuthorizeDispatcher =
-        fun env ssoCookie data ->
+    let private tryAuthorizeAnotherDomain: AuthorizeDispatcher =
+        fun env data ->
+            let { AuthorizeEnv = env } = env
+
+            let { AuthorizeData = data } = data
+
+            let logger = env.Logger
+
+            logger.LogDebug("Authorize another domain data {@data}", data)
+
+            task {
+
+                let emailOrPasswordNotEmpty =
+                    (isNotEmpty data.Email)
+                    || (isNotEmpty data.Password)
+
+                if emailOrPasswordNotEmpty then
+                    raise
+                        (BadRequest [| BadRequestCommonError
+                                           "Email and password could be provided only through IDP form" |])
+
+                match validateAuthorizeData false data with
+                | Some ex ->
+                    logger.LogWarning("Data validation failed {@ex}", ex)
+                    raise ex
+                | None -> ()
+
+                return getRedirectAuthorizeUrl data null null
+            }
+
+    let private tryAuthorizeIDPDomain: AuthorizeDispatcher =
+        fun env data ->
+            let { AuthorizeEnv = env
+                  SetSSOCookie = setSSOCookie } =
+                env
+
+            let { AuthorizeData = data
+                  RefererUrl = refererUrl
+                  SSOToken = ssoToken } =
+                data
+
             let logger = env.Logger
 
             task {
 
-                env.Logger.LogDebug("LogIn with data {@data} and sso {@sso}", data, ssoCookie)
+                let isPromptNone =
+                    match data.Prompt with
+                    | Some "none" -> true
+                    | _ -> false
 
-                let emailPasswordEmpty =
-                    (isEmpty data.Email) && (isEmpty data.Password)
+                logger.LogDebug
+                    ("Authorize IDP domain with data {@data} and sso {@sso} and refererUrl {refererUrl}",
+                     data,
+                     ssoToken,
+                     refererUrl)
 
-                match validateAuthorizeData (not emailPasswordEmpty) data with
+                // TODO : Basically we dont need any data besides sso in case there is sso cookie
+                match validateAuthorizeData (not isPromptNone) data with
                 | Some ex ->
-                    env.Logger.LogWarning("Data validation failed {@ex}", ex)
+                    logger.LogWarning("Data validation failed {@ex}", ex)
                     raise ex
                 | None -> ()
 
-                let ssoCookieStatus =
-                    match ssoCookie with
-                    | Some _ -> SSOCookieExists
-                    | None -> SSOCookieNotExists
+                match isPromptNone with
+                | true ->
+                    match ssoToken with
+                    | Some sso ->
+                        logger.LogDebug("Prompt none and sso cookie found, use SSO handler")
 
-                if emailPasswordEmpty then
-                    env.Logger.LogDebug("Email and password are empty redirect to login page")
-                    let result = getRedirectAuthorizeUrl data
-                    return RedirectEmptyLoginPassword(result, ssoCookieStatus)
-                else
-                    match data.Prompt with
-                    | Some "none" ->
-                        match ssoCookie with
-                        | Some sso ->
-                            logger.LogDebug("Prompt none and sso cookie found, use SSO handler")
+                        let! result = authorizeSSO env sso data
+                        return result
+                    | None ->
+                        logger.LogDebug("Prompt none and no SSO cookie, redirect back to idp page with new sso cookie")
 
-                            let! result = authorizeSSO env sso data
-                            return RedirectNoPromptSSO(result, SSOCookieExists)
-                        | None ->
-                            // the redirect must be to the idp server page for example prr.pw
-                            logger.LogDebug
-                                ("Prompt none and no SSO cookie, redirect back to idp page with new sso cookie")
+                        let result =
+                            getRedirectAuthorizeUrl { data with Prompt = None } "login_required" null
 
-                            let result = getRedirectAuthorizeUrl data
-                            return RedirectNoPromptSSO(result, SSOCookieNotExists)
-                    | _ ->
-                        logger.LogDebug("Prompt is not none use regular login handler")
+                        setSSOCookie ()
 
-                        let! result = authorize env ssoCookie data
-                        return RedirectRegularSuccess result
+                        return result
+                | _ ->
+                    logger.LogDebug("Prompt is not 'none' use regular login handler")
+
+                    let! result = authorize env ssoToken data
+                    return result
             }
 
+    let private tryAuthorizeDispatcher: AuthorizeDispatcher =
+        fun env data ->
+
+            let { RefererUrl = refererUrl } = data
+
+            let logger = env.AuthorizeEnv.Logger
+
+            let isIDPDomain = refererUrl = env.IDPDomain
+
+            logger.LogDebug("IDPDomain {isIDPDomain}", isIDPDomain)
+
+            match isIDPDomain with
+            | true -> tryAuthorizeIDPDomain env data
+            | false -> tryAuthorizeAnotherDomain env data
+
     let authorizeDispatcher: AuthorizeDispatcher =
-        fun env ssoCookie data ->
+        fun env data ->
+            env.AuthorizeEnv.Logger.LogDebug("AuthorizeDispatcher {@data}", data)
+
             task {
                 try
-                    return! tryAuthorizeDispatcher env ssoCookie data
+                    return! tryAuthorizeDispatcher env data
                 with ex ->
-                    let redirectUrlError =
-                        getExnRedirectUrl "https://localhost:4201" ex
+                    let redirectUrlError = getExnRedirectUrl data.AuthorizeData ex
 
-                    env.Logger.LogWarning("Redirect on ${@error} to ${redirectUrlError}", ex, redirectUrlError)
+                    env.DeleteSSOCookie()
 
-                    return RedirectError redirectUrlError
+                    env.AuthorizeEnv.Logger.LogWarning
+                        ("Redirect on error {@error} to {redirectUrlError}", ex, redirectUrlError)
+
+                    return redirectUrlError
             }
