@@ -13,6 +13,7 @@ module ConfigureServices =
 
     type AuthConfig =
         { Jwt: JwtConfig
+          LoginPageDomain: string
           SSOCookieExpiresIn: int<minutes>
           PerimeterSocialProviders: PerimeterSocialProviders
           ResetPasswordTokenExpiresIn: int<minutes>
@@ -42,10 +43,10 @@ module ConfigureServices =
         configureLogging config.Common.Logging services
         configureAuthorization config.Auth.Jwt.AccessTokenSecret services
         configureDataContext config.Common.DataContext services
-        configureTracing config.Common.Tracing services        
+        configureTracing config.Common.Tracing services
         configureConfigProvider config services
         configureHealthCheck config.Common.HealthCheck services
-        configureServiceBus config.Common.ServiceBus [] services        
+        configureServiceBus config.Common.ServiceBus [] services
         configureInfra config.Infra services
         configureKeyValueStorage config.KeyValueStorage services
 

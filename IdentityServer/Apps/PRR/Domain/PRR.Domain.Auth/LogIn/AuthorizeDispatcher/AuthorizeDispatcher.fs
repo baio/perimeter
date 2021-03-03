@@ -107,9 +107,9 @@ module AuthorizeDispatcher =
 
             let logger = env.AuthorizeEnv.Logger
 
-            let isIDPDomain = refererUrl = env.IDPDomain
+            let isIDPDomain = refererUrl = env.LoginPageDomain
 
-            logger.LogDebug("IDPDomain {isIDPDomain}", isIDPDomain)
+            logger.LogDebug("LoginPageDomain {isIDPDomain}", isIDPDomain)
 
             match isIDPDomain with
             | true -> tryAuthorizeIDPDomain env data

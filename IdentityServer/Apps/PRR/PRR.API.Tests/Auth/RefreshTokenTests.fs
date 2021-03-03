@@ -189,7 +189,7 @@ module RefreshToken =
 
                 let! logoutResult =
                     testFixture.Server1.HttpGetAsync'
-                        (sprintf "/api/auth/logout?return_uri=%s&access_token=%s" "http://localhost:4200" accessToken2)
+                        (sprintf "/api/auth/logout?post_logout_redirect_uri=%s&id_token_hint=%s" "http://localhost:4200" accessToken2)
 
                 do! ensureRedirectSuccessAsync logoutResult
 

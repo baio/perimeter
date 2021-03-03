@@ -9,9 +9,9 @@ module Models =
 
     type Env =
         { AuthorizeEnv: AuthorizeEnv
-          IDPDomain: string
           SetSSOCookie: unit -> unit
-          DeleteSSOCookie: unit -> unit }
+          DeleteSSOCookie: unit -> unit
+          LoginPageDomain: string }
 
     type Data =
         { AuthorizeData: AuthorizeData

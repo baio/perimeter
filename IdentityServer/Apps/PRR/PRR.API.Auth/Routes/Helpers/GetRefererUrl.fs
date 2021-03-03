@@ -13,4 +13,4 @@ module internal GetRefererUrl =
         |> getRefererHeader
         |> function
         | Some x -> x
-        | None -> "http://referer-not-found"
+        | None -> "http://referer-not-found/"

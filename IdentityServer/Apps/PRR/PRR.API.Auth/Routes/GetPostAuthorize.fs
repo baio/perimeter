@@ -25,7 +25,7 @@ module GetPostAuthorize =
 
         let config = getConfig ctx
 
-        { IDPDomain = "http://localhost:4200/"
+        { LoginPageDomain = config.Auth.LoginPageDomain
           SetSSOCookie = setSSOCookie ctx
           DeleteSSOCookie = removeSSOCookie ctx
           AuthorizeEnv =
