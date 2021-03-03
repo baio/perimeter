@@ -74,13 +74,14 @@ module private CreateClaims =
                else None
                if hasProfileScope
                then Some(Claim(ClaimTypes.Surname, tokenData.LastName))
-               else None |]
+               else None
+               Some(Claim(CLAIM_TYPE_UID, tokenData.Id.ToString())) |]
             |> Array.choose id
 
         let nonceClaims =
             match nonce with
             | null -> [||]
-            | nonce -> [| Claim(CLAIM_TYPE_NONCE, nonce) |]            
+            | nonce -> [| Claim(CLAIM_TYPE_NONCE, nonce) |]
 
         // TODO : RBA + Include permissions flag
         [| Claim(CLAIM_TYPE_SUB, getSub tokenData)

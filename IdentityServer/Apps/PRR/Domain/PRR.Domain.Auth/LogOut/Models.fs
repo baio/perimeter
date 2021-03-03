@@ -11,9 +11,7 @@ open Microsoft.Extensions.Logging
 module Models =
 
     [<CLIMutable>]
-    type Data =
-        { AccessToken: Token
-          ReturnUri: string }
+    type Data = { IdToken: Token; ReturnUri: string }
 
     type Result = { ReturnUri: string }
 

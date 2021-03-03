@@ -169,7 +169,7 @@ module internal SignInUser =
                   Nonce = nonce
                   AudienceScopes = validatedScopes
                   RefreshTokenProvider = if hasOfflineAccessScope then Some env.HashProvider else None
-                  AccessTokenCredentials = secretData.SigningCredentials
+                  SigningCredentials = secretData.SigningCredentials
                   AccessTokenExpiresIn = secretData.AccessTokenExpiresIn * 1<minutes>
                   IdTokenExpiresIn = idTokenExpiresIn }
 
