@@ -47,7 +47,8 @@ module Apis =
 
     type CreateEnv =
         { AccessTokenExpiresIn: int<minutes>
-          HS256SigningSecret: unit -> string }
+          HS256SigningSecret: unit -> string
+          AuthStringsGetter: IAuthStringsGetter }
 
     let catch =
         function
@@ -68,10 +69,18 @@ module Apis =
 
             let (envName, poolIdentifier, tenantName) = data
 
+            let apiAudience =
+                env.AuthStringsGetter.GetAudienceUri
+                    { IssuerUriData =
+                          { TenantName = tenantName
+                            DomainName = poolIdentifier
+                            EnvName = envName }
+                      ApiName = dto.Identifier }
+
             let api =
                 Api
                     (Name = dto.Name,
-                     Identifier = (sprintf "https://%s.%s.%s.%s.perimeter.pw" dto.Identifier envName poolIdentifier tenantName),
+                     Identifier = apiAudience,
                      DomainId = domainId,
                      IsDomainManagement = false,
                      Permissions = [||])
@@ -142,6 +151,7 @@ module Apis =
                     where
                         (p.DomainId = domainId
                          && p.IsDomainManagement = false)
+
                     select ((%select') p)
             }
             |> executeListQuery prms

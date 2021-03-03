@@ -92,7 +92,7 @@ module DomainPools =
             createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
             |> add
 
-            createDomainManagementApi env.AuthConfig domain
+            createDomainManagementApi env.AuthStringsProvider domain
             |> add
 
             let! (ownerId, ownerEmail) =

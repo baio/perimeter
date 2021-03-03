@@ -50,7 +50,7 @@ module Tenants =
             createTenantManagementApp env.AuthStringsProvider env.AuthConfig tenantManagementDomain
             |> add
 
-            createTenantManagementApi env.AuthConfig tenantManagementDomain
+            createTenantManagementApi env.AuthStringsProvider tenantManagementDomain
             |> add
 
             createDomainUserRole userEmail tenantManagementDomain Roles.TenantOwner.Id
@@ -68,7 +68,7 @@ module Tenants =
             createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
             |> add
 
-            createDomainManagementApi env.AuthConfig domain
+            createDomainManagementApi env.AuthStringsProvider domain
             |> add
 
             createDomainUserRole userEmail domain Roles.DomainOwner.Id

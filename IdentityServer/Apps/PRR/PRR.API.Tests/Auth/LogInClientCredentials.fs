@@ -19,7 +19,7 @@ module LogInClientCredentials =
           Email = "user@user.com"
           Password = "#6VvR&^"
           ReturnUrl = null }
-    
+
     let mutable authCode: string = null
 
     let mutable testContext: UserTestContext option = None
@@ -46,7 +46,9 @@ module LogInClientCredentials =
               ClientSecret = fun () -> "ClientSecret"
               AuthorizationCode = authStringsGetter.AuthorizationCode
               HS256SigningSecret = authStringsGetter.HS256SigningSecret
-              RS256XMLParams = authStringsGetter.RS256XMLParams }
+              RS256XMLParams = authStringsGetter.RS256XMLParams
+              GetAudienceUri = authStringsGetter.GetAudienceUri
+              GetIssuerUri = authStringsGetter.GetIssuerUri }
 
 
         services.AddSingleton<IAuthStringsGetterProvider>(AuthStringsProvider _authStringsGetter)
@@ -61,7 +63,9 @@ module LogInClientCredentials =
         [<Priority(-1)>]
         member __.``0 BeforeAll``() =
             task {
-                testContext <- Some(createUserTestContextWithServicesOverrides2 (fun _ -> ()) overrideServices testFixture)
+                testContext <-
+                    Some(createUserTestContextWithServicesOverrides2 (fun _ -> ()) overrideServices testFixture)
+
                 let! _ = createUser testContext.Value signUpData
                 ()
             }
@@ -105,7 +109,7 @@ module LogInClientCredentials =
             }
 
         [<Fact>]
-        [<Priority(1)>]        
+        [<Priority(1)>]
         member __.``A.3 Login with wrong Audience should give error``() =
 
             let tenant = testContext.Value.GetTenant()

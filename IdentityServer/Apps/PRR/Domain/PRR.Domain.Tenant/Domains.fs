@@ -56,6 +56,7 @@ module Domains =
                     (dp.Id = domainId
                      && dp.PoolId = Nullable(domainPoolId)
                      && dp.Pool.Tenant.UserId = userId)
+
                 select dp.Id
         }
         |> notFoundRaiseError Forbidden'
@@ -95,17 +96,18 @@ module Domains =
                 |> fun q -> q.Include("Tenant")
                 |> toSingleUnchangedAsync dataContext
 
+            let issuerUri =
+                env.AuthStringsProvider.GetIssuerUri
+                    { TenantName = pool.Tenant.Name
+                      DomainName = pool.Identifier
+                      EnvName = dto.EnvName }
+
             let domain =
                 Domain
                     (Pool = pool,
                      EnvName = dto.EnvName,
                      IsMain = false,
-                     Issuer =
-                         sprintf
-                             "https://%s.%s.%s.perimeter.pw/domain/issuer"
-                             dto.EnvName
-                             pool.Identifier
-                             pool.Tenant.Name,
+                     Issuer = issuerUri,
                      AccessTokenExpiresIn = (int env.AuthConfig.AccessTokenExpiresIn),
                      SigningAlgorithm = SigningAlgorithmType.RS256,
                      HS256SigningSecret = env.AuthStringsProvider.HS256SigningSecret(),
@@ -115,7 +117,7 @@ module Domains =
             createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
             |> add
 
-            createDomainManagementApi env.AuthConfig domain
+            createDomainManagementApi env.AuthStringsProvider domain
             |> add
 
             let! userEmail =
@@ -137,12 +139,21 @@ module Domains =
 
     let update: Update<int, PutLike, DbDataContext> =
         fun data dbContext ->
-            updateCatch<Domain, int, PutLike, _> catch (fun id -> Domain(Id = id)) (fun dto entity ->
-                // TODO : EF cant trace changes in enum fields (((
-                entity.SigningAlgorithm <- Enum.Parse<SigningAlgorithmType>(dto.SigningAlgorithm)
-                dbContext.Entry(entity).Property("SigningAlgorithm").IsModified <- true
-                entity.EnvName <- dto.EnvName
-                entity.AccessTokenExpiresIn <- dto.AccessTokenExpiresIn) data dbContext
+            updateCatch<Domain, int, PutLike, _>
+                catch
+                (fun id -> Domain(Id = id))
+                (fun dto entity ->
+                    // TODO : EF cant trace changes in enum fields (((
+                    entity.SigningAlgorithm <- Enum.Parse<SigningAlgorithmType>(dto.SigningAlgorithm)
+
+                    dbContext
+                        .Entry(entity)
+                        .Property("SigningAlgorithm").IsModified <- true
+
+                    entity.EnvName <- dto.EnvName
+                    entity.AccessTokenExpiresIn <- dto.AccessTokenExpiresIn)
+                data
+                dbContext
 
     let remove: Remove<int, DbDataContext> = remove (fun id -> Role(Id = id))
 

@@ -52,7 +52,9 @@ module LogInAuthorizationCode =
               ClientSecret = fun () -> "ClientSecret"
               AuthorizationCode = authStringsGetter.AuthorizationCode
               HS256SigningSecret = authStringsGetter.HS256SigningSecret
-              RS256XMLParams = authStringsGetter.RS256XMLParams }
+              RS256XMLParams = authStringsGetter.RS256XMLParams
+              GetIssuerUri = authStringsGetter.GetIssuerUri
+              GetAudienceUri = authStringsGetter.GetAudienceUri }
 
 
         services.AddSingleton<IAuthStringsGetterProvider>(AuthStringsProvider _authStringsGetter)
