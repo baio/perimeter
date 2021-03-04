@@ -90,6 +90,8 @@
         <Compile Include="LogOut\LogOut.fs" />
         <Compile Include="ApplicationInfo.fs" />
         <Compile Include="OpenIdConfiguration\OpenIdConfiguration.fs" />
+        <Compile Include="WellKnown\GetJWKS\Models.fs" />
+        <Compile Include="WellKnown\GetJWKS\GetJWKS.fs" />
     </ItemGroup>
 
     <ItemGroup>

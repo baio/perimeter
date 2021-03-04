@@ -4,21 +4,19 @@ module GetOpenIdConfiguration =
 
     open Giraffe
     open PRR.Domain.Auth.OpenIdConfiguration
+    open DataAvail.Common
 
     let handler (tenant, domain, env) next ctx =
-
-        printfn "111 %s %s %s" tenant domain env
 
         let issuerBaseUrl = (getConfig ctx).IssuerBaseUrl
 
         let getPath str =
-            sprintf
-                "%sissuers/%s/%s/%s%s"
-                issuerBaseUrl
-                tenant
-                domain
-                env
-                (if str = null then "" else (sprintf "/%s" str))
+            concatUrl [| issuerBaseUrl
+                         "issuers"
+                         tenant
+                         domain
+                         env
+                         str |]
 
         let config: OpenIdConfiguration =
             { JwksUri = getPath ".well-known/jwks.json"

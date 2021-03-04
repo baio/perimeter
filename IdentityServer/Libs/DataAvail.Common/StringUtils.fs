@@ -30,9 +30,20 @@ module StringUtils =
 
     let joinQueryStringTuples x = x |> joinTuples '=' '&'
 
-    let trimStart (x: string) (s: string) = s.Replace(x, "")
+    let trimStart (x: char) (s: string) = s.TrimStart(x)
+
+    let trimEnd (x: char) (s: string) = s.TrimEnd(x)
+
+    let trim (x: char) (s: string) = s.Trim(x)
 
     let startsWith (x: string) (s: string) = s.StartsWith(x)
+
+
+    let concatUrl x =
+        x
+        |> Seq.filter isNotEmpty
+        |> Seq.map (trim '/')
+        |> concat '/'
 
     let tryParseInt (x: string) =
         match Int32.TryParse x with

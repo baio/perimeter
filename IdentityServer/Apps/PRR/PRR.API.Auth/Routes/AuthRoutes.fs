@@ -6,7 +6,9 @@ module AuthRoutes =
     open Giraffe
 
     let createRoutes () =
-        (choose [ route "/social" >=> PostAuthSocial.handler
+        (choose [ POST
+                  >=> route "/social"
+                  >=> PostAuthSocial.handler
                   GET
                   >=> route "/social/callback"
                   >=> GetAuthSocialCallback.handler
@@ -32,7 +34,18 @@ module AuthRoutes =
                   >=> routef "/applications/%s" GetApplicationInfo.handler
                   PUT >=> route "/password" >=> PutPassword.handler
                   GET >=> route "/version" >=> Version.handler
-                  GET
-                  >=> routef "/issuers/%s/%s/%s/.well-known/openid-configuration" GetOpenIdConfiguration.handler
-                  GET
-                  >=> routef "/%s/.well-known/jwks.json" GetJwksJson.handler ])
+                  subRoutef "/issuers/%s/%s/%s" (fun data ->
+                      choose [ GET
+                               >=> route "/.well-known/openid-configuration"
+                               >=> GetOpenIdConfiguration.handler data
+                               GET
+                               >=> route "/.well-known/jwks.json"
+                               >=> GetJwksJson.handler data
+                               POST
+                               >=> route "/authorize"
+                               >=> GetPostAuthorize.handler GetPostAuthorize.GetPostMethod.Post
+                               GET
+                               >=> route "/authorize"
+                               >=> GetPostAuthorize.handler GetPostAuthorize.GetPostMethod.Get
+                               POST >=> route "/token" >=> PostToken.handler
+                               GET >=> route "/logout" >=> GetLogout.handler ]) ])

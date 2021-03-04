@@ -2,6 +2,21 @@
 
 module GetJwksJson =
 
+    open PRR.Domain.Auth.WellKnown.GetJWKS
     open Giraffe
+    open DataAvail.Giraffe.Common
 
-    let handler issuerPath next ctx = json {| Ok = true |} next ctx
+
+    let handler' (tenant, domain, domainEnv) ctx =
+        let env =
+            { DataContext = (getDataContext ctx)
+              Logger = (getLogger ctx) }
+
+        let data =
+            { Tenant = tenant
+              Domain = domain
+              Env = domainEnv }
+
+        getJWKS env data
+
+    let handler data = data |> handler' |> wrapHandlerOK

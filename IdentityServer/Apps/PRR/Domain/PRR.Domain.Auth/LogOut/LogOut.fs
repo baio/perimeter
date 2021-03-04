@@ -1,27 +1,21 @@
 ﻿namespace PRR.Domain.Auth.LogOut
 
-open PRR.Data.DataContext
-open PRR.Data.Entities
-open PRR.Domain.Auth
-open PRR.Domain.Auth.LogIn.TokenAuthorizationCode
-open PRR.Domain.Models
-open FSharp.Control.Tasks.V2.ContextInsensitive
-open Microsoft.IdentityModel.Tokens
-open PRR.Domain.Auth.Common.KeyValueModels
-// open PRR.Domain.Auth.LogIn.RefreshToken
-open System.Security.Claims
-open System.Text
-open System.Threading.Tasks
-open DataAvail.Http.Exceptions
-open DataAvail.Common.Option
-open DataAvail.EntityFramework.Common
-open PRR.Domain.Auth.Common
-open PRR.Domain.Auth.Common.Constants
-open Microsoft.Extensions.Logging
-
 [<AutoOpen>]
 module LogOut =
 
+    open PRR.Data.DataContext
+    open PRR.Data.Entities
+    open PRR.Domain.Auth
+    open PRR.Domain.Models
+    open FSharp.Control.Tasks.V2.ContextInsensitive
+    open Microsoft.IdentityModel.Tokens
+    open PRR.Domain.Auth.Common.KeyValueModels
+    open DataAvail.Http.Exceptions
+    open DataAvail.Common.Option
+    open DataAvail.EntityFramework.Common
+    open PRR.Domain.Auth.Common
+    open Microsoft.Extensions.Logging
+    
     type SigningParams =
         | RS256 of string
         | HS256 of string

@@ -1,8 +1,8 @@
 ﻿namespace PRR.Domain.Auth.OpenIdConfiguration
 
 [<AutoOpen>]
-module OpenIdConfiguration =
-
+module OpenIdConfiguration =    
+    
     type OpenIdConfiguration =
         { JwksUri: string
           TokenEndpoint: string
@@ -13,6 +13,7 @@ module OpenIdConfiguration =
           EndSessionEndpoint: string
           RbacUrl: string }
 
+    
     let getOpenIdConfigurationJsonString (config: OpenIdConfiguration) =
         {| token_endpoint = config.TokenEndpoint
            token_endpoint_auth_methods_supported =
