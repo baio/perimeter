@@ -1,8 +1,5 @@
 ﻿namespace PRR.Domain.Auth.WellKnown.GetJWKS
 
-open PRR.Data.Entities
-
-
 [<AutoOpen>]
 module GetJWKS =
 
@@ -11,6 +8,15 @@ module GetJWKS =
     open DataAvail.EntityFramework.Common
     open Microsoft.IdentityModel.Tokens
     open PRR.Domain.Auth.Common.Security
+    open System
+    open System.Security.Cryptography
+    open PRR.Data.Entities
+
+    let private getPublicKeyFromRS256Params xml =
+        let rsa = RSA.Create()
+        rsa.FromXmlString xml
+        let publicKey = rsa.ExportRSAPublicKey()
+        Convert.ToBase64String publicKey
 
     let getJWKS: GetJWKS =
         fun env data ->
@@ -38,26 +44,41 @@ module GetJWKS =
 
                 // TODO : Support both
                 let key =
-                    if signingAlgorithm = SigningAlgorithmType.RS256 then
-                        createRS256Key rS256Params
-                        |> JsonWebKeyConverter.ConvertFromRSASecurityKey
-                    else
-                        createHS256Key hS256SigningSecret
-                        |> JsonWebKeyConverter.ConvertFromSymmetricSecurityKey
+                    match signingAlgorithm with
+                    | SigningAlgorithmType.RS256 ->
+                        let key =
+                            createRS256Key rS256Params
+                            |> JsonWebKeyConverter.ConvertFromRSASecurityKey
 
-                logger.LogDebug("security key found {@key} {str}", key)
-                
-                let result =
-                    { Alg = key.Alg
-                      E = key.E
-                      Kid = key.Kid
-                      Kty = key.Kty
-                      N = key.N
-                      Use = key.Use
-                      X5c = key.X5c
-                      X5t = key.X5t }
+                        logger.LogDebug("key parsed {@key}", key)
 
-                logger.LogDebug("Get jwks success with result {@result}", result)
+                        { Alg = "RS256"
+                          E = key.E
+                          Kid = key.Kid
+                          Kty = key.Kty
+                          N = key.N
+                          Use = "sig"
+                          X5c = key.X5c
+                          X5t = key.X5t }
 
-                return seq { result }
+                    | SigningAlgorithmType.HS256 ->
+                        let key =
+                            createHS256Key hS256SigningSecret
+                            |> JsonWebKeyConverter.ConvertFromSymmetricSecurityKey
+
+                        logger.LogDebug("key parsed {@key}", key)
+                        
+                        { Alg = key.Alg
+                          E = key.E
+                          Kid = key.Kid
+                          Kty = key.Kty
+                          N = key.N
+                          Use = key.Use
+                          X5c = key.X5c
+                          X5t = key.X5t }
+
+
+                logger.LogDebug("security key found {@key}", key)
+
+                return { Keys = seq { key } }
             }

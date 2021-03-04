@@ -35,7 +35,7 @@ module AuthStringsGetterProvider =
           HS256SigningSecret = fun () -> getRandomString 35
           RS256XMLParams =
               fun () ->
-                  let rsa = RSA.Create(2048)
+                  let rsa = RSA.Create(2048)                  
                   rsa.ToXmlString(true)
           GetIssuerUri = fun data ->
               joinUri baseUri (sprintf "issuers/%s/%s/%s" data.TenantName data.DomainName data.EnvName)
