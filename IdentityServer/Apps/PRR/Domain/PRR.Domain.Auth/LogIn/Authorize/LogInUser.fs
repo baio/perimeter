@@ -127,7 +127,13 @@ module LogInUser =
 
             env.Logger.LogDebug("Validate {@scopes} for {email} and {clientId} ", scopes, data.Email, clientId)
 
-            let! validatedScopes = validateScopes dataContext data.Email clientId scopes
+            let! validatedScopes =
+                validateScopes
+                    { DataContext = dataContext
+                      Logger = env.Logger }
+                    data.Email
+                    clientId
+                    scopes
 
             env.Logger.LogDebug("Validated scopes {@validatedScopes}", validatedScopes)
 

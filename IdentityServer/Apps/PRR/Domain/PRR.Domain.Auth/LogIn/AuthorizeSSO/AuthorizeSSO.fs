@@ -109,7 +109,6 @@ module internal AuthorizeSSO =
                         ("${@dataRedirectUri} is not contained in ${@callbackUrls}", data.Redirect_Uri, callbackUrls)
 
                     return! raise (unAuthorized "return_uri mismatch")
-
                 match! getUserId dataContext ssoItem.Email with
                 | Some userId ->
                     env.Logger.LogInformation("${@userId} is found for ${@ssoItemEmail}", userId, ssoItem.Email)
@@ -118,7 +117,7 @@ module internal AuthorizeSSO =
 
                     let result =
                         sprintf "%s?code=%s&state=%s" data.Redirect_Uri code data.State
-                    
+
                     env.Logger.LogInformation("${@result} is ready", result)
 
                     let expiresAt =
@@ -126,7 +125,13 @@ module internal AuthorizeSSO =
 
                     let scopes = data.Scope.Split " "
 
-                    let! validatedScopes = validateScopes dataContext ssoItem.Email appInfo.ClientId scopes
+                    let! validatedScopes =
+                        validateScopes
+                            { DataContext = dataContext
+                              Logger = env.Logger }
+                            ssoItem.Email
+                            appInfo.ClientId
+                            scopes
 
                     let loginItem: LogInKV =
                         { Code = code

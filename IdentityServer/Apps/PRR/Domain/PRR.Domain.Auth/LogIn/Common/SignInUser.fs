@@ -137,7 +137,13 @@ module internal SignInUser =
             if Seq.contains grantType grantTypes |> not
             then return raise (unAuthorized "grant_type is not allowed for this application")
 
-            let! validatedScopes = getValidatedScopes env.DataContext tokenData.Email clientId scopes
+            let! validatedScopes =
+                getValidatedScopes
+                    { DataContext = env.DataContext
+                      Logger = env.Logger }
+                    tokenData.Email
+                    clientId
+                    scopes
 
             env.Logger.LogDebug("Validated scopes {@validatedScopes}", validatedScopes)
 

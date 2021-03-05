@@ -10,6 +10,7 @@ open DataAvail.KeyValueStorage.Core
 open DataAvail.EntityFramework.Common
 open DataAvail.Http.Exceptions
 open PRR.Domain.Auth.LogIn.Social.SocialAuth.GetSocialRedirectUrl
+open PRR.Domain.Auth.LogIn.Social.SocialAuth.Models
 
 [<AutoOpen>]
 module SocialAuth =

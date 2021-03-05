@@ -6,6 +6,7 @@ open Microsoft.Extensions.Logging
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open DataAvail.Http.Exceptions
 open PRR.Domain.Auth.Common
+open PRR.Domain.Auth.SignUp.Models
 
 [<AutoOpen>]
 module private OnSuccess =
