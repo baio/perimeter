@@ -17,9 +17,14 @@ module GetPostAuthorize =
     let private setSSOCookie ctx () =
         let hasher = getHash ctx
         let hash = hasher ()
+        let logger = getLogger ctx
+        logger.LogDebug("Set new SSO cookie", hash)
         ctx.Response.Cookies.Append("sso", hash, CookieOptions(HttpOnly = true, Secure = false))
 
-    let private removeSSOCookie (ctx: HttpContext) () = ctx.Response.Cookies.Delete("sso")
+    let private removeSSOCookie (ctx: HttpContext) () =
+        let logger = getLogger ctx
+        logger.LogDebug("Delete SSO cookie", hash)
+        ctx.Response.Cookies.Delete("sso")
 
     let private getEnv (ctx: HttpContext) =
 

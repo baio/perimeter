@@ -50,7 +50,6 @@ module KeyValueModels =
           Social: Social option
           ExpiresAt: DateTime }
 
-
     [<PartitionName("SocialLogIn")>]
     type SocialLoginKV =
         { Token: Token
@@ -63,7 +62,8 @@ module KeyValueModels =
           Scope: Scope
           CodeChallenge: string
           CodeChallengeMethod: string
-          DomainClientId: ClientId }
+          DomainClientId: ClientId
+          SSO: string option }
 
     [<PartitionName("RefreshToken")>]
     type RefreshTokenKV =

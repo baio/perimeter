@@ -32,9 +32,10 @@ module PostAuthSocial =
 
         task {
             let! data = bindFormAsync ctx
+            let sso = bindCookie "sso" ctx
 
             try
-                let! redirectUrl = socialAuth env data
+                let! redirectUrl = socialAuth env data sso
                 return! redirectTo false redirectUrl next ctx
             with ex ->
                 let refererUrl = getRefererUrl ctx

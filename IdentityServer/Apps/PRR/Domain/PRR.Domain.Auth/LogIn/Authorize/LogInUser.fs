@@ -157,14 +157,12 @@ module LogInUser =
                   Nonce = data.Nonce
                   Social = social }
 
-            let ssoExpiresAt =
-                DateTime.UtcNow.AddMinutes(float env.SSOExpiresIn)
-
             let ssoItem =
                 match ssoEnabled, sso with
                 | (true, Some sso) ->
                     env.Logger.LogDebug("With SSO {sso}", sso)
-
+                    let ssoExpiresAt =
+                        DateTime.UtcNow.AddMinutes(float env.SSOExpiresIn)
                     Some
                         ({ Code = sso
                            UserId = userId
@@ -174,13 +172,16 @@ module LogInUser =
                            Email = data.Email
                            Social = social }: SSOKV)
                 // TODO : Handle case SSO enabled but sso token not found
+                | (true, None) ->
+                    env.Logger.LogWarning("SSO Enabled but sso cookie not found!")
+                    None
                 | _ ->
                     env.Logger.LogDebug("SSO Enabled {ssoEnabled}", ssoEnabled)
                     None
 
             let successData = (loginItem, ssoItem)
 
-            env.Logger.LogDebug("{@successData} is ready", successData)
+            env.Logger.LogDebug("LogIn success data {@successData} is ready", successData)
 
             let env': OnSuccess.Env =
                 { Logger = env.Logger

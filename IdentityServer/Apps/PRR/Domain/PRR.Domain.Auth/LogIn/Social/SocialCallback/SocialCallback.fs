@@ -134,20 +134,21 @@ module Social =
         |> Seq.tryHead
         |> Option.map (fun ((_, state), (_, code)) -> state, code)
 
-    let socialCallback (env: Models.Env) (data: Data) (ssoCookie) =
+    let socialCallback (env: Models.Env) (data: Data) =
 
+        // let ssoCookie = env.SetSSOCookie()
         // TODO : Validate data !
 
         let logger = env.Logger
-        logger.LogInformation("SocialCallback starts ${@data}", data)
+        logger.LogDebug("SocialCallback with data ${@data}", data)
 
         let (state, code) =
             match getStateAndCode data with
             | Some (state, code) ->
-                logger.LogDebug("State and code is found ${state} ${code}", state, code)
+                logger.LogDebug("SocialCallback state and code is found ${state} ${code}", state, code)
                 state, code
             | None ->
-                logger.LogError("State or code is not found")
+                logger.LogError("SocialCallback state or code is not found")
                 raise (unAuthorized "State or code not found")
 
         task {
@@ -162,7 +163,6 @@ module Social =
                     item.DomainClientId
                     item.Type
 
-
             let! ident =
                 match item.Type with
                 | Github -> getGithubSocialIdentity env.HttpRequestFun item.SocialClientId secret code
@@ -172,12 +172,12 @@ module Social =
                     // Important state and code reversed
                     getTwitterSocialIdentity env.Logger env.HttpRequestFun item.SocialClientId secret code state
 
-            logger.LogInformation("Identity ${ident} created for flow", ident)
+            logger.LogInformation("SocialCallback identity ${ident} created for flow", ident)
 
             // create user and social identity (if still not created)
             let! userId = createUserAndSocialIdentity env.DataContext ident
 
-            logger.LogInformation("User with ${userId} and social identity created", userId)
+            logger.LogInformation("SocialCallback user with {userId} and social identity created", userId)
 
             // login user as usual with data from social provider
             let loginData: LoginData =
@@ -192,7 +192,7 @@ module Social =
                   CodeChallenge = item.CodeChallenge
                   CodeChallengeMethod = item.CodeChallengeMethod }
 
-            logger.LogDebug("${@loginData} created")
+            logger.LogDebug("SocialCallback {@loginData} created")
 
             let env': AuthorizeEnv =
                 { DataContext = env.DataContext
@@ -207,7 +207,7 @@ module Social =
                 { Id = ident.SocialId
                   Type = item.Type }
 
-            let! res = logInUser env' ssoCookie loginData (Some social)
+            let! res = logInUser env' item.SSO loginData (Some social)
 
             logger.LogInformation("loginUser success ${@res}", res)
 

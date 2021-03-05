@@ -36,7 +36,7 @@ module internal GetLogout =
                     logger.LogWarning("post_logout_redirect_uri param is not found")
                     raise (unAuthorized "post_logout_redirect_uri param is not found")
 
-            let accessToken =
+            let idToken =
                 match bindQueryStringField "id_token_hint" ctx with
                 | Some accessToken -> accessToken
                 | None ->
@@ -45,7 +45,7 @@ module internal GetLogout =
 
             let data: Data =
                 { ReturnUri = returnUri
-                  IdToken = accessToken }
+                  IdToken = idToken }
 
             try
 
