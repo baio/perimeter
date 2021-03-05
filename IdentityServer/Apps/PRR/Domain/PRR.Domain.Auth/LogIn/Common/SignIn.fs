@@ -31,6 +31,7 @@ module SignIn =
         let rolesPermissions =
             data.AudienceScopes
             |> Seq.collect (fun x -> x.Scopes)
+            |> Seq.distinct
 
         let accessToken =
             createAccessTokenClaims data.ClientId data.Issuer data.UserTokenData rolesPermissions audiences

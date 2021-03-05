@@ -30,6 +30,7 @@ module DefaultPermissionsForManager =
 
     let mutable testContext: UserTestContext option = None
     let mutable tenant: CreatedTenantInfo option = None
+    let mutable accessToken: string = null
 
     [<CLIMutable>]
     type GetLikeDto =
@@ -87,6 +88,8 @@ module DefaultPermissionsForManager =
 
                 result.access_token |> should be (not' Empty)
 
+                accessToken <- result.access_token
+
                 let jwtToken = readToken result.access_token
 
                 jwtToken.IsSome |> should be True
@@ -94,11 +97,32 @@ module DefaultPermissionsForManager =
                 let scope =
                     jwtToken.Value.Claims
                     |> Seq.find (fun f -> f.Type = "scope")
-
+                                       
                 scope |> should be (not' Null)
 
                 scope.Value
                 |> String.split ' '
                 |> should contain permissionName
+
+            }
+
+
+        [<Fact>]
+        [<Priority(2)>]
+        member __.``get common scopes should return assigned scopes``() =
+
+            let domainId =
+                testContext.Value.GetTenant().DomainId
+
+            task {
+                let! result =
+                    testFixture.Server2.HttpGetAsync
+                        accessToken
+                        (sprintf "/api/tenant/domains/%i/permissions/common" domainId)
+
+                do! ensureSuccessAsync result
+                let! result = readAsJsonAsync<GetLikeDto array> result
+                result |> should be (not' null)
+                result.Length |> should equal 1
 
             }
