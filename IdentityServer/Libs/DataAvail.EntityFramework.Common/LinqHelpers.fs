@@ -60,7 +60,7 @@ module LinqHelpers =
             | Some r -> return r
             | None -> return raise ex
         }
-    
+
     let toSingleAsync x = x |> toSingleExnAsync NotFound
 
     let setUnchanged (dataContext: DbContext) x =
@@ -170,6 +170,7 @@ module LinqHelpers =
     let unzipProps x =
         let t = x.GetType()
         let p = t.GetProperties()
+
         p
         |> Array.map (fun m -> (m.Name, m.GetValue(x)))
         |> Array.unzip
@@ -268,6 +269,7 @@ module LinqHelpers =
             context.Database.GetDbConnection().CreateCommand()
 
         command.CommandText <- q
+
         task {
             use! result = command.ExecuteReaderAsync()
             let mutable f = true

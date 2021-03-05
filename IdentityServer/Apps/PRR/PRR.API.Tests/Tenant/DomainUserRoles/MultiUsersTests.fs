@@ -336,7 +336,7 @@ module MultiUsers =
 
         [<Fact>]
         [<Priority(11)>]
-        member __.``L remove domain owner should give error``() =
+        member __.``L remove domain owner should not remove owner role``() =
             let u1 = users.[0]
 
             task {
@@ -345,12 +345,12 @@ module MultiUsers =
                         u1.Token.Value
                         (sprintf "/api/tenant/domains/%i/users/%s" u1.Tenant.Value.DomainId u1.Data.Email)
 
-                do ensureForbidden result
+                do! ensureSuccessAsync result
             }
 
         [<Fact>]
         [<Priority(12)>]
-        member __.``M update domain owner should give error``() =
+        member __.``M update domain shoul persist owner role``() =
             let u1 = users.[0]
 
             task {

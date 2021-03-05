@@ -3,7 +3,6 @@
 open PRR.Domain.Models
 open DataAvail.Http.Exceptions
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open Microsoft.EntityFrameworkCore
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open System
@@ -14,6 +13,7 @@ open DataAvail.EntityFramework.Common
 open DataAvail.ListQuery.Core
 open DataAvail.ListQuery.EntityFramework
 open DataAvail.Common.TaskUtils
+open Z.EntityFramework.Plus
 
 module DomainUserRoles =
 
@@ -122,16 +122,20 @@ module DomainUserRoles =
 
     let remove (domainId: DomainId) (email: string) (dbContext: DbDataContext) =
         task {
-            let! f = isUserDomainOwner domainId email dbContext
+            let q =
+                query {
+                    for dur in dbContext.DomainUserRole do
+                        where
+                            (dur.RoleId <> Seed.Roles.DomainOwner.Id
+                             && dur.UserEmail = email
+                             && dur.DomainId = domainId)
 
-            if f
-            then return raise (forbidden "Domain owner role could not be deleted")
+                        select dur
+                }
 
-            return!
-                removeRawAsync
-                    dbContext.DomainUserRole
-                    {| UserEmail = email
-                       DomainId = domainId |}
+            let! _ = q.DeleteAsync()
+
+            return ()
         }
 
     //
