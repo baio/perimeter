@@ -46,13 +46,14 @@ module ValidateScopes =
         | TenantManagement -> getTenantManagementAudience env domainId
         | DomainManagement -> getDomainManagementAudience env domainId
 
-    let private userHasAssignedRole { DataContext = dataContext } userEmail domainId =
+    let private userHasCommonAssignedRole { DataContext = dataContext } userEmail domainId =
         query {
             for dur in dataContext.DomainUserRole do
                 where
                     (dur.UserEmail = userEmail
-                     && dur.DomainId = domainId)
-
+                     && dur.DomainId = domainId
+                     && not dur.Role.IsDomainManagement
+                     && not dur.Role.IsTenantManagement)
                 select dur.RoleId
         }
         |> toCountAsync
@@ -131,7 +132,8 @@ module ValidateScopes =
     let getGenericAudienceScopes env userEmail domainId scopes =
         task {
             env.Logger.LogDebug("GetGenericAudienceScopes {userEmail} {domainId} {scopes}", domainId, domainId, scopes)
-            let! hasAssignedRole = userHasAssignedRole env userEmail domainId
+
+            let! hasAssignedRole = userHasCommonAssignedRole env userEmail domainId
 
             match hasAssignedRole with
             // Given scopes returns these which assigned for particular user (intersection)
@@ -140,7 +142,9 @@ module ValidateScopes =
                 return! getGenericDomainAudiencePermissions env userEmail domainId scopes
             // Since user doesn't have any assigned role, return intersection of default and requested scopes
             | false ->
-                env.Logger.LogDebug("Since user doesn't have any assigned role, return intersection of default and requested scopes")
+                env.Logger.LogDebug
+                    ("Since user doesn't have any assigned role, return intersection of default and requested scopes")
+
                 return! getDefaultDomainAudiencePermissions env domainId scopes
         }
 
@@ -152,9 +156,11 @@ module ValidateScopes =
     let private validateScopes' env userEmail clientId scopes =
         task {
             let! result = getAppDomainInfo env clientId
+
             match result with
             | Some (domainId, appDomainType) ->
                 env.Logger.LogDebug("App info {domainId} {appDomainType}", domainId, appDomainType)
+
                 match appDomainType with
                 // for generic app return intersection of requested scopes with assigned (or default)
                 | Generic -> return! getGenericAudienceScopes env userEmail domainId scopes
@@ -219,14 +225,14 @@ module ValidateScopes =
                 let! audScopes = validateScopes' env userEmail clientId scopes
 
                 env.Logger.LogDebug("Regular scopes result {@result}", audScopes)
-                
+
                 let result =
                     audScopes
                     |> Seq.map (fun audScope ->
                         { audScope with
                               Scopes = audScope.Scopes |> appendOpenIDScopes scopes })
-                    
-                env.Logger.LogDebug("Joint scopes result {@result}", result)                    
-                
+
+                env.Logger.LogDebug("Joint scopes result {@result}", result)
+
                 return result |> Seq.append [ defaultAudienceScopes ]
         }
