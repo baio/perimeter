@@ -15,7 +15,9 @@ module AuthorizeDispatcher =
 
     let private tryAuthorizeAnotherDomain: AuthorizeDispatcher =
         fun env data ->
-            let { AuthorizeEnv = env } = env
+            let { AuthorizeEnv = env
+                  LoginPageDomain = logInPageDomain } =
+                env
 
             let { AuthorizeData = data } = data
 
@@ -40,13 +42,14 @@ module AuthorizeDispatcher =
                     raise ex
                 | None -> ()
 
-                return getRedirectAuthorizeUrl data null null
+                return getRedirectAuthorizeUrl logInPageDomain data null null
             }
 
     let private tryAuthorizeIDPDomain: AuthorizeDispatcher =
         fun env data ->
             let { AuthorizeEnv = env
-                  SetSSOCookie = setSSOCookie } =
+                  SetSSOCookie = setSSOCookie
+                  LoginPageDomain = logInPageDomain } =
                 env
 
             let { AuthorizeData = data
@@ -88,7 +91,7 @@ module AuthorizeDispatcher =
                         logger.LogDebug("Prompt none and no SSO cookie, redirect back to idp page with new sso cookie")
 
                         let result =
-                            getRedirectAuthorizeUrl { data with Prompt = None } "login_required" null
+                            getRedirectAuthorizeUrl logInPageDomain { data with Prompt = None } "login_required" null
 
                         setSSOCookie ()
 
@@ -123,7 +126,8 @@ module AuthorizeDispatcher =
                 try
                     return! tryAuthorizeDispatcher env data
                 with ex ->
-                    let redirectUrlError = getExnRedirectUrl data.AuthorizeData ex
+                    let redirectUrlError =
+                        getExnRedirectUrl env.LoginPageDomain data.AuthorizeData ex
 
                     env.DeleteSSOCookie()
 

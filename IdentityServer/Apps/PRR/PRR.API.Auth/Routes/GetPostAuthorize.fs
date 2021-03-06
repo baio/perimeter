@@ -74,14 +74,14 @@ module GetPostAuthorize =
                     | Post -> bindFormAsync<AuthorizeData>
                     | Get -> bindQueryString >> Task.FromResult)
 
-            let refererUrl = getRefererUrl ctx
+            let refererUrl = getOriginUrl ctx
 
             let data =
                 { AuthorizeData = data'
                   SSOToken = ssoCookie
                   RefererUrl = refererUrl }
 
-            logger.LogDebug("Authorize parameters {@data}", data')
+            logger.LogDebug("Authorize parameters {@data}", data)
 
             let! result = authorizeDispatcher env data
 

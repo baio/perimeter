@@ -40,8 +40,10 @@ export class SignupConfirmPageComponent implements OnInit {
             .toPromise()
             .then(
                 () =>
+                
                     (window.location.href =
                         redirectUri + '?event=sign-up-confirm-success')
+                
                 /*
                 this.router.navigate(
                     ['..', 'login', { event: 'sign-up-confirm-success' }],
@@ -51,6 +53,7 @@ export class SignupConfirmPageComponent implements OnInit {
                     }
                 )
                 */
+                
             )
             .catch((_err) => {
                 const err = _err as HttpErrorResponse;

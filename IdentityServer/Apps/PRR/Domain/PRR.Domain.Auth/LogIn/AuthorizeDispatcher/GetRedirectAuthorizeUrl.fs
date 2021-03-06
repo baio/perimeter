@@ -6,7 +6,7 @@ module private GetRedirectAuthorizeUrl =
     open PRR.Domain.Auth.LogIn.Common
     open DataAvail.Common
 
-    let getRedirectAuthorizeUrl (data: AuthorizeData) error errorDescription =
+    let getRedirectAuthorizeUrl idpDomainUrl (data: AuthorizeData) error errorDescription =
 
         let qs =
             [| mapNullValue "client_id" data.Client_Id
@@ -23,4 +23,4 @@ module private GetRedirectAuthorizeUrl =
             |> Seq.choose id
             |> joinQueryStringTuples
 
-        sprintf "http://localhost:4200?%s" qs
+        sprintf "%s?%s" idpDomainUrl qs
