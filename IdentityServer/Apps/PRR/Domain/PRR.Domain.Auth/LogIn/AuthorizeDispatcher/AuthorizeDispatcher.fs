@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.LogIn.AuthorizeDispatcher
 
+open System
 open DataAvail.Http.Exceptions
 open PRR.Domain.Auth.Common
 
@@ -110,7 +111,12 @@ module AuthorizeDispatcher =
 
             let logger = env.AuthorizeEnv.Logger
 
-            let isIDPDomain = refererUrl = env.LoginPageDomain
+            let loginPageUri = Uri env.LoginPageDomain
+
+            let loginPageOrigin =
+                loginPageUri.GetLeftPart UriPartial.Authority
+
+            let isIDPDomain = refererUrl = loginPageOrigin
 
             logger.LogDebug("LoginPageDomain {isIDPDomain}", isIDPDomain)
 

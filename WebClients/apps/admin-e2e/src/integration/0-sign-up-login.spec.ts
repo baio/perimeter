@@ -22,7 +22,7 @@ describe('signup flow', () => {
         return cy.resetDb();
     });
 
-    it.only('signup / login', () => {
+    it('signup / login', () => {
         cy.visit('/home');
         cy.url().should('include', '/home');
         cy.dataCy('signup-button').click();
@@ -67,8 +67,7 @@ describe('signup flow', () => {
             cy.dataCy('login-button').click();
 
             cy.url().should('include', '/auth/login');
-
-            /*
+            
             cy.dataCy('email')
                 .type(EMAIL)
                 .dataCy('password')
@@ -87,7 +86,7 @@ describe('signup flow', () => {
             });
 
             cy.url().should('include', '/profile/home');
-            */
+
         });
     });
 
