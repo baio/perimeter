@@ -113,7 +113,10 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
 
     ngOnInit(): void {
         const urlQueryParams = this.activatedRoute.snapshot.queryParams;
-        if (urlQueryParams['error']) {
+        if (
+            urlQueryParams['error'] &&
+            urlQueryParams['error'] !== 'login_required'
+        ) {
             this.errorMessage =
                 urlQueryParams['error_description'] ||
                 'Unknown authentication error';
