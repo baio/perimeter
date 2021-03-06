@@ -6,17 +6,27 @@ open PRR.Data.Entities
 [<AutoOpen>]
 module Helpers =
 
+
     let createTenant name userId = Tenant(Name = name, UserId = userId)
 
     let createDomainPool tenant name identifier =
         DomainPool(Tenant = tenant, Name = name, Identifier = identifier)
 
     let createTenantManagementDomain (authStringProvider: IAuthStringsGetter) authConfig (tenant: Tenant) =
+
+        let envName = "dev"
+
+        let issuerUri =
+            authStringProvider.GetIssuerUri
+                { TenantName = tenant.Name
+                  DomainName = "tenant-management"
+                  EnvName = envName }
+
         Domain
             (Tenant = tenant,
-             EnvName = "management",
+             EnvName = envName,
              IsMain = true,
-             Issuer = sprintf "https://management.%s.perimeter.pw/tenant/issuer" tenant.Name,
+             Issuer = issuerUri,
              AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn),
              SigningAlgorithm = SigningAlgorithmType.HS256,
              HS256SigningSecret = authStringProvider.HS256SigningSecret())
@@ -24,7 +34,7 @@ module Helpers =
     let createTenantManagementApp (authStringProvider: IAuthStringsGetter) (authConfig: AuthConfig) domain =
         Application
             (Domain = domain,
-             Name = "Tenant domains management application",
+             Name = "tenant-management-app",
              ClientId = authStringProvider.ClientId(),
              ClientSecret = authStringProvider.ClientSecret(),
              GrantTypes =
@@ -40,25 +50,40 @@ module Helpers =
              SSOEnabled = true,
              IsDomainManagement = true)
 
-    let createTenantManagementApi authConfig (domain: Domain) =
+    let createTenantManagementApi (authStringProvider: IAuthStringsGetter) (domain: Domain) =
+        let apiAudience =
+            authStringProvider.GetAudienceUri
+                { IssuerUriData =
+                      { TenantName = domain.Tenant.Name
+                        DomainName = "tenant-management"
+                        EnvName = domain.EnvName }
+                  ApiName = "tenant-management-api" }
+
         Api
             (Domain = domain,
-             Name = "Tenant domains management API",
-             Identifier = sprintf "https://tenant-management-api.%s.%s.pw" domain.EnvName domain.Tenant.Name,
+             Name = "tenant-management-api",
+             Identifier = apiAudience,
              IsDomainManagement = false)
 
     //
     let createMainDomain (authStringProviders: IAuthStringsGetter) authConfig (domainPool: DomainPool) =
+        let envName = "dev"
+
+        let issuerUri =
+            authStringProviders.GetIssuerUri
+                { TenantName = domainPool.Tenant.Name
+                  DomainName = domainPool.Identifier
+                  EnvName = envName }
+
         Domain
             (Pool = domainPool,
-             EnvName = "dev",
+             EnvName = envName,
              IsMain = true,
              AccessTokenExpiresIn = (int authConfig.AccessTokenExpiresIn),
              SigningAlgorithm = SigningAlgorithmType.RS256,
              HS256SigningSecret = authStringProviders.HS256SigningSecret(),
              RS256Params = authStringProviders.RS256XMLParams(),
-             Issuer =
-                 sprintf "https://dev.%s.%s.perimeter.pw/domain/issuer" domainPool.Identifier domainPool.Tenant.Name)
+             Issuer = issuerUri)
 
     let createDomainApp (authStringProvider: IAuthStringsGetter) (authConfig: AuthConfig) domain name =
         Application
@@ -78,7 +103,7 @@ module Helpers =
     let createDomainManagementApp (authStringProvider: IAuthStringsGetter) (authConfig: AuthConfig) domain =
         Application
             (Domain = domain,
-             Name = "Domain management application",
+             Name = "domain-management",
              ClientId = authStringProvider.ClientId(),
              ClientSecret = authStringProvider.ClientSecret(),
              IdTokenExpiresIn = (int authConfig.IdTokenExpiresIn),
@@ -94,35 +119,29 @@ module Helpers =
              SSOEnabled = true,
              IsDomainManagement = true)
 
-    let createDomainApi (authStringProvider: IAuthStringsGetter)
-                        (authConfig: AuthConfig)
-                        (domain: Domain)
-                        name
-                        identifier
-                        =
-        Api
-            (Domain = domain,
-             Name = name,
-             Identifier =
-                 sprintf
-                     "https://%s.%s.%s.%s.perimeter.pw"
-                     identifier
-                     domain.EnvName
-                     domain.Pool.Identifier
-                     domain.Pool.Tenant.Name,
-             IsDomainManagement = false)
+    let createDomainApi (authStringProvider: IAuthStringsGetter) (domain: Domain) name identifier =
 
-    let createDomainManagementApi (authConfig: AuthConfig) (domain: Domain) =
-        Api
-            (Domain = domain,
-             Name = "Domain management API",
-             Identifier =
-                 sprintf
-                     "https://domain-management-api.%s.%s.%s.perimeter.pw"
-                     domain.EnvName
-                     domain.Pool.Identifier
-                     domain.Pool.Tenant.Name,
-             IsDomainManagement = true)
+        let apiAudience =
+            authStringProvider.GetAudienceUri
+                { IssuerUriData =
+                      { TenantName = domain.Pool.Tenant.Name
+                        DomainName = domain.Pool.Identifier
+                        EnvName = domain.EnvName }
+                  ApiName = identifier }
+
+        Api(Domain = domain, Name = name, Identifier = apiAudience, IsDomainManagement = false)
+
+    let createDomainManagementApi (authStringProvider: IAuthStringsGetter) (domain: Domain) =
+
+        let apiAudience =
+            authStringProvider.GetAudienceUri
+                { IssuerUriData =
+                      { TenantName = domain.Pool.Tenant.Name
+                        DomainName = domain.Pool.Identifier
+                        EnvName = domain.EnvName }
+                  ApiName = "domain-management-api" }
+
+        Api(Domain = domain, Name = "domain-management-api", Identifier = apiAudience, IsDomainManagement = true)
 
     let createDomainUserRoles (userEmail: string) (domain: Domain) (roleIds: int seq) =
         roleIds

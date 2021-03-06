@@ -14,14 +14,36 @@ module StringUtils =
 
     let split (chr: char) (x: string) = x.Split chr
 
+    let concat (chr: char) (x: string seq) = String.concat (chr.ToString()) x
+
     let splitTuple (chr: char) (x: string) =
         split chr x
         |> (function
         | [| k; v |] -> k, v
         | _ -> raise (ArgumentOutOfRangeException "Not key value"))
-    
-    let trimStart (x: string) (s: string) = s.Replace(x, "")
+
+    let joinTuple (chr: char) (a, b) = sprintf "%s%c%s" a chr b
+
+    let joinQueryStringTuple = joinTuple '='
+
+    let joinTuples (chr1: char) (chr2: char) = Seq.map (joinTuple chr1) >> concat chr2
+
+    let joinQueryStringTuples x = x |> joinTuples '=' '&'
+
+    let trimStart (x: char) (s: string) = s.TrimStart(x)
+
+    let trimEnd (x: char) (s: string) = s.TrimEnd(x)
+
+    let trim (x: char) (s: string) = s.Trim(x)
+
     let startsWith (x: string) (s: string) = s.StartsWith(x)
+
+
+    let concatUrl x =
+        x
+        |> Seq.filter isNotEmpty
+        |> Seq.map (trim '/')
+        |> concat '/'
 
     let tryParseInt (x: string) =
         match Int32.TryParse x with
@@ -32,7 +54,7 @@ module StringUtils =
         match Boolean.TryParse x with
         | true, int -> Some int
         | _ -> None
-    
+
     let (|Regex|_|) pattern input =
         let m = Regex.Match(input, pattern)
 

@@ -15,48 +15,62 @@ module private PermissionHandlers =
     let private dataContext = getDataContext |> ofReader
 
     let createHandler (apiId: int) =
-        wrap (create <!> ((doublet apiId) <!> bindJsonAsync<PostLike>) <*> dataContext)
+        wrap
+            (create
+             <!> ((doublet apiId) <!> bindJsonAsync<PostLike>)
+             <*> dataContext)
 
     let updateHandler (id: int) =
-        wrap (update <!> ((doublet id) <!> bindJsonAsync<PostLike>) <*> dataContext)
+        wrap
+            (update
+             <!> ((doublet id) <!> bindJsonAsync<PostLike>)
+             <*> dataContext)
 
-    let removeHandler (id: int) =
-        wrap (remove id <!> dataContext)
+    let removeHandler (id: int) = wrap (remove id <!> dataContext)
 
-    let getOne (id: int) =
-        wrap (getOne id <!> dataContext)
+    let getOne (id: int) = wrap (getOne id <!> dataContext)
 
     let bindListQuery =
         bindListQuery
             ((function
-             | "name" ->
-                 Some SortField.Name
-             | "dateCreated" ->
-                 Some SortField.DateCreated
+             | "name" -> Some SortField.Name
+             | "dateCreated" -> Some SortField.DateCreated
              | _ -> None),
              (function
-             | "text" ->
-                 Some FilterField.Text
+             | "text" -> Some FilterField.Text
+             | "type" -> Some FilterField.Type
              | _ -> None))
         |> ofReader
 
     let getList domainId =
-        wrap (getList <!> getDataContext' <*> ((doublet domainId) <!> bindListQuery))
+        wrap
+            (getList <!> getDataContext'
+             <*> ((doublet domainId) <!> bindListQuery))
 
-    let getAllPermissions (domainId: DomainId) =
-        wrap (Permissions.getAllDomainPermissions domainId <!> dataContext)
+    let getAllPermissions ((domainId, permissionType): (DomainId * string)) =
+        wrap
+            ((getTypedDomainPermissions domainId permissionType)
+             <!> dataContext)
 
 module Permission =
 
-    let createRoutes() =
-        choose [
-            GET >=> routef "/domains/%i/permissions/all" getAllPermissions 
-            subRoutef "/apis/%i/permissions" (fun apiId ->
-                wrapAudienceGuard fromApiId apiId >=>
-                choose
-                    [ POST >=> permissionGuard MANAGE_PERMISSIONS >=>  createHandler apiId
-                      PUT >=> permissionGuard MANAGE_PERMISSIONS >=> routef "/%i" updateHandler
-                      DELETE >=> permissionGuard MANAGE_PERMISSIONS >=> routef "/%i" removeHandler
-                      GET >=> permissionGuard READ_PERMISSIONS >=> routef "/%i" getOne                      
-                      GET >=> permissionGuard READ_PERMISSIONS >=> getList apiId ])
-        ]
+    let createRoutes () =
+        choose [ GET
+                 >=> routef "/domains/%i/permissions/%s" getAllPermissions
+                 subRoutef "/apis/%i/permissions" (fun apiId ->
+                     wrapAudienceGuard fromApiId apiId
+                     >=> choose [ POST
+                                  >=> permissionGuard MANAGE_PERMISSIONS
+                                  >=> createHandler apiId
+                                  PUT
+                                  >=> permissionGuard MANAGE_PERMISSIONS
+                                  >=> routef "/%i" updateHandler
+                                  DELETE
+                                  >=> permissionGuard MANAGE_PERMISSIONS
+                                  >=> routef "/%i" removeHandler
+                                  GET
+                                  >=> permissionGuard READ_PERMISSIONS
+                                  >=> routef "/%i" getOne
+                                  GET
+                                  >=> permissionGuard READ_PERMISSIONS
+                                  >=> getList apiId ]) ]

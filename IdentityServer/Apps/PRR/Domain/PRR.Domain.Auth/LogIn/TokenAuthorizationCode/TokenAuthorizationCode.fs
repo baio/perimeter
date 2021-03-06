@@ -82,7 +82,7 @@ module TokenAuthorizationCode =
                 let item =
                     match item with
                     | Ok item ->
-                        env.Logger.LogInformation("LogIn item found ${@item}", { item with Code = "***" })
+                        env.Logger.LogDebug("LogIn item found ${@item}", item)
                         item
                     | Result.Error err ->
                         env.Logger.LogWarning("Couldn't find LogIn item ${code} with error ${@error}", data.Code, err)
@@ -129,10 +129,14 @@ module TokenAuthorizationCode =
 
                 let socialType =
                     item.Social |> Option.map (fun f -> f.Type)
+
                 match! getUserDataForToken dataContext item.UserId socialType with
                 | Some tokenData ->
-                    env.Logger.LogInformation
-                        ("${@tokenData} for ${userId} and ${socialType} is found", tokenData, item.UserId, socialType)
+                    env.Logger.LogDebug
+                        ("getUserDataForToken {@tokenData} for {userId} and {socialType} is found",
+                         tokenData,
+                         item.UserId,
+                         socialType)
 
                     let signInUserEnv: SignInUserEnv =
                         { DataContext = env.DataContext
@@ -150,6 +154,7 @@ module TokenAuthorizationCode =
                             signInUserEnv
                             tokenData
                             data.Client_Id
+                            item.Nonce
                             (ValidatedScopes item.ValidatedScopes)
                             grantType
 
@@ -166,7 +171,7 @@ module TokenAuthorizationCode =
                                   IsPerimeterClient = isPerimeterClient
                                   SocialType = socialType }
 
-                    env.Logger.LogInformation("Success with refreshToken ${@refreshToken}", refreshTokenItem)
+                    env.Logger.LogInformation("Success with refreshToken {@refreshToken}", refreshTokenItem)
 
                     let env': OnLogInTokenSuccess.Env =
                         { DataContext = env.DataContext

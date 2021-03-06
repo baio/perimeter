@@ -16,6 +16,9 @@ module CreateAppConfig =
         let accessTokenSecret =
             configuration.GetValue<string>("Auth:Jwt:AccessTokenSecret")
 
+        let issuerBaseUrl =
+            configuration.GetValue<string>("IssuerBaseUrl")
+
         let auth: AuthConfig =
             { // AccessTokenSecret = configuration.GetValue<string>("TenantAuth:AccessTokenSecret")
               IdTokenExpiresIn = configuration.GetValue<int<minutes>>("TenantAuth:IdTokenExpiresInMinutes")
@@ -24,4 +27,5 @@ module CreateAppConfig =
 
         { Common = common
           AccessTokenSecret = accessTokenSecret
-          TenantAuth = auth }
+          TenantAuth = auth
+          IssuerBaseUrl = issuerBaseUrl }

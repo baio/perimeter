@@ -30,7 +30,7 @@ module BindListQuery =
         Option.maybe {
             let! sort = tryGetQueryStringValue ctx "sort"
 
-            let! field = sort |> trimStart "-" |> sortBinder
+            let! field = sort |> trimStart '-' |> sortBinder
 
             let order = sort |> getSortOrder
 

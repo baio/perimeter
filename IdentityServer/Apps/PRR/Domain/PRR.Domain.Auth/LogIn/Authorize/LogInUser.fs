@@ -1,6 +1,7 @@
 ﻿namespace PRR.Domain.Auth.LogIn.Authorize
 
 open PRR.Data.Entities
+open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Models
 
 [<AutoOpen>]
@@ -40,13 +41,20 @@ module LogInUser =
           ClientId: ClientId
           ResponseType: string
           State: string
+          Nonce: string
           RedirectUri: string
           Scope: Scope
           Email: string
           CodeChallenge: string
           CodeChallengeMethod: string }
 
-    let logInUser (env: Models.Env) (sso: Token option) (data: LoginData) (social: Social option) =
+    type LogInResult =
+        { RedirectUri: string
+          State: string
+          Code: string }
+
+
+    let logInUser (env: AuthorizeEnv) (sso: Token option) (data: LoginData) (social: Social option) =
 
         let isPKCE = isNotEmpty data.CodeChallenge
 
@@ -105,7 +113,7 @@ module LogInUser =
 
             let code = env.CodeGenerator()
 
-            let result: AuthorizeResult =
+            let result =
                 { RedirectUri = data.RedirectUri
                   State = data.State
                   Code = code }
@@ -119,7 +127,13 @@ module LogInUser =
 
             env.Logger.LogDebug("Validate {@scopes} for {email} and {clientId} ", scopes, data.Email, clientId)
 
-            let! validatedScopes = validateScopes dataContext data.Email clientId scopes
+            let! validatedScopes =
+                validateScopes
+                    { DataContext = dataContext
+                      Logger = env.Logger }
+                    data.Email
+                    clientId
+                    scopes
 
             env.Logger.LogDebug("Validated scopes {@validatedScopes}", validatedScopes)
 
@@ -139,16 +153,16 @@ module LogInUser =
                   UserEmail = data.Email
                   ExpiresAt = codeExpiresAt
                   RedirectUri = data.RedirectUri
+                  State = data.State
+                  Nonce = data.Nonce
                   Social = social }
-
-            let ssoExpiresAt =
-                DateTime.UtcNow.AddMinutes(float env.SSOExpiresIn)
 
             let ssoItem =
                 match ssoEnabled, sso with
                 | (true, Some sso) ->
                     env.Logger.LogDebug("With SSO {sso}", sso)
-
+                    let ssoExpiresAt =
+                        DateTime.UtcNow.AddMinutes(float env.SSOExpiresIn)
                     Some
                         ({ Code = sso
                            UserId = userId
@@ -158,13 +172,16 @@ module LogInUser =
                            Email = data.Email
                            Social = social }: SSOKV)
                 // TODO : Handle case SSO enabled but sso token not found
+                | (true, None) ->
+                    env.Logger.LogWarning("SSO Enabled but sso cookie not found!")
+                    None
                 | _ ->
                     env.Logger.LogDebug("SSO Enabled {ssoEnabled}", ssoEnabled)
                     None
 
             let successData = (loginItem, ssoItem)
 
-            env.Logger.LogDebug("{@successData} is ready", successData)
+            env.Logger.LogDebug("LogIn success data {@successData} is ready", successData)
 
             let env': OnSuccess.Env =
                 { Logger = env.Logger

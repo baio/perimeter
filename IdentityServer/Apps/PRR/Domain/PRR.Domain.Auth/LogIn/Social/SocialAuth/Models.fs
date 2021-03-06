@@ -22,6 +22,7 @@ module Models =
           Client_Id: ClientId
           Response_Type: string
           State: string
+          Nonce: string
           Redirect_Uri: Uri
           Scope: Scope
           Code_Challenge: string
@@ -31,8 +32,8 @@ module Models =
     // Since there is no app to manage perimeter admin data itself,
     // setup social providers for perimeter runtime through the environment configuration
     type PerimeterSocialClientKeySecrets =
-        { Github: string 
-          Google: string 
+        { Github: string
+          Google: string
           Twitter: string * string }
 
     type Env =

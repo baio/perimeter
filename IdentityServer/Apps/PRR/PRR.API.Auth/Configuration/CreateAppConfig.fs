@@ -30,10 +30,9 @@ module CreateAppConfig =
                     ConfirmSignUpUrl = configuration.GetValue("MailSender:Project:ConfirmSignUpUrl")
                     ResetPasswordUrl = configuration.GetValue("MailSender:Project:ResetPasswordUrl") } }
 
-        let sendGridApiKey = configuration.GetValue("SendGridApiKey")
-
         let authConfig: AuthConfig =
             { Jwt = jwt
+              LoginPageDomain = configuration.GetValue("Auth:LoginPageDomain")
               RefreshTokenExpiresIn = configuration.GetValue<int<minutes>>("Auth:Jwt:RefreshTokenExpiresInMinutes")
               SignUpTokenExpiresIn = configuration.GetValue<int<minutes>>("Auth:SignUpTokenExpiresInMinutes")
               ResetPasswordTokenExpiresIn =
@@ -65,6 +64,7 @@ module CreateAppConfig =
               Region = configuration.GetValue("MailGun:Region") }
 
         { Common = common
+          IssuerBaseUrl = configuration.GetValue<string>("IssuerBaseUrl")
           SendMailConfig = sendMailConfig
           MailSender = mailSenderConfig
           KeyValueStorage = keyValueStorageConfig

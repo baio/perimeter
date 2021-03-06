@@ -51,6 +51,7 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
             scope: urlQueryParams['scope'],
             code_challenge: urlQueryParams['code_challenge'],
             code_challenge_method: urlQueryParams['code_challenge_method'],
+            nonce: urlQueryParams['nonce'],
         };
 
         const errors = [];
@@ -101,6 +102,7 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
             state: [this.loginParams.state],
             response_type: [this.loginParams.response_type],
             redirect_uri: [this.loginParams.redirect_uri],
+            nonce: [this.loginParams.nonce],
             scope: [this.loginParams.scope],
             code_challenge: [this.loginParams.code_challenge],
             code_challenge_method: [this.loginParams.code_challenge_method],
@@ -111,7 +113,10 @@ export class LoginPageComponent implements OnInit, AfterViewInit {
 
     ngOnInit(): void {
         const urlQueryParams = this.activatedRoute.snapshot.queryParams;
-        if (urlQueryParams['error']) {
+        if (
+            urlQueryParams['error'] &&
+            urlQueryParams['error'] !== 'login_required'
+        ) {
             this.errorMessage =
                 urlQueryParams['error_description'] ||
                 'Unknown authentication error';

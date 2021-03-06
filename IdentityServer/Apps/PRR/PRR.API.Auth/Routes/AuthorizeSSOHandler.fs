@@ -5,8 +5,8 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Domain.Auth.LogIn.AuthorizeSSO
 open Microsoft.Extensions.Logging
 
-module internal PostAuthorizeSSOHandler =
-
+module internal AuthorizeSSOHandler = ()
+(*
     let getEnv ctx =
         { DataContext = getDataContext ctx
           CodeGenerator = getHash ctx
@@ -14,12 +14,12 @@ module internal PostAuthorizeSSOHandler =
           Logger = getLogger ctx
           KeyValueStorage = getKeyValueStorage ctx }
 
-    let handler ctx sso =
+    let handler data ctx sso =
 
         let env = getEnv ctx
         task {
 
-            let! data = bindFormAsync ctx
+            // let! data = bindFormAsync ctx
 
             try
 
@@ -41,3 +41,4 @@ module internal PostAuthorizeSSOHandler =
 
                 return (false, redirectUrlError)
         }
+*)

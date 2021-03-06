@@ -12,7 +12,8 @@ open MassTransit.RabbitMqTransport
 type AppConfig =
     { Common: CommonAppConfig
       AccessTokenSecret: string
-      TenantAuth: AuthConfig }
+      TenantAuth: AuthConfig
+      IssuerBaseUrl: string }
 
 
 [<AutoOpen>]
@@ -35,7 +36,7 @@ module ConfigureAppServices =
         configureConfigProvider config services
         configureServiceBus config.Common.ServiceBus [ typeof<LogInEventHandler> ] services
         // tenant
-        services.AddSingleton<IAuthStringsGetterProvider>(AuthStringsProvider(authStringsGetter))
+        services.AddSingleton<IAuthStringsGetterProvider>(AuthStringsProvider(authStringsGetter config.IssuerBaseUrl))
         |> ignore
         // event handlers
         let viewDb = viewDbProvider.Db

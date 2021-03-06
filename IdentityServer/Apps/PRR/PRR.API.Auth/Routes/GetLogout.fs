@@ -8,6 +8,7 @@ open Microsoft.Extensions.Logging
 open DataAvail.Http.Exceptions
 open PRR.API.Auth.Routes.Helpers
 
+// https://identityserver4.readthedocs.io/en/latest/endpoints/endsession.html
 module internal GetLogout =
 
     let getEnv ctx =
@@ -27,24 +28,24 @@ module internal GetLogout =
         task {
 
             let returnUri =
-                match bindQueryStringField "return_uri" ctx with
+                match bindQueryStringField "post_logout_redirect_uri" ctx with
                 | Some returnUri ->
                     returnUri' <- returnUri
                     returnUri
                 | None ->
-                    logger.LogWarning("return_uri param is not found")
-                    raise (unAuthorized "return_uri param is not found")
+                    logger.LogWarning("post_logout_redirect_uri param is not found")
+                    raise (unAuthorized "post_logout_redirect_uri param is not found")
 
-            let accessToken =
-                match bindQueryStringField "access_token" ctx with
+            let idToken =
+                match bindQueryStringField "id_token_hint" ctx with
                 | Some accessToken -> accessToken
                 | None ->
-                    logger.LogWarning("access_token param is not found")
-                    raise (unAuthorized "access_token param is not found")
+                    logger.LogWarning("id_token_hint param is not found")
+                    raise (unAuthorized "id_token_hint param is not found")
 
             let data: Data =
                 { ReturnUri = returnUri
-                  AccessToken = accessToken }
+                  IdToken = idToken }
 
             try
 

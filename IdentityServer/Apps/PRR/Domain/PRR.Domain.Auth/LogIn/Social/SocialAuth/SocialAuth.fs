@@ -1,6 +1,7 @@
 ﻿namespace PRR.Domain.Auth.LogIn.Social.SocialAuth
 
 open System.Threading.Tasks
+open PRR.Domain.Auth.LogIn.Authorize
 open PRR.Domain.Models
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
@@ -10,6 +11,7 @@ open DataAvail.KeyValueStorage.Core
 open DataAvail.EntityFramework.Common
 open DataAvail.Http.Exceptions
 open PRR.Domain.Auth.LogIn.Social.SocialAuth.GetSocialRedirectUrl
+open PRR.Domain.Auth.LogIn.Social.SocialAuth.Models
 
 [<AutoOpen>]
 module SocialAuth =
@@ -62,11 +64,11 @@ module SocialAuth =
         | _ -> getCommonSocialConnectionInfo dataContext clientId socialType
 
 
-    let socialAuth (env: Env) (data: Data) =
+    let socialAuth (env: Env) (data: Data) sso =
         let logger = env.Logger
 
         task {
-            logger.LogDebug("SocialAuth with ${@data}", data)
+            logger.LogDebug("SocialAuth with data {@data} and SSO {sso}", data, sso)
             // Social name to social type
             let socialType = socialName2Type data.Social_Name
 
@@ -74,7 +76,7 @@ module SocialAuth =
             let! socialInfo =
                 getSocialConnectionInfo env.PerimeterSocialClientIds env.DataContext data.Client_Id socialType
 
-            logger.LogDebug("${@socialInfo} found", socialInfo)
+            logger.LogDebug("SocialAuth {@socialInfo} found", socialInfo)
 
             // Generate token it will be used as state for social redirect url
 
@@ -97,7 +99,7 @@ module SocialAuth =
                                 socialInfo.ClientSecret
                 }
 
-            logger.LogInformation("${socialRedirectUrl} created", socialRedirectUrl)
+            logger.LogInformation("SocialAuth ${socialRedirectUrl} created", socialRedirectUrl)
 
             // Store login data they will be used when callback hit back
             let data: SocialLoginKV =
@@ -108,12 +110,14 @@ module SocialAuth =
                   Type = socialType
                   ResponseType = data.Response_Type
                   State = data.State
+                  Nonce = data.Nonce
                   RedirectUri = data.Redirect_Uri
                   Scope = data.Scope
                   CodeChallenge = data.Code_Challenge
-                  CodeChallengeMethod = data.Code_Challenge_Method }
+                  CodeChallengeMethod = data.Code_Challenge_Method
+                  SSO = sso }
 
-            logger.LogInformation("${successData} ready", data)
+            logger.LogInformation("SocialAuth ${successData} ready", data)
 
             let expiresIn =
                 System.DateTime.UtcNow.AddMinutes(float env.SocialCallbackExpiresIn)

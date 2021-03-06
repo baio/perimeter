@@ -52,7 +52,9 @@ module LogInAuthorizationCode =
               ClientSecret = fun () -> "ClientSecret"
               AuthorizationCode = authStringsGetter.AuthorizationCode
               HS256SigningSecret = authStringsGetter.HS256SigningSecret
-              RS256XMLParams = authStringsGetter.RS256XMLParams }
+              RS256XMLParams = authStringsGetter.RS256XMLParams
+              GetIssuerUri = authStringsGetter.GetIssuerUri
+              GetAudienceUri = authStringsGetter.GetAudienceUri }
 
 
         services.AddSingleton<IAuthStringsGetterProvider>(AuthStringsProvider _authStringsGetter)
@@ -85,7 +87,7 @@ module LogInAuthorizationCode =
                     .GetTenant()
                     .TenantManagementApplicationClientId
 
-            let logInData: PRR.Domain.Auth.LogIn.Authorize.Models.Data =
+            let logInData: AuthorizeData =
                 { Client_Id = clientId
                   Response_Type = "code"
                   State = "state"
@@ -94,7 +96,9 @@ module LogInAuthorizationCode =
                   Email = signUpData.Email
                   Password = signUpData.Password
                   Code_Challenge = null
-                  Code_Challenge_Method = null }
+                  Code_Challenge_Method = null
+                  Nonce = null
+                  Prompt = None }
 
 
             task {
@@ -123,7 +127,7 @@ module LogInAuthorizationCode =
                     .GetTenant()
                     .TenantManagementApplicationClientId
 
-            let logInData: PRR.Domain.Auth.LogIn.Authorize.Models.Data =
+            let logInData: AuthorizeData =
                 { Client_Id = clientId
                   Response_Type = "code"
                   State = "state"
@@ -132,7 +136,9 @@ module LogInAuthorizationCode =
                   Email = signUpData.Email
                   Password = signUpData.Password
                   Code_Challenge = null
-                  Code_Challenge_Method = null }
+                  Code_Challenge_Method = null
+                  Nonce = null
+                  Prompt = None }
 
             task {
                 let! result = logIn testFixture logInData
@@ -147,7 +153,7 @@ module LogInAuthorizationCode =
                       Client_Secret = "ClientSecret" }
 
                 let! result' = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
-                
+
                 do! ensureSuccessAsync result'
 
                 let! result = result' |> readAsJsonAsync<LogInResult>

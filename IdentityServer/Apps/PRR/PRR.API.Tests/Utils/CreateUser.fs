@@ -19,7 +19,7 @@ open PRR.Domain.Auth.LogIn.TokenAuthorizationCode
 [<AutoOpen>]
 module CreateUser =
 
-    let logIn' (testFixture: TestFixture) (data: PRR.Domain.Auth.LogIn.Authorize.Models.Data) =
+    let logIn' (testFixture: TestFixture) (data: AuthorizeData) =
         testFixture.Server1.HttpPostFormAsync'
             "/api/auth/authorize"
             (Map
@@ -35,7 +35,7 @@ module CreateUser =
                     ("Code_Challenge_Method", data.Code_Challenge_Method)
                  }))
 
-    let logIn (testFixture: TestFixture) (data: PRR.Domain.Auth.LogIn.Authorize.Models.Data) =
+    let logIn (testFixture: TestFixture) (data: AuthorizeData) =
         task {
             let! result = logIn' testFixture data
             let location = readResponseHeader "Location" result
@@ -91,7 +91,7 @@ module CreateUser =
                 |> Seq.append scopes
                 |> String.concat " "
 
-            let logInData: PRR.Domain.Auth.LogIn.Authorize.Models.Data =
+            let logInData: AuthorizeData =
                 { Client_Id = clientId
                   Response_Type = "code"
                   State = "state"
@@ -100,7 +100,9 @@ module CreateUser =
                   Email = email
                   Password = password
                   Code_Challenge = codeChallenge
-                  Code_Challenge_Method = "S256" }
+                  Code_Challenge_Method = "S256"
+                  Prompt = None
+                  Nonce = null }
 
             let! code = logIn fixture logInData
 

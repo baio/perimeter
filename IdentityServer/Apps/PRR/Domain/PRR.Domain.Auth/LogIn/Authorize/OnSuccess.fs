@@ -32,20 +32,16 @@ module internal OnSuccess =
             | _ -> ()
         }
 
-    let private storeSSO env (item: SSOKV) =
-        storeItem env item.Code item.ExpiresAt item
-
-    let private storeLogIn env (item: LogInKV) =
-        storeItem env item.Code item.ExpiresAt item
-
     let onSuccess (env: Env) =
-        fun (loginItem, ssoItem) ->
+        fun ((loginItem, ssoItem): (LogInKV * SSOKV option)) ->
             task {
-                do! storeLogIn env loginItem
+                do! storeItem env loginItem.Code loginItem.ExpiresAt loginItem
                 match ssoItem with
                 | Some ssoItem ->
-                    // Update SSO item 
+                    // Update SSO item expireTime
+                    env.Logger.LogDebug("Remove SSO from storage", ssoItem.Code)
                     let! _ = env.KeyValueStorage.RemoveValue<SSOKV> ssoItem.Code None
-                    do! storeSSO env ssoItem
+                    env.Logger.LogDebug("Add SSO to storage", ssoItem.Code)
+                    do! storeItem env ssoItem.Code ssoItem.ExpiresAt ssoItem
                 | _ -> ()
             }

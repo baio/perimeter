@@ -23,6 +23,7 @@ open System.Threading.Tasks
 open DataAvail.EntityFramework.Common
 open Microsoft.Extensions.Logging
 open PRR.Domain.Models
+open DataAvail.Common
 
 [<CLIMutable>]
 type ReinitData = { LoginAsDomain: bool }
@@ -41,11 +42,27 @@ module E2E =
         |> Seq.map (fun x -> chars.[random.Next(chars.Length)])
         |> System.String.Concat
 
-    let private authStringsGetter: PRR.Domain.Tenant.Models.IAuthStringsGetter =
+    let private authStringsGetter (baseUri: string): PRR.Domain.Tenant.Models.IAuthStringsGetter =
         { ClientId = fun () -> getRandomString 33
           ClientSecret = fun () -> getRandomString 50
           AuthorizationCode = fun () -> getRandomString 35
           HS256SigningSecret = fun () -> getRandomString 35
+          GetIssuerUri =
+              fun data ->
+                  concatUrl [| baseUri
+                               "issuers"
+                               data.TenantName
+                               data.DomainName
+                               data.EnvName |]
+
+          GetAudienceUri =
+              fun data ->
+                  concatUrl [| baseUri
+                               "audiences"
+                               data.IssuerUriData.TenantName
+                               data.IssuerUriData.DomainName
+                               data.IssuerUriData.EnvName
+                               data.ApiName |]
           RS256XMLParams =
               fun () ->
                   let rsa = RSA.Create(2048)
@@ -61,12 +78,12 @@ module E2E =
               AccessTokenExpiresIn = configuration.GetValue<int<minutes>>("TenantAuth:AccessTokenExpiresInMinutes")
               RefreshTokenExpiresIn = configuration.GetValue<int<minutes>>("TenantAuth:RefreshTokenExpiresInMinutes") }
 
-
+        let issuerBaseUrl = configuration.GetValue("IssuerBaseUrl")
         // Code for which PRR.Domain.Tenant was included not allowed to use PRR.Domain.Tenant anywhere else in this project !!!
         let env: PRR.Domain.Tenant.CreateUserTenant.Env =
             { DbDataContext = getDataContext ctx
               AuthConfig = authConfig
-              AuthStringsGetter = authStringsGetter }
+              AuthStringsGetter = authStringsGetter issuerBaseUrl }
 
         PRR.Domain.Tenant.CreateUserTenant.createUserTenant env { UserId = userId; Email = userEmail }
     //

@@ -2,12 +2,14 @@
 
 // open PRR.Domain.Auth.LogIn.Authorize
 open DataAvail.Common
+open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Models
 open System.Threading.Tasks
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Data.DataContext
 open PRR.Data.Entities
 open PRR.Domain.Auth.Common.KeyValueModels
+open PRR.Domain.Auth.LogIn.Authorize.LogInUser
 open PRR.Domain.Auth.LogIn.Authorize.Authorize
 open System.Linq
 open Microsoft.Extensions.Logging
@@ -15,7 +17,7 @@ open DataAvail.EntityFramework.Common
 open DataAvail.Http.Exceptions
 open DataAvail.Common.Option
 open PRR.Domain.Auth.LogIn.Social.SocialCallback.Identities
-open PRR.Domain.Auth.LogIn.Authorize.LogInUser
+
 
 [<AutoOpen>]
 module Social =
@@ -88,10 +90,10 @@ module Social =
                 return user.Id
         }
 
-    let private getSuccessRedirectUrl (loginResult: PRR.Domain.Auth.LogIn.Authorize.Models.AuthorizeResult) =
+    let private getSuccessRedirectUrl (loginResult: LogInResult) =
         sprintf "%s?code=%s&state=%s" loginResult.RedirectUri loginResult.Code loginResult.State
 
-    let private getSocialLoginItem env state =
+    let private getSocialLoginItem (env: Models.Env) state =
         task {
             match! env.KeyValueStorage.GetValue<SocialLoginKV> state None with
             | Ok item ->
@@ -132,20 +134,21 @@ module Social =
         |> Seq.tryHead
         |> Option.map (fun ((_, state), (_, code)) -> state, code)
 
-    let socialCallback (env: Env) (data: Data) (ssoCookie) =
+    let socialCallback (env: Models.Env) (data: Data) =
 
+        // let ssoCookie = env.SetSSOCookie()
         // TODO : Validate data !
 
         let logger = env.Logger
-        logger.LogInformation("SocialCallback starts ${@data}", data)
+        logger.LogDebug("SocialCallback with data ${@data}", data)
 
         let (state, code) =
             match getStateAndCode data with
             | Some (state, code) ->
-                logger.LogDebug("State and code is found ${state} ${code}", state, code)
+                logger.LogDebug("SocialCallback state and code is found ${state} ${code}", state, code)
                 state, code
             | None ->
-                logger.LogError("State or code is not found")
+                logger.LogError("SocialCallback state or code is not found")
                 raise (unAuthorized "State or code not found")
 
         task {
@@ -160,7 +163,6 @@ module Social =
                     item.DomainClientId
                     item.Type
 
-
             let! ident =
                 match item.Type with
                 | Github -> getGithubSocialIdentity env.HttpRequestFun item.SocialClientId secret code
@@ -170,12 +172,12 @@ module Social =
                     // Important state and code reversed
                     getTwitterSocialIdentity env.Logger env.HttpRequestFun item.SocialClientId secret code state
 
-            logger.LogInformation("Identity ${ident} created for flow", ident)
+            logger.LogInformation("SocialCallback identity ${ident} created for flow", ident)
 
             // create user and social identity (if still not created)
             let! userId = createUserAndSocialIdentity env.DataContext ident
 
-            logger.LogInformation("User with ${userId} and social identity created", userId)
+            logger.LogInformation("SocialCallback user with {userId} and social identity created", userId)
 
             // login user as usual with data from social provider
             let loginData: LoginData =
@@ -183,15 +185,16 @@ module Social =
                   ClientId = item.DomainClientId
                   ResponseType = item.ResponseType
                   State = item.State
+                  Nonce = item.Nonce
                   RedirectUri = item.RedirectUri
                   Scope = item.Scope
                   Email = ident.Email
                   CodeChallenge = item.CodeChallenge
                   CodeChallengeMethod = item.CodeChallengeMethod }
 
-            logger.LogDebug("${@loginData} created")
+            logger.LogDebug("SocialCallback {@loginData} created")
 
-            let env': PRR.Domain.Auth.LogIn.Authorize.Models.Env =
+            let env': AuthorizeEnv =
                 { DataContext = env.DataContext
                   CodeGenerator = env.CodeGenerator
                   PasswordSalter = env.PasswordSalter
@@ -204,7 +207,7 @@ module Social =
                 { Id = ident.SocialId
                   Type = item.Type }
 
-            let! res = logInUser env' ssoCookie loginData (Some social)
+            let! res = logInUser env' item.SSO loginData (Some social)
 
             logger.LogInformation("loginUser success ${@res}", res)
 

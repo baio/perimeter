@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.LogIn.AuthorizeSSO
 
+open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Models
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
@@ -12,34 +13,12 @@ open DataAvail.EntityFramework.Common
 open DataAvail.Http.Exceptions
 
 [<AutoOpen>]
-module Authorize =
-
-    let private validateData (data: Data) =
-        let scope =
-            if data.Scope = null then "" else data.Scope
-
-        [| (validateNullOrEmpty "client_id" data.Client_Id)
-           (validateNullOrEmpty "response_type" data.Response_Type)
-           (validateContains [| "code" |] "response_type" data.Response_Type)
-           (validateNullOrEmpty "redirect_uri" data.Redirect_Uri)
-           (validateUrl "redirect_uri" data.Redirect_Uri)
-           (validateNullOrEmpty "scope" scope)
-           (validateContainsAll [| "openid" |] "scope" (scope.Split " "))
-           (validateNullOrEmpty "code_challenge" data.Code_Challenge)
-           (validateNullOrEmpty "code_challenge_method" data.Code_Challenge_Method)
-           (validateContains [| "S256" |] "code_challenge_method" data.Code_Challenge_Method) |]
-        |> mapBadRequest
+module internal AuthorizeSSO =
 
     let authorizeSSO: AuthorizeSSO =
         fun env ssoToken data ->
 
-            env.Logger.LogDebug("LogIn SSO with data ${@data} and token ${ssoToken}", data, ssoToken)
-
-            match validateData data with
-            | Some ex ->
-                env.Logger.LogWarning("Data validation failed {@ex}", ex)
-                raise ex
-            | None -> ()
+            env.Logger.LogDebug("LogIn SSO with data {@data} and token {ssoToken}", data, ssoToken)
 
             let dataContext = env.DataContext
 
@@ -50,18 +29,18 @@ module Authorize =
                 let ssoItem =
                     match ssoItem with
                     | Ok ssoItem ->
-                        env.Logger.LogInformation("SSO ${@item} is found", ssoItem)
+                        env.Logger.LogDebug("SSO {@item} is found", ssoItem)
                         ssoItem
                     | Error err ->
-                        env.Logger.LogWarning("SSO Item is not found for ${token} with error ${@err}", ssoItem, err)
+                        env.Logger.LogWarning("SSO Item is not found for ${token} with error ${@err}", ssoToken, err)
                         raise (unAuthorized "sso not found")
 
-                if ssoItem.ExpiresAt < DateTime.UtcNow then raise (unAuthorized "sso expired")                
+                if ssoItem.ExpiresAt < DateTime.UtcNow then raise (unAuthorized "sso expired")
 
                 let! appInfo = getAppInfo env.DataContext data.Client_Id ssoItem.Email 1<minutes>
 
-                env.Logger.LogInformation("AppInfo found ${@appInfo}", appInfo)                                
-                
+                env.Logger.LogInformation("AppInfo found ${@appInfo}", appInfo)
+
                 let! app =
                     query {
                         for app in dataContext.Applications do
@@ -130,17 +109,14 @@ module Authorize =
                         ("${@dataRedirectUri} is not contained in ${@callbackUrls}", data.Redirect_Uri, callbackUrls)
 
                     return! raise (unAuthorized "return_uri mismatch")
-
                 match! getUserId dataContext ssoItem.Email with
                 | Some userId ->
                     env.Logger.LogInformation("${@userId} is found for ${@ssoItemEmail}", userId, ssoItem.Email)
 
                     let code = env.CodeGenerator()
 
-                    let result: PRR.Domain.Auth.LogIn.Authorize.Models.AuthorizeResult =
-                        { RedirectUri = data.Redirect_Uri
-                          State = data.State
-                          Code = code }
+                    let result =
+                        sprintf "%s?code=%s&state=%s" data.Redirect_Uri code data.State
 
                     env.Logger.LogInformation("${@result} is ready", result)
 
@@ -149,7 +125,13 @@ module Authorize =
 
                     let scopes = data.Scope.Split " "
 
-                    let! validatedScopes = validateScopes dataContext ssoItem.Email appInfo.ClientId scopes
+                    let! validatedScopes =
+                        validateScopes
+                            { DataContext = dataContext
+                              Logger = env.Logger }
+                            ssoItem.Email
+                            appInfo.ClientId
+                            scopes
 
                     let loginItem: LogInKV =
                         { Code = code
@@ -162,6 +144,8 @@ module Authorize =
                           UserEmail = ssoItem.Email
                           ExpiresAt = expiresAt
                           RedirectUri = data.Redirect_Uri
+                          State = data.State
+                          Nonce = data.Nonce
                           Social = None }
 
                     env.Logger.LogInformation("${@loginItem} ready", loginItem)

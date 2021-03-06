@@ -15,14 +15,15 @@ module private ApiHandlers =
     let getEnv ctx =
         let config = getConfig ctx
         let authStringsProvider = getAuthStringsGetter ctx
+
         { AccessTokenExpiresIn = config.TenantAuth.AccessTokenExpiresIn
-          HS256SigningSecret = authStringsProvider.HS256SigningSecret }
+          HS256SigningSecret = authStringsProvider.HS256SigningSecret
+          AuthStringsGetter = (getAuthStringsGetter ctx) }
 
     let createHandler domainId =
 
         wrap
-            (create
-             <!> (ofReader getEnv)
+            (create <!> (ofReader getEnv)
              <*> ((doublet domainId)
                   <!> bindValidateJsonAsync validatePostData)
              <*> dataContext)
@@ -52,8 +53,7 @@ module private ApiHandlers =
 
     let getList domainId =
         wrap
-            (getList
-             <!> getDataContext'
+            (getList <!> getDataContext'
              <*> ((doublet domainId) <!> bindListQuery))
 
 module Api =

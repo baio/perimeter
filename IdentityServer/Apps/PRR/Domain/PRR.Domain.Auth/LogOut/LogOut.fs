@@ -1,27 +1,21 @@
 ﻿namespace PRR.Domain.Auth.LogOut
 
-open PRR.Data.DataContext
-open PRR.Data.Entities
-open PRR.Domain.Auth
-open PRR.Domain.Auth.LogIn.TokenAuthorizationCode
-open PRR.Domain.Models
-open FSharp.Control.Tasks.V2.ContextInsensitive
-open Microsoft.IdentityModel.Tokens
-open PRR.Domain.Auth.Common.KeyValueModels
-// open PRR.Domain.Auth.LogIn.RefreshToken
-open System.Security.Claims
-open System.Text
-open System.Threading.Tasks
-open DataAvail.Http.Exceptions
-open DataAvail.Common.Option
-open DataAvail.EntityFramework.Common
-open PRR.Domain.Auth.Common
-open PRR.Domain.Auth.Common.Constants
-open Microsoft.Extensions.Logging
-
 [<AutoOpen>]
 module LogOut =
 
+    open PRR.Data.DataContext
+    open PRR.Data.Entities
+    open PRR.Domain.Auth
+    open PRR.Domain.Models
+    open FSharp.Control.Tasks.V2.ContextInsensitive
+    open Microsoft.IdentityModel.Tokens
+    open PRR.Domain.Auth.Common.KeyValueModels
+    open DataAvail.Http.Exceptions
+    open DataAvail.Common.Option
+    open DataAvail.EntityFramework.Common
+    open PRR.Domain.Auth.Common
+    open Microsoft.Extensions.Logging
+    
     type SigningParams =
         | RS256 of string
         | HS256 of string
@@ -59,55 +53,57 @@ module LogOut =
     let logout: LogOut =
         fun env data ->
             let logger = env.Logger
-            let accessToken = data.AccessToken
+            let idToken = data.IdToken
 
-            logger.LogInformation("logout with access token ${token}", accessToken)
+            logger.LogDebug("logout with id token {token}", idToken)
 
             task {
                 let clientId =
-                    readToken accessToken
+                    readToken idToken
                     |> Option.bind (fun jwt -> jwt.Claims |> tryBindClaimClientId)
 
                 let clientId =
                     match clientId with
                     | Some clientId ->
-                        logger.LogInformation("Issuer found ${clientId}", clientId)
+                        logger.LogDebug("ClientId found {clientId}", clientId)
                         clientId
                     | None ->
-                        logger.LogInformation("access_token is not valid or clientId not found")
-                        raise (unAuthorized "access_token is not valid or clientId not found")
+                        logger.LogWarning("id_token is not valid or clientId not found")
+                        raise (unAuthorized "id_token is not valid or clientId not found")
 
                 let! secret = getSigningParams env.DataContext env.JwtConfig clientId
 
                 logger.LogInformation("secret info ${@secret}", secret)
+
 
                 let securityKey =
                     match secret with
                     | RS256 key -> createRS256Key key :> SecurityKey
                     | HS256 key -> createHS256Key key :> SecurityKey
 
+
                 let tokenValidationParameters =
                     TokenValidationParameters
                         (ValidateAudience = false,
                          ValidateIssuer = false,
-                         ValidateIssuerSigningKey = true,
+                         ValidateLifetime = false,
                          IssuerSigningKey = securityKey,
-                         ValidateLifetime = false)
+                         RequireSignedTokens = false)
 
                 let principal =
-                    validateToken accessToken tokenValidationParameters
+                    validateToken idToken tokenValidationParameters
 
                 let principal =
                     match principal with
                     | Some principal -> principal
-                    | None -> raise (unAuthorized "access_token is not valid")
+                    | None -> raise (unAuthorized "id_token is not valid")
 
                 let claims = principalClaims principal
 
                 let sub =
                     claims
                     |> getClaimInt CLAIM_TYPE_UID
-                    |> noneFails (unAuthorized "sub is not found")
+                    |> noneFails (unAuthorized "uid is not found")
 
                 let result = { ReturnUri = data.ReturnUri }
 

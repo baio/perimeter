@@ -45,6 +45,7 @@ module Permissions =
                             where
                                 (perm.Name = dto.Name
                                  && perm.Api.Domain.Apis.Any(fun f -> f.Id = apiId))
+
                             select perm.Id
                     }
                     |> toCountAsync
@@ -66,11 +67,15 @@ module Permissions =
 
     let update: Update<int, PostLike, DbDataContext> =
         fun data dbContext ->
-            update<Permission, _, PostLike, _> (fun id -> Permission(Id = id)) (fun dto entity ->
-                entity.Name <- dto.Name
-                entity.Description <- dto.Description
-                entity.IsDefault <- dto.IsDefault
-                dbContext.Entry(entity).Property("IsDefault").IsModified <- true) data dbContext
+            update<Permission, _, PostLike, _>
+                (fun id -> Permission(Id = id))
+                (fun dto entity ->
+                    entity.Name <- dto.Name
+                    entity.Description <- dto.Description
+                    entity.IsDefault <- dto.IsDefault
+                    dbContext.Entry(entity).Property("IsDefault").IsModified <- true)
+                data
+                dbContext
 
     let remove: Remove<int, DbDataContext> = remove (fun id -> Permission(Id = id))
 
@@ -89,7 +94,9 @@ module Permissions =
         | Name
         | DateCreated
 
-    type FilterField = Text
+    type FilterField =
+        | Text
+        | Type
 
     type ListQuery = ListQuery<SortField, FilterField>
 
@@ -101,9 +108,17 @@ module Permissions =
     let getFilterFieldExpr filterValue =
         function
         | FilterField.Text ->
-            <@ fun (domain: Permission) ->
+            <@ fun (perm: Permission) ->
                 let like = %(ilike filterValue)
-                (like domain.Name) || (like domain.Description) @>
+                (like perm.Name) || (like perm.Description) @>
+        | FilterField.Type ->
+            match filterValue with
+            | "tenant" -> <@ fun (perm: Permission) -> perm.IsTenantManagement @>
+            | "domain" -> <@ fun (perm: Permission) -> perm.IsDomainManagement @>
+            | "common" ->
+                <@ fun (perm: Permission) ->
+                    not perm.IsTenantManagement
+                    && not perm.IsDomainManagement @>
 
     let getSortFieldExpr =
         function
@@ -119,6 +134,7 @@ module Permissions =
             query {
                 for p in apps do
                     where (p.ApiId = Nullable(apiId))
+
                     select
                         { Id = p.Id
                           Name = p.Name
@@ -128,10 +144,22 @@ module Permissions =
             }
             |> executeListQuery prms
 
-    let getAllDomainPermissions (domainId: DomainId) (dataContext: DbDataContext) =
+    let getTypedDomainPermissions (domainId: DomainId) (permType: string) (dataContext: DbDataContext) =
+
+        let typeFilter =
+            match permType with
+            | "common" ->
+                <@ fun (p: Permission) ->
+                    not p.IsTenantManagement
+                    && not p.IsDomainManagement @>
+            | "tenant" -> <@ fun (p: Permission) -> p.IsTenantManagement @>
+            | "domain" -> <@ fun (p: Permission) -> p.IsDomainManagement @>
+            | _ -> <@ fun (_: Permission) -> true @>
+
         query {
             for p in dataContext.Permissions do
-                where (p.Api.DomainId = domainId)
+                where (p.Api.DomainId = domainId && (%typeFilter) p)
+
                 select
                     { Id = p.Id
                       Name = p.Name

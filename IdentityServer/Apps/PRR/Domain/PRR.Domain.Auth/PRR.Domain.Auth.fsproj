@@ -45,6 +45,11 @@
         <Compile Include="LogIn\AuthorizeSSO\UserHelpers.fs" />
         <Compile Include="LogIn\AuthorizeSSO\Models.fs" />
         <Compile Include="LogIn\AuthorizeSSO\AuthorizeSSO.fs" />
+        <Compile Include="LogIn\AuthorizeDispatcher\ValidateAuthorizeData.fs" />
+        <Compile Include="LogIn\AuthorizeDispatcher\GetRedirectAuthorizeUrl.fs" />
+        <Compile Include="LogIn\AuthorizeDispatcher\GetExnRedirectUrl.fs" />
+        <Compile Include="LogIn\AuthorizeDispatcher\Models.fs" />
+        <Compile Include="LogIn\AuthorizeDispatcher\AuthorizeDispatcher.fs" />
         <Compile Include="LogIn\TokenAuthorizationCode\Models.fs" />
         <Compile Include="LogIn\TokenAuthorizationCode\TokenAuthorizationCode.fs" />
         <Compile Include="LogIn\TokenResourceOwnerPassword\Models.fs" />
@@ -84,6 +89,9 @@
         <Compile Include="LogOut\Models.fs" />
         <Compile Include="LogOut\LogOut.fs" />
         <Compile Include="ApplicationInfo.fs" />
+        <Compile Include="OpenIdConfiguration\OpenIdConfiguration.fs" />
+        <Compile Include="WellKnown\GetJWKS\Models.fs" />
+        <Compile Include="WellKnown\GetJWKS\GetJWKS.fs" />
     </ItemGroup>
 
     <ItemGroup>

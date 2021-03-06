@@ -85,7 +85,7 @@ module RefreshToken =
                         let scopes = item.Scopes
 
                         let! (res, clientId, _) =
-                            signInUser env' tokenData item.ClientId (RequestedScopes scopes) GrantType.RefreshToken
+                            signInUser env' tokenData item.ClientId null (RequestedScopes scopes) GrantType.RefreshToken
 
                         let newRefreshTokenItem: RefreshTokenKV =
                             { ClientId = clientId

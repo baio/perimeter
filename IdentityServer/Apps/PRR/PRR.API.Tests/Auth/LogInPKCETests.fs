@@ -74,7 +74,7 @@ module LogInPKCE =
 
             let clientId = "123"
 
-            let logInData: PRR.Domain.Auth.LogIn.Authorize.Models.Data =
+            let logInData: AuthorizeData =
                 { Client_Id = clientId
                   Response_Type = "code"
                   State = "state"
@@ -83,7 +83,9 @@ module LogInPKCE =
                   Email = signUpData.Email
                   Password = signUpData.Password
                   Code_Challenge = codeChallenge
-                  Code_Challenge_Method = "S256" }
+                  Code_Challenge_Method = "S256"
+                  Prompt = None
+                  Nonce = null }
 
             task {
                 let! result = logIn' testFixture logInData
@@ -100,7 +102,7 @@ module LogInPKCE =
                     .GetTenant()
                     .TenantManagementApplicationClientId
 
-            let logInData: PRR.Domain.Auth.LogIn.Authorize.Models.Data =
+            let logInData: AuthorizeData =
                 { Client_Id = clientId
                   Response_Type = "code"
                   State = "state"
@@ -109,7 +111,9 @@ module LogInPKCE =
                   Email = signUpData.Email
                   Password = signUpData.Password
                   Code_Challenge = codeChallenge
-                  Code_Challenge_Method = "S256" }
+                  Code_Challenge_Method = "S256"
+                  Prompt = None
+                  Nonce = null }
 
 
             task {
@@ -138,7 +142,7 @@ module LogInPKCE =
                     .GetTenant()
                     .TenantManagementApplicationClientId
 
-            let logInData: PRR.Domain.Auth.LogIn.Authorize.Models.Data =
+            let logInData: AuthorizeData =
                 { Client_Id = clientId
                   Response_Type = "code"
                   State = "state"
@@ -147,7 +151,9 @@ module LogInPKCE =
                   Email = signUpData.Email
                   Password = signUpData.Password
                   Code_Challenge = codeChallenge
-                  Code_Challenge_Method = "S256" }
+                  Code_Challenge_Method = "S256"
+                  Prompt = None
+                  Nonce = null }
 
             task {
                 let! result = logIn testFixture logInData
@@ -164,9 +170,7 @@ module LogInPKCE =
                 let! result' = testFixture.Server1.HttpPostAsync' "/api/auth/token" loginTokenData
                 do! ensureSuccessAsync result'
 
-                let! result =
-                    result'
-                    |> readAsJsonAsync<LogInResult>
+                let! result = result' |> readAsJsonAsync<LogInResult>
 
                 result.access_token |> should be (not' Empty)
                 result.id_token |> should be (not' Empty)

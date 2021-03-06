@@ -121,6 +121,7 @@ module internal SignInUser =
     let signInUser (env: SignInUserEnv)
                    (tokenData: UserTokenData)
                    clientId
+                   nonce
                    (scopes: SignInScopes)
                    (grantType: GrantType)
                    =
@@ -136,7 +137,13 @@ module internal SignInUser =
             if Seq.contains grantType grantTypes |> not
             then return raise (unAuthorized "grant_type is not allowed for this application")
 
-            let! validatedScopes = getValidatedScopes env.DataContext tokenData.Email clientId scopes
+            let! validatedScopes =
+                getValidatedScopes
+                    { DataContext = env.DataContext
+                      Logger = env.Logger }
+                    tokenData.Email
+                    clientId
+                    scopes
 
             env.Logger.LogDebug("Validated scopes {@validatedScopes}", validatedScopes)
 
@@ -165,9 +172,10 @@ module internal SignInUser =
                 { UserTokenData = Some tokenData
                   ClientId = clientId
                   Issuer = issuer
+                  Nonce = nonce
                   AudienceScopes = validatedScopes
                   RefreshTokenProvider = if hasOfflineAccessScope then Some env.HashProvider else None
-                  AccessTokenCredentials = secretData.SigningCredentials
+                  SigningCredentials = secretData.SigningCredentials
                   AccessTokenExpiresIn = secretData.AccessTokenExpiresIn * 1<minutes>
                   IdTokenExpiresIn = idTokenExpiresIn }
 

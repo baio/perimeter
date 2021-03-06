@@ -27,9 +27,11 @@ export class HomePageComponent implements OnInit {
                 this.message = 'Email confirmed! You can login now.';
         }
 
+        /*
         if (queryEvent) {
             this.onLogin(queryEvent);
         }
+        */
     }
 
     ngOnInit(): void {}

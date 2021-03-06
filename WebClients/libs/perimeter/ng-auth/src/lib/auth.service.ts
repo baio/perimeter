@@ -339,10 +339,10 @@ export class AuthService {
     }
 
     logout() {
-        const accessToken = this.accessToken;
-        const url = `${this.config.logoutUrl}?return_uri=${encodeURI(
+        const idToken = this.idToken;
+        const url = `${this.config.logoutUrl}?post_logout_redirect_uri=${encodeURI(
             appendHost(this.config.returnLogoutUri)
-        )}&access_token=${accessToken}`;
+        )}&id_token_hint=${idToken}`;
         this.resetTokens();
         document.location.href = url;
     }

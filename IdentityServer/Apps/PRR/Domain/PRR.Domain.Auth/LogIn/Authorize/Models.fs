@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth.LogIn.Authorize
 
+open PRR.Domain.Auth.LogIn.Common
 open PRR.Domain.Models
 open DataAvail.KeyValueStorage.Core
 open Microsoft.Extensions.Logging
@@ -9,31 +10,4 @@ open System.Threading.Tasks
 [<AutoOpen>]
 module Models =
 
-    [<CLIMutable>]
-    type AuthorizeResult =
-        { State: string
-          Code: string
-          RedirectUri: string }
-
-    [<CLIMutable>]
-    type Data =
-        { Client_Id: ClientId
-          Response_Type: string
-          State: string
-          Redirect_Uri: Uri
-          Scope: Scope
-          Email: string
-          Password: string
-          Code_Challenge: string
-          Code_Challenge_Method: string }
-
-    type Env =
-        { DataContext: DbDataContext
-          CodeGenerator: HashProvider
-          PasswordSalter: StringSalter
-          CodeExpiresIn: int<minutes>
-          SSOExpiresIn: int<minutes>
-          Logger: ILogger
-          KeyValueStorage: IKeyValueStorage }
-
-    type Authorize = Env -> string option -> Data -> Task<AuthorizeResult>
+    type Authorize = AuthorizeEnv -> string option -> AuthorizeData -> Task<string>
