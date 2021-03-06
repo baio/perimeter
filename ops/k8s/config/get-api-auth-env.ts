@@ -45,5 +45,7 @@ export const getApiAuthEnv = (pulumiConfig: pulumi.Config) => {
         Auth__Social__CallbackExpiresInMilliseconds: rq(
             'Auth__Social__CallbackExpiresInMilliseconds',
         ),
+        IssuerBaseUrl: rq('IssuerBaseUrl'),
+        Auth__LoginPageDomain: rq('Auth__LoginPageDomain'),
     };
 };
