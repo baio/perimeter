@@ -22,4 +22,4 @@ module internal GetRefererUrl =
         |> getOriginHeader
         |> function
         | Some x -> x
-        | None -> "http://origin-not-found/"
+        | None -> "http://origin-not-found"
