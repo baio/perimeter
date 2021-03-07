@@ -29,7 +29,7 @@ module SignUpConfirm =
                 let item =
                     match item with
                     | Ok item ->
-                        env.Logger.LogInformation("Signup item found ${@item}", { item with Password = "***" })
+                        env.Logger.LogDebug("Signup item found ${@item}", { item with Password = "***" })
                         item
                     | Error err ->
                         env.Logger.LogWarning("Couldn't find signup item ${token} with error ${@error}", token, err)
@@ -47,11 +47,10 @@ module SignUpConfirm =
                 let! userId =
                     match existentUserId with
                     | Some userId ->
-                        env.Logger.LogDebug
-                            ("UserId ${userId} is found in the stored item, just update password", userId)
+                        env.Logger.LogDebug("UserId {userId} is found in the stored item, just update password", userId)
 
                         task {
-                            update dataContext (fun (user: User) -> user.Password = item.Password) (User(Id = userId))
+                            update dataContext (fun (user: User) -> user.Password <- item.Password) (User(Id = userId))
                             do! saveChangesAsync dataContext
                             return userId
                         }
