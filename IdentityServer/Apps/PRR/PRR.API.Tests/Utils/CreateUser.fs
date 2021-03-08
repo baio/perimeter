@@ -123,6 +123,43 @@ module CreateUser =
 
     let logInUser = logInUser' Seq.empty
 
+    let createTenantAndLogin (testFixture: TestFixture) signInUnderSampleDomain userId userEmail userPassword =
+        //
+        let services = testFixture.Server1.Server.Services
+
+        let dataContext =
+            services.GetService(typeof<DbDataContext>) :?> DbDataContext
+
+        let config =
+            services.GetService(typeof<IConfiguration>) :?> IConfiguration
+
+        let authStringsGetterProvider =
+            testFixture.Server2.Server.Services.GetService(typeof<IAuthStringsGetterProvider>) :?> IAuthStringsGetterProvider
+
+        let config' =
+            PRR.API.Tenant.Configuration.CreateAppConfig.createAppConfig (config)
+
+        let env': CreateUserTenant.Env =
+            { DbDataContext = dataContext
+              AuthStringsGetter = authStringsGetterProvider.AuthStringsGetter
+              AuthConfig = config'.TenantAuth }
+
+        task {
+            let! tenant = createUserTenant env' { UserId = userId; Email = userEmail }
+
+            let clientId =
+                if signInUnderSampleDomain
+                then tenant.DomainManagementApplicationClientId
+                else tenant.TenantManagementApplicationClientId
+
+
+            let! loginResult = logInUser testFixture clientId userEmail userPassword
+
+            return (tenant, loginResult)
+        }
+
+
+
     let createUser'' signInUnderSampleDomain (env: UserTestContext) (userData: SignUp.Models.Data) =
         task {
             let! _ = env.TestFixture.Server1.HttpPostAsync' "/api/auth/sign-up" userData
@@ -133,51 +170,17 @@ module CreateUser =
 
             let! userId = readAsJsonAsync<int> result
 
-            //
-            let services = env.TestFixture.Server1.Server.Services
-
-            let configProvider =
-                services.GetService(typeof<IConfigProvider>) :?> IConfigProvider
-
-            let dataContext =
-                services.GetService(typeof<DbDataContext>) :?> DbDataContext
-
-            let config =
-                services.GetService(typeof<IConfiguration>) :?> IConfiguration
-
-            let authStringsGetterProvider =
-                env.TestFixture.Server2.Server.Services.GetService(typeof<IAuthStringsGetterProvider>) :?> IAuthStringsGetterProvider
-
-            let config' =
-                PRR.API.Tenant.Configuration.CreateAppConfig.createAppConfig (config)
-
-            let env': CreateUserTenant.Env =
-                { DbDataContext = dataContext
-                  AuthStringsGetter = authStringsGetterProvider.AuthStringsGetter
-                  AuthConfig = config'.TenantAuth }
-
-            let! tenant =
-                createUserTenant
-                    env'
-                    { UserId = userId
-                      Email = userData.Email }
+            let! (tenant, result) =
+                createTenantAndLogin env.TestFixture signInUnderSampleDomain userId userData.Email userData.Password
 
             env.SetTenant tenant
 
-            let clientId =
-                if signInUnderSampleDomain
-                then tenant.DomainManagementApplicationClientId
-                else tenant.TenantManagementApplicationClientId
-
-
-            let! result = logInUser env.TestFixture clientId userData.Email userData.Password
-
-            return result
+            return (result, userId)
         }
 
     let createUser' signInUnderSampleDomain b c =
         task {
-            let! result = createUser'' signInUnderSampleDomain b c
+            let! (result, _) = createUser'' signInUnderSampleDomain b c
             return result.access_token
         }
 

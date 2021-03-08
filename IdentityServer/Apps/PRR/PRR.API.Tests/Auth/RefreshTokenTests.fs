@@ -27,6 +27,13 @@ module RefreshToken =
     let mutable refreshToken2: string = null
     let mutable confirmToken: string = null
 
+    //
+    let mutable tenant2AccessToken: string = null
+    let mutable tenant2RefreshToken: string = null
+
+    let mutable tenant2AccessToken2: string = null
+    let mutable tenant2RefreshToken2: string = null
+
     let confirmTokenWaitHandle =
         new System.Threading.AutoResetEvent(false)
 
@@ -52,9 +59,16 @@ module RefreshToken =
 
                 let testContext = createUserTestContext testFixture
 
-                let! result = createUser'' true testContext ownerData
+                let! (result, userId) = createUser'' true testContext ownerData
+
+                let! (_, result2) = createTenantAndLogin testFixture true userId ownerData.Email ownerData.Password
+
                 accessToken <- result.access_token
                 refreshToken <- result.refresh_token
+
+                tenant2AccessToken <- result2.access_token
+                tenant2RefreshToken <- result2.refresh_token
+
                 return ()
             }
 
@@ -124,6 +138,42 @@ module RefreshToken =
             }
 
         [<Fact>]
+        [<Priority(1)>]
+        member __.``C.1 Refresh token for tenant 2 must be success``() =
+
+            task {
+
+                let data: Data =
+                    { Grant_Type = "refresh_token"
+                      Refresh_Token = tenant2RefreshToken }
+
+                // Wait in order to get updated access token
+                do! System.Threading.Tasks.Task.Delay(1000)
+
+                let! result = testFixture.Server1.HttpPostAsync tenant2AccessToken "/api/auth/token" data
+
+                do! ensureSuccessAsync result
+
+                let! result = readAsJsonAsync<SignInResult> result
+
+                result.access_token |> should be (not' Null)
+
+                result.id_token |> should be (not' Null)
+                result.refresh_token |> should be (not' Null)
+
+                result.access_token
+                |> should not' (equal accessToken)
+
+                result.refresh_token
+                |> should not' (equal refreshToken)
+
+                tenant2AccessToken2 <- result.access_token
+
+                tenant2RefreshToken2 <- result.refresh_token
+
+            }
+
+        [<Fact>]
         [<Priority(2)>]
         member __.``D Refresh same token second time must fail``() =
 
@@ -180,7 +230,6 @@ module RefreshToken =
             }
 
 
-        // TODO : Restore
         [<Fact>]
         [<Priority(3)>]
         member __.``F After logout user could not refresh token``() =
@@ -189,7 +238,10 @@ module RefreshToken =
 
                 let! logoutResult =
                     testFixture.Server1.HttpGetAsync'
-                        (sprintf "/api/auth/logout?post_logout_redirect_uri=%s&id_token_hint=%s" "http://localhost:4200" accessToken2)
+                        (sprintf
+                            "/api/auth/logout?post_logout_redirect_uri=%s&id_token_hint=%s"
+                             "http://localhost:4200"
+                             accessToken2)
 
                 do! ensureRedirectSuccessAsync logoutResult
 
@@ -202,4 +254,42 @@ module RefreshToken =
                 let! result = testFixture.Server1.HttpPostAsync accessToken2 "/api/auth/token" data
 
                 ensureUnauthorized result
+            }
+
+
+        [<Fact>]
+        [<Priority(4)>]
+        member __.``G Refresh tenant2 token with new token must be success``() =
+
+            task {
+
+                let data: Data =
+                    { Grant_Type = "refresh_token"
+                      Refresh_Token = tenant2RefreshToken2 }
+
+                // Wait in order to get updated access token
+                do! System.Threading.Tasks.Task.Delay(1000)
+
+                let! result = testFixture.Server1.HttpPostAsync tenant2AccessToken2 "/api/auth/token" data
+
+                do! ensureSuccessAsync result
+
+                let! result = readAsJsonAsync<SignInResult> result
+
+                result.access_token |> should be (not' Null)
+
+                result.id_token |> should be (not' Null)
+                result.refresh_token |> should be (not' Null)
+
+                result.access_token
+                |> should not' (equal tenant2AccessToken)
+
+                result.refresh_token
+                |> should not' (equal tenant2RefreshToken)
+
+                result.access_token
+                |> should not' (equal tenant2AccessToken2)
+
+                result.refresh_token
+                |> should not' (equal tenant2RefreshToken2)
             }
