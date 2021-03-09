@@ -9,6 +9,7 @@ open Microsoft.Extensions.Logging
 open PRR.Data.DataContext
 open PRR.Domain.Auth.Common
 open PRR.Domain.Common.Events
+open PRR.Domain.Models
 open PRR.Domain.Models.Social
 
 [<AutoOpen>]
@@ -26,8 +27,10 @@ module OnLogInTokenSuccess =
           Social: Social option
           UserId: int }
 
-    let private addRefreshToken (env: Env) (userId: int) (refreshTokenItem: RefreshTokenKV) =
+    let private addRefreshToken (env: Env) (issuer: Issuer) (userId: int) (refreshTokenItem: RefreshTokenKV) =
         task {
+            let tag = getAuthTag issuer userId
+
             let! result =
                 env.KeyValueStorage.AddValue
                     refreshTokenItem.Token
@@ -35,17 +38,18 @@ module OnLogInTokenSuccess =
                     (Some
                         { PartitionName = null
                           ExpiresAt = (Some refreshTokenItem.ExpiresAt)
-                          Tag = (userId.ToString()) })
+                          Tag = tag })
 
             match result with
-            | Result.Ok _ -> env.Logger.LogInformation("Refresh token successfully added to kv storage")
+            | Result.Ok _ -> env.Logger.LogDebug("Refresh token successfully added to kv storage")
             | Result.Error err ->
-                env.Logger.LogInformation
+                env.Logger.LogError
                     ("Add refresh ${token} token to kv storage gives error ${@err}", refreshTokenItem.Token, err)
         }
 
 
     let onLoginTokenSuccess (env: Env)
+                            (issuer: string)
                             (clientId: string)
                             (grantType: LogInGrantType)
                             (loginItem: Item)
@@ -55,7 +59,7 @@ module OnLogInTokenSuccess =
         task {
 
             match refreshTokenItem with
-            | Some refreshTokenItem -> do! addRefreshToken env loginItem.UserId refreshTokenItem
+            | Some refreshTokenItem -> do! addRefreshToken env issuer loginItem.UserId refreshTokenItem
             | None -> ()
 
             do! match loginItem.Code with

@@ -15,7 +15,7 @@ module LogOut =
     open DataAvail.EntityFramework.Common
     open PRR.Domain.Auth.Common
     open Microsoft.Extensions.Logging
-    
+
     type SigningParams =
         | RS256 of string
         | HS256 of string
@@ -105,11 +105,17 @@ module LogOut =
                     |> getClaimInt CLAIM_TYPE_UID
                     |> noneFails (unAuthorized "uid is not found")
 
+                let issuer =
+                    claims
+                    |> getClaim CLAIM_TYPE_ISSUER
+                    |> noneFails (unAuthorized "issuer is not found")
+
                 let result = { ReturnUri = data.ReturnUri }
+                let tag = getAuthTag issuer sub
 
-                let! _ = env.KeyValueStorage.RemoveValuesByTag<SSOKV> (sub.ToString()) None
+                let! _ = env.KeyValueStorage.RemoveValuesByTag<SSOKV> tag None
 
-                let! _ = env.KeyValueStorage.RemoveValuesByTag<RefreshTokenKV> (sub.ToString()) None
+                let! _ = env.KeyValueStorage.RemoveValuesByTag<RefreshTokenKV> tag None
 
                 return result
             }

@@ -1,17 +1,17 @@
 ﻿namespace PRR.Domain.Auth.LogIn.RefreshToken
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open DataAvail.KeyValueStorage.Core
-open PRR.Domain.Auth.Common.KeyValueModels
+open PRR.Domain.Auth.Common
 
 [<AutoOpen>]
 module private OnSuccess =
 
-
-    let onSuccess (env: Env) =
+    let onSuccess (env: Env) issuer =
         fun oldRefreshToken (data: RefreshTokenKV) ->
+
             task {
                 let! _ = env.KeyValueStorage.RemoveValue<RefreshTokenKV> oldRefreshToken None
+                let tag = getAuthTag issuer data.UserId
 
                 let! _ =
                     env.KeyValueStorage.AddValue
@@ -20,7 +20,7 @@ module private OnSuccess =
                         (Some
                             { PartitionName = null
                               ExpiresAt = (Some data.ExpiresAt)
-                              Tag = (data.UserId.ToString()) })
+                              Tag = tag })
 
                 ()
             }

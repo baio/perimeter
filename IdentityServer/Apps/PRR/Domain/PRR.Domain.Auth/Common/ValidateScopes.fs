@@ -12,7 +12,7 @@ open DataAvail.Http.Exceptions
 [<AutoOpen>]
 module ValidateScopes =
 
-    type Env =
+    type ValidateScopesEnv =
         { Logger: ILogger
           DataContext: DbDataContext }
 
@@ -205,7 +205,7 @@ module ValidateScopes =
                 "email"
                 "offline_access" ] }
 
-    let validateScopes (env: Env) userEmail clientId scopes =
+    let validateScopes (env: ValidateScopesEnv) userEmail clientId scopes =
         env.Logger.LogDebug("Validate scopes with {userEmail} {clientId} {@scopes}", userEmail, clientId, scopes)
 
         task {

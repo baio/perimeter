@@ -129,7 +129,6 @@ module TokenAuthorizationCode =
 
                 let socialType =
                     item.Social |> Option.map (fun f -> f.Type)
-
                 match! getUserDataForToken dataContext item.UserId socialType with
                 | Some tokenData ->
                     env.Logger.LogDebug
@@ -149,7 +148,7 @@ module TokenAuthorizationCode =
                         | true -> GrantType.AuthorizationCodePKCE
                         | false -> GrantType.AuthorizationCode
 
-                    let! (result, clientId, isPerimeterClient) =
+                    let! (result, clientId, isPerimeterClient, issuer) =
                         signInUser
                             signInUserEnv
                             tokenData
@@ -194,7 +193,14 @@ module TokenAuthorizationCode =
                         | true -> LogInGrantType.AuthorizationCodePKCE userData
                         | false -> LogInGrantType.AuthorizationCode userData
 
-                    do! onLoginTokenSuccess env' clientId logInGrantType loginItem refreshTokenItem isPerimeterClient
+                    do! onLoginTokenSuccess
+                            env'
+                            issuer
+                            clientId
+                            logInGrantType
+                            loginItem
+                            refreshTokenItem
+                            isPerimeterClient
 
                     return result
                 | None ->

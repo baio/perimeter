@@ -181,5 +181,5 @@ module internal SignInUser =
 
             let result = signIn data
 
-            return (result, clientId, isPerimeterClient)
+            return (result, clientId, isPerimeterClient, issuer)
         }

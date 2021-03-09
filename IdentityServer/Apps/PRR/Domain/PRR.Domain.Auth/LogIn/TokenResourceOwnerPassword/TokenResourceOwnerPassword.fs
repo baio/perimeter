@@ -83,7 +83,7 @@ module TokenResourceOwnerPassword =
 
                     let scopes = data.Scope.Split " "
 
-                    let! (result, clientId, isPerimeterClient) =
+                    let! (result, clientId, isPerimeterClient, issuer) =
                         signInUser
                             signInUserEnv
                             tokenData
@@ -124,7 +124,7 @@ module TokenResourceOwnerPassword =
                             { UserEmail = data.Username
                               UserId = userId }
 
-                    do! onLoginTokenSuccess env' clientId grantType loginItem refreshTokenItem isPerimeterClient
+                    do! onLoginTokenSuccess env' issuer clientId grantType loginItem refreshTokenItem isPerimeterClient
 
                     return result
             }

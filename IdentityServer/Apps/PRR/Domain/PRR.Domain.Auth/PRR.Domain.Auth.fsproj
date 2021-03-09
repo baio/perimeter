@@ -27,6 +27,7 @@
         <Compile Include="Common\Security.fs" />
         <Compile Include="Common\GetAppInfo.fs" />
         <Compile Include="Common\GetClaim.fs" />
+        <Compile Include="Common\GetAuthTag.fs" />
         <Compile Include="LogIn\Common\Models.fs" />
         <Compile Include="LogIn\Common\GetLogInEvent.fs" />
         <Compile Include="LogIn\Common\GetUserDataForToken.fs" />

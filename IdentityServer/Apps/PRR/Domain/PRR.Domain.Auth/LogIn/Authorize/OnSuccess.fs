@@ -13,11 +13,12 @@ module internal OnSuccess =
         { KeyValueStorage: IKeyValueStorage
           Logger: ILogger }
 
-    let private storeItem<'a> env code expiredAt (item: 'a) =
+    let private storeItem<'a> env code expiredAt (item: 'a) tag =
         task {
             let options =
                 { addValueDefaultOptions with
-                      ExpiresAt = (Some expiredAt) }
+                      ExpiresAt = (Some expiredAt)
+                      Tag = tag }
 
             let! result = env.KeyValueStorage.AddValue<'a> code item (Some options)
 
@@ -35,13 +36,19 @@ module internal OnSuccess =
     let onSuccess (env: Env) =
         fun ((loginItem, ssoItem): (LogInKV * SSOKV option)) ->
             task {
-                do! storeItem env loginItem.Code loginItem.ExpiresAt loginItem
+                do! storeItem env loginItem.Code loginItem.ExpiresAt loginItem null
+
                 match ssoItem with
                 | Some ssoItem ->
                     // Update SSO item expireTime
                     env.Logger.LogDebug("Remove SSO from storage", ssoItem.Code)
+
                     let! _ = env.KeyValueStorage.RemoveValue<SSOKV> ssoItem.Code None
                     env.Logger.LogDebug("Add SSO to storage", ssoItem.Code)
-                    do! storeItem env ssoItem.Code ssoItem.ExpiresAt ssoItem
+
+                    let tag =
+                        getAuthTag loginItem.Issuer loginItem.UserId
+
+                    do! storeItem env ssoItem.Code ssoItem.ExpiresAt ssoItem tag
                 | _ -> ()
             }
