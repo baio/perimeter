@@ -46,9 +46,7 @@ module internal OnSuccess =
                     let! _ = env.KeyValueStorage.RemoveValue<SSOKV> ssoItem.Code None
                     env.Logger.LogDebug("Add SSO to storage", ssoItem.Code)
 
-                    let tag =
-                        getAuthTag loginItem.Issuer loginItem.UserId
 
-                    do! storeItem env ssoItem.Code ssoItem.ExpiresAt ssoItem tag
+                    do! storeItem env ssoItem.Code ssoItem.ExpiresAt ssoItem (loginItem.UserId.ToString())
                 | _ -> ()
             }

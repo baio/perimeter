@@ -113,7 +113,7 @@ module LogOut =
                 let result = { ReturnUri = data.ReturnUri }
                 let tag = getAuthTag issuer sub
 
-                let! _ = env.KeyValueStorage.RemoveValuesByTag<SSOKV> tag None
+                let! _ = env.KeyValueStorage.RemoveValuesByTag<SSOKV> (sub.ToString()) None
 
                 let! _ = env.KeyValueStorage.RemoveValuesByTag<RefreshTokenKV> tag None
 

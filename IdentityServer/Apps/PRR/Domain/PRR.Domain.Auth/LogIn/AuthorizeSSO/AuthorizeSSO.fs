@@ -71,9 +71,11 @@ module internal AuthorizeSSO =
                     env.Logger.LogWarning("SSO is disabled for this app")
                     return raise (unAuthorized "SSO Disabled")
 
+                // Login SSO works perimeter wide
+                (*
                 let tenantId =
                     if managementDomainTenantId.HasValue then managementDomainTenantId.Value else poolTenantId
-
+               
                 if tenantId <> ssoItem.TenantId then
 
                     env.Logger.LogInformation
@@ -99,7 +101,8 @@ module internal AuthorizeSSO =
                             ("${isDomainManagementClient} or ${isTenantManagementClient} is true, so this is admin client, we allow switch tenant silently for these",
                              tenantId,
                              ssoItem.TenantId)
-
+                *)
+                
                 if (callbackUrls <> "*"
                     && (callbackUrls.Split(",")
                         |> Seq.map (fun x -> x.Trim())
@@ -109,7 +112,6 @@ module internal AuthorizeSSO =
                         ("${@dataRedirectUri} is not contained in ${@callbackUrls}", data.Redirect_Uri, callbackUrls)
 
                     return! raise (unAuthorized "return_uri mismatch")
-
                 match! getUserId dataContext ssoItem.Email with
                 | Some userId ->
                     env.Logger.LogInformation("${@userId} is found for ${@ssoItemEmail}", userId, ssoItem.Email)
@@ -156,10 +158,8 @@ module internal AuthorizeSSO =
                           ExpiresAt = (Some expiresAt)
                           PartitionName = null }
 
-                    let! _ = env.KeyValueStorage.RemoveValue<SSOKV> ssoItem.Code None
-
                     let! result' = env.KeyValueStorage.AddValue code loginItem (Some options)
-
+                    
                     match result' with
                     | Result.Error AddValueError.KeyAlreadyExists ->
                         env.Logger.LogError("Code ${code} already exists in LogIn storage", code)
