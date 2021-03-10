@@ -109,6 +109,7 @@ module internal AuthorizeSSO =
                         ("${@dataRedirectUri} is not contained in ${@callbackUrls}", data.Redirect_Uri, callbackUrls)
 
                     return! raise (unAuthorized "return_uri mismatch")
+
                 match! getUserId dataContext ssoItem.Email with
                 | Some userId ->
                     env.Logger.LogInformation("${@userId} is found for ${@ssoItemEmail}", userId, ssoItem.Email)
@@ -154,6 +155,8 @@ module internal AuthorizeSSO =
                         { Tag = userId.ToString()
                           ExpiresAt = (Some expiresAt)
                           PartitionName = null }
+
+                    let! _ = env.KeyValueStorage.RemoveValue<SSOKV> ssoItem.Code None
 
                     let! result' = env.KeyValueStorage.AddValue code loginItem (Some options)
 
