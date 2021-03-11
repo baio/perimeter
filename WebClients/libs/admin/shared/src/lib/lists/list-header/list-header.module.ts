@@ -8,6 +8,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { InfoModule } from '../../info';
 import { AdminListHeaderComponent } from './list-header.component';
 
 @NgModule({
@@ -24,6 +25,7 @@ import { AdminListHeaderComponent } from './list-header.component';
         NzSelectModule,
         NzSwitchModule,
         ReactiveFormsModule,
+        InfoModule,
     ],
 })
 export class AdminListHeaderModule {}
