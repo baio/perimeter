@@ -1,7 +1,7 @@
 <div *ngIf="view$ | async as view">
     <nz-spin [nzSize]="'large'" [nzSpinning]="view.status === 'submitting'">
-        <h2>{{ title }}</h2>
-        <hlc-nz-form [definition]="definition" [value]="view.value" #hlcForm>
+        <h2>{{ title | transloco }}</h2>
+        <hlc-nz-form [definition]="hlcDefinition" [value]="view.value" #hlcForm>
         </hlc-nz-form>
 
         <div class="ant-drawer-footer">

@@ -4,6 +4,7 @@ import { delay, filter, map, take } from 'rxjs/operators';
 import { AdminForm, AdminFormFields } from '../models';
 import { pipe, assocPath } from 'lodash/fp';
 import { HlcFormFields } from '@nz-holistic/forms';
+import { FormGroup } from '@angular/forms';
 
 export const delayWhile = <T>(
     status$: Observable<T>,
@@ -58,14 +59,13 @@ const addTabDefinitionTranslations = (t: (s: string) => string) => (
     return {
         ...definition,
         title: mapTranslateFieldValue(t)(definition.title),
-        $content: addDefinitionTranslations(
-            t,
-            definition.$content as any
+        $content: definition.$content.map((x) =>
+            _addDefinitionTranslations(t, x)
         ) as any,
     };
 };
 
-export const addDefinitionTranslations = (
+const _addDefinitionTranslations = (
     t: (s: string) => string,
     definition: AdminForm.FormDefinition
 ): AdminForm.FormDefinition => {
@@ -82,3 +82,13 @@ export const addDefinitionTranslations = (
         return definition;
     }
 };
+
+export const addDefinitionTranslations = (
+    t: (s: string) => string,
+    definition:
+        | AdminForm.FormDefinition
+        | ((form: FormGroup) => AdminForm.FormDefinition)
+): AdminForm.FormDefinition | ((form: FormGroup) => AdminForm.FormDefinition) =>
+    typeof definition === 'function'
+        ? (form) => _addDefinitionTranslations(t, definition(form))
+        : _addDefinitionTranslations(t, definition);

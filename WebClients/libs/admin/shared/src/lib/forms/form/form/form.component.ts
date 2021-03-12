@@ -95,7 +95,9 @@ export class AdminFormComponent implements OnInit, AfterViewInit {
     private readonly submit$ = new Subject<any>();
     private readonly remove$ = new Subject<any>();
     view$: Observable<FormView>;
-    hlcDefinition: AdminForm.FormDefinition;
+    hlcDefinition:
+        | AdminForm.FormDefinition
+        | ((form: FormGroup) => AdminForm.FormDefinition);
 
     private readonly translate = this.transloco.translate.bind(this.transloco);
 

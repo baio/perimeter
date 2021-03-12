@@ -45,7 +45,7 @@ export const getDefinition = (
         {
             id: 'name',
             kind: 'Text',
-            label: 'Name',
+            label: 'name',
             validators: [Validators.required],
             wrapper: {
                 kind: 'info',
@@ -58,7 +58,7 @@ export const getDefinition = (
             id: 'grantTypes',
             kind: 'Select',
             props: {
-                label: 'Grant Types',
+                label: 'grantTypes',
                 mode: 'tags',
                 items: grantTypes,
                 value: ['AuthorizationCodePKCE', 'RefreshToken'],
@@ -74,7 +74,7 @@ export const getDefinition = (
         {
             id: 'idTokenExpiresIn',
             kind: 'Number',
-            label: 'ID Token Expires In (minutes)',
+            label: 'idTokenExpiresIn',
             validators: [Validators.required],
             hidden: isNew$,
             wrapper: {
@@ -87,7 +87,7 @@ export const getDefinition = (
         {
             id: 'refreshTokenExpiresIn',
             kind: 'Number',
-            label: 'Refresh Token Expires In (minutes)',
+            label: 'refreshTokenExpiresIn',
             validators: [Validators.required],
             hidden: isNew$,
             wrapper: {
@@ -100,7 +100,7 @@ export const getDefinition = (
         {
             id: 'allowedCallbackUrls',
             kind: 'TextArea',
-            label: 'Allowed return URIs',
+            label: 'returnUris',
             validators: [Validators.required],
             hidden: isNew$,
             wrapper: {
@@ -113,7 +113,7 @@ export const getDefinition = (
         {
             id: 'allowedLogoutCallbackUrls',
             kind: 'TextArea',
-            label: 'Allowed logout return URIs',
+            label: 'logoutReturnUris',
             validators: [Validators.required],
             hidden: isNew$,
             wrapper: {
@@ -126,7 +126,7 @@ export const getDefinition = (
         {
             id: 'ssoEnabled',
             kind: 'Toggle',
-            label: 'Use SSO',
+            label: 'useSSO',
             hidden: isNew$,
             wrapper: {
                 kind: 'info',

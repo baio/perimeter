@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
 import { HlcNzFormComponent } from '@nz-holistic/nz-forms';
 import { mapServerError } from '@perimeter/common';
 import { NzModalService } from 'ng-zorro-antd/modal';
@@ -30,15 +31,10 @@ import {
     withLatestFrom,
 } from 'rxjs/operators';
 import { AdminListService } from '../../../common';
-import { delayWhile } from '../form/utils';
+import { addDefinitionTranslations, delayWhile } from '../form/utils';
 import { AdminForm } from '../models';
 
-const MESSAGE_UPDATE_SUCCESS = 'Update success';
-const MESSAGE_CREATE_SUCCESS = 'Create success';
-const MESSAGE_REMOVE_SUCCESS = 'Remove success';
-
 export type FormStatus = 'none' | 'loading' | 'submitting' | 'invalid';
-
 export interface FormView {
     isNew: boolean;
     status: FormStatus;
@@ -93,6 +89,8 @@ export class AdminFormPageComponent implements OnInit, AfterViewInit {
     private readonly submit$ = new Subject<any>();
     private readonly remove$ = new Subject<any>();
     view$: Observable<FormView>;
+    hlcDefinition: AdminForm.FormDefinition;
+    readonly translate = this.transloco.translate.bind(this.transloco);
 
     get itemId$(): Observable<number | string> {
         return this.activatedRoute.parent.params.pipe(
@@ -105,10 +103,16 @@ export class AdminFormPageComponent implements OnInit, AfterViewInit {
         private readonly activatedRoute: ActivatedRoute,
         private readonly notificationService: NzNotificationService,
         private readonly modalService: NzModalService,
+        private readonly transloco: TranslocoService,
         @Optional() private readonly listService?: AdminListService
     ) {}
 
     ngOnInit() {
+        this.hlcDefinition = addDefinitionTranslations(
+            this.translate,
+            this.definition
+        );
+
         const value$ =
             this.value || !this.loadValueDataAccess
                 ? of(this.value)
@@ -166,8 +170,8 @@ export class AdminFormPageComponent implements OnInit, AfterViewInit {
                         tap(() => {
                             this.origValue = this.form.value;
                             const successMessage = value.id
-                                ? MESSAGE_UPDATE_SUCCESS
-                                : MESSAGE_CREATE_SUCCESS;
+                                ? this.translate('messageUpdateSuccess')
+                                : this.translate('messageCreateSuccess');
                             this.notificationService.success(
                                 successMessage,
                                 ''
@@ -198,7 +202,9 @@ export class AdminFormPageComponent implements OnInit, AfterViewInit {
                 switchMap((value) =>
                     this.removeItemDataAccess(value).pipe(
                         tap(() => {
-                            const successMessage = MESSAGE_REMOVE_SUCCESS;
+                            const successMessage = this.translate(
+                                'messageRemoveSuccess'
+                            );
                             this.notificationService.success(
                                 successMessage,
                                 ''
@@ -319,11 +325,10 @@ export class AdminFormPageComponent implements OnInit, AfterViewInit {
 
     onRemove(value: any) {
         this.modalService.confirm({
-            nzTitle: 'Do you want to delete this item?',
-            nzContent:
-                "You are about to delete item, you can't restore it later.",
-            nzOkText: 'Yes',
-            nzCancelText: 'No',
+            nzTitle: this.translate('deletItemTitle'),
+            nzContent: this.translate('deletItemContent'),
+            nzOkText: this.translate('yes'),
+            nzCancelText: this.translate('no'),
             nzOnOk: () => {
                 this.remove$.next(value);
                 return true;

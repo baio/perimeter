@@ -7,7 +7,7 @@ export const getDefinition = (form: FormGroup): AdminForm.FormDefinition => ({
     $content: [
         {
             kind: 'tab',
-            title: 'Main',
+            title: 'main',
             $content: [
                 {
                     kind: 'fields',
@@ -15,7 +15,7 @@ export const getDefinition = (form: FormGroup): AdminForm.FormDefinition => ({
                         {
                             id: 'envName',
                             kind: 'Text',
-                            label: 'Name',
+                            label: 'name',
                             validators: [Validators.required],
                             wrapper: {
                                 kind: 'info',
@@ -25,7 +25,7 @@ export const getDefinition = (form: FormGroup): AdminForm.FormDefinition => ({
                         {
                             id: 'issuer',
                             kind: 'Display',
-                            label: 'Issuer',
+                            label: 'issuer',
                             wrapper: {
                                 kind: 'info',
                                 props: { infoKey: 'domain:issuer' },
@@ -37,7 +37,7 @@ export const getDefinition = (form: FormGroup): AdminForm.FormDefinition => ({
         },
         {
             kind: 'tab',
-            title: 'Access Token',
+            title: 'accessToken',
             $content: [
                 {
                     kind: 'fields',
@@ -45,7 +45,7 @@ export const getDefinition = (form: FormGroup): AdminForm.FormDefinition => ({
                         {
                             id: 'signingAlgorithm',
                             kind: 'Select',
-                            label: 'Signing Algorithm',
+                            label: 'signingAlgorithm',
                             props: {
                                 mode: 'default',
                                 items: [
@@ -67,7 +67,7 @@ export const getDefinition = (form: FormGroup): AdminForm.FormDefinition => ({
                         {
                             id: 'rS256PublicKey',
                             kind: 'Display',
-                            label: 'Public Key',
+                            label: 'rS256PublicKey',
                             hidden: form.valueChanges.pipe(
                                 map(
                                     ({ signingAlgorithm }) =>
@@ -82,7 +82,7 @@ export const getDefinition = (form: FormGroup): AdminForm.FormDefinition => ({
                         {
                             id: 'hS256SigningSecret',
                             kind: 'Display',
-                            label: 'Signing Secret',
+                            label: 'hS256SigningSecret',
                             hidden: form.valueChanges.pipe(
                                 map(
                                     ({ signingAlgorithm }) =>
@@ -97,7 +97,7 @@ export const getDefinition = (form: FormGroup): AdminForm.FormDefinition => ({
                         {
                             id: 'accessTokenExpiresIn',
                             kind: 'Number',
-                            label: 'Access Token Expires in Minutes',
+                            label: 'accessTokenExpiresIn',
                             validators: [Validators.required],
                             wrapper: {
                                 kind: 'info',
