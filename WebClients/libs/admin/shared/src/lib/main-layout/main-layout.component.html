@@ -1,10 +1,7 @@
-<nz-layout>
+<nz-layout *transloco="let t">
     <nz-header *ngIf="view$ | async as view">
         <div data-cy="logo" class="logo">
-            <img
-                src="assets/logo-small.png"
-                style="margin-left: -30px;"
-            />
+            <img src="assets/logo-small.png" style="margin-left: -30px;" />
             Perimeter
         </div>
         <div class="tool">
@@ -17,7 +14,14 @@
                 <ul nz-menu>
                     <li nz-menu-item (click)="onLogout()" data-cy="logout">
                         <i nz-icon nzType="logout" nzTheme="outline"></i>
-                        Logout
+                        {{ t('logout') }}
+                    </li>
+                    <li nz-menu-divider></li>
+                    <li nz-menu-item (click)="onSetLanguage('en')">
+                        English
+                    </li>
+                    <li nz-menu-item (click)="onSetLanguage('ru')">
+                        Русский
                     </li>
                 </ul>
             </nz-dropdown-menu>

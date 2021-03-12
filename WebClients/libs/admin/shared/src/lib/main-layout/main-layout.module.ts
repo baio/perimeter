@@ -9,6 +9,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { MainLayoutComponent } from './main-layout.component';
+import { TranslocoModule } from '@ngneat/transloco';
 
 @NgModule({
     imports: [
@@ -21,6 +22,7 @@ import { MainLayoutComponent } from './main-layout.component';
         NzMenuModule,
         NzDropDownModule,
         NzIconModule,
+        TranslocoModule,
     ],
     declarations: [MainLayoutComponent],
     exports: [],

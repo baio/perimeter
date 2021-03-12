@@ -6,7 +6,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { IconDefinition } from '@ant-design/icons-angular';
 import * as AllIcons from '@ant-design/icons-angular/icons';
-import { Actions, EffectsModule } from '@ngrx/effects';
+import { EffectsModule } from '@ngrx/effects';
 import { Store, StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { HlcNzFormModule } from '@nz-holistic/nz-forms';
@@ -24,6 +24,7 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthRoutingModule } from './auth-routing.module';
+import { TranslocoRootModule } from './transloco-root.module';
 
 const antDesignIcons = AllIcons as {
     [key: string]: IconDefinition;
@@ -54,6 +55,7 @@ const icons: IconDefinition[] = Object.keys(antDesignIcons).map(
         HttpErrorMessageInterceptorModule,
         NzNotificationModule,
         InfoModule,
+        TranslocoRootModule,
     ],
     providers: [
         { provide: NZ_ICONS, useValue: icons },

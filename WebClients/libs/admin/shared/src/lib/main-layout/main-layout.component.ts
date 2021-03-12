@@ -12,6 +12,7 @@ import { map } from 'rxjs/operators';
 import { Observable, merge, combineLatest } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthService } from '@perimeter/ngx-auth';
+import { TranslocoService } from '@ngneat/transloco';
 
 export interface IView {
     activeDomain: Domain;
@@ -31,7 +32,8 @@ export class MainLayoutComponent implements OnInit {
     constructor(
         store: Store,
         private router: Router,
-        private readonly authService: AuthService
+        private readonly authService: AuthService,
+        private readonly transloco: TranslocoService
     ) {
         const activeDomain$ = store.select(selectActiveDomain(router.url));
         const domains$ = store.select(selectProfileDomainsList);
@@ -59,5 +61,10 @@ export class MainLayoutComponent implements OnInit {
 
     onLogout() {
         this.authService.logout();
+    }
+
+    onSetLanguage(lang: string) {
+        localStorage.setItem('APP_LANG', lang);
+        this.transloco.setActiveLang(lang);
     }
 }

@@ -1,0 +1,5 @@
+{
+  "logout": "Logout",
+  "hello": "transloco en",
+  "dynamic": "transloco {{value}}"
+}
