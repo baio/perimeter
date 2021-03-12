@@ -7,7 +7,7 @@ export const definition: AdminForm.FormDefinition = {
         {
             id: 'envName',
             kind: 'Text',
-            label: 'Name',
+            label: 'name',
             validators: [Validators.required],
         },
     ],

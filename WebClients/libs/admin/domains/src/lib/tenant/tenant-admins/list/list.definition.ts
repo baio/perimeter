@@ -8,12 +8,12 @@ export const listDefinition: AdminList.TableDefinition = {
     cols: [
         {
             id: 'email',
-            title: 'Email',
+            title: 'email',
             sort: true,
         },
         {
             id: 'roles',
-            title: 'Roles',
+            title: 'roles',
             kind: 'Permissions',
         },
     ],

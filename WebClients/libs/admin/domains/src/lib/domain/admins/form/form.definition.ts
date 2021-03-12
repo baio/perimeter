@@ -13,7 +13,7 @@ export const getDefinition = (
         {
             id: 'userEmail',
             kind: 'Text',
-            label: 'Email',
+            label: 'email',
             validators: [Validators.required, Validators.email],
             props: {
                 readonly: isNew$.pipe(not$),
@@ -29,7 +29,7 @@ export const getDefinition = (
             id: 'roleId',
             kind: 'Select',
             props: {
-                label: 'Role',
+                label: 'roles',
                 mode: 'default',
                 items: roles$.pipe(
                     map(_map((x) => ({ key: x.id, label: x.name })))

@@ -5,12 +5,12 @@ export const listDefinition: AdminList.TableDefinition = {
     cols: [
         {
             id: 'name',
-            title: 'Name',
+            title: 'name',
             sort: true,
         },
         {
             id: 'permissions',
-            title: 'Permissions',
+            title: 'permissions',
             kind: 'Permissions',
             // TODO !
             props: {
@@ -19,7 +19,7 @@ export const listDefinition: AdminList.TableDefinition = {
         },
         {
             id: 'identifierUri',
-            title: 'Identifier',
+            title: 'identifier',
         }/*,
         {
             id: 'signingAlgorithm',
@@ -31,7 +31,7 @@ export const listDefinition: AdminList.TableDefinition = {
         }*/,        
         {
             id: 'dateCreated',
-            title: 'Created',
+            title: 'created',
             format: 'dateTime',
             sort: 'dateCreated',
         },

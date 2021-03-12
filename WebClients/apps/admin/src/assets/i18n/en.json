@@ -23,7 +23,8 @@
     "logout": "Logout",
     "logoutReturnUris": "Allowed Logout Return URIs",
     "messageRemoveSuccess": "Remove success",
-    "messageUpdateSuccess": "Create success",
+    "messageUpdateSuccess": "Update success",
+    "messageCreateSuccess": "Create success",
     "name": "Name",
     "no": "No",
     "orderingOff": "Ordering Off",
@@ -46,5 +47,6 @@
     "accessToken": "Токен",
     "issuer": "Issuer",
     "idTokenExpiresIn": "Id Token истекает (минуты)",
-    "refreshTokenExpiresIn": "Refresh Token истекает (минуты)"
+    "refreshTokenExpiresIn": "Refresh Token истекает (минуты)",
+    "identifierUri": "Identifier Uri"    
 }

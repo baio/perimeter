@@ -12,24 +12,24 @@ export const definition = (formGroup: FormGroup): AdminForm.FormDefinition => {
             {
                 id: 'name',
                 kind: 'Display',
-                label: 'Name',
+                label: 'name',
             },
             {
                 id: 'isEnabled',
                 kind: 'Toggle',
-                label: 'Is Enabled',
+                label: 'isEnabled',
             },
             {
                 id: 'clientId',
                 kind: 'Text',
-                label: 'Client ID',
+                label: 'clientID',
                 validators: [Validators.required],
                 hidden: isNotEnabled$,
             },
             {
                 id: 'clientSecret',
                 kind: 'Text',
-                label: 'Client Secret',
+                label: 'clientSecret',
                 validators: [Validators.required],
                 hidden: isNotEnabled$,
             },

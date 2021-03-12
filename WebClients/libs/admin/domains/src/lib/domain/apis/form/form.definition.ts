@@ -11,7 +11,7 @@ export const getDefinition = (
         {
             id: 'name',
             kind: 'Text',
-            label: 'Name',
+            label: 'name',
             validators: [Validators.required],
             wrapper: {
                 kind: 'info',
@@ -24,7 +24,7 @@ export const getDefinition = (
             id: 'identifier',
             kind: 'Text',
             hidden: isNew$.pipe(not$),
-            label: 'Identifier',
+            label: 'identifier',
             validators: [Validators.required, FormValidators.domainName],
             wrapper: {
                 kind: 'info',
@@ -37,7 +37,7 @@ export const getDefinition = (
             id: 'identifierUri',
             kind: 'Display',
             hidden: isNew$,
-            label: 'Identifier',
+            label: 'identifierUri',
             wrapper: {
                 kind: 'info',
                 props: {

@@ -8,18 +8,18 @@
 >
     <admin-list-header
         infoKey="domain-social-connections-list:page"
-        searchPlaceholder="Search by name"
+        searchPlaceholder="searchByName"
         [canAdd]="false"
         [useSearch]="!view.sortMode"
     >
-        <div title>
-            Social
+        <div title *transloco="let t">
+            {{ t('social') }}
             <nz-switch
                 data-cy="ordering-mode-switch"
                 [ngModel]="view.sortMode"
                 (ngModelChange)="onSortModeChanged($event)"
-                nzCheckedChildren="Ordering On"
-                nzUnCheckedChildren="Ordering Off"
+                [nzCheckedChildren]="t('orderingOn')"
+                [nzUnCheckedChildren]="t('orderingOff')"
             ></nz-switch>
         </div>
     </admin-list-header>

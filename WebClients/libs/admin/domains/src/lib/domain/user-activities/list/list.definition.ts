@@ -8,15 +8,15 @@ export const listDefinition: AdminList.TableDefinition = {
     cols: [
         {
             id: 'userEmail',
-            title: 'Email',
+            title: 'email',
         },
         {
             id: 'appIdentifier',
-            title: 'Application',
+            title: 'application',
         },
         {
             id: 'dateTime',
-            title: 'Date',
+            title: 'date',
             format: 'dateTime',
             sort: true,
         },

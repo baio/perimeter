@@ -5,24 +5,24 @@ export const listDefinition: AdminList.TableDefinition = {
     cols: [
         {
             id: 'name',
-            title: 'Name',
+            title: 'name',
             decorator: 'ellipsis',
             sort: true,
         },
         {
             id: 'identifier',
-            title: 'Identifier',
+            title: 'identifier',
             decorator: 'ellipsis',
             sort: true,
         },
         {
             id: 'envs',
-            title: 'Environments',
+            title: 'environments',
             customCell: true,
         },
         {
             id: 'dateCreated',
-            title: 'Created',
+            title: 'created',
             format: 'dateTime',
             sort: 'dateCreated',
         },

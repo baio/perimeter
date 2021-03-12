@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { TranslocoModule } from '@ngneat/transloco';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -26,6 +27,7 @@ import { AdminListHeaderComponent } from './list-header.component';
         NzSwitchModule,
         ReactiveFormsModule,
         InfoModule,
+        TranslocoModule,
     ],
 })
 export class AdminListHeaderModule {}

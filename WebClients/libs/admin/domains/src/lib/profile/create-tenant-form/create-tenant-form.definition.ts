@@ -8,7 +8,7 @@ export const definition: AdminForm.FormDefinition = {
         {
             id: 'name',
             kind: 'Text',
-            label: 'Name',
+            label: 'name',
             validators: [Validators.required, FormValidators.domainName],
             wrapper: {
                 kind: 'info',

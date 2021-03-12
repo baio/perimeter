@@ -13,16 +13,13 @@ import { TranslocoService } from '@ngneat/transloco';
 })
 export class AdminActivitiesListComponent implements OnInit {
     private readonly domainId: number;
-    readonly listDefinition = listDefinition(
-        this.transloco.translate.bind(this.transloco)
-    );
+    readonly listDefinition = listDefinition;
     readonly dataProvider: HlcNzTable.Data.DataProvider = (state) =>
         this.dataAccess.loadAdminsList(this.domainId, state);
 
     constructor(
         activatedRoute: ActivatedRoute,
-        private readonly dataAccess: UserActivitiesDataAccessService,
-        private readonly transloco: TranslocoService
+        private readonly dataAccess: UserActivitiesDataAccessService
     ) {
         this.domainId = +activatedRoute.parent.snapshot.params['id'];
     }

@@ -7,7 +7,7 @@ export const definition: AdminForm.FormDefinition = {
         {
             id: 'name',
             kind: 'Text',
-            label: 'Name',
+            label: 'name',
             validators: [Validators.required],
             wrapper: {
                 kind: 'info',
@@ -19,7 +19,7 @@ export const definition: AdminForm.FormDefinition = {
         {
             id: 'description',
             kind: 'TextArea',
-            label: 'Description',
+            label: 'description',
             validators: [Validators.required],
             wrapper: {
                 kind: 'info',
@@ -31,7 +31,7 @@ export const definition: AdminForm.FormDefinition = {
         {
             id: 'isDefault',
             kind: 'Toggle',
-            label: 'Is Default',
+            label: 'isDefault',
             props: {
                 value: false,
             },

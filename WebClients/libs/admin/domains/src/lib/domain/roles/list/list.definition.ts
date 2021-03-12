@@ -5,21 +5,21 @@ export const listDefinition: AdminList.TableDefinition = {
     cols: [
         {
             id: 'name',
-            title: 'Name',
+            title: 'name',
             sort: true,
         },
         {
             id: 'description',
-            title: 'Descriptions',
+            title: 'description',
         },
         {
             id: 'permissions',
-            title: 'Permissions',
+            title: 'permissions',
             kind: 'Permissions',
         },
         {
             id: 'dateCreated',
-            title: 'Created',
+            title: 'created',
             format: 'dateTime',
             sort: 'dateCreated',
         },
