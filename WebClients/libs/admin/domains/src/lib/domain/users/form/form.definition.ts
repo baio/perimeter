@@ -18,6 +18,12 @@ export const getDefinition = (
             props: {
                 readonly: isNew$.pipe(not$),
             },
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'users:email',
+                },
+            },
         },
         {
             id: 'rolesIds',
@@ -30,6 +36,12 @@ export const getDefinition = (
                 ),
             },
             validators: [Validators.required],
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'users:roles',
+                },
+            },
         },
     ],
 });

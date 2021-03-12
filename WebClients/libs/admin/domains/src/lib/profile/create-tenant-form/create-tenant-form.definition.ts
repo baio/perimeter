@@ -10,6 +10,12 @@ export const definition: AdminForm.FormDefinition = {
             kind: 'Text',
             label: 'Name',
             validators: [Validators.required, FormValidators.domainName],
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'tenant:name',
+                },
+            },
         },
     ],
 };

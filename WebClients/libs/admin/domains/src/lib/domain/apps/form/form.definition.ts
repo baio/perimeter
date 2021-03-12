@@ -35,12 +35,24 @@ export const getDefinition = (
             kind: 'Display',
             label: 'Client Id',
             hidden: isNew$,
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'domain:clientId',
+                },
+            },
         },
         {
             id: 'name',
             kind: 'Text',
             label: 'Name',
             validators: [Validators.required],
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'domain:name',
+                },
+            },
         },
         {
             id: 'grantTypes',
@@ -52,6 +64,12 @@ export const getDefinition = (
                 value: ['AuthorizationCodePKCE', 'RefreshToken'],
             },
             validators: [Validators.required],
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'domain:grantTypes',
+                },
+            },
         },
         {
             id: 'idTokenExpiresIn',
@@ -59,6 +77,12 @@ export const getDefinition = (
             label: 'ID Token Expires In (minutes)',
             validators: [Validators.required],
             hidden: isNew$,
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'domain:idTokenExpiresIn',
+                },
+            },
         },
         {
             id: 'refreshTokenExpiresIn',
@@ -66,6 +90,12 @@ export const getDefinition = (
             label: 'Refresh Token Expires In (minutes)',
             validators: [Validators.required],
             hidden: isNew$,
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'domain:refreshTokenExpiresIn',
+                },
+            },
         },
         {
             id: 'allowedCallbackUrls',
@@ -73,6 +103,12 @@ export const getDefinition = (
             label: 'Allowed return URIs',
             validators: [Validators.required],
             hidden: isNew$,
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'domain:allowedCallbackUrls',
+                },
+            },
         },
         {
             id: 'allowedLogoutCallbackUrls',
@@ -80,12 +116,24 @@ export const getDefinition = (
             label: 'Allowed logout return URIs',
             validators: [Validators.required],
             hidden: isNew$,
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'domain:allowedLogoutCallbackUrls',
+                },
+            },
         },
         {
             id: 'ssoEnabled',
             kind: 'Toggle',
             label: 'Use SSO',
             hidden: isNew$,
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'domain:ssoEnabled',
+                },
+            },
         },
     ],
 });

@@ -15,12 +15,24 @@ export const getDefinition = (
             kind: 'Text',
             label: 'Name',
             validators: [Validators.required],
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'roles:name',
+                },
+            },
         },
         {
             id: 'description',
             kind: 'TextArea',
             label: 'Description',
             validators: [Validators.required],
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'roles:description',
+                },
+            },
         },
         {
             id: 'permissionIds',
@@ -31,6 +43,12 @@ export const getDefinition = (
                 items: permissions$.pipe(
                     map(_map((x) => ({ key: x.id, label: x.name })))
                 ),
+            },
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'roles:permission-ids',
+                },
             },
         },
     ],

@@ -13,6 +13,12 @@ export const getDefinition = (
             kind: 'Text',
             label: 'Name',
             validators: [Validators.required],
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'tenant:name',
+                },
+            },
         },
         {
             id: 'identifier',
@@ -22,6 +28,12 @@ export const getDefinition = (
                 readonly: isNew$.pipe(not$),
             },
             validators: [Validators.required, FormValidators.domainName],
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'tenant:identifier',
+                },
+            },
         },
     ],
 });

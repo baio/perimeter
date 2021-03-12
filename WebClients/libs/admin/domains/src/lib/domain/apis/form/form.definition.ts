@@ -13,39 +13,37 @@ export const getDefinition = (
             kind: 'Text',
             label: 'Name',
             validators: [Validators.required],
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'api:name',
+                },
+            },
         },
-        /*
-        {
-            id: 'signingAlgorithm',
-            kind: 'Display',
-            label: 'Signing Algorithm',
-            hidden: isNew$,
-        },
-        {
-            id: 'signingSecret',
-            kind: 'Display',
-            label: 'Signing Secret',
-            hidden: isNew$,
-        },*/
         {
             id: 'identifier',
             kind: 'Text',
             hidden: isNew$.pipe(not$),
             label: 'Identifier',
             validators: [Validators.required, FormValidators.domainName],
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'api:identifier',
+                },
+            },
         },
         {
             id: 'identifierUri',
             kind: 'Display',
             hidden: isNew$,
             label: 'Identifier',
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'api:identifierUri',
+                },
+            },
         },
-        /*
-        {
-            id: 'accessTokenExpiresIn',
-            kind: 'Number',
-            label: 'Access Token Expires in Minutes',
-            validators: [Validators.required],
-        },*/
     ],
 });

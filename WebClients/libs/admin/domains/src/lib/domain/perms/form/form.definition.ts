@@ -9,12 +9,24 @@ export const definition: AdminForm.FormDefinition = {
             kind: 'Text',
             label: 'Name',
             validators: [Validators.required],
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'perms:name',
+                },
+            },
         },
         {
             id: 'description',
             kind: 'TextArea',
             label: 'Description',
             validators: [Validators.required],
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'perms:description',
+                },
+            },
         },
         {
             id: 'isDefault',
@@ -24,6 +36,12 @@ export const definition: AdminForm.FormDefinition = {
                 value: false,
             },
             validators: [Validators.required],
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'perms:is-default',
+                },
+            },
         },
     ],
 };

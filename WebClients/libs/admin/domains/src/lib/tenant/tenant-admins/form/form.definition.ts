@@ -13,10 +13,16 @@ export const getDefinition = (
         {
             id: 'userEmail',
             kind: 'Text',
-            label: 'Name',
+            label: 'Email',
             validators: [Validators.required, Validators.email],
             props: {
                 readonly: isNew$.pipe(not$),
+            },
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'tenant-admins:email',
+                },
             },
         },
         {
@@ -30,6 +36,12 @@ export const getDefinition = (
                 ),
             },
             validators: [Validators.required],
+            wrapper: {
+                kind: 'info',
+                props: {
+                    infoKey: 'tenant-admins:roles',
+                },
+            },
         },
     ],
 });
