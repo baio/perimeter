@@ -30,6 +30,9 @@ export class AdminListHeaderComponent implements OnInit {
     @Input()
     titleTemplate: TemplateRef<any>;
 
+    @Input()
+    infoKey: string;
+
     readonly filterForm: FormGroup;
 
     constructor(

@@ -26,10 +26,7 @@ export class InfoEffects {
                 const items = flatten(
                     result.items.map((m) => {
                         const key =
-                            m.fields['page']['en-US'] +
-                                '-' +
-                                ((m.fields['field'] &&
-                                    m.fields['field']['en-US']) || 'page');
+                            m.fields['key']['en-US'];
                         const url = m.fields['url'];
                         return [
                             {

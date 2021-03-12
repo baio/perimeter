@@ -4,7 +4,12 @@
     [removeItemDataAccess]="removeItemDataAccess"
     (actionClick)="onActionClick($event)"
 >
-    <admin-list-header title="Domains" searchPlaceholder="Search by name">
+    <admin-list-header
+        infoKey="domain-admins-list:page"
+        title="Domains"
+        searchPlaceholder="Search by name"
+        infoKey="tenant-domains-list:page"
+    >
     </admin-list-header>
     <ng-template hlcNzCustomCell="envs" let-items>
         <button

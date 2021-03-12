@@ -5,8 +5,8 @@
     <nz-page-header-title>
         {{ title }}
         <ng-content select="[title]"> </ng-content>
-        <admin-info key="domain-pool-list-page"></admin-info>
-    </nz-page-header-title>    
+    <admin-info [key]="infoKey"></admin-info>
+    </nz-page-header-title>
     <nz-page-header-subtitle *ngIf="subTitle">{{
         subTitle
     }}</nz-page-header-subtitle>
