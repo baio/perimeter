@@ -362,7 +362,7 @@ export class AuthService {
                 .post<TokensResult>(
                     this.config.refreshTokenUrl,
                     {
-                        refreshToken,
+                        refresh_token: refreshToken,
                         grant_type: 'refresh_token',
                     },
                     { headers: { Authorization: `Bearer ${accessToken}` } }
