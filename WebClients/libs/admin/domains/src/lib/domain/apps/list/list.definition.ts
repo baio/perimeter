@@ -5,29 +5,29 @@ export const listDefinition: AdminList.TableDefinition = {
     cols: [
         {
             id: 'name',
-            title: 'Name',
+            title: 'name',
             sort: true,
         },
         {
             id: 'grantTypes',
-            title: 'Grant Types',
+            title: 'grantTypes',
         },
         {
             id: 'clientId',
-            title: 'Client Id',
+            title: 'clientId',
         },
         {
             id: 'ssoEnabled',
-            title: 'Use SSO',
+            title: 'useSSO',
             format: (val) => (val ? 'Yes' : 'No'),
         },
         {
             id: 'allowedCallbackUrls',
-            title: 'Return URIs',
+            title: 'returnUris',
         },
         {
             id: 'dateCreated',
-            title: 'Created',
+            title: 'created',
             format: 'dateTime',
             sort: 'dateCreated',
         },

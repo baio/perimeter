@@ -4,8 +4,9 @@
     [removeItemDataAccess]="removeItemDataAccess"
 >
     <admin-list-header
+        *transloco="let t"
         infoKey="domain-apps-list:page"
-        title="Applications"
-        searchPlaceholder="Search by name"
+        [title]="t('applications')"
+        [searchPlaceholder]="t('searchByName')"
     ></admin-list-header>
 </admin-list>

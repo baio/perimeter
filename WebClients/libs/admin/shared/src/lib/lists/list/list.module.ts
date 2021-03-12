@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { TranslocoModule } from '@ngneat/transloco';
 import {
     HlcNzCustomCellDirective,
     HlcNzImgColumnConfig,
@@ -25,6 +26,7 @@ import {
         RouterModule,
         NzAlertModule,
         ...tableCellMapModules,
+        TranslocoModule,
     ],
     providers: [
         {

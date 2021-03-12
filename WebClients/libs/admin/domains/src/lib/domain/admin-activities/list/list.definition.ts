@@ -1,6 +1,9 @@
 import { AdminList } from '@admin/shared';
+import { TranslocoService } from '@ngneat/transloco';
 
-export const listDefinition: AdminList.TableDefinition = {
+export const listDefinition = (
+    t: (x: string) => string
+): AdminList.TableDefinition => ({
     sort: {
         id: 'dateTime',
         direction: 'desc',
@@ -8,13 +11,13 @@ export const listDefinition: AdminList.TableDefinition = {
     cols: [
         {
             id: 'userEmail',
-            title: 'Email',
+            title: t('email'),
         },
         {
             id: 'dateTime',
-            title: 'Date',
+            title: t('Date'),
             format: 'dateTime',
             sort: true,
         },
     ],
-};
+});

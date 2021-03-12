@@ -1,32 +1,36 @@
 <nz-layout class="full-height-layout">
     <nz-sider nzWidth="200px" nzTheme="light">
-        <ul nz-menu nzMode="inline" class="sider-menu">
+        <ul nz-menu nzMode="inline" class="sider-menu" *transloco="let t">
             <li data-cy="apps-menu-item" nz-menu-item nzMatchRouter>
-                <a [routerLink]="['.', 'info']">Domain</a>
+                <a [routerLink]="['.', 'info']">{{ t('domain') }}</a>
             </li>
             <li data-cy="apps-menu-item" nz-menu-item nzMatchRouter>
-                <a [routerLink]="['.', 'apps']">Applications</a>
+                <a [routerLink]="['.', 'apps']">{{ t('applications') }}</a>
             </li>
             <li data-cy="apis-menu-item" nz-menu-item nzMatchRouter>
-                <a [routerLink]="['.', 'apis']">APIs</a>
+                <a [routerLink]="['.', 'apis']">{{ t('apis') }}</a>
             </li>
             <li data-cy="roles-menu-item" nz-menu-item nzMatchRouter>
-                <a [routerLink]="['.', 'roles']">Roles</a>
+                <a [routerLink]="['.', 'roles']">{{ t('roles') }}</a>
             </li>
             <li data-cy="social-menu-item" nz-menu-item nzMatchRouter>
-                <a [routerLink]="['.', 'social']">Social</a>
+                <a [routerLink]="['.', 'social']">{{ t('social') }}</a>
             </li>
             <li data-cy="users-menu-item" nz-menu-item nzMatchRouter>
-                <a [routerLink]="['.', 'users']">Users</a>
+                <a [routerLink]="['.', 'users']">{{ t('users') }}</a>
             </li>
             <li data-cy="admins-menu-item" nz-menu-item nzMatchRouter>
-                <a [routerLink]="['.', 'admins']">Admins</a>
+                <a [routerLink]="['.', 'admins']">{{ t('admins') }}</a>
             </li>
             <li data-cy="user-activities-menu-item" nz-menu-item nzMatchRouter>
-                <a [routerLink]="['.', 'user-activities']">User Activities</a>
+                <a [routerLink]="['.', 'user-activities']">{{
+                    t('userActivities')
+                }}</a>
             </li>
             <li data-cy="admin-activities-menu-item" nz-menu-item nzMatchRouter>
-                <a [routerLink]="['.', 'admin-activities']">Admin Activities</a>
+                <a [routerLink]="['.', 'admin-activities']">{{
+                    t('adminActivities')
+                }}</a>
             </li>
         </ul>
     </nz-sider>

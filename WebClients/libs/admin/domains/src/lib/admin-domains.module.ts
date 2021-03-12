@@ -7,6 +7,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule } from '@ngneat/transloco';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
@@ -62,6 +63,7 @@ import { TenantLayoutComponent } from './tenant/tenant-layout/tenant-layout.comp
         NzSwitchModule,
         FormsModule,
         NzPageHeaderModule,
+        TranslocoModule,
     ],
     declarations: [
         DomainLayoutComponent,

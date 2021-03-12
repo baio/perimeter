@@ -16,6 +16,7 @@ import {
     ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
 import {
     ActionClickEvent,
     CellClickEvent,
@@ -42,6 +43,7 @@ import {
     addDefinitionLinkButtonAction,
     DELETE_ACTION_ID,
 } from './utils';
+import { addDefinitionTranslations } from './utils/add-definition-translations';
 
 @Component({
     selector: 'admin-list',
@@ -111,6 +113,8 @@ export class AdminListComponent
     private readonly destroy$ = new Subject();
     hlcDefinition: HlcNzTable.TableDefinition;
 
+    private readonly translate = this.transloco.translate.bind(this.transloco);
+
     /**
      * Custom cells
      */
@@ -124,6 +128,7 @@ export class AdminListComponent
         private readonly listService: AdminListService,
         private readonly router: Router,
         private readonly filterService: HlcNzTableFilterService,
+        private readonly transloco: TranslocoService,
         @Optional()
         @SkipSelf()
         @Inject(HLC_NZ_TABLE_CUSTOM_CELLS_PROVIDER)
@@ -132,6 +137,11 @@ export class AdminListComponent
 
     ngOnInit() {
         this.hlcDefinition = this.definition;
+
+        this.hlcDefinition = addDefinitionTranslations(
+            this.translate,
+            this.hlcDefinition
+        );
 
         this.hlcDefinition = this.hlcDefinition.layout
             ? this.hlcDefinition
@@ -144,6 +154,7 @@ export class AdminListComponent
                     : null;
 
             this.hlcDefinition = addDefinitionLinkButtonAction(
+                this.translate,
                 linkButtonTitle,
                 this.hlcDefinition
             );
@@ -151,6 +162,7 @@ export class AdminListComponent
 
         if (this.removeItemDataAccess) {
             this.hlcDefinition = addDefinitionDeleteButtonAction(
+                this.translate,
                 this.hlcDefinition,
                 this.canRemoveRow
             );
@@ -195,11 +207,10 @@ export class AdminListComponent
         this.actionClick.emit(action);
         if (action.actionId === DELETE_ACTION_ID) {
             this.modalService.confirm({
-                nzTitle: 'Do you want to delete this item?',
-                nzContent:
-                    "You are about to delete item, you can't restore it later.",
-                nzOkText: 'Yes',
-                nzCancelText: 'No',
+                nzTitle: this.translate('deletItemTitle'),
+                nzContent: this.translate('deletItemContent'),
+                nzOkText: this.translate('yes'),
+                nzCancelText: this.translate('no'),
                 nzOnOk: async () => {
                     // TODO : Suspense
                     await this.removeItemDataAccess(action.row).toPromise();

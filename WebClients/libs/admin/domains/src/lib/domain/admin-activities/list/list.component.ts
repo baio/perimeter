@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { HlcNzTable } from '@nz-holistic/nz-list';
 import { listDefinition } from './list.definition';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
 
 @Component({
     selector: 'admin-admin-activities-list',
@@ -12,13 +13,16 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class AdminActivitiesListComponent implements OnInit {
     private readonly domainId: number;
-    readonly listDefinition = listDefinition;
+    readonly listDefinition = listDefinition(
+        this.transloco.translate.bind(this.transloco)
+    );
     readonly dataProvider: HlcNzTable.Data.DataProvider = (state) =>
         this.dataAccess.loadAdminsList(this.domainId, state);
 
     constructor(
         activatedRoute: ActivatedRoute,
-        private readonly dataAccess: UserActivitiesDataAccessService
+        private readonly dataAccess: UserActivitiesDataAccessService,
+        private readonly transloco: TranslocoService
     ) {
         this.domainId = +activatedRoute.parent.snapshot.params['id'];
     }

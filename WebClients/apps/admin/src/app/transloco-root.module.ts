@@ -48,6 +48,10 @@ export function preloadUser(transloco: TranslocoService) {
                 // doesn't support changing language in runtime.
                 reRenderOnLangChange: true,
                 prodMode: environment.production,
+                fallbackLang: 'en',
+                missingHandler: {
+                    useFallbackTranslation: true,
+                },
             }),
         },
         { provide: TRANSLOCO_LOADER, useClass: TranslocoHttpLoader },
