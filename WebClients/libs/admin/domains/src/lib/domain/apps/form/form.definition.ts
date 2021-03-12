@@ -33,7 +33,7 @@ export const getDefinition = (
         {
             id: 'clientId',
             kind: 'Display',
-            label: 'Client Id',
+            label: 'clientId',
             hidden: isNew$,
             wrapper: {
                 kind: 'info',

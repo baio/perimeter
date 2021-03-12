@@ -34,5 +34,11 @@
     "delete": "Delete",
     "yes": "Yes",
     "no": "No",
-    "searchByName": "Search by name"
+    "searchByName": "Search by name",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "messageUpdateSuccess": "Update success",
+    "messageUpdateSuccess": "Create success",
+    "messageRemoveSuccess": "Remove success"
 }

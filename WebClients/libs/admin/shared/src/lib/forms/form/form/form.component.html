@@ -7,7 +7,7 @@
     <div data-cy="drawer" *ngIf="view$ | async as view">
         <nz-spin [nzSize]="'large'" [nzSpinning]="view.status === 'submitting'">
             <hlc-nz-form
-                [definition]="definition"
+                [definition]="hlcDefinition"
                 [value]="view.value"
                 #hlcForm
             >
@@ -23,7 +23,7 @@
                 >
                 </nz-alert>
 
-                <div class="footer-buttons">
+                <div class="footer-buttons" *transloco="let t">
                     <button
                         data-cy="drawer-submit"
                         nz-button
@@ -31,7 +31,7 @@
                         [disabled]="view.submitDisabled"
                         (click)="onSubmit(hlcForm.form.value)"
                     >
-                        Submit
+                        {{ t('submit') }}
                     </button>
 
                     <button
@@ -40,7 +40,7 @@
                         nzType="default"
                         (click)="onClose()"
                     >
-                        Cancel
+                        {{ t('cancel') }}
                     </button>
 
                     <button
@@ -52,7 +52,7 @@
                         nzDanger
                         (click)="onRemove(view.value)"
                     >
-                        Delete
+                        {{ t('delete') }}
                     </button>
                 </div>
             </div>

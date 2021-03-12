@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { TranslocoModule } from '@ngneat/transloco';
 import {
     HLC_FIELDS_LAYOUT_MAP,
     HLC_FORM_FIELD_WRAPPER_MAP,
@@ -41,6 +42,7 @@ import { AdminFormComponent } from './form/form.component';
         RouterModule,
         ...adminFieldsModules,
         ...adminFieldContainersModules,
+        TranslocoModule,
     ],
     providers: [
         {
