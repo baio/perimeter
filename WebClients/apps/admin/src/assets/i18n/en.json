@@ -58,5 +58,7 @@
     "user": "User",
     "userActivities": "User Activities",
     "users": "Users",
-    "yes": "Yes"
+    "yes": "Yes",
+    "login": "Log in",
+    "register": "Register"
 }

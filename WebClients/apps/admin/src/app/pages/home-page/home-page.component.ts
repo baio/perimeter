@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
 import { AuthService } from '@perimeter/ngx-auth';
 
 const REDIRECT_PATH = '/';
@@ -15,7 +16,8 @@ export class HomePageComponent implements OnInit {
 
     constructor(
         private readonly authService: AuthService,
-        activatedRoute: ActivatedRoute
+        activatedRoute: ActivatedRoute,
+        private readonly transloco: TranslocoService
     ) {
         const queryEvent = activatedRoute.snapshot.queryParamMap.get('event');
 
@@ -42,7 +44,8 @@ export class HomePageComponent implements OnInit {
             redirectPath: REDIRECT_PATH,
         });
         // Simple delegate handling of `event` query string to the idp
-        window.location.href = loginUrl + (queryEvent ? '&event=' + queryEvent : '');
+        window.location.href =
+            loginUrl + (queryEvent ? '&event=' + queryEvent : '');
     }
 
     async onSignUp() {
@@ -54,5 +57,10 @@ export class HomePageComponent implements OnInit {
 
     onLogout() {
         this.authService.logout();
+    }
+
+    onSetLanguage(lang: string) {
+        this.transloco.setActiveLang(lang);
+        localStorage.setItem('APP_LANG', lang);
     }
 }

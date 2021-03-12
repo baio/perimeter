@@ -14,6 +14,7 @@ import { HomePageComponent } from './home-page/home-page.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { LoginCbPageComponent } from './login-cb-page/login-cb-page.component';
 import { BlankPageComponent } from './blank-page/blank-page.component';
+import { TranslocoModule } from '@ngneat/transloco';
 
 @NgModule({
     imports: [
@@ -29,6 +30,7 @@ import { BlankPageComponent } from './blank-page/blank-page.component';
         NzSelectModule,
         NzModalModule,
         NzAlertModule,
+        TranslocoModule,
     ],
     declarations: [HomePageComponent, LoginCbPageComponent, BlankPageComponent],
     exports: [],
