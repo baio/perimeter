@@ -1,0 +1,16 @@
+<hlc-nz-input-container
+    [formControl]="formControl"
+    [id]="id"
+    [label]="label"
+    [labelDecorator]="labelDecorator"
+    [readonly]="readonly"
+    [validatorsErrorsMap]="validatorsErrorsMap"
+>
+    <ng-container #ref>
+        <ng-content></ng-content>
+    </ng-container>
+</hlc-nz-input-container>
+
+<ng-template #labelDecorator>
+    &nbsp; <admin-info [key]="infoKey"></admin-info>
+</ng-template>

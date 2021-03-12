@@ -26,7 +26,6 @@ export class InfoComponent implements OnInit {
         this.text$ = this.key$.pipe(
             filter((f) => !!f),
             switchMap((key) => {
-                console.log('111', key);
                 return store.select(selectInfoLocaleKeyText('ru-RU', key))
             })
         );

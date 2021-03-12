@@ -12,12 +12,22 @@ export namespace AdminFormFields {
         kind: 'lengthCounter';
         props: { maxLength: number; warnLength?: number };
     }
-    export type FieldWrapper = 'default' | LengthCounterFieldWrapper;
+    export interface InfoFieldWrapper {
+        kind: 'info';
+        props: { infoKey: string };
+    }
+
+    export type FieldWrapper =
+        | 'default'
+        | LengthCounterFieldWrapper
+        | InfoFieldWrapper;
 
     export type BaseField<
         TKind extends string,
         TVal = any,
-        TExtProps = {}
+        TExtProps = {
+            infoKey?: string;
+        }
     > = HlcNzFormFields.BaseField<TKind, TVal, TExtProps, FieldWrapper>;
 
     export interface StateSelector
