@@ -14,7 +14,7 @@ module AuthorizeDispatcher =
     open FSharp.Control.Tasks.V2.ContextInsensitive
     open DataAvail.Common
 
-    let private tryAuthorizeAnotherDomain: AuthorizeDispatcher =
+    let private tryAuthorizeAnotherDomain : AuthorizeDispatcher =
         fun env data ->
             let { AuthorizeEnv = env
                   LoginPageDomain = logInPageDomain } =
@@ -33,9 +33,9 @@ module AuthorizeDispatcher =
                     || (isNotEmpty data.Password)
 
                 if emailOrPasswordNotEmpty then
-                    raise
-                        (BadRequest [| BadRequestCommonError
-                                           "Email and password could be provided only through IDP form" |])
+                    raise (
+                        BadRequest [| BadRequestCommonError "Email and password could be provided only through IDP form" |]
+                    )
 
                 match validateAuthorizeData false data with
                 | Some ex ->
@@ -46,7 +46,7 @@ module AuthorizeDispatcher =
                 return getRedirectAuthorizeUrl logInPageDomain data null null
             }
 
-    let private tryAuthorizeIDPDomain: AuthorizeDispatcher =
+    let private tryAuthorizeIDPDomain : AuthorizeDispatcher =
         fun env data ->
             let { AuthorizeEnv = env
                   SetSSOCookie = setSSOCookie
@@ -67,11 +67,12 @@ module AuthorizeDispatcher =
                     | Some "none" -> true
                     | _ -> false
 
-                logger.LogDebug
-                    ("Authorize IDP domain with data {@data} and sso {@sso} and refererUrl {refererUrl}",
-                     data,
-                     ssoToken,
-                     refererUrl)
+                logger.LogDebug(
+                    "Authorize IDP domain with data {@data} and sso {@sso} and refererUrl {refererUrl}",
+                    data,
+                    ssoToken,
+                    refererUrl
+                )
 
                 // TODO : Basically we dont need any data besides sso in case there is sso cookie
                 match validateAuthorizeData (not isPromptNone) data with
@@ -104,7 +105,7 @@ module AuthorizeDispatcher =
                     return result
             }
 
-    let private tryAuthorizeDispatcher: AuthorizeDispatcher =
+    let private tryAuthorizeDispatcher : AuthorizeDispatcher =
         fun env data ->
 
             let { RefererUrl = refererUrl } = data
@@ -118,13 +119,18 @@ module AuthorizeDispatcher =
 
             let isIDPDomain = refererUrl = loginPageOrigin
 
-            logger.LogDebug("LoginPageDomain {isIDPDomain}", isIDPDomain)
+            logger.LogDebug(
+                "LoginPageDomain {isIDPDomain} {refererUrl} {loginPageOrigin}",
+                isIDPDomain,
+                refererUrl,
+                loginPageOrigin
+            )
 
             match isIDPDomain with
             | true -> tryAuthorizeIDPDomain env data
             | false -> tryAuthorizeAnotherDomain env data
 
-    let authorizeDispatcher: AuthorizeDispatcher =
+    let authorizeDispatcher : AuthorizeDispatcher =
         fun env data ->
             env.AuthorizeEnv.Logger.LogDebug("AuthorizeDispatcher {@data}", data)
 
@@ -137,8 +143,11 @@ module AuthorizeDispatcher =
 
                     env.DeleteSSOCookie()
 
-                    env.AuthorizeEnv.Logger.LogWarning
-                        ("Redirect on error {@error} to {redirectUrlError}", ex, redirectUrlError)
+                    env.AuthorizeEnv.Logger.LogWarning(
+                        "Redirect on error {@error} to {redirectUrlError}",
+                        ex,
+                        redirectUrlError
+                    )
 
                     return redirectUrlError
             }

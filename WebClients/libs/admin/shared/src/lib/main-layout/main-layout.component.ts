@@ -65,6 +65,7 @@ export class MainLayoutComponent implements OnInit {
 
     onSetLanguage(lang: string) {
         localStorage.setItem('APP_LANG', lang);
-        this.transloco.setActiveLang(lang);
+        window.location.reload();
+        //this.transloco.setActiveLang(lang);
     }
 }

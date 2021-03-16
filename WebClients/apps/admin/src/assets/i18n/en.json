@@ -1,5 +1,5 @@
 {
-    "accessToken": "Токен",
+    "accessToken": "Token",
     "accessTokenExpiresIn": "Access Token Expires In (minutes)",
     "admin": "Admin",
     "adminActivities": "Admin Activities",
@@ -31,7 +31,7 @@
     "issuer": "Issuer",
     "logout": "Logout",
     "logoutReturnUris": "Allowed Logout Return URIs",
-    "main": "Главное",
+    "main": "Main",
     "messageCreateSuccess": "Create success",
     "messageRemoveSuccess": "Remove success",
     "messageUpdateSuccess": "Update success",
