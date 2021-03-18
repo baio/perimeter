@@ -1,6 +1,7 @@
 module PRR.API.Auth.App
 
 open System.Net
+open DataAvail.Giraffe.Common.Utils
 open Giraffe
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
@@ -74,12 +75,11 @@ let configureApp (app: IApplicationBuilder) =
 let configureServices (context: WebHostBuilderContext) (services: IServiceCollection) =
 
     // Important for mongo F# serialization
-    NamelessInteractive.FSharp.MongoDB.SetUp.registerSerializationAndConventions()
-
+    NamelessInteractive.FSharp.MongoDB.SetUp.registerSerializationAndConventions ()
+    FixJsonSerializer.configureServices services
     services.AddCors().AddGiraffe() |> ignore
 
-    let appConfig =
-        createAppConfig context.Configuration
+    let appConfig = createAppConfig context.Configuration
 
     configureAppServices appConfig services
 

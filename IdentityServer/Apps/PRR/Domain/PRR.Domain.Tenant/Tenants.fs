@@ -6,6 +6,8 @@ open Helpers
 open PRR.Data.DataContext.Seed
 open DataAvail.EntityFramework.Common
 open DataAvail.Http.Exceptions
+open DataAvail.Common.StringUtils
+open PRR.Data.Entities
 
 module Tenants =
 
@@ -17,12 +19,90 @@ module Tenants =
         | UniqueConstraintException "IX_Tenants_Name" (ConflictErrorField ("name", UNIQUE)) ex -> raise ex
         | ex -> raise ex
 
-    type PostLike = { Name: string }
+    [<CLIMutable>]
+    type SandboxData =
+        { DomainName: string
+          EnvName: string
+          ApiName: string
+          AppName: string
+          Permissions: string array }
+
+    [<CLIMutable>]
+    type PostLike =
+        { Name: string
+          Sandbox: SandboxData option }
 
 
     let validateData (data: PostLike) =
         [| (validateDomainName "name" data.Name) |]
         |> Array.choose id
+
+    let createSandbox (env: Env) (tenant: Tenant) userEmail (data: SandboxData) =
+
+        let add x = x |> add env.DataContext
+        let add' x = x |> add' env.DataContext
+
+        let domainPool =
+            createDomainPool tenant data.DomainName (toLower data.DomainName)
+            |> add'
+
+        let domain =
+            createMainDomain env.AuthStringsProvider env.AuthConfig domainPool data.EnvName
+            |> add'
+
+        // domain management
+        createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
+        |> add
+
+        createDomainManagementApi env.AuthStringsProvider domain
+        |> add
+
+        createDomainUserRole userEmail domain Roles.DomainOwner.Id
+        |> add
+
+        // app
+        let appData : Applications.PostLike =
+            { Name = data.AppName
+              GrantTypes =
+                  [| GrantType.AuthorizationCodePKCE
+                     GrantType.RefreshToken |]
+                  |> Array.map (fun x -> System.Enum.GetName(typeof<GrantType>, x)) }
+
+
+        let env' : Applications.CreateEnv =
+            { RefreshTokenExpiresIn = env.AuthConfig.RefreshTokenExpiresIn
+              IdTokenExpiresIn = env.AuthConfig.IdTokenExpiresIn
+              AuthStringsProvider = env.AuthStringsProvider }
+
+        Applications.create'' env' (domain.Id, appData)
+        |> add
+
+        // api
+        let apiData : Apis.PostLike =
+            { Name = data.ApiName
+              Identifier = (toLower data.ApiName) }
+
+        let apiTenantData : Apis.ParentData =
+            { TenantName = tenant.Name
+              DomainName = (toLower data.DomainName)
+              EnvName = data.EnvName }
+
+        let api =
+            Apis.create'' (env.AuthStringsProvider.GetAudienceUri) (domain.Id, apiTenantData, apiData)
+            |> add'
+
+        // Permissions
+        let permissionsData =
+            data.Permissions
+            |> Seq.map
+                (fun name ->
+                    { Name = name
+                      Description = name
+                      IsDefault = true }: Permissions.PostLike)
+
+        permissionsData
+        |> Seq.map (fun data -> Permissions.create'' (api.Id, data))
+        |> addRange env.DataContext
 
     let create (env: Env) ((userId, data): UserId * PostLike) =
         task {
@@ -56,23 +136,7 @@ module Tenants =
             createDomainUserRole userEmail tenantManagementDomain Roles.TenantOwner.Id
             |> add
 
-            // domain management
-            let domainPool =
-                createDomainPool tenant "Default" "default"
-                |> add'
-
-            let domain =
-                createMainDomain env.AuthStringsProvider env.AuthConfig domainPool
-                |> add'
-
-            createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
-            |> add
-
-            createDomainManagementApi env.AuthStringsProvider domain
-            |> add
-
-            createDomainUserRole userEmail domain Roles.DomainOwner.Id
-            |> add
+            printfn "222"
 
             try
                 do! saveChangesAsync dataContext

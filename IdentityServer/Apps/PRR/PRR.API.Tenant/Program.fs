@@ -1,5 +1,6 @@
 ﻿module PRR.API.Tenant.App
 
+open DataAvail.Giraffe.Common.Utils
 open Giraffe
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Cors.Infrastructure
@@ -45,6 +46,7 @@ let configureServices (context: WebHostBuilderContext) (services: IServiceCollec
 
     // Important for mongo F# serialization
     NamelessInteractive.FSharp.MongoDB.SetUp.registerSerializationAndConventions()
+    FixJsonSerializer.configureServices services
     
     services.AddCors().AddGiraffe() |> ignore
 

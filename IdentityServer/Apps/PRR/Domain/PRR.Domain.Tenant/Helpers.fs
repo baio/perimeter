@@ -66,9 +66,8 @@ module Helpers =
              IsDomainManagement = false)
 
     //
-    let createMainDomain (authStringProviders: IAuthStringsGetter) authConfig (domainPool: DomainPool) =
-        let envName = "dev"
-
+    let createMainDomain (authStringProviders: IAuthStringsGetter) authConfig (domainPool: DomainPool) (envName: string) =
+        
         let issuerUri =
             authStringProviders.GetIssuerUri
                 { TenantName = domainPool.Tenant.Name

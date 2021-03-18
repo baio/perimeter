@@ -15,6 +15,7 @@ module ReadResponseUtils =
     let readAsJsonAsync<'a> (response: HttpResponseMessage) =
         task {            
             let! str = response.Content.ReadAsStringAsync()
+            printfn "+++ %s" str
             let json = JsonConvert.DeserializeObject<'a>(str)
             return json
         }

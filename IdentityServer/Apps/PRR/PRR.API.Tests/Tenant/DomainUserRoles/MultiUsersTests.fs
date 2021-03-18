@@ -385,7 +385,7 @@ module MultiUsers =
 
                 do ensureBadRequest result
                 let! result' = readAsJsonAsync<ErrorDataDTO<Map<string, string array>>> result
-
+                
                 let expected =
                     [ ("userEmail", [| "CUSTOM:The UserEmail field is not a valid e-mail address." |]) ]
                     |> Map

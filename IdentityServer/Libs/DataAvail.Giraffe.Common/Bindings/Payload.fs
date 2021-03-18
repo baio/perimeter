@@ -24,14 +24,14 @@ module Payload =
             if f then
                 return v :?> 'a
             else
-                let! v = ctx.BindModelAsync<'a>()                
+                let! v = ctx.BindModelAsync<'a>()
                 ctx.Items.Add(BoundModelValue typeof<'a>, v)
                 return v
         }
 
     let bindValidateJsonAsync<'a> validator (ctx: HttpContext) =
         task {
-            let! model = bindJsonAsync<'a> ctx
+            let! model = bindJsonAsync<'a> ctx            
             match validator model with
             | [||] -> return model
             | errors ->

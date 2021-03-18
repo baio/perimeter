@@ -87,7 +87,7 @@ module CreateUserTenant =
                 |> add'
 
             let sampleDomain =
-                createMainDomain env.AuthStringsGetter authConfig pool
+                createMainDomain env.AuthStringsGetter authConfig pool "dev"
                 |> add'
 
             let domainManagementApp =

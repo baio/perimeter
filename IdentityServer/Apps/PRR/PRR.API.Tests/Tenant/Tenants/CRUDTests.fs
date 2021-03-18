@@ -1,4 +1,5 @@
 ﻿namespace PRR.API.Tests.Tenant.Tenants
+
 open DataAvail.Test.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.API.Tests.Utils
@@ -48,6 +49,7 @@ module CRUD =
         member __.``0 BEFORE ALL``() =
             task {
                 testContext <- Some(createUserTestContext testFixture)
+
                 let! userToken' = createUser' false testContext.Value userData
                 userToken <- userToken'
                 printf "%s" userToken
@@ -55,9 +57,19 @@ module CRUD =
 
         [<Fact>]
         [<Priority(1)>]
-        member __.``A Create tenant must be success``() =
+        member __.``A Create tenant with sandbox must be success``() =
             task {
-                let data: PostLike = { Name = "tenant-a" }
+                let sandboxData =
+                    { DomainName = "domain"
+                      EnvName = "env"
+                      ApiName = "api"
+                      AppName = "app"
+                      Permissions = [| "read"; "write" |] }
+
+                let data =
+                    {| Name = "tenant-a"
+                       Sandbox = sandboxData |}
+
                 let! result = testFixture.Server2.HttpPostAsync userToken "/api/tenant/tenants" data
                 do! ensureSuccessAsync result
                 let! result = readAsJsonAsync<int> result

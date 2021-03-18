@@ -15,10 +15,12 @@
         <Compile Include="RequestWrappers\WrapNoArgs.fs" />
         <Compile Include="RequestWrappers\Wrap.fs" />
         <Compile Include="RequestWrappers\WrapHandler.fs" />
+        <Compile Include="Utils\FixJsonSerializer.fs" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Giraffe" Version="4.1.0" />
+      <PackageReference Include="Microsoft.FSharpLu.Json" Version="0.11.6" />
     </ItemGroup>
 
     <ItemGroup>

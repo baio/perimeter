@@ -108,9 +108,7 @@ module MultiTenantAdminTests =
                 do! ensureSuccessAsync result
 
                 let! data = result |> readAsJsonAsync<TenantDomain []>
-
-                printfn "%A" data
-
+                
                 data.Length |> should equal 1
             }
 

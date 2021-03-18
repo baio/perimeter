@@ -38,6 +38,7 @@ module StringUtils =
 
     let startsWith (x: string) (s: string) = s.StartsWith(x)
 
+    let toLower (x: string) = x.ToLower()
 
     let concatUrl x =
         x
@@ -58,9 +59,10 @@ module StringUtils =
     let (|Regex|_|) pattern input =
         let m = Regex.Match(input, pattern)
 
-        if m.Success
-        then Some(List.tail [ for g in m.Groups -> g.Value ])
-        else None
+        if m.Success then
+            Some(List.tail [ for g in m.Groups -> g.Value ])
+        else
+            None
 
     let (|Int|_|) = tryParseInt
 

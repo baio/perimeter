@@ -96,6 +96,9 @@ module LinqHelpers =
     let addRange (dbContext: DbContext) (x: 'a seq) =
         x |> dbContext.Set<'a>().AddRange |> ignore
 
+    let addRange' (dbContext: DbContext) =
+        Seq.map (add' dbContext)
+
     let attachRange (dbContext: DbContext) (x: 'a seq) =
         x |> dbContext.Set<'a>().AttachRange |> ignore
 

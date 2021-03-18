@@ -20,6 +20,7 @@ module HttpMethods =
 
     let httpPostAsync' (client: HttpClient) (path: string) (payload: 'a) =
         let str = JsonSerializer.ToJsonString(payload)
+        printfn "444 %s" str
         use json = new StringContent(str, Encoding.UTF8, "application/json")
         client.PostAsync(path, json)
 
