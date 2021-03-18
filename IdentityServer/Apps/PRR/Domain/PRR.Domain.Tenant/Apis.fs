@@ -61,7 +61,9 @@ module Apis =
           DomainName: string
           EnvName: string }
 
-    let create'' (getAudienceUri: AudienceUriData -> string) (domainId: int, parentData: ParentData, dto: PostLike) =
+    let create'' (getAudienceUri: AudienceUriData -> string)
+                 (domainId: IdOrEntity<Domain>, parentData: ParentData, dto: PostLike)
+                 =
         let apiAudience =
             getAudienceUri
                 { IssuerUriData =
@@ -70,13 +72,9 @@ module Apis =
                         EnvName = parentData.EnvName }
                   ApiName = dto.Identifier }
 
-        Api(
-            Name = dto.Name,
-            Identifier = apiAudience,
-            DomainId = domainId,
-            IsDomainManagement = false,
-            Permissions = [||]
-        )
+        let (domainId, domain) = IdOrEntity.asPair domainId
+
+        Api(Name = dto.Name, Identifier = apiAudience, DomainId = domainId, Domain = domain, IsDomainManagement = false)
 
     let create' (dataContext: DbDataContext, getAudienceUri: AudienceUriData -> string) data =
         task {
@@ -104,14 +102,14 @@ module Apis =
                 }
                 |> toSingleAsync
 
-            return! create' (dataContext, env.AuthStringsGetter.GetAudienceUri) (domainId, data, dto)
+            return! create' (dataContext, env.AuthStringsGetter.GetAudienceUri) ((Id domainId), data, dto)
         }
 
 
-    let update : Update<int, DomainId * PutLike, DbDataContext> =
+    let update: Update<int, DomainId * PutLike, DbDataContext> =
         updateCatch<Api, _, _, _> catch (fun id -> Api(Id = id)) (fun (_, dto) entity -> entity.Name <- dto.Name)
 
-    let remove : Remove<int, DbDataContext> = remove (fun id -> Api(Id = id))
+    let remove: Remove<int, DbDataContext> = remove (fun id -> Api(Id = id))
 
     let private select' =
         <@ fun (p: Api) ->
@@ -120,14 +118,13 @@ module Apis =
               IdentifierUri = p.Identifier
               DateCreated = p.DateCreated
               Permissions =
-                  p.Permissions.Select
-                      (fun x ->
-                          { Id = x.Id
-                            Name = x.Name
-                            IsDefault = x.IsDefault }) } @>
+                  p.Permissions.Select(fun x ->
+                      { Id = x.Id
+                        Name = x.Name
+                        IsDefault = x.IsDefault }) } @>
 
 
-    let getOne : GetOne<int, GetLike, DbDataContext> =
+    let getOne: GetOne<int, GetLike, DbDataContext> =
         getOne<Api, _, _, _> (<@ fun p id -> p.Id = id @>) select'
     //
     type SortField =
@@ -155,7 +152,7 @@ module Apis =
         | SortField.DateCreated -> SortDate <@ fun (domain: Api) -> domain.DateCreated @>
         | SortField.Name -> SortString <@ fun (domain: Api) -> domain.Name @>
 
-    let getList : GetList =
+    let getList: GetList =
         fun dataContext (domainId, prms) ->
 
             let apps =
@@ -163,10 +160,9 @@ module Apis =
 
             query {
                 for p in apps do
-                    where (
-                        p.DomainId = domainId
-                        && p.IsDomainManagement = false
-                    )
+                    where
+                        (p.DomainId = domainId
+                         && p.IsDomainManagement = false)
 
                     select ((%select') p)
             }

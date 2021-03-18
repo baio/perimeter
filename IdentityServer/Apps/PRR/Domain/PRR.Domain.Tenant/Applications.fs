@@ -70,23 +70,25 @@ module Applications =
     let private parseGrantTypes =
         Array.map (fun x -> Enum.Parse(typeof<GrantType>, x) :?> GrantType)
 
-    let create'' (env: CreateEnv) (domainId: int, dto: PostLike) =
-        Application(
-            Name = dto.Name,
-            ClientId = env.AuthStringsProvider.ClientId(),
-            DomainId = domainId,
-            ClientSecret = env.AuthStringsProvider.ClientSecret(),
-            IdTokenExpiresIn = int env.IdTokenExpiresIn,
-            RefreshTokenExpiresIn = int env.RefreshTokenExpiresIn,
-            GrantTypes = parseGrantTypes dto.GrantTypes,
-            AllowedLogoutCallbackUrls = "*",
-            AllowedCallbackUrls = "*"
-        )
+    let create' (env: CreateEnv) (domain: IdOrEntity<Domain>, dto: PostLike) =
+        let (domainId, domain) = IdOrEntity.asPair domain
 
-    let create (env: CreateEnv) : Create<int * PostLike, int, DbDataContext> =
-        createCatch<Application, _, _, _> catch (create'' env) (fun x -> x.Id)
+        Application
+            (Name = dto.Name,
+             ClientId = env.AuthStringsProvider.ClientId(),
+             DomainId = domainId,
+             Domain = domain,
+             ClientSecret = env.AuthStringsProvider.ClientSecret(),
+             IdTokenExpiresIn = int env.IdTokenExpiresIn,
+             RefreshTokenExpiresIn = int env.RefreshTokenExpiresIn,
+             GrantTypes = parseGrantTypes dto.GrantTypes,
+             AllowedLogoutCallbackUrls = "*",
+             AllowedCallbackUrls = "*")
 
-    let update : Update<int, DomainId * PutLike, DbDataContext> =
+    let create (env: CreateEnv): Create<int * PostLike, int, DbDataContext> =
+        createCatch<Application, _, _, _> catch (fun (domainId, dto) -> create' env (Id domainId, dto)) (fun x -> x.Id)
+
+    let update: Update<int, DomainId * PutLike, DbDataContext> =
         updateCatch<Application, _, _, _>
             catch
             (fun id -> Application(Id = id))
@@ -99,7 +101,7 @@ module Applications =
                 entity.SSOEnabled <- dto.SSOEnabled
                 entity.GrantTypes <- parseGrantTypes dto.GrantTypes)
 
-    let remove : Remove<int, DbDataContext> = remove (fun id -> Application(Id = id))
+    let remove: Remove<int, DbDataContext> = remove (fun id -> Application(Id = id))
 
     let selectApp =
         <@ fun (p: Application) ->
@@ -115,7 +117,7 @@ module Applications =
               SSOEnabled = p.SSOEnabled
               GrantTypes = p.GrantTypes } @>
 
-    let getOne : GetOne<int, GetLike, DbDataContext> =
+    let getOne: GetOne<int, GetLike, DbDataContext> =
         getOne<Application, _, _, _> (<@ fun p id -> p.Id = id @>) (selectApp)
 
     //
@@ -144,7 +146,7 @@ module Applications =
         | SortField.DateCreated -> SortDate <@ fun (domain: Application) -> domain.DateCreated @>
         | SortField.Name -> SortString <@ fun (domain: Application) -> domain.Name @>
 
-    let getList : GetList =
+    let getList: GetList =
         fun dataContext (domainId, prms) ->
 
             let apps =
@@ -152,10 +154,9 @@ module Applications =
 
             query {
                 for p in apps do
-                    where (
-                        p.DomainId = domainId
-                        && p.IsDomainManagement = false
-                    )
+                    where
+                        (p.DomainId = domainId
+                         && p.IsDomainManagement = false)
 
                     select ((%selectApp) p)
             }

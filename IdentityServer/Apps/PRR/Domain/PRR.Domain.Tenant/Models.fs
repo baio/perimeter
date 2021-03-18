@@ -33,3 +33,25 @@ module Models =
         { DataContext: DbDataContext
           AuthStringsProvider: IAuthStringsGetter
           AuthConfig: AuthConfig }
+
+    type IdOrEntity<'a> =
+        | Id of int
+        | Entity of 'a
+
+    [<RequireQualifiedAccess>]
+    module IdOrEntity =
+        let asPair =
+            function
+            | Id id -> (id, null)
+            | Entity ent -> (0, ent)
+
+    type NullableIdOrEntity<'a> =
+        | NullableId of int
+        | NullableEntity of 'a
+
+    [<RequireQualifiedAccess>]
+    module NullableIdOrEntity =
+        let asPair =
+            function
+            | NullableId id -> (System.Nullable id, null)
+            | NullableEntity ent -> (System.Nullable(), ent)

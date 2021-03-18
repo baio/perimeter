@@ -29,13 +29,15 @@ module Permissions =
           DateCreated: DateTime
           IsDefault: bool }
 
-    let create'' (apiId: int, dto: PostLike) =
-        Permission(Name = dto.Name, Description = dto.Description, ApiId = apiId, IsDefault = dto.IsDefault)
+    let create'' (api: Api IdOrEntity, dto: PostLike) =
+        let (apiId, api) = IdOrEntity.asPair api
+        Permission(Name = dto.Name, Description = dto.Description, Api = api, ApiId = apiId, IsDefault = dto.IsDefault)
 
 
-    let create' : Create<int * PostLike, Permission, DbDataContext> =
+    let create': Create<int * PostLike, Permission, DbDataContext> =
         fun (apiId, dtos) dbContext ->
-            let permission = create'' (apiId, dtos) |> add' dbContext
+            let permission =
+                create'' (Id apiId, dtos) |> add' dbContext
 
             task {
                 try
@@ -49,7 +51,7 @@ module Permissions =
                 return permission
             }
 
-    let create : Create<int * PostLike, int, DbDataContext> =
+    let create: Create<int * PostLike, int, DbDataContext> =
         fun (apiId, dto) dbContext ->
             task {
 
@@ -57,24 +59,23 @@ module Permissions =
                 let! sameNameCount =
                     query {
                         for perm in dbContext.Permissions do
-                            where (
-                                perm.Name = dto.Name
-                                && perm.Api.Domain.Apis.Any(fun f -> f.Id = apiId)
-                            )
+                            where
+                                (perm.Name = dto.Name
+                                 && perm.Api.Domain.Apis.Any(fun f -> f.Id = apiId))
 
                             select perm.Id
                     }
                     |> toCountAsync
 
-                if sameNameCount > 0 then
-                    raise (Conflict(ConflictErrorField("name", UNIQUE)))
+                if sameNameCount > 0
+                then raise (Conflict(ConflictErrorField("name", UNIQUE)))
 
                 let! result = create' (apiId, dto) dbContext
                 return result.Id
             }
 
 
-    let update : Update<int, PostLike, DbDataContext> =
+    let update: Update<int, PostLike, DbDataContext> =
         fun data dbContext ->
             update<Permission, _, PostLike, _>
                 (fun id -> Permission(Id = id))
@@ -86,9 +87,9 @@ module Permissions =
                 data
                 dbContext
 
-    let remove : Remove<int, DbDataContext> = remove (fun id -> Permission(Id = id))
+    let remove: Remove<int, DbDataContext> = remove (fun id -> Permission(Id = id))
 
-    let getOne : GetOne<int, GetLike, DbDataContext> =
+    let getOne: GetOne<int, GetLike, DbDataContext> =
         getOne<Permission, _, _, _>
             (<@ fun p id -> p.Id = id @>)
             (<@ fun p ->
@@ -134,7 +135,7 @@ module Permissions =
         | SortField.DateCreated -> SortDate <@ fun (perm: Permission) -> perm.DateCreated @>
         | SortField.Name -> SortString <@ fun (perm: Permission) -> perm.Name @>
 
-    let getList : GetList =
+    let getList: GetList =
         fun dataContext (apiId, prms) ->
 
             let apps =
