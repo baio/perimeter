@@ -60,7 +60,7 @@ module CRUD =
         [<Priority(1)>]
         member __.``A Create tenant with sandbox must be success``() =
             task {
-                let sandboxData: DomainSandbox.Data =
+                let sandboxData =
                     { DomainName = "domain"
                       EnvName = "env"
                       ApiName = "api"

@@ -10,8 +10,12 @@ module DomainSandbox =
     open DataAvail.EntityFramework.Common
     open DataAvail.Common.StringUtils
 
+    type DomainPoolOrName =
+        | DomainPool of DomainPool
+        | Name of string
+
     type Data =
-        { DomainName: string
+        { Domain: DomainPoolOrName
           EnvName: string
           ApiName: string
           AppName: string
@@ -22,9 +26,13 @@ module DomainSandbox =
         let add x = x |> add env.DataContext
         let add' x = x |> add' env.DataContext
 
-        let domainPool =
-            createDomainPool tenant data.DomainName (toLower data.DomainName)
-            |> add'
+        let (domainPoolName, domainPool) =
+            match data.Domain with
+            | DomainPool domainPool -> (domainPool.Name, domainPool)
+            | Name name -> 
+                createDomainPool tenant name (toLower name)
+                |> add'
+                |> fun domainPool -> (name, domainPool)
 
         let domain =
             createMainDomain env.AuthStringsProvider env.AuthConfig domainPool data.EnvName
@@ -64,7 +72,7 @@ module DomainSandbox =
 
         let apiTenantData: Apis.ParentData =
             { TenantName = tenant.Name
-              DomainName = (toLower data.DomainName)
+              DomainName = (toLower domainPoolName)
               EnvName = data.EnvName }
 
         let api =

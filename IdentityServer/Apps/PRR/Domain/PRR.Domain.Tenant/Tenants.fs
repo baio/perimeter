@@ -17,9 +17,16 @@ module Tenants =
         | UniqueConstraintException "IX_Tenants_Name" (ConflictErrorField ("name", UNIQUE)) ex -> raise ex
         | ex -> raise ex
 
+    type TenantSandbox =
+        { DomainName: string
+          EnvName: string
+          ApiName: string
+          AppName: string
+          Permissions: string array }
+
     type PostLike =
         { Name: string
-          Sandbox: DomainSandbox.Data option }
+          Sandbox: TenantSandbox option }
 
     let validateData (data: PostLike) =
         [| (validateDomainName "name" data.Name) |]
@@ -31,7 +38,7 @@ module Tenants =
 
             let dataContext = env.DataContext
 
-            let add  x = x |> add dataContext
+            let add x = x |> add dataContext
             let add' x = x |> add' dataContext
 
             let! userEmail =
@@ -60,7 +67,15 @@ module Tenants =
 
             // sandbox
             match data.Sandbox with
-            | Some sandbox -> DomainSandbox.create env tenant userEmail sandbox
+            | Some sandbox ->
+                let data: DomainSandbox.Data =
+                    { Domain = DomainSandbox.DomainPoolOrName.Name sandbox.DomainName
+                      EnvName = sandbox.EnvName
+                      ApiName = sandbox.ApiName
+                      AppName = sandbox.AppName
+                      Permissions = sandbox.Permissions }
+
+                DomainSandbox.create env tenant userEmail data
             | None -> ()
 
             try

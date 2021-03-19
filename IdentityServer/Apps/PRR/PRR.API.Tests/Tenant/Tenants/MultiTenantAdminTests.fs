@@ -67,6 +67,7 @@ module MultiTenantAdminTests =
                 let! userToken = createUser' false testContext.Value u1.Data
 
                 let tenant = testContext.Value.GetTenant()
+
                 users.[0] <- {| u1 with
                                     Token = Some(userToken)
                                     Tenant = Some(tenant) |}
@@ -108,7 +109,7 @@ module MultiTenantAdminTests =
                 do! ensureSuccessAsync result
 
                 let! data = result |> readAsJsonAsync<TenantDomain []>
-                
+
                 data.Length |> should equal 1
             }
 
@@ -119,7 +120,8 @@ module MultiTenantAdminTests =
             task {
                 let data: DomainPools.PostLike =
                     { Name = "domain 1"
-                      Identifier = "domain-1" }
+                      Identifier = "domain-1"
+                      Sandbox = None }
 
                 let info: CreatedTenantInfo = users.[0].Tenant.Value
 

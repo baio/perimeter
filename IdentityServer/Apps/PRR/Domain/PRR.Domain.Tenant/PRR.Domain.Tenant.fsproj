@@ -33,7 +33,6 @@
       <Compile Include="Views\LogInView\Insert.fs" />
       <Compile Include="Views\LogInView\GetList.fs" />
       <Compile Include="Helpers.fs" />
-      <Compile Include="DomainPools.fs" />
       <Compile Include="Domains.fs" />
       <Compile Include="Apis.fs" />
       <Compile Include="Applications.fs" />
@@ -44,6 +43,7 @@
       <Compile Include="TenantUserRoles.fs" />
       <Compile Include="UserDomains.fs" />
       <Compile Include="DomainSandbox.fs" />
+      <Compile Include="DomainPools.fs" />
       <Compile Include="Tenants.fs" />
       <Compile Include="CreateUserTenant.fs" />
     </ItemGroup>

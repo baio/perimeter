@@ -19,8 +19,16 @@ open DataAvail.Http.Exceptions
 
 module DomainPools =
 
-    [<CLIMutable>]
-    type PostLike = { Name: string; Identifier: string }
+    type DomainPoolSandbox =
+        { EnvName: string
+          ApiName: string
+          AppName: string
+          Permissions: string array }
+
+    type PostLike =
+        { Name: string
+          Identifier: string
+          Sandbox: DomainPoolSandbox option }
 
     [<CLIMutable>]
     type PutLike = { Name: string }
@@ -65,6 +73,14 @@ module DomainPools =
         [| (validateNullOrEmpty "name" data.Name) |]
         |> Array.choose id
 
+    let getUserEmail (dataContext: DbDataContext) userId =
+        query {
+            for user in dataContext.Users do
+                where (user.Id = userId)
+                select user.Email
+        }
+        |> toSingleAsync
+
     let create ((tenantId, userId, data): UserId * TenantId * PostLike) (env: Env) =
         let dataContext = env.DataContext
 
@@ -87,7 +103,8 @@ module DomainPools =
                 |> add'
 
             let domain =
-                createMainDomain env.AuthStringsProvider env.AuthConfig domainPool "dev" |> add'
+                createMainDomain env.AuthStringsProvider env.AuthConfig domainPool "dev"
+                |> add'
 
             createDomainManagementApp env.AuthStringsProvider env.AuthConfig domain
             |> add
@@ -106,13 +123,7 @@ module DomainPools =
             // Tenant owner -> Domain owner
             // User -> Domain super admin
             if ownerId <> userId then
-                let! userEmail =
-                    query {
-                        for user in dataContext.Users do
-                            where (user.Id = userId)
-                            select user.Email
-                    }
-                    |> toSingleAsync
+                let! userEmail = getUserEmail dataContext userId
 
                 createDomainUserRole ownerEmail domain Seed.Roles.DomainOwner.Id
                 |> add
@@ -123,6 +134,20 @@ module DomainPools =
                 createDomainUserRole ownerEmail domain Seed.Roles.DomainOwner.Id
                 |> add
 
+            match data.Sandbox with
+            | Some sandbox ->
+                let! userEmail = getUserEmail dataContext userId
+
+                let data: DomainSandbox.Data =
+                    { Domain = DomainSandbox.DomainPoolOrName.DomainPool domainPool
+                      EnvName = sandbox.EnvName
+                      ApiName = sandbox.ApiName
+                      AppName = sandbox.AppName
+                      Permissions = sandbox.Permissions }
+
+                DomainSandbox.create env tenant userEmail data
+            | None -> ()
+
             try
                 do! saveChangesAsync dataContext
             with ex -> return catch ex
@@ -132,8 +157,10 @@ module DomainPools =
 
     //
     let update: Update<int, PutLike, DbDataContext> =
-        updateCatch<DomainPool, _, _, _> catch (fun id -> DomainPool(Id = id)) (fun dto entity ->
-            entity.Name <- dto.Name)
+        updateCatch<DomainPool, _, _, _>
+            catch
+            (fun id -> DomainPool(Id = id))
+            (fun dto entity -> entity.Name <- dto.Name)
 
     let remove: Remove<int, DbDataContext> = remove (fun id -> DomainPool(Id = id))
 
@@ -148,7 +175,11 @@ module DomainPools =
                       { Id = x.Id
                         IsMain = x.IsMain
                         EnvName = x.EnvName
-                        DomainManagementClientId = x.Applications.First(fun f -> f.IsDomainManagement).ClientId }) } @>
+                        DomainManagementClientId =
+                            x
+                                .Applications
+                                .First(fun f -> f.IsDomainManagement)
+                                .ClientId }) } @>
 
 
     let getOne: GetOne<int, GetLike, DbDataContext> =

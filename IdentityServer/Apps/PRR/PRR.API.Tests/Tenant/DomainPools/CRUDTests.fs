@@ -64,7 +64,8 @@ module CRUD =
             task {
                 let data: PostLike =
                     { Name = "domain 1"
-                      Identifier = "domain-1" }
+                      Identifier = "domain-1"
+                      Sandbox = None }
 
                 let! result =
                     testFixture.Server2.HttpPostAsync userToken (sprintf "/api/tenant/tenants/%i/domain-pools" tenantId.Value) data
@@ -82,7 +83,8 @@ module CRUD =
             task {
                 let data: PostLike =
                     { Name = "domain 1 updated"
-                      Identifier = "domain-1-updated" }
+                      Identifier = "domain-1-updated"
+                      Sandbox = None }
 
                 let! result =
                     testFixture.Server2.HttpPutAsync
@@ -99,7 +101,8 @@ module CRUD =
             task {
                 let expected: PostLike =
                     { Name = "domain 1 updated"
-                      Identifier = "domain-1-updated" }
+                      Identifier = "domain-1-updated"
+                      Sandbox = None }
 
                 let! result =
                     testFixture.Server2.HttpGetAsync
