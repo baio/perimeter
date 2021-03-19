@@ -1,5 +1,6 @@
 ﻿namespace PRR.Domain.Auth
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open PRR.Domain.Models
 open DataAvail.Common
 open PRR.Data.DataContext
@@ -15,15 +16,28 @@ module ApplicationInfo =
           SocialConnections: string seq }
 
     let private getCommon (clientId: ClientId) (dataContext: DbDataContext) =
-        query {
-            for app in dataContext.Applications do
-                where (app.ClientId = clientId)
-                select
-                    { Title = app.Name
-                      SocialConnections =
-                          app.Domain.SocialConnections.OrderBy(fun x -> x.Order).Select(fun x -> x.SocialName) }
+        task {
+            let! (result, isDomainManagement, isTenantManagement) =
+                query {
+                    for app in dataContext.Applications do
+                        where (app.ClientId = clientId)
+
+                        select
+                            ({ Title = app.Name
+                               SocialConnections =
+                                   app
+                                       .Domain
+                                       .SocialConnections
+                                       .OrderBy(fun x -> x.Order)
+                                       .Select(fun x -> x.SocialName) },
+                             app.IsDomainManagement,
+                             app.Domain.Pool = null)
+                }
+                |> toSingleAsync
+
+            let isManagement = isDomainManagement || isTenantManagement
+            return (isManagement, result)
         }
-        |> toSingleAsync
 
 
     let private getPerimeter () =
@@ -38,4 +52,14 @@ module ApplicationInfo =
           PerimeterSocialProviders: PerimeterSocialProviders }
 
     let getApplicationInfo (clientId: ClientId) (dataContext: DbDataContext) =
-        if clientId = DEFAULT_CLIENT_ID then getPerimeter () |> TaskUtils.returnM else getCommon clientId dataContext
+        task {
+            if clientId = DEFAULT_CLIENT_ID then
+                return getPerimeter ()
+            else
+                let! (isManagement, result) = getCommon clientId dataContext
+
+                return
+                    match isManagement with
+                    | true -> getPerimeter ()
+                    | false -> result
+        }
